@@ -29,9 +29,9 @@ variant universal {}
 compiler.blacklist  *cc* *dragonegg*
 
 build.args          PREFIX=${prefix}
-build.env           CC="${configure.cc}" \
-                    CFLAGS="[get_canonical_archflags cc]" \
-                    LDFLAGS="[get_canonical_archflags ld]"
+build.env           CC=${configure.cc} \
+                    CFLAGS=[get_canonical_archflags cc] \
+                    LDFLAGS=[get_canonical_archflags ld]
 
 destroot.args       ${build.args}
 

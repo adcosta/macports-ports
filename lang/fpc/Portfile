@@ -3,94 +3,205 @@
 PortSystem          1.0
 
 name                fpc
-version             2.6.4
-revision            1
+version             3.2.0
 categories          lang
 platforms           darwin
 license             GPL-2 LGPL-2
-maintainers         {takeshi @tenomoto} openmaintainer
-description         free pascal
-long_description    Open source compiler for Pascal and Object Pascal
+maintainers         nomaintainer
+description         Free Pascal, an open source Pascal and Object Pascal compiler.
+long_description    Free Pascal is a 32, 64 and 16 bit professional Pascal compiler. \
+                    It can target many processor architectures: Intel x86 (including 8086), \
+                    AMD64/x86-64, PowerPC, PowerPC64, SPARC, ARM, AArch64, MIPS and the JVM. \
+                    Supported operating systems include Linux, FreeBSD, Mac OS X/iOS/iPhoneSimulator/Darwin, \
+                    Win32, Win64, WinCE and Android.
 homepage            http://www.freepascal.org
-master_sites        sourceforge:freepascal
+master_sites        sourceforge:freepascal:main \
+                    ftp://ftp.freepascal.org/pub/fpc/dist/3.0.4/bootstrap/:bootstrap
 
 set src             ${name}build-${version}.tar.gz
-set pp              universal-macosx-10.5-ppcuniversal.tar.bz2
-distfiles           ${src} ${pp}
+# the 3.0.4 bootstrap compiler
+set pp              x86_64-macosx-10.9-ppcx64.tar.bz2
+distfiles           ${src}:main ${pp}:bootstrap
 checksums           ${src} \
-                    rmd160  339b71d3c9983a720eed7c6bda1cfd330d89966f \
-                    sha256  8d9c3bcfa469d9b37c05663e2775d179809e4b3443604fac7d21aa64c9a56daa \
+                    rmd160  c8d56acb409a6d5c186b0aaed38dc02dfa3bcb69 \
+                    sha256  f9b914eace989a023fb953da203dc0d973b44487568b4138c7d5b9613d7d6838 \
+                    size    80698915 \
                     ${pp} \
-                    rmd160  0124c2f4447ba7f96e3db0a27e6bff459c5749f4 \
-                    sha256  e7243e83e6a04de147ebab7530754ec92cd1fbabbc9b6b00a3f90a796312f3e9
+                    rmd160  7c5327aa6f4fd8616d78bc4f708463b9fb3e8844 \
+                    sha256  0515ad4251c51fa7e5c0ff9b1d90ea50f41530b56276cc72b73798fae437b3b4 \
+                    size    1556308
+supported_archs     x86_64
+
+# doesn't install shared libraries
+installs_libs       no
+
+# parallel building is unreliable
+use_parallel_build  no
 
 extract.only        ${src}
-                    
+
 use_configure       no
 universal_variant   no
 
-post-extract {
-    system -W ${workpath} "bzip2 -dc ${distpath}/${pp} | tar xf -"
-}
+set fpcbasepath     ${prefix}/libexec/${name}
 
-worksrcdir          ${name}build-${version}/fpcsrc
-set fpcbasepath     ${prefix}/lib/${name}
-build.env           PP=${workpath}/ppcuniversal \
-                    PREFIX=${destroot}${fpcbasepath}
-build.target        all
+subport "chmcmd-${name}" {
+    revision        0
 
-destroot.env        ${build.env}
+    description     The FPC Pascal htmlhelp (CHM) compiler
+    long_description \
+                    chmcmd is an cross-platform utility to generate compressed HTML (.chm) \
+                    documentation, written in Free Pascal
 
-# Yosemite fix: fpc's build system checkes MACOSX_DEPLOYMENT_TARGET and halts if > 10.9
-platform darwin {
-    if {${os.major} > 13} {
-        macosx_deployment_target    10.9
+    depends_build-append \
+                    port:${name}
+    extract.post_args-append \
+                    ${name}build-${version}/fpcsrc/packages/chm \
+                    ${name}build-${version}/fpcsrc/packages/fcl-xml \
+                    ${name}build-${version}/fpcsrc/packages/fcl-base \
+                    ${name}build-${version}/fpcsrc/packages/fcl-process \
+                    ${name}build-${version}/fpcsrc/packages/fpmkunit \
+                    ${name}build-${version}/fpcsrc/packages/hash \
+                    ${name}build-${version}/fpcsrc/packages/iconvenc \
+                    ${name}build-${version}/fpcsrc/packages/libtar \
+                    ${name}build-${version}/fpcsrc/packages/paszlib \
+                    ${name}build-${version}/fpcsrc/packages/univint \
+                    ${name}build-${version}/fpcsrc/rtl
+    worksrcdir      ${name}build-${version}/fpcsrc/packages/chm
+    use_configure   yes
+    configure.cmd   ${fpcbasepath}/bin/fpcmake
+    configure.pre_args
+    configure.args  -r -v Makefile.fpc.fpcmake
+    configure.post_args
+    build.env       PREFIX=${prefix}
+    build.target
+    build.post_args-append \
+                    V=1 VERBOSE=1
+    destroot {
+        xinstall -m 0755 ${build.dir}/chmcmd ${destroot}${prefix}/bin
     }
 }
 
-post-destroot {
-# create a symlink to the architecture dependent executable
+subport "${name}-cross" {
+    revision        0
+
+    description     FreePascal common cross-compiler binaries
+    long_description \
+                    Crosscompilers serving as starting points \
+                    for specific operating system targets.    \
+                    OS runtime libraries are not yet ready.
+    depends_build-append \
+                    port:${name}
+
+    worksrcdir      ${name}build-${version}/fpcsrc/compiler
+    use_configure   no
+    build.args      OPT="-ap -v0"
+    build.target    arm avr i386 i8086 jvm m68k mips mipsel powerpc powerpc64 sparc
+
+    destroot {
+      # delete unwanted files
+        file delete -force ${worksrcpath}/ppcgen
+        file delete        {*}[glob ${worksrcpath}/ppc*.*]
+
+      # create dirs
+        xinstall -m 0755 -d ${destroot}${prefix}/bin
+        xinstall -m 0755 -d ${destroot}${prefix}/lib/fpc/${version}
+
+      # loop over installing all cross-compilers
+        foreach PPCCROSS [glob -tails -directory ${worksrcpath} ppc*] {
+            xinstall -m 0755 ${worksrcpath}/$PPCCROSS ${destroot}${prefix}/lib/fpc/${version}
+            ln -sf ../lib/fpc/${version}/$PPCCROSS ${destroot}${prefix}/bin/$PPCCROSS
+        }
+    }
+}
+
+if {${subport} eq "${name}"} {
+    revision            0
+
+    installs_libs       yes
+
+    post-extract {
+        system -W ${workpath} "bzip2 -dc ${distpath}/${pp} | tar xf -"
+    }
+
+
+    post-patch {
+        # adjust the path "codfilepath" for plex from /usr/local to MacPort's prefix.
+        reinplace "s|/usr/local|${prefix}|g" \
+            ${worksrcpath}/utils/tply/pyacc.y \
+            ${worksrcpath}/utils/tply/pyacc.pas \
+            ${worksrcpath}/utils/tply/plex.pas
+    }
+
     switch ${build_arch} {
         "x86_64" {
             set b "ppcx64"
-        } 
-        "i386" {
-            set b "ppc386"
         }
         default {
-            set b "ppcppc"
+            set b "unsupported"
         }
     }
-    ln -s ${fpcbasepath}/lib/${name}/${version}/${b} ${destroot}${fpcbasepath}/bin
-# generate a configuration file
-    xinstall -d ${destroot}${fpcbasepath}/etc
-    system "
-        ${destroot}${fpcbasepath}/bin/fpcmkcfg \
-            -d basepath=${fpcbasepath}/lib/${name}/${version} \
-            -o ${destroot}${fpcbasepath}/etc/fpc.cfg
-    "
-# install man
-    xinstall -d ${destroot}${fpcbasepath}/man
-    foreach d {1 5} {
-        file copy ${workpath}/${name}build-${version}/install/man/man${d} ${destroot}${fpcbasepath}/man
-        foreach f [glob ${destroot}${fpcbasepath}/man/man${d}/*.${d}] {
-            system "/usr/bin/gzip ${f}"
-        }
-    }
-    ln -s ${fpcbasepath}/man/man1/fpc.1.gz ${destroot}${prefix}/share/man/man1
-    ln -s ${fpcbasepath}/man/man5/fpc.cfg.5.gz ${destroot}${prefix}/share/man/man5
-}
 
-notes "
-    The compiler fpc looks for the fpc.cfg file in the following places: \n\
-    - The current directory. \n\
-    - Home directory, looks for .fpc.cfg \n\
-    - The directory specified in the environment variable PPC_CONFIG_PATH, \n\
-      and if it's not set under compilerdir/../etc. \n\
-    - If it is not yet found: in /etc. \n\
-    \n\
-    All the files of fpc are installed in ${fpcbasepath} and \n\
-    the executables are installed in ${fpcbasepath}/bin. \n\
-    The fpc.cfg is installed in ${fpcbasepath}/etc to make fpc find fpc.cfg. \n\
-    To customize, use ~/.fpc.cfg or /etc/fpc.cfg and call ${fpcbasepath}/bin/fpc directly.
-" 
+    worksrcdir          ${name}build-${version}/fpcsrc
+    build.env           PP=${workpath}/${b} \
+                        PREFIX=${destroot}${fpcbasepath}
+    build.target        all
+
+    destroot.env        {*}${build.env}
+
+    # build the compiler utilities msgdif and msg2inc
+    post-build {
+        system -W ${worksrcpath}/compiler/utils \
+               "../ppcx64 -WM10.9 -Fu../../rtl/units/${build_arch}-darwin msgdif.pp && \
+                ../ppcx64 -WM10.9 -Fu../../rtl/units/${build_arch}-darwin msg2inc.pp"
+    }
+
+    post-destroot {
+        # create a symlink to the architecture dependent executable
+        ln -s ${fpcbasepath}/lib/${name}/${version}/${b} ${destroot}${fpcbasepath}/bin
+        # generate a configuration file
+        xinstall -d ${destroot}${fpcbasepath}/etc
+        system "
+            ${destroot}${fpcbasepath}/bin/fpcmkcfg \
+                -d basepath=${fpcbasepath}/lib/${name}/${version} \
+                -o ${destroot}${fpcbasepath}/etc/fpc.cfg
+        "
+        ln -s ${fpcbasepath}/etc/fpc.cfg ${destroot}${prefix}/etc
+        system "patch ${destroot}${fpcbasepath}/etc/fpc.cfg ${filespath}/fpc.cfg.patch"
+
+        # install man
+        xinstall -d ${destroot}${fpcbasepath}/man
+        foreach d {1 5} {
+            file copy ${workpath}/${name}build-${version}/install/man/man${d} ${destroot}${fpcbasepath}/man
+            foreach f [glob ${destroot}${fpcbasepath}/man/man${d}/*.${d}] {
+                system "/usr/bin/gzip ${f}"
+            }
+        }
+        ln -s ${fpcbasepath}/man/man1/fpc.1.gz ${destroot}${prefix}/share/man/man1
+        ln -s ${fpcbasepath}/man/man5/fpc.cfg.5.gz ${destroot}${prefix}/share/man/man5
+
+        # chmcmd will be installed by the chmcmd-fpc subport
+        file delete -force ${destroot}${fpcbasepath}/bin/chmcmd
+        foreach b [glob -nocomplain ${destroot}${fpcbasepath}/bin/*] {
+            set n [file tail ${b}]
+            ln -s ${fpcbasepath}/bin/${n} ${destroot}${prefix}/bin
+        }
+
+        # install the compiler utilities msgdif and msg2inc
+        xinstall -m 0755 -W ${worksrcpath}/compiler/utils msgdif msg2inc ${destroot}${prefix}/bin
+    }
+
+    notes "
+        The compiler fpc looks for the fpc.cfg file in the following places:
+        - The current directory.
+        - Home directory, looks for .fpc.cfg
+        - The directory specified in the environment variable PPC_CONFIG_PATH,\
+          and if it's not set under compilerdir/../etc.
+        - If it is not yet found: in /etc.
+
+        All the files of fpc are installed in ${fpcbasepath} and\
+        the executables are installed in ${fpcbasepath}/bin.
+        The fpc.cfg is installed in ${fpcbasepath}/etc to make fpc find fpc.cfg.
+        To customize, use ~/.fpc.cfg or /etc/fpc.cfg and call ${fpcbasepath}/bin/fpc directly.
+    "
+}

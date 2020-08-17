@@ -9,10 +9,6 @@
 # inform users that they should uninstall it and install something else
 # instead; you might want to override some of the defaults though.
 
-platforms       darwin
-maintainers     nomaintainer
-supported_archs noarch
-
 proc obsolete.set_descriptions {replaced_by} {
     if {${replaced_by} eq ""} {
         description         Obsolete port
@@ -20,6 +16,29 @@ proc obsolete.set_descriptions {replaced_by} {
     } else {
         description         Obsolete port, replaced by ${replaced_by}
         long_description    This port has been replaced by ${replaced_by}.
+    }
+
+    default platforms       darwin
+    default maintainers     nomaintainer
+    default homepage        https://www.macports.org
+    default license         none
+
+    archive_sites
+    patchfiles
+    distfiles
+    depends_build
+    depends_extract
+    depends_fetch
+    depends_lib
+    depends_patch
+    depends_run
+    depends_test
+
+    supported_archs         noarch
+    livecheck.type          none
+
+    if {[info commands known_fail] ne ""} {
+        known_fail yes
     }
 }
 
@@ -41,19 +60,6 @@ if {[info exists replaced_by]} {
     obsolete.set_descriptions ""
 }
 
-homepage        https://www.macports.org/
-
-archive_sites
-patchfiles
-distfiles
-depends_build
-depends_extract
-depends_fetch
-depends_lib
-depends_patch
-depends_run
-depends_test
-
 pre-configure {
     if {[info exists replaced_by]} {
         ui_error "${subport} has been replaced by ${replaced_by};\
@@ -63,5 +69,3 @@ pre-configure {
     }
     return -code error "obsolete port"
 }
-
-livecheck.type  none

@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Socket 2.027
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Socket 2.030
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Socket - networking constants and support functions
@@ -12,6 +12,6 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  43e6923d1c7307e5f4fc8314f150395d8f045620 \
-                    sha256  141c11494d171c13765d972417be731388f6372ffaad619cfc72998e972be2a8 \
-                    size    43885
+checksums           rmd160  443cefd8d8486e907fffb55862699a7a894cf43f \
+                    sha256  2573571d0db6ab98b5472a371c4acb24fe53d890f920e43aab49a0eeabe6da67 \
+                    size    44283

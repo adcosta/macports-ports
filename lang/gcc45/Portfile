@@ -150,6 +150,7 @@ configure.env-append \
                     OTOOL64=${prefix}/bin/otool
 
 if {${os.platform} eq "darwin" && ([vercmp $xcodeversion 9.0] > 0)} {
+    known_fail      yes
     depends_build
     depends_lib
     depends_run
@@ -340,11 +341,11 @@ variant universal {
 }
 # the generated compiler doesn't accept -arch
 configure.env-append \
-    CPP="${configure.cc} -E" \
-    CXXCPP="${configure.cxx} -E"
+    "CPP=${configure.cc} -E" \
+    "CXXCPP=${configure.cxx} -E"
 build.env-append \
-    CPP="${configure.cc} -E" \
-    CXXCPP="${configure.cxx} -E"
+    "CPP=${configure.cc} -E" \
+    "CXXCPP=${configure.cxx} -E"
 configure.cc-append [get_canonical_archflags]
 configure.cc_archflags
 configure.cxx_archflags

@@ -1,9 +1,10 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
 
 name                nsis
-version             3.03
+version             3.06.1
 set major           [lindex [split ${version} .] 0]
 categories          devel
 license             zlib CPL-1 MIT
@@ -25,12 +26,14 @@ use_bzip2           yes
 distfiles-append    nsis-${version}.zip
 extract.only-delete nsis-${version}.zip
 
-checksums           nsis-${version}-src.tar.bz2 \
-                    rmd160  b97f524fcda4dc333d73593c41130db5f8dddde1 \
-                    sha256  abae7f4488bc6de7a4dd760d5f0e7cd3aad7747d4d7cd85786697c8991695eaa \
-                    nsis-${version}.zip \
-                    rmd160  806e501feff324f94e6d16e442cbaf6de4404837 \
-                    sha256  b53a79078f2c6abf21f11d9fe68807f35b228393eb17a0cd3873614190116ba7
+checksums           nsis-3.06.1-src.tar.bz2 \
+                    rmd160  7673c3097e03fb9b812836a896d00a437034ab55 \
+                    sha256  9b5d68bf1874a7b393432410c7e8c376f174d2602179883845d2508152153ff0 \
+                    size    1771333 \
+                    nsis-3.06.1.zip \
+                    rmd160  3a291267bfd93fd0cd9c6bfe49ea22bcafcc7491 \
+                    sha256  d463ad11aa191ab5ae64edb3a439a4a4a7a3e277fcb138254317254f7111fba7 \
+                    size    2326512
 
 depends_build       port:scons
 
@@ -45,6 +48,9 @@ post-extract {
 }
 
 use_configure       no
+
+# https://sourceforge.net/p/nsis/bugs/1251/
+compiler.blacklist  {clang < 900}
 
 build.args          APPEND_CCFLAGS="[get_canonical_archflags cc] -stdlib=${configure.cxx_stdlib}" \
                     APPEND_CPPPATH="${prefix}/include" \
@@ -69,7 +75,7 @@ destroot.args       {*}${build.args}
 destroot.destdir    PREFIX_DEST="${destroot}"
 
 post-destroot {
-    foreach dir {Bin Contrib Docs Examples Include Menu Plugins Stubs} {
+    foreach dir {Bin Contrib Docs Examples Include Plugins Stubs} {
         file delete -force ${destroot}${prefix}/share/nsis/${dir}
         file copy ${workpath}/nsis-${version}/${dir} ${destroot}${prefix}/share/nsis
     }

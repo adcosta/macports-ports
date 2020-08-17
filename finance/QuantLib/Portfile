@@ -3,10 +3,11 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        lballabio QuantLib 1.14 QuantLib-v
-checksums           rmd160  80c0b321764b1d6f936bf84c3eda76c92b4917b6 \
-                    sha256  65a6ef7984ddedd3af64ea3f9bec44a6d658436f276b4d99ced80382eaef47fb \
-                    size    9116788
+github.setup        lballabio QuantLib 1.19 QuantLib-v
+revision            0
+checksums           rmd160  aa30fe414710f11bc8dce3fd835abe52561ecf80 \
+                    sha256  4a5ff7d53ed5590944f2f0d6b96dd6fba041cc7601e25bc06b040257a455813a \
+                    size    9169267
 
 categories          finance
 platforms           darwin

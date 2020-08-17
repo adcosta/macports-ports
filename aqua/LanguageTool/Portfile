@@ -1,9 +1,10 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           java 1.0
 
 name                LanguageTool
-version             4.3
+version             5.0
 categories          aqua textproc java
 license             LGPL-2.1
 maintainers         {amake @amake} openmaintainer
@@ -17,11 +18,11 @@ platforms           darwin
 supported_archs     noarch
 master_sites        https://languagetool.org/download/
 
-checksums           rmd160  b45a69661f4ee30c92ddff89b1f86ec1fb12d55b \
-                    sha256  65a9f222329390497c3db7944ad5f3a7ee2d54957a956ccf15b4a62a1a561aa4 \
-                    size    163219324
+checksums           rmd160  2560a2baa536cabb6f94463f3ef271c6e7d0b8f0 \
+                    sha256  212eb275cf9df8b6f49d8ce2bb386246081be7f01d907577fbd09a9f27055628 \
+                    size    189614295
 
-depends_run         bin:java:kaffe
+java.version        1.8+
 
 use_zip             yes
 use_configure       no
@@ -46,7 +47,7 @@ destroot    {
     xinstall -m 644 ${filespath}/LanguageTool.icns ${app}/Contents/Resources/
     set fp [open ${app}/Contents/MacOS/LanguageTool w]
     puts $fp "#!/bin/sh"
-    puts $fp "JAVA_HOME=\$(/usr/libexec/java_home -v 1.8)"
+    puts $fp "JAVA_HOME=\$(/usr/libexec/java_home -v ${java.version})"
     puts $fp "exec \$JAVA_HOME/bin/java \\"
     puts $fp "    -Xdock:name=${name} \\"
     puts $fp "    -Xdock:icon=${applications_dir}/${name}.app/Contents/Resources/LanguageTool.icns \\"

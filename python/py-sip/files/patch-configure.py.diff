@@ -1,6 +1,6 @@
 --- configure.py.orig
 +++ configure.py
-@@ -1025,7 +1025,6 @@
+@@ -1046,7 +1046,6 @@
          raise
      except:
          sys.stderr.write(

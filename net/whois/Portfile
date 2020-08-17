@@ -10,15 +10,19 @@
 
 PortSystem                  1.0
 PortGroup                   compiler_blacklist_versions 1.0
+PortGroup                   github 1.0
 PortGroup                   perl5 1.0
 
-name                        whois
+github.setup                rfc1036 whois 5.5.6 v
+revision                    0
+checksums                   rmd160  d8252d1e070f6f7305d25be078c3f676c5c046a4 \
+                            sha256  cba1e9000c60950f46a96ba23e8eea8aee240a2b8560e63a6bfb33f9034af14e \
+                            size    85572
+
 conflicts                   bahamut expect ripe-whois
-version                     5.3.2
 categories                  net
-maintainers                 {ryandesign @ryandesign}
+maintainers                 {ryandesign @ryandesign} openmaintainer
 license                     GPL-2+
-homepage                    http://www.linux.it/~md/software/
 platforms                   darwin
 use_parallel_build          yes
 
@@ -30,13 +34,10 @@ long_description            whois is an improved whois client that follows the \
 master_sites                http://ftp.debian.org/debian/pool/main/w/${name}/
 use_xz                      yes
 
-checksums                   rmd160  58688de1c945878d28fcea67be28b98c2e9a890a \
-                            sha256  79714ba89172bca08a2443f59885daa4af0c5f8d6a49bc9e7f2a83559a286354 \
-                            size    82984
-
 distfiles                   ${name}_${version}${extract.suffix}
+worksrcdir                  ${name}
 
-perl5.branches              5.26
+perl5.branches              5.28
 
 depends_build               port:perl${perl5.major}
 
@@ -74,7 +75,7 @@ post-configure {
 variant universal {}
 
 build.target-append         pos
-build.env                   CC="${configure.cc} [get_canonical_archflags]" \
+build.env                   "CC=${configure.cc} [get_canonical_archflags]" \
                             CONFIG_FILE=${prefix}/etc/whois.conf \
                             HAVE_LIBIDN2=1 \
                             HAVE_ICONV=1 \
@@ -85,7 +86,7 @@ build.args                  prefix=${prefix} \
                             PERL="${configure.perl}"
 
 destroot.target-append      install-pos
-destroot.args               prefix=${destroot}${prefix}
+destroot.args               prefix=${prefix}
 
 post-destroot {
     xinstall -m 644 -W ${worksrcpath} whois.conf ${destroot}${prefix}/etc/whois.conf.sample
@@ -103,7 +104,3 @@ pre-activate {
         notes
     }
 }
-
-livecheck.type              regex
-livecheck.url               [lindex ${master_sites} 0]?C=M&O=D
-livecheck.regex             "${name}_(\[^~\]+?)${extract.suffix}"

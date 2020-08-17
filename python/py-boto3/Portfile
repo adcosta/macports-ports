@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-boto3
-version             1.7.16
+version             1.11.9
 platforms           darwin
 supported_archs     noarch
 license             Apache-2
@@ -17,14 +17,12 @@ long_description    Boto3 is the Amazon Web Services (AWS) Software \
                     like Amazon S3 and Amazon EC2.
 
 homepage            https://github.com/boto/boto3
-master_sites        pypi:b/boto3
-distname            boto3-${version}
 
-checksums           rmd160 7e074002bf1fb318d60a7547757e3fbcf9b54ba8 \
-                    sha256 3dc4d47d2adc5463afd05124d8e612ecb3da8253b8e95b61d7c4f50762ab976a \
-                    size   93010
+checksums           rmd160  b0396b6352c17a3ff53fe5b087fd003493c2f68f \
+                    sha256  05f7ae180813fbf11cb7397b43b6bd29463abdc246bee58127836f1a8f6a9a2f \
+                    size    98335
 
-python.versions     27 35 36 37
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -35,6 +33,4 @@ if {${name} ne ${subport}} {
                         port:py${python.version}-s3transfer
 
     livecheck.type      none
-} else {
-    livecheck.type      pypi
 }

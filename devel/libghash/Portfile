@@ -23,11 +23,11 @@ patchfiles		patch-Makefile
 
 use_configure	no
 
-build.env		PREFIX="${prefix}" \
-			CC="${configure.cc}" \
-			CFLAGS="${configure.cflags} ${configure.cc_archflags}" \
-			LDFLAGS="${configure.ld_archflags}"
+build.env		PREFIX=${prefix} \
+			CC=${configure.cc} \
+			"CFLAGS=${configure.cflags} ${configure.cc_archflags}" \
+			LDFLAGS=${configure.ld_archflags}
 
-destroot.env	PREFIX="${prefix}"
+destroot.env	PREFIX=${prefix}
 
 test.run		yes

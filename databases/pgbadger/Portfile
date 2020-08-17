@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           perl5 1.0
 
-github.setup        dalibo pgbadger 9.2 v
+github.setup        darold pgbadger 11.2 v
 revision            1
 categories          databases
 maintainers         nomaintainer
@@ -17,16 +17,20 @@ platforms           darwin
 license             BSD
 supported_archs     noarch
 
-homepage            https://dalibo.github.io/${name}/
+homepage            https://pgbadger.darold.net/
 
-checksums           rmd160  8112cdd2c54b931766f51390ef96eee1b440ad4f \
-                    sha256  b07982588875a34b3ab6861663332e6e337937f0bab5f8e080f415736c28c0d5 \
-                    size    745247
+checksums           rmd160  4c38e19fc126b8f3ab8ddf30e7a2a3298d2b955f \
+                    sha256  f22edacd39fe849ac9487724b96c42f4eff269b9e6b1cf85bfbac68152e57e2d \
+                    size    2230383
 
-perl5.branches      5.26
+perl5.require_variant   yes
+perl5.conflict_variants yes
+perl5.branches          5.26 5.28 5.30
+perl5.default_branch    5.28
+perl5.create_variants   ${perl5.branches}
 
-depends_lib-append  port:perl${perl5.major} \
-                    port:p${perl5.major}-text-csv_xs
+depends_lib-append  port:p${perl5.major}-text-csv_xs \
+                    port:p${perl5.major}-json-xs
 
 post-patch {
     reinplace "s|^#!/usr/bin/env perl|#!${perl5.bin}|" ${worksrcpath}/${name}

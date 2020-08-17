@@ -4,7 +4,9 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-zopfli
-version             0.1.4
+version             0.1.7
+revision            0
+
 platforms           darwin
 license             Apache-2
 maintainers         nomaintainer
@@ -13,21 +15,33 @@ description         Zopfli module for python
 long_description    ${description}
 
 homepage            https://github.com/obp/py-zopfli
-master_sites        pypi:z/zopfli
-
 use_zip             yes
 
-distname            zopfli-${version}
+checksums           rmd160  ef2fe2fe2129550270f144cdbff79886225f3268 \
+                    sha256  512892714f0e3dcc9a77222cb509ed519f41ce2b92467e47a4b406a23b48561a \
+                    size    75709
 
-checksums           rmd160  63545b71612e385da2cb018e81b281d89e129c10 \
-                    sha256  95cdbadb8732ef0881aa310079e324c22a800d59ddd44456a1cddb1d42744b62 \
-                    size    75793
-
-python.versions     27 36 37
+python.versions     27 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                        port:py${python.version}-setuptools
+                    port:py${python.version}-setuptools
+
+    pre-test {
+        test.env    PYTHONPATH=[glob -nocomplain ${worksrcpath}/build/lib*]
+    }
+
+    test.run        yes
+    test.dir        ${build.dir}/tests
+    test.cmd        ${python.bin} tests.py
+    test.target
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst COPYING \
+            ${destroot}${docdir}
+    }
 
     livecheck.type      none
 }

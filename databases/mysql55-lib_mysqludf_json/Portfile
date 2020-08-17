@@ -30,12 +30,12 @@ foreach mysql.extension.port ${mysql.extension.ports} {
 }
 
 categories          databases lang
-maintainers         {pixilla @pixilla}
+maintainers         nomaintainer
 platforms           darwin
 license             LGPL
 
 description         Map database data to the JSON.
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            http://www.mysqludf.org/${package.name}/
 master_sites        ${homepage}

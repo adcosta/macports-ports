@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 epoch               1
-perl5.branches      5.26
-perl5.setup         Perl-Critic 1.132
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Perl-Critic 1.138
 license             {Artistic-1 GPL}
 maintainers         {khindenburg @kurthindenburg} openmaintainer
 supported_archs     noarch
@@ -15,9 +15,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  c5e74c7bca2b3fa3d9e985a843ff9267394c4545 \
-                    sha256  bcf36e32830373cf1ee35abbe2e20336fbbcad5041c14aad6822ac947be092b1 \
-                    size    646999
+checksums           rmd160  b9fbef6a0c2ee01e5c827791928d1e7131fbb30e \
+                    sha256  2ad194f91ef24df4698369c2562d4164e9bf74f2d5565c681841abf79789ed82 \
+                    size    649701
 
 if {${perl5.major} != ""} {
 depends_build-append  port:p${perl5.major}-test-deep
@@ -25,26 +25,19 @@ depends_build-append  port:p${perl5.major}-test-deep
 depends_lib-append  port:p${perl5.major}-b-keywords \
                     port:p${perl5.major}-config-tiny \
                     port:p${perl5.major}-exception-class \
-                    port:p${perl5.major}-file-sharedir \
-                    port:p${perl5.major}-file-sharedir-projectdistdir \
                     port:p${perl5.major}-io-string \
-                    port:p${perl5.major}-lingua-en-inflect \
                     port:p${perl5.major}-list-moreutils \
                     port:p${perl5.major}-module-pluggable \
-                    port:p${perl5.major}-path-finddev \
-                    port:p${perl5.major}-path-isdev \
                     port:p${perl5.major}-ppi \
                     port:p${perl5.major}-ppix-quotelike \
                     port:p${perl5.major}-ppix-regexp \
                     port:p${perl5.major}-ppix-utilities \
                     port:p${perl5.major}-string-format \
                     port:p${perl5.major}-version \
-                    port:p${perl5.major}-file-homedir \
                     port:p${perl5.major}-file-which \
                     port:p${perl5.major}-perl-tidy \
                     port:p${perl5.major}-pod-spell \
                     port:p${perl5.major}-readonly \
-                    port:p${perl5.major}-regexp-parser \
                     port:p${perl5.major}-readonly-xs
 
 perl5.use_module_build

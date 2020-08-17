@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                  1.0
+PortGroup                   github 1.0
+
+github.setup                toy blueutil 2.6.0 v
+categories                  sysutils
+platforms                   darwin
+maintainers                 {dons.net.au:darius @DanielO}
+license                     BSD
+
+description                 CLI for Bluetooth on macOS
+
+long_description            Command line interface for Bluetooth on macOS, \
+                            control power, discoverable state, list paired \
+                            devices, pair new devices, connect and disconnect \
+                            devices, and check if a device is connected.
+
+checksums                   sha1    c06665f0564fa686cb60037ad9fe21b4d3033128 \
+                            rmd160  2c79a34420a5854d23a5cdaa3aa3697769ca78a7 \
+                            sha256  45a418781eb71174965a47b2aa7f606fcbff5fbeea71d20e6eff88ee1f4e6721 \
+                            size    16760
+
+if { ${os.platform} eq "darwin" && ${os.major} <= 12} {
+    known_fail              yes
+    pre-fetch {
+        ui_error "${name} @${version} requires OS X 10.9 or later."
+        return -code error "Unsupported platform"
+    }
+}
+
+patchfiles                  blueutil-Makefile.diff
+
+post-patch {
+    reinplace  "s|@PREFIX@|${prefix}|g" ${worksrcpath}/Makefile
+}
+
+use_configure               no
+
+post-destroot {
+    xinstall -d -m 0755 ${destroot}${prefix}/share/${name}
+    xinstall -m 0644 -W ${worksrcpath} README.md LICENSE.txt CHANGELOG.md \
+        ${destroot}${prefix}/share/${name}/
+}
+
+test.run                    yes
+test.args                   ""
+test.cmd                    echo y | ./test

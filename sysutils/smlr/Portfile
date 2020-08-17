@@ -21,10 +21,9 @@ patchfiles          patch-Makefile.diff
 variant universal {}
 
 use_configure       no
-
-build.env           CC="${configure.cc}" \
-                    CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
-                    LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]" \
+build.env           CC=${configure.cc} \
+                    "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]" \
                     PREFIX=${prefix}
 
 destroot.env        PREFIX=${destroot}${prefix}

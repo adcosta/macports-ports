@@ -37,11 +37,10 @@ pre-fetch {
 }
 
 use_configure no
-
-build.env           CC="${configure.cc} [get_canonical_archflags cc]" \
-                    CPPFLAGS="${configure.cppflags}" \
-                    CFLAGS="${configure.cflags}" \
-                    LDFLAGS="${configure.ldflags}"
+build.env           "CC=${configure.cc} [get_canonical_archflags cc]" \
+                    CPPFLAGS=${configure.cppflags} \
+                    CFLAGS=${configure.cflags} \
+                    LDFLAGS=${configure.ldflags}
 
 destroot.args       PREFIX=${prefix}
 

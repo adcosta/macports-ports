@@ -2,27 +2,28 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
-PortGroup           cxx11 1.1
 
 github.setup        facebook watchman 4.9.0 v
 revision            1
 
 categories          sysutils
 platforms           darwin
-maintainers         {sean @seanfarley} openmaintainer
+maintainers         nomaintainer
 license             Apache-2
 
 description         watches files and takes action when they change
 long_description    ${description}
 
 use_autoreconf      yes
-autoreconf.env      AUTOMAKE="automake --foreign"
+autoreconf.env      "AUTOMAKE=automake --foreign"
 
 depends_build-append    port:pkgconfig
 depends_lib-append  port:pcre
 
 patch.pre_args      -p1
 patchfiles-append   patch-container-of-uses.diff
+
+compiler.cxx_standard   2011
 
 configure.args      --disable-silent-rules \
                     --with-pcre \

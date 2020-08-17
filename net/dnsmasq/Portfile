@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                dnsmasq
-version             2.80
+version             2.82
 categories          net
 license             GPL
 maintainers         {snc @nerdling} openmaintainer
@@ -32,9 +32,9 @@ notes               "A startup item has been generated that will aid in\
 master_sites        http://www.thekelleys.org.uk/dnsmasq/
 use_xz              yes
 
-checksums           rmd160  5a26def1ae9a47a2debe08845dfc41d14f3bfa2e \
-                    sha256  cdaba2785e92665cf090646cba6f94812760b9d7d8c8d0cfb07ac819377a63bb \
-                    size    501072
+checksums           rmd160  7583a0a0fa85aa400069e74899ec9e2aaa40c9d1 \
+                    sha256  84523646f3116bb5e1151efb66e645030f6e6a8256f29aab444777a343ebc132 \
+                    size    509904
 
 patchfiles          patch-src-config.h.diff \
                     patch-src-network.c.diff
@@ -48,9 +48,8 @@ post-patch {
 use_configure       no
 
 variant universal {}
-
-build.env-append    CC="${configure.cc} [get_canonical_archflags]"
-destroot.env-append    CC="${configure.cc} [get_canonical_archflags]"
+build.env-append    "CC=${configure.cc} [get_canonical_archflags]"
+destroot.env-append    "CC=${configure.cc} [get_canonical_archflags]"
 
 destroot.args       PREFIX=${prefix}
 destroot.keepdirs   ${destroot}${prefix}/var/run/${name}
@@ -59,31 +58,11 @@ livecheck.type      regex
 livecheck.url       ${master_sites}
 livecheck.regex     LATEST_IS_(\\d\\.\\d+)
 
-# TODO: remove no_* variants after 2015-01-09
-if { ! [variant_isset no_dhcp] } {
-    default_variants-append +dhcp
-}
-if { ! [variant_isset no_tftp] } {
-    default_variants-append +tftp
-}
-if { ! [variant_isset no_ipv6] } {
-    default_variants-append +ipv6
-}
+default_variants    +dhcp +tftp +ipv6
 
-variant no_dhcp conflicts dhcp description { obsolete } {}
-variant dhcp conflicts no_dhcp description { Provide built-in DHCP server } {
-    build.args-delete   -DNO_DHCP
-}
-
-variant no_tftp conflicts tftp description { obsolete } {}
-variant tftp conflicts no_tftp description { Provide built-in TFTP server } {
-    build.args-delete   -DNO_TFTP
-}
-
-variant no_ipv6 conflicts ipv6 description { obsolete } {}
-variant ipv6 conflicts no_ipv6 description { Provide IPV6 support } {
-    build.args-delete   -DNO_IPV6
-}
+variant dhcp description { Provide built-in DHCP server } {}
+variant tftp description { Provide built-in TFTP server } {}
+variant ipv6 description { Provide IPV6 support } {}
 
 set COPTS {}
 if {![variant_isset dhcp]} {

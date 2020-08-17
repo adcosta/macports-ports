@@ -6,13 +6,18 @@ PortGroup           github 1.0
 PortGroup           muniversal 1.0
 
 epoch               1
-github.setup        ninja-build ninja 1.8.2 v
-revision            1
+github.setup        ninja-build ninja 1.10.0 v
+revision            0
+checksums           rmd160  cebdbc2b0d7b1d393ef6c3e449e902463b135eed \
+                    sha256  3810318b08489435f8efc19c05525e80a993af5a55baa0dfeae0465a9d45f99f \
+                    size    210313
+
 categories          devel
 platforms           darwin
 maintainers         {ryandesign @ryandesign} openmaintainer
 license             Apache-2
 installs_libs       no
+conflicts           samurai
 
 description         Small build system with a focus on speed.
 
@@ -30,15 +35,11 @@ long_description    Ninja is yet another build system. It takes as input    \
                     after changing one file. Ninja is under a second.
 
 homepage            https://ninja-build.org
-
-checksums           rmd160  4565c35672b5cddfde05fb679c80c9eef41935ef \
-                    sha256  a67900e40f26d1cdb41381bcac56f4c219c3b424cc6d840edf727d6d566b242e \
-                    size    185248
+github.tarball_from archive
 
 installs_libs       no
 
-patchfiles          patch-configure.py-CXXFLAGS.diff \
-                    patch-configure.py-bootstrap-only.diff
+patchfiles          patch-configure.py-bootstrap-only.diff
 
 depends_build-append \
                     port:re2c
@@ -58,16 +59,16 @@ build.target
 build.args          -v
 
 destroot {
-    xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin
+    xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin
     xinstall -d ${destroot}${prefix}/etc/bash_completion.d
-    xinstall -m 644 ${worksrcpath}/misc/bash-completion ${destroot}${prefix}/etc/bash_completion.d/ninja
+    xinstall -m 0644 ${worksrcpath}/misc/bash-completion ${destroot}${prefix}/etc/bash_completion.d/ninja
     
     set docdir ${prefix}/share/doc/${subport}
     xinstall -d ${destroot}${docdir}
     xinstall -m 0644 -W ${worksrcpath} \
+        CONTRIBUTING.md \
         COPYING \
-        HACKING.md \
-        README \
+        README.md \
         ${destroot}${docdir}
 }
 
@@ -82,3 +83,7 @@ platform darwin {
         patchfiles-append patch-tiger-sysconf.diff
     }
 }
+
+test.run            yes
+test.cmd            ./ninja ninja_test && ./ninja_test
+test.args

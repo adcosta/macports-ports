@@ -1,13 +1,15 @@
-# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        pymc-devs pymc3 3.5 v
+github.setup        pymc-devs pymc3 3.9.2 v
+revision            0
 name                py-pymc3
+
 platforms           darwin
-maintainers         {@reneeotten gmail.com:ottenr.work} openmaintainer
+maintainers         {reneeotten @reneeotten} openmaintainer
 license             Apache-2
 supported_archs     noarch
 
@@ -18,28 +20,58 @@ long_description    PyMC3 is a Python package for Bayesian statistical modeling 
                     Its flexibility and extensibility make it applicable to a large \
                     suite of problems.
 
-python.versions     27 34 35 36
+checksums           rmd160  dab7c224459208479ed0cd516c18535dc2cb9530 \
+                    sha256  c25552389e490ba6635a8fbc2bf5af2c6b39080783ae04b7118f440969720e3a \
+                    size    74734201
 
-checksums           rmd160  f7c2ce63b47e18079660f603869a645cf82f091e \
-                    sha256  11dec661fba8279991322b954845d8cc1953a2d761244560cbe3b862008a49c5 \
-                    size    26355500
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
-    depends_lib-append    port:py${python.version}-h5py \
-                          port:py${python.version}-joblib \
-                          port:py${python.version}-numpy \
-                          port:py${python.version}-pandas \
-                          port:py${python.version}-patsy \
-                          port:py${python.version}-six \
-                          port:py${python.version}-theano \
-                          port:py${python.version}-tqdm
+    if {${python.version} == 27} {
+        github.setup    pymc-devs pymc3 3.6 v
+        revision        0
+        checksums       rmd160  1d3cf15c44b964fd27d4d68882ad1e7675e592e9 \
+                        sha256  12afa97f2f9cb10d6469d5b550153627f65013abf0e18c93c776272f3f4a83f0 \
+                        size    30266821
 
-    if {${python.version} eq 27} {
         depends_lib-append \
-                          port:py${python.version}-enum34
+                        port:py${python.version}-enum34 \
+                        port:py${python.version}-joblib \
+                        port:py${python.version}-six \
+    } elseif {${python.version} == 35} {
+        github.setup    pymc-devs pymc3 3.8 v
+        revision        0
+        checksums       rmd160  45fd2f9d311a3d0dc2c74fe6964621dc8b1c8a3f \
+                        sha256  11314c81e27f9b0216c30e0f1d40fca56c2365bd1b8c63675927c24d8d3faf02 \
+                        size    35397724
     }
 
-    livecheck.type        none
+    if {${python.version} != 27} {
+        depends_lib-append \
+                        port:py${python.version}-arviz
+    }
+    if {${python.version} in "27 35"} {
+        depends_lib-append \
+                        port:py${python.version}-tqdm
+    } else {
+        depends_lib-append \
+                        port:py${python.version}-fastprogress \
+                        port:py${python.version}-typing_extensions
+    }
+
+    if {${python.version} == 36} {
+        depends_lib-append \
+                        port:py${python.version}-contextvars
+    }
+
+    depends_lib-append  port:py${python.version}-h5py \
+                        port:py${python.version}-numpy \
+                        port:py${python.version}-pandas \
+                        port:py${python.version}-patsy \
+                        port:py${python.version}-scipy \
+                        port:py${python.version}-theano \
+
+    livecheck.type      none
 } else {
     github.livecheck.regex  {([0-9.]+)}
 }

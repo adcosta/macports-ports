@@ -1,47 +1,12 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           github 1.0
-
-epoch               1
-github.setup        ccache ccache 3.5 v
-checksums           rmd160  c1da8cfe5414e598f89ce01f0c3c573e9bc41fa2 \
-                    sha256  7ec1d4a359830c617af98d4b6650c3cba44a9f65325a9f493f007daf7e8eb296 \
-                    size    367584
+PortGroup           obsolete 1.0
 
 name                ccache-devel
-categories          devel
-platforms           darwin freebsd
-license             GPL-3+
+replaced_by         ccache
+epoch               1
+version             3.7.11
+revision            0
 
-maintainers         {ryandesign @ryandesign} openmaintainer
-
-description         object-file caching compiler wrapper
-
-long_description \
-    ccache is a compiler cache.  It acts as a caching pre-processor to C/C++ \
-    compilers, using the -E compiler switch and a hash to detect when a \
-    compilation can be satisfied from cache.  This often results in a 5 to 10 \
-    times speedup in common compilations.
-
-homepage            https://ccache.samba.org/
-
-# use_autoconf yes and setting autoconf.cmd to a non-default value will modify
-# depends_build, removing autoconf/automake/libtool. Avoid this by doing it
-# before setting depends_build.
-use_autoconf        yes
-autoconf.cmd        ./autogen.sh
-
-depends_build       port:asciidoc \
-                    port:autoconf \
-                    port:automake \
-                    port:libtool \
-                    bin:perl:perl5
-
-depends_lib         port:zlib
-
-patchfiles          no-Werror.patch
-
-build.target-append doc/ccache.1
-
-conflicts           ccache
+# This obsolete port can be removed after March 2021

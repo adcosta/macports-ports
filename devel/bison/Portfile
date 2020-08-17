@@ -6,7 +6,7 @@ name                bison
 subport             bison-runtime {}
 
 epoch               1
-version             3.1
+version             3.7.1
 if {${subport} eq "bison"} {
     revision        0
 } else {
@@ -17,7 +17,8 @@ platforms           darwin
 if {${subport} eq "bison-runtime"} {
     supported_archs noarch
 }
-license             GPL-3+
+# an exception in file "parse-gram.h" allows generated parser not to be GPL
+license             {GPL-3+ Permissive}
 maintainers         nomaintainer
 
 if {${subport} eq "bison-runtime"} {
@@ -42,7 +43,6 @@ if {${subport} eq "bison-runtime"} {
                         desk calculators to complex programming \
                         languages.
 
-    depends_build       bin:perl:perl5
     depends_lib         port:gettext
     depends_run         port:bison-runtime \
                         port:m4
@@ -53,17 +53,42 @@ homepage            https://www.gnu.org/software/bison
 master_sites        gnu
 use_xz              yes
 
-checksums           rmd160  42ed2a13b83549205e129e48f929b4e9ed1f8a91 \
-                    sha256  7c2464ad6cb7b513b2c350a092d919327e1f63d12ff024836acbb504475da5c6 \
-                    size    1990536
+checksums           rmd160  1f65ab9e6040f427f76e40b29230649ff24a94f4 \
+                    sha256  55c215521a13982a9bee68cd42eed51a65713f96c530a739a57de4438ac1bb69 \
+                    size    2605940
 
-configure.args      --disable-silent-rules
+configure.args      --disable-silent-rules \
+                    ac_cv_prog_HAVE_GCJ_IN_PATH= \
+                    ac_cv_prog_HAVE_GIJ_IN_PATH= \
+                    ac_cv_prog_HAVE_JAVA_IN_PATH= \
+                    ac_cv_prog_HAVE_JAVAC_IN_PATH= \
+                    ac_cv_prog_HAVE_JIKES_IN_PATH= \
+                    ac_cv_prog_HAVE_JRE_IN_PATH= \
+                    ac_cv_prog_HAVE_JVIEW_IN_PATH= \
+                    ac_cv_prog_VALGRIND=
 
 if {${subport} eq "bison-runtime"} {
     build.dir       ${worksrcpath}/runtime-po
     livecheck.type  none
 } else {
     patchfiles-append skip-runtime-po.patch
+
+    # __WORDSIZE is not defined in the Tiger stdint.h header
+    # we add in a 32 and 64 bit compatible version of the macro
+    # taken from the later Apple stdint.h headers
+    patchfiles-append patch-wordsize.diff
+
+    # the build uses pragmas inside functions, which requires a newer gcc version
+    # and also uses C11 redefinition of typedefs in the test suite
+    # this is possibly a bug, to be further elucidated once a more complete understanding
+    # is available. See ticket #59927 for further details of this issue.
+    compiler.c_standard 2011
     test.run        yes
     test.target     check
+}
+
+platform darwin 8 {
+    # https://trac.macports.org/ticket/58819
+    depends_build-append port:flex
+    configure.args-append ac_cv_prog_LEX=${prefix}/bin/flex
 }

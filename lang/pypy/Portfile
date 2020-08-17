@@ -1,13 +1,11 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-# Please remember to keep this file in sync with the pypy-tkinter port!
-
 PortSystem          1.0
-PortGroup           bitbucket 1.0
 PortGroup           select 1.0
 
 name                pypy
-bitbucket.setup     pypy pypy 6.0.0 {release-pypy${python.branch}-v}
+version             7.3.1
+revision            0
 categories          lang python devel
 license             MIT PSF
 maintainers         {danchr @danchr} openmaintainer
@@ -16,8 +14,6 @@ platforms           darwin
 
 homepage            http://pypy.org/
 use_bzip2           yes
-bitbucket.tarball_from \
-                    downloads
 
 depends_build       port:pkgconfig \
                     port:py27-docutils
@@ -32,7 +28,7 @@ depends_lib         port:libffi \
 depends_run         port:python_select
 select.entries      [list python python-$subport $subport]
 
-patchfiles          darwin.py.diff \
+patchfiles          no-embed.diff \
                     make_output.diff \
                     ffiplatform.py.diff \
                     paths.diff
@@ -48,8 +44,7 @@ array set module_scripts {
 }
 
 subport pypy3 {
-    set python.branch 3.5
-    set pypy_c_name pypy3-c
+    set python.branch 3.6
 
     set module_scripts(venv) venv
     set module_scripts(idle) idlelib
@@ -58,30 +53,50 @@ subport pypy3 {
 
     depends_run-append port:python3_select
     select.entries-append [list python3 python3-$subport $subport]
+}
 
-    distname            pypy3-v${version}-src
+subport pypy-tkinter {
+    set python.branch   2.7
+}
 
-    checksums           rmd160  18f1511e9bcbcd6911e44aefa73e874cda09d4e4 \
-                        sha256  ed8005202b46d6fc6831df1d13a4613bc40084bfa42f275068edadf8954034a3 \
-                        size    22648140
+subport pypy3-tkinter {
+    set python.branch   3.6
 }
 
 if {$subport == ${name}} {
     set python.branch 2.7
-    set pypy_c_name pypy-c
 
     depends_run-append port:python2_select
     select.entries-append [list python2 python2-$subport $subport]
-
-    distname            pypy2-v${version}-src
-    checksums           rmd160  4a9568322ac0b8e1c53be81861c7474c1d1926e6 \
-                        sha256  6097ec5ee23d0d34d8cd27a1072bed041c8a080ad48731190a03a2223029212d \
-                        size    19741694
 }
 
+if {${python.branch} == 2.7} {
+    patchfiles-append   pypy2-darwin.py.diff
+
+    checksums           rmd160  a9b587b014ac64ec4499fd93b0be2171dab5c501 \
+                        sha256  fc4fcf1007f91acec4b832f16a25862e42b06dbdd9b0ea72bc3313c8b975969a \
+                        size    20725620
+} else {
+    patchfiles-append   pypy3-darwin.py.diff
+
+    checksums           rmd160  c2ea7aaf5d64d805fa76dc7fa604e7e2648195ec \
+                        sha256  437abe7575827be2f5e519e7f77fe634d4c9f5d3c9f5b7a269ac4c8c8aa7f0e9 \
+                        size    22347476
+}
+
+master_sites        https://foss.heptapod.net/pypy/pypy/repository/release-pypy${python.branch}-v${version}
+distname            archive
+dist_subdir         ${name}/pypy${python.branch}-v${version}
+
+description         A fast interpreter for Python ${python.branch}
+long_description \
+    PyPy is a replacement for CPython ${python.branch}. The main reason to use it \
+    instead of CPython is speed, as it runs generally faster.
+
 build.env           PYPY_USESSION_DIR=${workpath} PYPY_LOCALBASE=${prefix} \
-                    CFLAGS="${configure.cc_archflags} ${configure.cppflags}" \
-                    LDFLAGS="${configure.ld_archflags} ${configure.ldflags}"
+                    PYPY_NO_EMBED_DEPENDENCIES=1 \
+                    "CFLAGS=${configure.cc_archflags} ${configure.cppflags}" \
+                    "LDFLAGS=${configure.ld_archflags} ${configure.ldflags}"
 
 build.dir           ${worksrcpath}/pypy/goal
 build.args          --batch --verbose \
@@ -90,40 +105,37 @@ build.args          --batch --verbose \
 build.target        ../../rpython/bin/rpython
 build.post_args     targetpypystandalone
 
-destroot.env        ${build.env}
+destroot.env        {*}${build.env}
+destroot.env-append CC=${configure.cc} \
+                    "LDSHARED=${configure.cc} -pthread -shared -undefined dynamic_lookup"
+
 destroot.dir        ${worksrcpath}/pypy/tool/release
 destroot.args       --builddir ${destroot}${prefix}/lib \
                     --archive-name ${subport} \
-                    --without-tk
+                    --without-_tkinter --no-embedded-dependencies
 destroot.target     package.py
 destroot.post_args
 
-if {$subport == "pypy3"} {
-    # we need to do this after assigning to the variable above -- and
-    # since ${worksrcpath} depends on the subport, we can't do it earlier either
-    destroot.args-append --no-embedded-dependencies
-}
-
-description         A fast interpreter for Python ${python.branch}
-long_description \
-    PyPy is a replacement for CPython ${python.branch}. The main reason to use it \
-    instead of CPython is speed, as it runs generally faster.
-
 post-patch {
     # sanity check, useful when upgrading, as upstream tends to move these around
-    if { ![catch {exec grep --exclude "*.orig" -lwre /sw -e ${prefix} ${worksrcpath}} result] } {
-        return -code error "didn't catch all references to /sw and ${prefix}:\n$result"
+    if { ![catch {exec grep --exclude "*.orig" -Ilwre /sw -e ${prefix} ${worksrcpath}} result] } {
+        ui_warn "patching potentially didn't catch all references to /sw and ${prefix}:\n$result"
     }
 
     reinplace "s|__PREFIX__|${prefix}|" \
-        ${worksrcpath}/pypy/module/test_lib_pypy/ctypes_tests/conftest.py \
+        ${worksrcpath}/extra_tests/ctypes_tests/conftest.py \
         ${worksrcpath}/pypy/tool/cpyext/extbuild.py \
         ${worksrcpath}/lib_pypy/cffi/ffiplatform.py \
         ${worksrcpath}/lib_pypy/_tkinter/tklib_build.py
 
+    if {${python.branch} == "2.7"} {
+        reinplace "/MACOSX_DEPLOYMENT_TARGET/s/10\\.\\(\[0-9\]*\\)/${macosx_deployment_target}/" \
+            lib-python/2.7/distutils/sysconfig_pypy.py
+    }
+
     # sanity check, likewise
-    if { ![catch {exec grep --exclude "*.orig" -lwre __PREFIX__ ${worksrcpath}} result] } {
-        return -code error "didn't catch all references to __PREFIX__:\n$result"
+    if { ![catch {exec grep --exclude "*.orig" -lIwre __PREFIX__ ${worksrcpath}} result] } {
+        ui_warn "patching potentially didn't catch all references to __PREFIX__:\n$result"
     }
 }
 
@@ -134,9 +146,6 @@ if {$subport ne $name} {
     # just use our own pypy2 for building pypy3
     depends_build-append port:pypy
     build.cmd       ${prefix}/lib/pypy/bin/pypy
-} elseif {![tbool ports_trace] && [file executable ${prefix}/lib/pypy/pypy]} {
-    # if we're not in trace mode, use pypy from this port if it's available
-    build.cmd       ${prefix}/lib/pypy/pypy
 } else {
     if {${os.platform} eq "darwin" && ${os.arch} eq "i386" && ![catch {sysctl hw.cpu64bit_capable} is64bit] && $is64bit == 1} {
         # use a binary distribution of pypy itself
@@ -182,26 +191,78 @@ if {${os.arch} ne "i386"} {
     build.args-append --opt=3
 }
 
-post-destroot {
-    file delete ${destroot}${prefix}/lib/${subport}.tar.bz2
-    ln -s ../lib/${subport}/bin/${subport} ${destroot}${prefix}/bin
+# Install support files, but only if not in a proper subport
+if {![string match "pypy*-*" ${subport}]} {
+    post-destroot {
+        file delete ${destroot}${prefix}/lib/${subport}.tar.bz2
+        ln -s ../lib/${subport}/bin/${subport} ${destroot}${prefix}/bin/${subport}
 
-    xinstall -d ${destroot}${prefix}/share/man/man1
-    system -W ${worksrcpath}/pypy/doc/man \
-        "rst2man-2.7.py pypy.1.rst ${destroot}${prefix}/share/man/man1/${subport}.1"
+        xinstall -d ${destroot}${prefix}/share/man/man1
+        system -W ${worksrcpath}/pypy/doc/man \
+            "rst2man-2.7.py pypy.1.rst ${destroot}${prefix}/share/man/man1/${subport}.1"
 
-    foreach script [array names module_scripts] {
-        set module $module_scripts($script)
-        set scriptpath "${destroot}/${prefix}/lib/${subport}/bin/${script}"
+        foreach script [array names module_scripts] {
+            set module $module_scripts($script)
+            set scriptpath "${destroot}${prefix}/lib/${subport}/bin/${script}"
 
-        xinstall -m 755 ${filespath}/module-script.sh $scriptpath
-        reinplace "s+__PYPY__+${prefix}/bin/${subport}+" $scriptpath
-        reinplace "s+__MODULE__+${module}+" $scriptpath
+            xinstall -m 755 ${filespath}/module-script.sh $scriptpath
+            reinplace "s+__PYPY__+${prefix}/bin/${subport}+" $scriptpath
+            reinplace "s+__MODULE__+${module}+" $scriptpath
+        }
     }
 }
 
-variant opt1 description {use optimization level 1 for faster build (but slower execution)} {
-    depends_lib-append port:boehmgc
-    build.args-delete  --opt=3 --opt=jit
-    build.args-append  --opt=1
+# Factor Tk into a separate subport, like CPython
+if {[string match "pypy*-tkinter" ${subport}]} {
+    set pypy_version    [string range ${subport} 0 [string first "-" ${subport}]-1]
+    set pypy_root       ${prefix}/lib/${pypy_version}
+
+    description         PyPy bindings to the Tk widget set
+    long_description    ${description}
+    categories          python graphics
+
+    depends_build       port:pkgconfig \
+                        port:tcl
+    depends_lib         port:${pypy_version} \
+                        port:tk
+
+    build.dir           ${worksrcpath}
+    build.cmd           ${prefix}/bin/${pypy_version}
+    build.args          lib_pypy/_tkinter/tklib_build.py
+    build.target
+    build.post_args
+    build.env-append    CC=${configure.cc} \
+                        "LDSHARED=${configure.cc} -pthread -shared -undefined dynamic_lookup"
+
+    select.entries
+
+    destroot {
+        xinstall -m 755 -d ${destroot}${pypy_root}/lib_pypy/_tkinter
+        xinstall -m 755 \
+            [glob -directory ${worksrcpath}/lib_pypy/_tkinter tklib_cffi.*.so] \
+            ${destroot}${pypy_root}/lib_pypy/_tkinter
+    }
+
+    post-destroot { }
+}
+
+
+set min_darwin 11
+
+if {${os.major} < ${min_darwin} && ${os.platform} eq "darwin"} {
+    known_fail yes
+
+    # https://trac.macports.org/ticket/59191
+    pre-fetch {
+        ui_error "${name} ${version} requires Darwin ${min_darwin} or newer."
+        return -code error "incompatible macOS version"
+    }
+}
+
+if {[regexp \- $subport]} {
+    # don't check the tkinter subports
+    livecheck.type none
+} else {
+    livecheck.url       https://foss.heptapod.net/api/v4/projects/76/repository/tags
+    livecheck.regex     \"release-pypy${python.branch}-v(\[0-9.\]+)\"
 }

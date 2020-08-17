@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Config-IniFiles 3.000000
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Config-IniFiles 3.000003
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         A module for reading .ini-style configuration files.
 long_description    ${description}
 
-checksums           rmd160  e2341c8788299279ab53444bf5aa8d8b009e7c4e \
-                    sha256  cd92f6b7f1aa3e03abf6251f1e6129dab8a2b835e8b17c7c4cc3e8305c1c9b29 \
-                    size    69536
+checksums           rmd160  0826268c643a90b618e57c520f6befc978c2bbb4 \
+                    sha256  3c457b65d98e5ff40bdb9cf814b0d5983eb0c53fb8696bda3ba035ad2acd6802 \
+                    size    70024
 
 platforms           darwin
 

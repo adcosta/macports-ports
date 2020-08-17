@@ -3,15 +3,11 @@
 PortSystem          1.0
 PortGroup           active_variants 1.1
 
-# glibmm > 2.44.0 requires C++11 or better
-PortGroup           cxx11 1.1
-
 name                glibmm
-version             2.56.0
-revision            1
+version             2.58.1
 set branch          [join [lrange [split ${version} .] 0 1] .]
 description         C++ interface to glib
-long_description    ${description}
+long_description    {*}${description}
 maintainers         {devans @dbevans} openmaintainer
 categories          devel x11
 platforms           darwin
@@ -21,9 +17,9 @@ master_sites        gnome:sources/${name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  83d0d3fe5c468883449bc082f5561d99329f1c4f \
-                    sha256  6e74fcba0d245451c58fc8a196e9d103789bc510e1eee1a9b1e816c5209e79a9 \
-                    size    6859520
+checksums           rmd160  9349731f12c09fb43a9e422eddab21da4a5b3f53 \
+                    sha256  6e5fe03bdf1e220eeffd543e017fd2fb15bcec9235f0ffd50674aff9362a85f0 \
+                    size    6778632
 
 depends_build       port:pkgconfig \
                     port:mm-common
@@ -31,7 +27,8 @@ depends_build       port:pkgconfig \
 depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     port:libsigcxx2
 
-patchfiles          0001-ustring-Fix-wchar-conversion-on-macOS-with-libc.patch
+# glibmm > 2.44.0 requires C++11 or better
+compiler.cxx_standard 2011
 
 configure.perl      /usr/bin/perl
 

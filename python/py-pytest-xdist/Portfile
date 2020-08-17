@@ -4,36 +4,42 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pytest-xdist
-version             1.14
+version             1.31.0
+revision            0
+
 categories-append   devel
 platforms           darwin
 supported_archs     noarch
 license             MIT
 maintainers         nomaintainer
 
-description         ${python.rootname} adds extends pytest with some unique test execution modes
+description         The ${python.rootname} plugin extends py.test with some unique test execution modes
 long_description    ${description}
 
-homepage            https://pypi.python.org/pypi/${python.rootname}/${version}
-master_sites        https://pypi.io/packages/source/[string index ${python.rootname} 0]/${python.rootname}
+homepage            https://github.com/pytest-dev/pytest-xdist
 
-use_zip             yes
+checksums           rmd160  97e2ef432e1c265110ede1a2407b749240f3cd3d \
+                    sha256  7dc0d027d258cd0defc618fb97055fbd1002735ca7a6d17037018cf870e24011 \
+                    size    66133
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  adabee9f8df156188837348ab042f246daedbbf3 \
-                    sha256  4a5e1199122fa29e3017d8d189f59ccc5d82e841474ba2a1eec0e89606153623
-
-python.versions     27 34 35 36
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
-    depends_build-append    port:py${python.version}-setuptools \
-                            port:py${python.version}-setuptools_scm
+    depends_build-append \
+                    port:py${python.version}-setuptools_scm
 
-    depends_lib-append      port:py${python.version}-pytest \
-                            port:py${python.version}-execnet
+    depends_lib-append \
+                    port:py${python.version}-execnet \
+                    port:py${python.version}-pytest \
+                    port:py${python.version}-pytest-forked \
+                    port:py${python.version}-setuptools \
+                    port:py${python.version}-six
+
+    post-destroot {
+        xinstall -d ${destroot}${prefix}/share/doc/${subport}
+        xinstall -m 0644 -W ${worksrcpath} CHANGELOG.rst README.rst LICENSE \
+            OVERVIEW.md ${destroot}${prefix}/share/doc/${subport}
+    }
 
     livecheck.type  none
-} else {
-    livecheck.type  pypi
 }

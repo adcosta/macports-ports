@@ -39,7 +39,7 @@ if {[file exists ${prefix}/lib/mpich-mp-devel]} then {
 build.target        all
 
 set ocamlfind_destdir ${destroot}${prefix}/lib/ocaml/site-lib
-destroot.env        OCAMLFIND_INSTFLAGS="-destdir $ocamlfind_destdir -ldconf ignore" OCAMLFIND_STUBLIBS=${ocamlfind_destdir}/stublibs
+destroot.env        "OCAMLFIND_INSTFLAGS=-destdir $ocamlfind_destdir -ldconf ignore" OCAMLFIND_STUBLIBS=${ocamlfind_destdir}/stublibs
 destroot.target     ocamlfind-install
 
 pre-destroot {

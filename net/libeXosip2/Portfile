@@ -1,7 +1,7 @@
 PortSystem 1.0
 
 name            libeXosip2
-version         5.0.0
+version         5.1.1
 categories      net
 
 description     The eXtended osip library
@@ -19,8 +19,9 @@ maintainers     {toby @tobypeterson}
 
 master_sites    https://download.savannah.nongnu.org/releases/exosip/
 distname        libexosip2-${version}
-checksums       rmd160 ab84cfa1d1f90aa086127cab2959444e031110f5 \
-                sha256 a26558594de95405d3adeee554a7c10cb3ec5a9316a879e679b53a99a9cf2e1f
+checksums       rmd160 5a4e28f9e4ce321d223747f92ff878dd6997efd5 \
+                sha256 21420c00bf8e0895ff36161766beec12b7e6f1d371030c389dba845e271272e2 \
+                size   630264
 
 configure.args  --mandir=${prefix}/share/man --disable-openssl
 

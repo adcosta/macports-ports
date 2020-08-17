@@ -3,12 +3,15 @@
 PortSystem        1.0
 
 name              aqbanking5
-# This port offers the latest stable version (also as a gtk subport)
-# as well as the latest beta version as aqbanking5-devel
-# and the svn version as aqbanking5-svn!
+version             5.8.2
+revision            1
+# this is specific to this port and *version* for downloading it
+set release         107
 
-# The package number is unique for aqbanking:
-set package       03
+checksums           rmd160  ce40afdce3d98a6cae7e709582399a28f761e97f \
+                    sha256  93ca523fe175e72042db75f8c3fc6255ab058cf82caf52796e15f030809fb15e \
+                    size    3824997
+
 
 categories        devel net finance
 maintainers       {dports @drkp} openmaintainer
@@ -23,9 +26,9 @@ long_description  aqbanking is a generic online banking interface mainly \
                   Note that the YellowNet backend (for Suisse Postfinance) \
                   is not available for OS X (upstream only has a Linux binary).
 
-homepage          http://www2.aquamaniac.de/sites/aqbanking/index.php
+homepage          https://aquamaniac.de/rdm/projects/aqbanking
 
-conflicts         aqbanking5 aqbanking5-devel aqbanking5-gtk aqbanking5-gtk-devel aqbanking5-svn
+conflicts         aqbanking5 aqbanking5-gtk aqbanking5
 
 depends_lib       port:ktoblzcheck \
                   port:libofx \
@@ -43,77 +46,25 @@ if {$subport == $name} {
                         port:qt4-mac
 }
 
-subport aqbanking5-devel {
-    depends_lib-append  port:gwenhywfar4-devel \
-                        port:qt4-mac
-}
-
 subport aqbanking5-gtk {
     depends_lib-append  port:gwenhywfar4-gtk
-}
-
-subport aqbanking5-gtk-devel {
-    depends_lib-append  port:gwenhywfar4-gtk-devel
 }
 
 subport aqbanking5-gtk3 {
     depends_lib-append  port:gwenhywfar4-gtk3
 }
 
-subport aqbanking5-gtk3-devel {
-    depends_lib-append  port:gwenhywfar4-gtk3-devel
-}
-
-
 patchfiles        patch-aqbanking-config.cmake.in.diff
 
-# There isn't currently a newer devel version.
-# if {![string match "*-devel" $subport]} {
-    version             5.7.8
-    revision            1
-    # this is specific to this port and *version* for downloading it
-    set release         217
 
-    checksums           rmd160  801bc2ba0c37320b8f5915b528c83aae2df813d9 \
-                        sha256  16f86e4cc49a9eaaa8dfe3206607e627873208bce45a70030c3caea9b5afc768
-
-    if {$subport eq $name} {
-        depends_lib-append port:gwenhywfar4
-    }
-# } else {
-    # version             5.7.6beta
-    # # this is specific to this port and *version* for downloading it
-    # set release         215
-
-    # checksums           rmd160  3923a8b166a7a67c239fa7ddce3196657a04dd39 \
-    #                     sha256  f9420d8b34c2eee703a7d26dd71a849700fdb2d7372b7649a3488b5a69f55565
-# }
-
-
-
-subport aqbanking5-svn {
-    fetch.type          svn
-    svn.url             http://devel.aqbanking.de/svn/aqbanking/trunk
-    # r2384 is indeed identical to 5.0.32beta
-    svn.revision        2384
-    version             svn-r${svn.revision}
-    revision            3
-    worksrcdir          trunk
-
-    use_autoreconf      yes
-    autoreconf.args     -fvi
-    patchfiles-append   patch-Makefile.am.diff
-
-    depends_lib-append  port:gwenhywfar4-devel
+if {$subport eq $name} {
+    depends_lib-append port:gwenhywfar4
 }
 
-if {$subport ne "aqbanking5-svn"} {
-    master_sites      http://www.aquamaniac.de/sites/download/download.php?package=${package}&release=${release}&file=02&dummy=
-}
+
+master_sites      https://aquamaniac.de/rdm/attachments/download/${release}/
 
 distname          aqbanking-${version}
-# This is only to be used in case the dist was directly created from git
-#distname          aqbanking-${version}.0-git
 
 configure.cppflags-append "-L${prefix}/lib"
 configure.cflags-append   "-L${prefix}/lib"
@@ -136,27 +87,16 @@ use_parallel_build no
 
 # Allow gtk3 version to replace any gtk2 version if it is installed
 # This will conflicts during gnucash upgrade.
-if {$subport == "aqbanking5-gtk3" || $subport == "aqbanking5-gtk3-devel"} {
-    conflicts-delete aqbanking5-gtk aqbanking5-gtk-devel
+if {$subport == "aqbanking5-gtk3" } {
+    conflicts-delete aqbanking5-gtk
     pre-activate {
         if { ![catch {set vers [lindex [registry_active aqbanking5-gtk] 0]}] } {
             registry_deactivate_composite aqbanking5-gtk "" [list ports_nodepcheck 1]
         }
-        if { ![catch {set vers [lindex [registry_active aqbanking5-gtk-devel] 0]}] } {
-            registry_deactivate_composite aqbanking5-gtk-devel "" [list ports_nodepcheck 1]
-        }
     }
 }
 
-if {$subport ne "aqbanking5-svn"} {
-    livecheck.type    regex
-    livecheck.url     http://www.aquamaniac.de/sites/download/packages.php?package=${package}&showall=1
-    if {[string match "*-devel" $subport]} {
-        livecheck.regex   aqbanking-(\[0-9.\]*(beta)?)\\.tar
-    } else {
-        livecheck.regex   aqbanking-(\[0-9.\]*)\\.tar
-    }
-} else {
-    livecheck.type    none
-}
+livecheck.type    regex
+livecheck.url     https://aquamaniac.de/rdm/projects/aqbanking/files
+livecheck.regex   aqbanking-(5\\.\[0-9.\]*)\\.tar
 

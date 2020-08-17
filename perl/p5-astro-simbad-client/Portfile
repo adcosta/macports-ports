@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Astro-SIMBAD-Client 0.038
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Astro-SIMBAD-Client 0.041
 license             {Artistic-1 GPL}
 maintainers         {devans @dbevans} openmaintainer
 description         Astro::SIMBAD::Client - Fetch astronomical data from SIMBAD 4.
@@ -12,9 +12,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  0cec893a96874c5c852b30d4006f0bdc60851a4a \
-                    sha256  07e902d1562c74b25eb3d586c3c7c0cadbda40d69904f4bf2b3210ac2b201924 \
-                    size    68302
+checksums           rmd160  27f8df765ee550c530cc1aed89ff51ca64ed942d \
+                    sha256  9f037bff40efdcdb2f85c1bdbfc58ee7aa4885a27b62eef6d4b8b962a1975336 \
+                    size    68683
 
 if {${perl5.major} != ""} {
     depends_build-append \

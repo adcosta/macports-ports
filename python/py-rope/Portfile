@@ -4,11 +4,14 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        python-rope rope 0.11.0
+github.setup        python-rope rope 0.17.0
 name                py-rope
+revision            0
+
 platforms           darwin
-license             GPL-2+
-maintainers         {gmail.com:ottenr.work @reneeotten} openmaintainer
+supported_archs     noarch
+license             LGPL-3+
+maintainers         {reneeotten @reneeotten} openmaintainer
 
 description         python refactoring library
 long_description    Rope is a Python refactoring library that can be used \
@@ -17,24 +20,30 @@ long_description    Rope is a Python refactoring library that can be used \
                     assistance like auto-completion and access to \
                     documentation.
 
-supported_archs     noarch
+checksums           rmd160  e8ba73c90403af28ddc93baff741b2a46527e2a6 \
+                    sha256  2d0a44f69e4617afbabfe132bdfe968992cf7a72ce3d5c3bdc58abcdd084c567 \
+                    size    244939
 
-checksums           rmd160  40a9a3f855e0867179410411e5b08c37a65b50b7 \
-                    sha256  8b72835c89ea549da578e8078eaa35cb243330a7f4bc433153427f2f4586ff22 \
-                    size    247423
-
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append \
                     port:py${python.version}-setuptools
 
-    if {${python.version} < 35} {
-        depends_test-append \
-                    port:py${python.version}-unittest2
-    }
+    depends_test-append \
+                    port:py${python.version}-pytest
+
     test.run        yes
-    test.cmd        ${python.bin} setup.py
+    test.cmd        py.test-${python.branch}
+    test.target
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} CONTRIBUTORS COPYING \
+            README.rst ${destroot}${docdir}
+    }
 
     livecheck.type  none
 }

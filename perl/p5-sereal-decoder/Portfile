@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Sereal-Decoder 4.005 ../../authors/id/Y/YV/YVES
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Sereal-Decoder 4.018 ../../authors/id/Y/YV/YVES
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Sereal::Decoder - Fast, compact, powerful binary deserialization
@@ -12,9 +12,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  ff25c077927436ec294b30f50de2399cf183d56a \
-                    sha256  043adad093d1bfdea1e637e1a6fe598291da244d18213e9e5486e313f0c25e9f \
-                    size    494527
+checksums           rmd160  38b29ea3901ab62602e7618ccc63a77720e22a1d \
+                    sha256  2ea4fc5585c2f24d9c1270e50511463eca9aa005941cf2acad24dd516f8fcd71 \
+                    size    692820
 
 use_parallel_build  no
 
@@ -26,4 +26,7 @@ if {${perl5.major} != ""} {
                     port:p${perl5.major}-test-differences \
                     port:p${perl5.major}-test-longstring \
                     port:p${perl5.major}-test-warn
+
+    depends_lib-append \
+                    port:zstd
 }

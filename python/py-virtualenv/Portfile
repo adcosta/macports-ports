@@ -5,34 +5,56 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-virtualenv
-version             16.0.0
+version             20.0.27
+revision            0
+
 categories-append   devel
 platforms           darwin
-license             MIT
-maintainers         {larryv @larryv}
 supported_archs     noarch
+license             MIT
+maintainers         {larryv @larryv} openmaintainer
 
 description         Virtual Python Environment builder
 long_description    virtualenv is a tool to create isolated Python \
                     environments.
+
 homepage            https://virtualenv.pypa.io
 
-master_sites        pypi:v/${python.rootname}
-distname            ${python.rootname}-${version}
-checksums           rmd160  ed709651e82f28dd131900010d566dda3fd2c577 \
-                    sha256  ca07b4c0b54e14a91af9f34d0919790b016923d157afda5efdde55c96718f752 \
-                    size    1970558
+checksums           rmd160  7d07a0530a3cebef019eb6398f30a844471de47c \
+                    sha256  26cdd725a57fef4c7c22060dba4647ebd8ca377e30d1c1cf547b30a0b79c43b4 \
+                    size    8265353
 
-python.versions     27 34 35 36 37
+# keep older Python versions here, do add the EOL version to the list below
+python.versions     27 34 35 36 37 38
 
 if {${name} ne ${subport}} {
-    depends_lib-append  port:py${python.version}-setuptools
+    # add EOL warnings
+    if {${python.version} in "27 34"} {
+        PortGroup   deprecated 1.0
 
-    depends_test-append port:py${python.version}-pytest \
-                        port:py${python.version}-mock
-    test.run            yes
-    test.cmd            py.test-${python.branch}
-    test.target
+        deprecated.eol_version  yes
+    }
+
+    depends_build-append    port:py${python.version}-setuptools_scm
+
+    depends_lib-append      port:py${python.version}-appdirs \
+                            port:py${python.version}-distlib \
+                            port:py${python.version}-filelock \
+                            port:py${python.version}-setuptools \
+                            port:py${python.version}-six
+
+    if {${python.version} == 27} {
+        depends_lib-append  port:py${python.version}-contextlib2 \
+                            port:py${python.version}-pathlib2
+    }
+
+    if {${python.version} < 37} {
+        depends_lib-append  port:py${python.version}-importlib-resources
+    }
+
+    if {${python.version} < 38} {
+        depends_lib-append  port:py${python.version}-importlib-metadata
+    }
 
     depends_run-append  port:virtualenv_select
 
@@ -41,12 +63,16 @@ if {${name} ne ${subport}} {
 
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}
-        xinstall -m 755 -d ${destroot}${docdir}
-        xinstall -m 644 {*}[glob -directory ${worksrcpath}/docs *] \
-                ${destroot}${docdir}
+        xinstall -d ${destroot}${docdir}/docs/changelog
+        xinstall -m 0644 -W ${worksrcpath} README.md LICENSE \
+            ${destroot}${docdir}
+        xinstall -m 0644 {*}[glob -directory ${worksrcpath}/docs *.rst] \
+                ${destroot}${docdir}/docs
+        xinstall -m 0644 {*}[glob -directory ${worksrcpath}/docs/changelog *] \
+                ${destroot}${docdir}/docs/changelog
     }
 
-    notes "
+    notes-append "
     The executable is installed as\
     '${prefix}/bin/virtualenv-${python.branch}'. To symlink it to\
     '${prefix}/bin/virtualenv', run:

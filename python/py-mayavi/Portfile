@@ -5,7 +5,7 @@ PortGroup           python 1.0
 PortGroup           active_variants 1.1
 PortGroup           github 1.0
 
-github.setup        enthought mayavi 4.5.0
+github.setup        enthought mayavi 4.7.1
 
 name                py-mayavi
 categories-append   devel graphics math
@@ -17,10 +17,11 @@ long_description    3D Scientific Data Visualization and Plotting using VTK as t
 license             BSD
 platforms           darwin
 
-checksums           rmd160  ea9281e86e594796e867d279ff7b7fcfdf237a78 \
-                    sha256  31889891b1545069ffce8c77b6ca7757bdd300d314b10e1df9d492359843aaf2
+checksums           rmd160  a78fee221fa1243096101cf088dc26dd14567d5f \
+                    sha256  5dff720e2d3342697d2f6b22621a9a7cf4a34134aceb9bf22446eea2257e4789 \
+                    size    9066423
 
-python.versions     27 35 36
+python.versions     35 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools \
@@ -34,6 +35,9 @@ if {${name} ne ${subport}} {
     require_active_variants vtk python${python.version}
     
     post-patch {
+        # https://github.com/enthought/mayavi/issues/652
+        reinplace "/vtk/d" ${worksrcpath}/mayavi/__init__.py
+        
         reinplace "s|sphinx-build|sphinx-build-${python.branch}|g" \
             ${worksrcpath}/docs/Makefile \
             ${worksrcpath}/docs/MakefileMayavi \

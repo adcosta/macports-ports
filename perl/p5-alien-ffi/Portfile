@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Alien-FFI 0.22
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Alien-FFI 0.25
 license             {Artistic-1 GPL}
 maintainers         {devans @dbevans} openmaintainer
 description         Alien::FFI - Build and make available libffi
@@ -12,9 +12,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  8437f7eae2c02b5eab9975ccc820fe79219d659a \
-                    sha256  81228cafe0014190025c91d37f8b1dc4889cee4a3add3af10614f803f7b65745 \
-                    size    17206
+checksums           rmd160  6a7e37100db8784aa03537e04a7cf04e00b2d600 \
+                    sha256  86d4723eddad74faf3a25477e9b398fe6ad567237f2ba34a502ca3135721221d \
+                    size    18302
 
 if {${perl5.major} != ""} {
     depends_build-append \

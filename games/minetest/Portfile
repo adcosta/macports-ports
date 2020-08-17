@@ -2,13 +2,19 @@
 
 PortSystem              1.0
 PortGroup               github 1.0
+PortGroup               conflicts_build 1.0
 PortGroup               cmake 1.1
 
-github.setup            minetest minetest 0.4.17.1
+compiler.cxx_standard   2011
+# required thread_local storage
+compiler.thread_local_storage   yes
+
+github.setup            minetest minetest 5.3.0
+revision                0
 
 # new wrinkle -- the game version can be different than the minetest version
 # (although it will most often be the same)
-set game_version        0.4.17
+set game_version        5.3.0
 
 # have to do some shenanigans to add on more files to a github portgroup download
 # cache the preset distfiles delivered by the github PG
@@ -25,13 +31,13 @@ master_sites            ${github.master_sites}:main \
                         ${game_mastersite}:game
 
 checksums               ${main_distfile} \
-                        rmd160  cf84bac8b425a63b90ffa6e6361e45b547af2fa4 \
-                        sha256  f9e31285b90df365ea33b2e9430da4670e0ccc4ab13c629cd92cb3b90e5791dc \
-                        size    7758719 \
+                        rmd160  bfd30a6d78a75b6fc5d8bbdf2f8ebb3ba1fc3284 \
+                        sha256  aa80a1e06ed3d90a20798f7b0e1db04ea38f0896cdc2ddd4f7c7efd31b35501d \
+                        size    10826662 \
                         ${game_distfile} \
-                        rmd160  eb9929bfa3f0c4559e5638df5cff85fb8b893671 \
-                        sha256  f0ab07cb47c1540b2016bf76a36e2eec28b0ea7827bf66fc5447e0c5e5d4495d \
-                        size    1356784
+                        rmd160  8042e143599c6066d9e14e4cff796768b0611c1f \
+                        sha256  06c6c1d4b97af211dd0fa518a3e68a205f594e9816a4b2477e48d4d21d278e2d \
+                        size    1904865
 
 # rename directory - had to steal this out of the github portgroup
 post-extract {
@@ -42,14 +48,17 @@ post-extract {
 }
 
 
-license                 GPL-2.1+
+license                 LGPL-2.1+
 categories              games
 platforms               darwin
-maintainers             {kencu @kencu} openmaintainer
+maintainers             nomaintainer
 description             open source infinite-world block sandbox game with survival and crafting
 long_description        ${description}.
 
 depends_build-append    port:doxygen
+
+# libevent interferes with event.h from minetest
+conflicts_build         libevent
 
 depends_lib-append      port:irrlicht \
                         port:jpeg \
@@ -64,6 +73,11 @@ depends_lib-append      port:irrlicht \
                         port:jsoncpp \
                         port:xorg-libX11 \
                         port:xorg-libXxf86vm
+
+# see https://trac.macports.org/ticket/58315
+# possibly fixable?
+universal_variant       no
+supported_archs         x86_64
 
 # 001. the original build calls fixup_bundle to move all the deps into the app bundle.
 #    this doesn't work correctly with macports destrooting, and isn't necessary for a macports install so deleted it
@@ -91,7 +105,7 @@ configure.args-append   -DCMAKE_BUILD_TYPE=Release \
                         -DIRRLICHT_INCLUDE_DIR:FILEPATH=${prefix}/include/irrlicht \
                         -DCURSES_INCLUDE_PATH:FILEPATH=${prefix}/include \
                         -DENABLE_LUAJIT=ON \
-                        -DLUA_INCLUDE_DIR:PATH=${prefix}/include/luajit-2.0 \
+                        -DLUA_INCLUDE_DIR:PATH=${prefix}/include/luajit-2.1 \
                         -DLUA_LIBRARY:FILEPATH=${prefix}/lib/libluajit-5.1.dylib
 
 post-destroot {

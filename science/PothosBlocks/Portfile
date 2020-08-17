@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           cmake 1.1
+
+platforms           darwin macosx
+categories          science
+license             Boost-1
+maintainers         {ra1nb0w @ra1nb0w} {michaelld @michaelld} openmaintainer
+
+description         A collection of core processing blocks for Pothos
+long_description    The processing blocks found in this project offer \
+    core functionality, and do not incur external dependencies. More \
+    information to come as this project fills in.
+
+github.setup        pothosware PothosBlocks 0.5.2 pothos-blocks-
+checksums           rmd160  cbcf9fccb158e3c342a550adf70375228d72d084 \
+                    sha256  23de943199b61abe8f060b5682053b693e009b86126619a280dd2ee6568ddd4d \
+                    size    64248
+revision            0
+
+compiler.cxx_standard 2011
+
+depends_lib-append \
+    port:PothosCore \
+    port:poco \
+    port:nlohmann-json

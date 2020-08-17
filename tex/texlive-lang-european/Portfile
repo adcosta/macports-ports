@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           texlive 1.0
 
 name                texlive-lang-european
-version             47375
+version             54568
 revision            0
 
 categories          tex
@@ -13,15 +13,18 @@ license             Copyleft Permissive
 description         TeX Live: Other European languages
 long_description    Support for a number of European languages\; others (Greek, German, French, ...) have their own collections, depending simply on the size of the support.
 
-checksums           texlive-lang-european-47375-run.tar.xz \
-                    rmd160  262df179c99ab738a9792f5ca4b83c1a9a62774b \
-                    sha256  b6ce1a3295dc691008e6e6d0873d152c88a335fdf3d4718057806c912b9e0e0d \
-                    texlive-lang-european-47375-doc.tar.xz \
-                    rmd160  99c654b4d455e952e3b38abb371d41b283bb7d95 \
-                    sha256  37c00faf9bee7a7806b13d4801eda82e6e2697521026ed8a029b8764cccf07ce \
-                    texlive-lang-european-47375-src.tar.xz \
-                    rmd160  256be63f571272163ac2ceea27f40d7e4b8a1b0b \
-                    sha256  1443b0cce47656ef52c4839dd920a5098bd6445630b013cb68797b05feb97dc9
+checksums           texlive-lang-european-54568-run.tar.xz \
+                    rmd160  0b37f630770647e3a8d375f5fc2ff0d19671ee39 \
+                    sha256  74e51d4f75d010c0eaee51eb18f13b700434f4e51c3ceff8f1e68dded7d6a606 \
+                    size    14049972 \
+                    texlive-lang-european-54568-doc.tar.xz \
+                    rmd160  10c87aeb396b98eb86648c7fb4fe43bcadab5162 \
+                    sha256  148ed1814e8d3bc23e9de4a0f56c8da2f5f69e1f7e6796a5a4dab8c0c24595c4 \
+                    size    12554256 \
+                    texlive-lang-european-54568-src.tar.xz \
+                    rmd160  f812377c662242ce3d0e32a310f8122715de52e2 \
+                    sha256  e5212347f8f6533d5f67c413047e108ef42a5d35f876e80484a1daa2c66a204a \
+                    size    143772
 
 depends_lib         port:texlive-basic
 
@@ -41,6 +44,7 @@ texlive.languages      \
     {liturgicallatin loadhyph-la-x-liturgic.tex 2 2 {} {hyph-la-x-liturgic.pat.txt} {} {} } \
     {latvian loadhyph-lv.tex 2 2 {} {hyph-lv.pat.txt} {} {} } \
     {lithuanian loadhyph-lt.tex 2 2 {} {hyph-lt.pat.txt} {} {} } \
+    {macedonian loadhyph-mk.tex 2 2 {} {hyph-mk.pat.txt} {} {} } \
     {bokmal loadhyph-nb.tex 2 2 {norwegian norsk} {hyph-nb.pat.txt} {hyph-nb.hyp.txt} {} } \
     {nynorsk loadhyph-nn.tex 2 2 {} {hyph-nn.pat.txt} {hyph-nn.hyp.txt} {} } \
     {occitan loadhyph-oc.tex 2 2 {} {hyph-oc.pat.txt} {} {} } \

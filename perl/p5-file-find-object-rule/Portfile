@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         File-Find-Object-Rule 0.0309
+perl5.branches      5.26 5.28 5.30
+perl5.setup         File-Find-Object-Rule 0.0312
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         File::Find::Object::Rule - Alternative interface to File::Find::Object
@@ -14,14 +14,15 @@ platforms           darwin
 
 supported_archs     noarch
 
-checksums           rmd160  47b07bd2c86a2ad4027c68143e52595c674bd0a6 \
-                    sha256  a184e11b271646c1b5b40ac01ca15d87750dc2b16a66dda3be0bd8976ece21e3 \
-                    size    38070
+checksums           rmd160  c28581f561590522590f9d974978785afed8e6cd \
+                    sha256  3e0b6c8dadf6362e65f2310530b1be637ed6aac113399d10c6f9129e734afff9 \
+                    size    38425
 
 if {${perl5.major} != ""} {
     depends_test-append \
                     port:p${perl5.major}-test-pod \
                     port:p${perl5.major}-test-pod-coverage
+
     depends_lib-append \
                     port:p${perl5.major}-class-xsaccessor \
                     port:p${perl5.major}-file-find-object \

@@ -5,9 +5,14 @@ PortGroup               compilers 1.0
 
 name                    cdf
 epoch                   1
-version                 3.6.4
+version                 3.8.0
+revision                0
+checksums               rmd160  45cd54e3080d79df684a0af3a5f2150f92e5d0b6 \
+                        sha256  5478a403007c58b1c05b5a4127318018c2e152f2087b8da392948c15ce2979ad \
+                        size    2274627
+
 set my_branch           [join [lrange [split ${version} .] 0 1] ""]
-set my_version          ${my_branch}_[join [lrange [split [regsub -- {\.0$} ${version} {}] .] 2 end] "_"]
+set my_version          ${my_branch}_[join [lrange [split ${version} .] 2 end] "_"]
 set my_short_version    ${my_branch}_[lindex [split ${version} .] 2]
 maintainers             {ryandesign @ryandesign} openmaintainer
 platforms               darwin
@@ -26,9 +31,6 @@ master_sites            https://cdaweb.sci.gsfc.nasa.gov/pub/software/cdf/dist/$
 
 distname                ${name}${my_version}-dist
 extract.suffix          -all${extract.suffix}
-
-checksums               rmd160  f22d2dc27fcb54187ec6bec11e100483c009a054 \
-                        sha256  f6950c669d04e34bc8ba4f424c780a71b9b0d2503fb683a7ca0b8f10349661b1
 
 depends_lib             port:ncurses
 
@@ -96,5 +98,4 @@ post-destroot {
 }
 
 livecheck.type          regex
-livecheck.url           ${homepage}/html/sw_and_docs.html
-livecheck.regex         {latest official released version V([0-9.]+)}
+livecheck.regex         {V(\d+(?:\.\d+)+)}

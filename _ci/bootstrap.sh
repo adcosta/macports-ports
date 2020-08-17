@@ -1,39 +1,58 @@
 #!/bin/bash
 set -e
+
 # Uninstall Homebrew
-curl -fsSLO "https://raw.githubusercontent.com/Homebrew/install/master/uninstall"
-chmod 0755 uninstall && ./uninstall -fq && rm -f uninstall
-# Clean /usr/local
+brew --version
 /usr/bin/sudo /usr/bin/find /usr/local -mindepth 2 -delete && hash -r
+
+# Guard against intermittent Travis CI DNS outages
+for host in distfiles.macports.org dl.bintray.com github.com packages.macports.org packages-private.macports.org rsync-origin.macports.org; do
+    dig +short "$host" | sed -n '$s/$/ '"$host/p" | sudo tee -a /etc/hosts >/dev/null
+done
+
 # Download and install MacPorts built by https://github.com/macports/macports-base/blob/travis-ci/.travis.yml
-export OS_MAJOR=$(uname -r | cut -f 1 -d .)
-curl -fsSLO "https://dl.bintray.com/macports-ci-bot/macports-base/MacPorts-${OS_MAJOR}.tar.bz2"
+OS_MAJOR=$(uname -r | cut -f 1 -d .)
+curl -fsSLO "https://dl.bintray.com/macports-ci-bot/macports-base/2.6r0/MacPorts-${OS_MAJOR}.tar.bz2"
 sudo tar -xpf "MacPorts-${OS_MAJOR}.tar.bz2" -C /
 rm -f "MacPorts-${OS_MAJOR}.tar.bz2"
-# Prepare environment variables: clear CC and set PATH for port
-unset CC && source /opt/local/share/macports/setupenv.bash
+
+# Set PATH for portindex
+source /opt/local/share/macports/setupenv.bash
 # Set ports tree to $PWD
 sudo sed -i "" "s|rsync://rsync.macports.org/macports/release/tarballs/ports.tar|file://${PWD}|; /^file:/s/default/nosync,default/" /opt/local/etc/macports/sources.conf
 # CI is not interactive
 echo "ui_interactive no" | sudo tee -a /opt/local/etc/macports/macports.conf >/dev/null
+# Only download from the CDN, not the mirrors
+echo "host_blacklist *.distfiles.macports.org *.packages.macports.org" | sudo tee -a /opt/local/etc/macports/macports.conf >/dev/null
+# Try downloading archives from the private server after trying the public server
+echo "archive_site_local https://packages.macports.org/:tbz2 https://packages-private.macports.org/:tbz2" | sudo tee -a /opt/local/etc/macports/macports.conf >/dev/null
+# Prefer to get archives from the public server instead of the private server
+# preferred_hosts has no effect on archive_site_local
+# See https://trac.macports.org/ticket/57720
+#echo "preferred_hosts packages.macports.org" | sudo tee -a /opt/local/etc/macports/macports.conf >/dev/null
+
 # Update PortIndex
-rsync --no-motd -zvl "rsync://rsync.macports.org/macports/release/ports/PortIndex_darwin_${OS_MAJOR}_i386/PortIndex*" .
+rsync --no-motd -zvl "rsync://rsync-origin.macports.org/macports/release/ports/PortIndex_darwin_${OS_MAJOR}_i386/PortIndex" .
 git remote add macports https://github.com/macports/macports-ports.git
 git fetch macports master
-git checkout -qf macports/master
+## Run portindex on recent commits if PR is newer
+git checkout -qf macports/master~4
+git checkout -qf -
+git checkout -qf "$(git merge-base macports/master HEAD)"
+## Ignore portindex errors on common ancestor
+portindex
 git checkout -qf -
 portindex -e
+
 # Create macports user
 sudo /opt/local/postflight && sudo rm -f /opt/local/postflight
-# Install mpbb and its dependency getopt
+
+# Install mpbb
 git clone --depth 1 https://github.com/macports/mpbb.git ../mpbb
-export PATH="${PWD}/../mpbb:$PATH"
+# Install getopt required by mpbb
 curl -fsSLO "https://dl.bintray.com/macports-ci-bot/getopt/getopt-v1.1.6.tar.bz2"
 sudo tar -xpf "getopt-v1.1.6.tar.bz2" -C /
-export PATH="/opt/mports/bin:$PATH" && hash -r
+
 # Download and run CI runner
 curl -fsSLO "https://github.com/macports/mpbot-github/releases/download/v0.0.1/runner"
 chmod 0755 runner
-
-# Workaround for an Xcode issue. See https://trac.macports.org/ticket/54939
-[ "$OS_MAJOR" = 17 ] && $(cd $(xcode-select -p)/Toolchains && sudo ln -s XcodeDefault.xctoolchain OSX10.13.xctoolchain) || true

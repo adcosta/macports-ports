@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Modern-Perl 1.20180928 ../../authors/id/C/CH/CHROMATIC
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Modern-Perl 1.20200211 ../../authors/id/C/CH/CHROMATIC
 license             {Artistic-1 GPL}
 maintainers         {devans @dbevans} openmaintainer
 description         enable all of the features of Modern Perl with one import
@@ -12,11 +12,8 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  ac5c11495dfd8e65d536cfa82e11dec67f9ffdce \
-                    sha256  377b4f16b27ca3b38fdb148468111e3463eff148beb7a00826353268f240f577 \
-                    size    14210
+checksums           rmd160  c37c0e46879edf996bfdfe856a41ea8eb27bff7a \
+                    sha256  da1c83cee84fab9edb9e31d7f7abac43e1337b2e66015191ec4b6da59298c480 \
+                    size    14856
 
-if {${perl5.major} != ""} {
-    supported_archs noarch
-    perl5.use_module_build
-}
+supported_archs     noarch

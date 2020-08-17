@@ -4,8 +4,7 @@ PortSystem 1.0
 PortGroup github 1.0
 PortGroup cmake 1.0
 
-github.setup            neovim neovim 0.3.1 v
-revision                1
+github.setup            neovim neovim 0.4.4 v
 categories              editors
 platforms               darwin
 maintainers             {raimue @raimue} \
@@ -20,9 +19,9 @@ long_description \
 
 homepage                https://neovim.io
 
-checksums               rmd160  28caa4ad1293437374f080f5856c47c845d96b21 \
-                        sha256  7639e21d1fe26930677c7b9486e377e2aebca2d7fdced8edf93a1e552583df15 \
-                        size    8938898
+checksums               rmd160  740290555b5f031a87ffb6c99a90a03002c31596 \
+                        sha256  50a2d5ae4b426bb7e0956f8875136f9ba5846cdac4650e83460135253d48d0b9 \
+                        size    9559093
 
 depends_build-append    port:pkgconfig
 
@@ -34,14 +33,15 @@ depends_lib             port:gettext \
                         port:jemalloc \
                         port:msgpack1 \
                         port:lua \
-                        port:luajit \
                         port:lua-lpeg \
                         port:lua-mpack \
-                        port:lua-luabitop
+                        port:lua-luabitop \
+                        port:luv
 
 cmake.out_of_source     yes
 
 configure.args-append   -DUSE_BUNDLED=OFF \
+                        -DPREFER_LUA=ON \
                         -DLUA_PRG=${prefix}/bin/lua \
                         -DENABLE_JEMALLOC=ON
 
@@ -49,5 +49,5 @@ notes {
     If you want to share your existing Vim configuration with Neovim, you can add these symlinks:
         ln -s ~/.vim ~/.config/nvim
         ln -s ~/.vimrc ~/.config/nvim/init.vim
-    For possible incompatible changes and differences to Vim check ':help nvim-intro' in nvim. 
+    For possible incompatible changes and differences to Vim check ':help nvim-intro' in nvim.
 }

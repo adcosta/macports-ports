@@ -6,8 +6,7 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           meson 1.0
 PortGroup           muniversal 1.0
 
-github.setup        ebassi graphene 1.8.2
-revision            2
+github.setup        ebassi graphene 1.10.2
 license             Permissive
 categories          graphics gnome
 maintainers         {devans @dbevans} openmaintainer
@@ -18,9 +17,9 @@ description         A thin layer of graphic data types
 
 long_description    ${description}
 
-checksums           rmd160  7806b716353781c789fdb0d9e71a1f364f7645ec \
-                    sha256  3389d8f51d480ad46b1ff2bf541da7c390651ee60f3dbf1cc41b71eea4e2e4bf \
-                    size    157664
+checksums           rmd160  cd6d2ad814d126f0493ccc223ee1bdb4ad559571 \
+                    sha256  a9109334a65e377150a832f298bdf098291621b6b1c377dd5e68e6cce3b544b4 \
+                    size    174489
 
 depends_build-append \
                     port:pkgconfig
@@ -63,10 +62,10 @@ if {${build_arch} eq "i386" || ${build_arch} eq "x86_64"} {
 # gobject-introspection uses g-ir-scanner, which uses $CC from env
 if {[variant_isset universal]} {
     foreach arch ${configure.universal_archs} {
-        lappend merger_build_env(${arch})  CC='${configure.cc} -arch ${arch}'
-        lappend merger_destroot_env(${arch})  CC='${configure.cc} -arch ${arch}'
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
     }
 } else {
-    build.env-append       CC="${configure.cc} ${configure.cc_archflags}"
-    destroot.env-append    CC="${configure.cc} ${configure.cc_archflags}"
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
 }

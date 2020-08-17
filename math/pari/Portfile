@@ -2,9 +2,11 @@
 
 PortSystem          1.0
 PortGroup           muniversal 1.0
+PortGroup           compiler_blacklist_versions 1.0
 
 name                pari
-version             2.11.0
+version             2.11.4
+revision            0
 categories          math
 platforms           darwin
 license             GPL-2+
@@ -16,12 +18,12 @@ long_description    PARI/GP is a widely used computer algebra system designed \
                     for fast  computations in number theory (factorizations, \
                     algebraic number theory,  elliptic curves...)
 
-homepage            http://pari.math.u-bordeaux.fr/
+homepage            https://pari.math.u-bordeaux.fr/
 master_sites        ${homepage}pub/pari/unix/
 
-checksums           rmd160  52f78622efe6079254a9b8a916239f41bf478fad \
-                    sha256  3835caccaa3e0c64764521032d89efeb8773cce841f6655fec6d58e790f4c9a1 \
-                    size    4419112
+checksums           rmd160  435029877b88b6605dcdd277f0567cfff623f8a1 \
+                    sha256  bfc88fc4f7352f4840e6e352c72f0369cbea8a45403b1834a6269f3709970b1c \
+                    size    4445000
 
 depends_lib         port:gmp \
                     port:ncurses \
@@ -33,7 +35,12 @@ platform darwin 8 {
 }
 
 # llvm-gcc produces incorrect code, ticket #33024
-compiler.blacklist  llvm-gcc-4.2
+compiler.blacklist-append llvm-gcc-4.2
+
+# https://trac.macports.org/ticket/59295
+# Most likely related to the 'stack-check' issue.
+# To be reviewed once Xcode 11.2 comes out.
+compiler.blacklist-append {clang > 1099}
 
 configure.cmd       ./Configure
 

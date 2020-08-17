@@ -1,53 +1,65 @@
-PortSystem 1.0
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-name            ntl
-version         5.4.2
-categories      math
-platforms       darwin
-license         GPL-2+
-maintainers     nomaintainer
-description     NTL: A Library for doing Number Theory
-long_description NTL is a high-performance, portable C++ library providing\
-                 data structures and algorithms for arbitrary length\
-                 integers\; for vectors, matrices, and polynomials over the\
-                 integers and over finite fields\; and for arbitrary\
-                 precision floating point arithmetic.
+PortSystem              1.0
+PortGroup               muniversal 1.0
 
-homepage		http://shoup.net/ntl/
-master_sites    ${homepage}
-checksums       md5 0aac5c680eee09a19732e1601b237a0b \
-                sha1 0250461a5e205663f7e446211c9571b6aad249e9 \
-                rmd160 5657f4f3b18281787b85f561b184c757254f656f
+name                    ntl
+version                 11.4.3
+categories              math devel
+platforms               darwin
+license                 LGPL-2.1+
+maintainers             {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+description             NTL: A Library for doing Number Theory
+long_description        NTL is a high-performance, portable C++ library providing\
+                        data structures and algorithms for arbitrary length\
+                        integers\; for vectors, matrices, and polynomials over the\
+                        integers and over finite fields\; and for arbitrary\
+                        precision floating point arithmetic.
 
-depends_build   path:bin/perl:perl5
+homepage		        https://shoup.net/ntl/
+master_sites            ${homepage}
 
-test.run        no
+checksums               rmd160  362e62354c160daeda3af7395df79385b0c582f5 \
+                        sha256  b7c1ccdc64840e6a24351eb4a1e68887d29974f03073a1941c906562c0b83ad2 \
+                        size    2274421
 
-configure.pre_args      PREFIX=\"${prefix}\" DOCDIR=\"${prefix}/share/doc\"
-configure.args          NTL_STD_CXX=on \
-                        CC=\"\$CC\" CXX=\"\$CXX\" CFLAGS=\"\$CFLAGS\" CXXFLAGS=\"\$CXXFLAGS\"
+compiler.cxx_standard   2011
 
-worksrcdir      ${name}-${version}/src
+depends_build-append    path:bin/perl:perl5
+depends_lib-append      port:gmp
 
-destroot.destdir PREFIX=\"${destroot}${prefix}\" DOCDIR=\"${destroot}${prefix}/share/doc\"
+worksrcdir              ${name}-${version}/src
 
-post-patch {
-        # Ensure that the correct perl is used
-        reinplace "s|perl DoConfig|${prefix}/bin/perl DoConfig|g" ${worksrcpath}/configure
-}
+# see configure script
+configure.cmd           "${prefix}/bin/perl DoConfig"
 
-variant gmp {
-        depends_lib-append      port:gmp
-        configure.args-append   NTL_GMP_LIP=on GMP_PREFIX=\"${prefix}\"
+configure.pre_args-replace \
+                        --prefix=${prefix} \
+                        PREFIX=\"${prefix}\"
+# build shared library
+# do not try to add -march=native
+# look for external libraries (e.g. GMP) in ${prefix}
+configure.args-append   SHARED=on \
+                        NATIVE=off \
+                        DEF_PREFIX=\"${prefix}\"
+
+# respect MacPorts variables
+foreach val {CXX CXXFLAGS CPPFLAGS LDFLAGS} {
+    configure.args-append ${val}=\"\$${val}\"
 }
 
 post-destroot {
-        system "cd ${destroot}${prefix}/share/doc && mv NTL tmp && mv tmp ntl"
-        xinstall -m 0644 ${worksrcpath}/../README \
-                         ${destroot}${prefix}/share/doc/${name}
-        xinstall -m 0644 ${worksrcpath}/../doc/copying.txt \
-                         ${destroot}${prefix}/share/doc/${name}/LICENSE
+    system "cd ${destroot}${prefix}/share/doc && mv NTL tmp && mv tmp ${name}"
+    xinstall -m 0644 ${worksrcpath}/../README \
+                     ${destroot}${prefix}/share/doc/${name}
+    xinstall -m 0644 ${worksrcpath}/../doc/copying.txt \
+                     ${destroot}${prefix}/share/doc/${name}/LICENSE
 }
 
-livecheck.url    http://shoup.net/ntl/download.html
-livecheck.regex  "Download NTL (\\d+(?:\\.\\d+)*)"
+variant tuned description {Build with more optimizations} {
+    configure.args-delete  NATIVE=off
+    configure.args-append  TUNE=auto
+}
+
+livecheck.url           https://shoup.net/ntl/download.html
+livecheck.regex         "Download NTL (\\d+(?:\\.\\d+)*)"

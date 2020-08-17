@@ -3,9 +3,11 @@
 PortSystem                      1.0
 PortGroup                       cmake 1.0
 PortGroup                       compiler_blacklist_versions 1.0
+PortGroup                       mpi 1.0
 
 name                            armadillo
-version                         9.100.6
+version                         9.900.2
+revision                        0
 categories                      science
 platforms                       darwin
 maintainers                     {mps @Schamschula} openmaintainer
@@ -26,9 +28,9 @@ master_sites                    sourceforge:project/arma
 
 use_xz                          yes
 
-checksums                       rmd160  82afd569e8a84fdfb70d661bac0ea8b6fd424d18 \
-                                sha256  6349163da682d237ee6fedfa31b936b07ff0c1c12a48631be700a89aa37c39ee \
-                                size    4781788
+checksums                       rmd160  b0d82909d2c0057aef6adae227d19528c3a9706c \
+                                sha256  d78658c9442addf7f718eb05881150ee3ec25604d06dd3af4942422b3ce26d05 \
+                                size    4724108
 
 depends_build-append            port:pkgconfig
 
@@ -36,16 +38,38 @@ depends_lib-append              port:hdf5
 
 cmake.out_of_source             yes
 
+mpi.setup
+mpi.enforce_variant             hdf5
+ 
 configure.args-append           -DARPACK_LIBRARY=
 
-livecheck.type                  regex
-livecheck.url                   ${homepage}download.html
-livecheck.regex                 /${name}-(\[0-9.\]+)${extract.suffix}
-
 variant arpack description {compile with ARPACK support} {
-    depends_lib-append      port:arpack
-    configure.args-delete   -DARPACK_LIBRARY=
+    depends_lib-append          port:arpack
+    configure.args-delete       -DARPACK_LIBRARY=
+}
+
+variant openblas description {compile with OpenBLAS support} {
+    depends_lib-append          path:lib/libopenblas.dylib:OpenBLAS
+    configure.args-append       -DALLOW_BLAS_LAPACK_MACOS=TRUE
+}
+
+variant superlu description {compile with SuperLU support} {
+    depends_lib-append          port:superlu
+    configure.args-append       -DARMA_USE_SUPERLU=ON
+}
+
+# Fix https://trac.macports.org/ticket/59173,
+# also see https://trac.macports.org/ticket/56554
+if {[variant_isset gcc44] || [variant_isset gcc45] || [variant_isset gcc46] || \
+    [variant_isset gcc47] || [variant_isset gcc48] || [variant_isset gcc49] || \
+    [variant_isset gcc5] || [variant_isset gcc6] || [variant_isset gcc7] || \
+    [variant_isset gcc8] || [variant_isset gcc9]} {
+    configure.cxx_stdlib        libstdc++
 }
 
 # Snow Leopard (and older) will fail to build with the error "Need a newer compiler"
 compiler.blacklist-append       *gcc-3.* *gcc-4.0 *gcc-4.2 {clang <= 211.10.1}
+
+livecheck.type                  regex
+livecheck.url                   ${homepage}download.html
+livecheck.regex                 /${name}-(\[0-9.\]+)${extract.suffix}

@@ -4,13 +4,15 @@ PortSystem      1.0
 PortGroup       muniversal 1.0
 PortGroup       compiler_blacklist_versions 1.0
 PortGroup       mpi 1.0
+PortGroup       xcode_workaround 1.0
 
 name            fftw-3
 version         3.3.8
+revision        1
 categories      math
 license         GPL-2+
 platforms       darwin
-maintainers     {sean @seanfarley}
+maintainers     {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
 homepage        http://www.fftw.org/
 distname        fftw-${version}
 
@@ -42,6 +44,18 @@ checksums           rmd160  ce2d1c266a13c96af85d51d75252417458947dc6 \
                     sha256  6113262f6e92c5bd474f2875fa1b01054c4ad5040f6b0da7c03c98821d9ae303 \
                     size    4110137
 
+# see https://trac.macports.org/ticket/59678
+xcode_workaround.fixed_xcode_version 11.2
+
+variant openmp description {Add OpenMP support} {
+    configure.args-append --enable-openmp
+}
+variant threads description {Legacy compatibility variant} requires openmp {
+}
+if {[variant_isset openmp] && ![c_variant_isset]} {
+    compiler.openmp_version 2.5
+}
+
 variant pfft_patches description {Apply patches recommended for use as dependency of pfft port} {
     if {![mpi_variant_isset]} {
         ui_warn "Variant +pfft_patches has no effect without setting an MPI variant."
@@ -64,6 +78,8 @@ mpi.setup
 
 # blacklist older versions of clang which do not handle the --enable-avx option (#41622, #41673)
 compiler.blacklist-append {clang <= 211.10.1} gcc-4.2
+# see https://trac.macports.org/ticket/60145
+compiler.blacklist-append *gcc-3.* *gcc-4.*
 
 configure.args \
     --enable-threads \
@@ -80,6 +96,7 @@ configure.cflags-append \
 pre-configure {
     if { [avx_compiler_isset] == 1 } {
         array set merger_configure_args {
+            arm64  ""
             ppc    "--enable-fma"
             ppc64  "--enable-fma"
             i386   "--enable-sse2 --enable-avx"
@@ -87,6 +104,7 @@ pre-configure {
         }
     } else {
         array set merger_configure_args {
+            arm64  ""
             ppc    "--enable-fma"
             ppc64  "--enable-fma"
             i386   "--enable-sse2"
@@ -114,6 +132,7 @@ subport fftw-3-single {
     pre-configure {
         if { [avx_compiler_isset] == 1 } {
             array set merger_configure_args {
+                arm64  "--enable-neon"
                 ppc    "--enable-fma --enable-altivec"
                 ppc64  "--enable-fma --enable-altivec"
                 i386   "--enable-sse --enable-avx"
@@ -121,6 +140,7 @@ subport fftw-3-single {
             }
         } else {
             array set merger_configure_args {
+                arm64  "--enable-neon"
                 ppc    "--enable-fma --enable-altivec"
                 ppc64  "--enable-fma --enable-altivec"
                 i386   "--enable-sse"
@@ -170,6 +190,7 @@ subport fftw-3-long {
 
     pre-configure {
         array set merger_configure_args {
+            arm64  ""
             ppc    ""
             ppc64  ""
             i386   ""
@@ -201,9 +222,16 @@ subport fftw-3-long {
 }
 
 if {${os.arch} eq "i386"} {
+    lappend merger_configure_args(arm64)   "--disable-fortran"
     lappend merger_configure_args(ppc)     "--disable-fortran"
     lappend merger_configure_args(ppc64)   "--disable-fortran"
+} elseif {${os.arch} eq "powerpc"} {
+    lappend merger_configure_args(arm64)   "--disable-fortran"
+    lappend merger_configure_args(i386)    "--disable-fortran"
+    lappend merger_configure_args(x86_64)  "--disable-fortran"
 } else {
+    lappend merger_configure_args(ppc)     "--disable-fortran"
+    lappend merger_configure_args(ppc64)   "--disable-fortran"
     lappend merger_configure_args(i386)    "--disable-fortran"
     lappend merger_configure_args(x86_64)  "--disable-fortran"
 }
@@ -212,7 +240,7 @@ if {[fortran_variant_isset]} {
     configure.args-delete --disable-fortran
 }
 
-# this is put at the bottom to run last (after the sub-port have done their own
+# this is put at the bottom to run last (after the sub-ports have done their own
 # logic)
 pre-configure {
     if {[mpi_variant_isset]} {

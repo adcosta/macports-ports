@@ -1,12 +1,14 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem                  1.0
+PortGroup                   legacysupport 1.0
 
 name                        lighttpd
-version                     1.4.51
-checksums                   rmd160  cdbb0e8cc52f2d26a2d5e67c3defa15416c154e3 \
-                            sha256  2af9fdb265d1f025bfa634e13770239712ecbd585e4975b8226edf1df74e9c82 \
-                            size    723268
+version                     1.4.55
+revision                    0
+checksums                   rmd160  3ec0c81a6ee286efc998150690c9e39f9606ef28 \
+                            sha256  6a0b50e9c9d5cc3d9e48592315c25a2d645858f863e1ccd120507a30ce21e927 \
+                            size    765660
 
 set branch                  [join [lrange [split ${version} .] 0 1] .]
 categories                  www
@@ -50,7 +52,8 @@ configure.args-append       CC_FOR_BUILD="${configure.cc}" \
 
 platform darwin {
     depends_lib-append      port:libev
-    patchfiles-append       patch-conf-darwin.diff
+    patchfiles-append       patch-conf-darwin.diff \
+                            patch-tigerfixes.diff
     post-patch {
         if {${os.major} <= 8} {
             set user "www"
@@ -79,15 +82,15 @@ destroot.keepdirs           ${destroot}${prefix}/var/log/lighttpd \
 post-destroot {
     xinstall -d ${destroot}${lighttpd_config_dir}/conf.d
     foreach f [glob ${worksrcpath}/doc/config/*.conf] {
-        xinstall -m 644 ${f} ${destroot}${lighttpd_config_dir}/[file tail ${f}].default
+        xinstall -m 0644 ${f} ${destroot}${lighttpd_config_dir}/[file tail ${f}].default
     }
     foreach f [glob ${worksrcpath}/doc/config/conf.d/*.conf] {
-        xinstall -m 644 ${f} ${destroot}${lighttpd_config_dir}/conf.d/[file tail ${f}].default
+        xinstall -m 0644 ${f} ${destroot}${lighttpd_config_dir}/conf.d/[file tail ${f}].default
     }
 
    set docdir ${destroot}${prefix}/share/doc/${name}
    xinstall -d ${docdir}
-   xinstall -m 644 -W ${worksrcpath} \
+   xinstall -m 0644 -W ${worksrcpath} \
        AUTHORS \
        COPYING \
        NEWS \
@@ -113,16 +116,10 @@ post-activate {
     }
 }
 
-variant mysql4 conflicts mysql5 description {Enable MySQL 4 support} {
-    depends_lib-append      port:mysql4
-    configure.args-append   --with-mysql=${prefix}/bin/mysql_config
-    #configure.cppflags-append -I${prefix}/include/mysql
-}
-
-variant mysql5 conflicts mysql4 description {Enable MySQL 5 support} {
-    depends_lib-append      path:bin/mysql_config5:mysql5
-    configure.args-append   --with-mysql=${prefix}/bin/mysql_config5
-    #configure.cppflags-append -I${prefix}/include/mysql5/mysql
+variant mysql57 description {Enable MySQL 5.7 support} {
+    depends_lib-append      port:mysql57
+    configure.args-append   --with-mysql=${prefix}/lib/mysql57/bin/mysql_config
+    #configure.cppflags-append -I${prefix}/include/mysql57/mysql
 }
 
 variant ssl description {Enable serving secure web sites with SSL} {

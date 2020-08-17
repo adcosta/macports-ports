@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        yarnpkg yarn 1.10.1 v
+github.setup        yarnpkg yarn 1.22.4 v
+revision            2
 
 categories          devel
 
@@ -12,8 +13,8 @@ supported_archs     noarch
 
 license             BSD
 
-maintainers         andrewsforge.com:code \
-                    gmail.com:isomarcte \
+maintainers         {andrewsforge.com:code @jambonrose} \
+                    {gmail.com:isomarcte @isomarcte} \
                     openmaintainer
 
 description         JavaScript dependency manager
@@ -26,26 +27,28 @@ homepage            https://yarnpkg.com/
 
 github.tarball_from releases
 distname            ${name}-${git.branch}
-checksums           rmd160  39df70294480d66819f58f122cf8aa4ae22f545c \
-                    sha256  97bf147cb28229e66e4e3c5733a93c851bbcb0f10fbc72696ed011774f4c6f1b \
-                    size    1107068
 
-depends_run         path:bin/node:nodejs6
+checksums           rmd160  78fa03d13631d7560a34aba42c6b17f9087c3cac \
+                    sha256  bc5316aa110b2f564a71a3d6e235be55b98714660870c5b6b2d2d3f12587fb58 \
+                    size    1244785
+
+depends_run         path:bin/node:nodejs12
 
 platform darwin {
-    # Fix for https://trac.macports.org/ticket/53166
-    # Mac OS X 10.6 Snow Leopard and earlier cannot install Node JS v6
-    if {${os.major} < 11} {
-        depends_run-replace path:bin/node:nodejs6 path:bin/node:nodejs4
+    if {${os.major} < 13} {
+        depends_run-replace path:bin/node:nodejs12 path:bin/node:nodejs6
     }
 }
 
 use_configure       no
-build {}
+build {
+    reinplace "s|Darwin|# Darwin|g" ${worksrcpath}/bin/yarn
+}
 
 destroot {
   copy ${worksrcpath} ${destroot}${prefix}/libexec/yarn
   ln -s ${prefix}/libexec/yarn/bin/yarn ${destroot}${prefix}/bin/yarn
+  ln -s ${prefix}/libexec/yarn/bin/yarnpkg ${destroot}${prefix}/bin/yarnpkg
 }
 
 notes "

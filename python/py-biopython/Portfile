@@ -1,48 +1,51 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-PortSystem 1.0
-PortGroup python 1.0
+PortSystem          1.0
+PortGroup           python 1.0
 
-name            py-biopython
-version         1.72
-categories-append     science
-maintainers     {mmoll @mamoll} openmaintainer
-platforms       darwin
-description     python tools for computational molecular biology
-long_description    python tools for computational molecular biology: \
-                parsers for various file formats, interfaces for programs, \
-                tools for performing common operations on sequences, etc.
+name                py-biopython
+version             1.77
+revision            0
 
-homepage        http://www.biopython.org/
-license         MIT
-master_sites    ${homepage}/DIST
-distname        biopython-${version}
-checksums       rmd160  8d3659c93a8d6c916ea242a2ae689609879454ce \
-                sha256  ab6b492443adb90c66267b3d24d602ae69a93c68f4b9f135ba01cb06d36ce5a2 \
-                size    16391360
+categories-append   science
+platforms           darwin
+license             BSD
+maintainers         {reneeotten @reneeotten} openmaintainer
 
+description         Python tools for computational molecular biology
+long_description    ${description}: parsers for various file formats, interfaces for \
+                    programs, tools for performing common operations on sequences, etc.
 
-python.versions 27 34 35 36 37
+homepage            https://biopython.org/
 
-if { ${name} ne ${subport} } {
-    depends_lib-append  port:py${python.version}-numpy
+checksums           rmd160  930863e9d861d558d74226ce5b4ac3ed3a8e0dd1 \
+                    sha256  fb1936e9ca9e7af8de1050e84375f23328e04b801063edf0ad73733494d8ec42 \
+                    size    16837021
 
-    post-destroot {
-        file delete -force ${destroot}${prefix}/share/doc/${subport}
-        file copy ${worksrcpath}/Doc ${destroot}${prefix}/share/doc/${subport}
-        xinstall -m 644 -W ${worksrcpath} CONTRIB DEPRECATED LICENSE NEWS README \
-            ${destroot}${prefix}/share/doc/${subport}
+python.versions     27 35 36 37 38
+
+if {${name} ne ${subport}} {
+    if {${python.version} in "27 35"} {
+        version     1.76
+        revision    0
+        checksums   rmd160  dd99b8275b0aeb9a5d4d5378a93663534c378209 \
+                    sha256  3873cb98dad5e28d5e3f2215a012565345a398d3d2c4eebf7cd701757b828c72 \
+                    size    16283634
     }
 
-    build.env   CFLAGS=-I${python.include}
+    depends_build-append \
+                    port:py${python.version}-setuptools
 
-    test.run        no
-    test.cmd        ${build.cmd}
-    test.target     test
+    depends_lib-append \
+                    port:py${python.version}-numpy
 
-    livecheck.type  none
-} else {
-    livecheck.type  regex
-    livecheck.url   http://biopython.org/wiki/Download
-    livecheck.regex biopython-(\[0-9\.\]+).tar.gz
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst NEWS.rst \
+            LICENSE.rst DEPRECATED.rst CONTRIBUTING.rst \
+            CONTRIB.rst ${destroot}${docdir}
+    }
+
+    livecheck.type      none
 }

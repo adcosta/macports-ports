@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        tantale deprecated 1.2.9 v
+name                py-deprecated
+revision            0
+
+license             MIT
+platforms           darwin
+supported_archs     noarch
+maintainers         nomaintainer
+
+description         Python @deprecated decorator to deprecate old python classes, \
+                    functions or methods.
+long_description    ${description}
+
+checksums           rmd160  c78dba890ad38d4001b2b8ba68215bd8b5a32def \
+                    sha256  4912a61f48e7b6e0e4516b0c0c0446111b94dc7f16bef2bf14a46a2066e99020 \
+                    size    5332823
+
+python.versions     36 37 38
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-wrapt
+
+    livecheck.type  none
+}

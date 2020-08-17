@@ -4,10 +4,8 @@ PortSystem          1.0
 PortGroup           gobject_introspection 1.0
 
 name                gnome-online-accounts
-
-# version 3.16.0+ requires webkit2gtk-4.0
-version             3.28.0
-
+version             3.36.0
+revision            0
 license             LGPL-2
 set branch          [join [lrange [split ${version} .] 0 1] .]
 description         Single sign-on framework for GNOME
@@ -20,88 +18,51 @@ master_sites        gnome:sources/${name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  70a77e53014a96df9e645c324e0b9a57042e7bb4 \
-                    sha256  87bc4ef307604f1ce4f09f6e5c9996ef8d37ca5e0a3bf76f6b27d71844adb40c \
-                    size    1531200
+checksums           rmd160  dd5bc0427140b0eaab80687ec53efe4b8ea9f23e \
+                    sha256  1c8f62990833ca41188dbb80c5e99d99b57a62608ca675bbcd37bc2244742f2e \
+                    size    860472
 
 depends_build       port:pkgconfig \
-                    port:libxslt \
-                    port:docbook-xsl-nons
-
-# intltool required for git submodule telepathy-account-widgets only
-depends_build-append \
-                    port:intltool
+                    port:gtk-doc
 
 depends_lib         port:gdk-pixbuf2 \
                     port:gtk3 \
                     port:libsoup \
                     port:json-glib \
+                    port:kerberos5 \
                     port:rest \
                     port:libsecret \
                     port:libxml2 \
                     port:gcr \
-                    port:telepathy-glib \
-                    port:vala
+                    port:vala \
+                    path:lib/pkgconfig/webkit2gtk-4.0.pc:webkit2-gtk
 
 gobject_introspection yes
 
-configure.args      --enable-ubuntu-online-accounts=no \
-                    --enable-compile-warnings=no \
-                    --disable-exchange \
+compiler.cxx_standard 2011
+
+patchfiles          patch-src-goaidentity-Makefile.am.diff
+
+use_autoreconf      yes
+autoreconf.args     -fvi
+
+configure.cppflags-append \
+                    -DBUILDING_GTK__
+
+configure.args      --enable-compile-warnings=no \
                     --disable-media-server \
+                    --enable-exchange \
                     --enable-inspector \
                     --enable-flickr \
                     --enable-foursquare \
                     --enable-google \
                     --enable-imap-smtp \
                     --enable-owncloud \
-                    --enable-yahoo \
                     --enable-facebook \
                     --enable-windows-live \
-                    --enable-telepathy \
-                    --enable-pocket \
                     --enable-lastfm \
-                    --disable-kerberos \
+                    --enable-kerberos \
                     --disable-maintainer-mode \
                     --disable-silent-rules
 
-platform darwin {
-    if {${configure.cxx_stdlib} eq "libstdc++"} {
-        version         3.8.5
-        revision        2
-        checksums       rmd160  21889d886fa262e536929ecb6905cfcd3f50a462 \
-                        sha256  34d6fbc33bda4c7bba8aa52343ebe1eb8afe1033097c10a2d9979c0a99593e5d
-        depends_build-append \
-                        port:autoconf \
-                        port:automake \
-                        port:libtool \
-                        port:gtk-doc
-
-        depends_lib-delete \
-                        port:telepathy-glib
-        depends_lib-append \
-                        path:lib/pkgconfig/webkitgtk-3.0.pc:webkit-gtk3-2.0
-        patchfiles-append \
-                        patch-alarm.diff
-        post-patch {
-            xinstall -m 755 ${filespath}/autogen.sh-${version} ${worksrcpath}/autogen.sh
-        }
-        configure.cmd   ./autogen.sh
-        configure.cflags-append \
-                        -Wno-format-nonliteral
-        configure.args-delete  \
-                        --disable-media-server \
-                        --enable-inspector \
-                        --enable-foursquare \
-                        --enable-ubuntu-online-accounts=no \
-                        --enable-yahoo \
-                        --enable-telepathy \
-                        --enable-pocket \
-                        --enable-lastfm
-        # Version 3.8.5 is the last version that will build on platforms supporting libstdc++
-        livecheck.type  none
-    } else {
-        depends_lib-append path:lib/pkgconfig/webkit2gtk-4.0.pc:webkit2-gtk
-        livecheck.type  gnome
-    }
-}
+livecheck.type      gnome

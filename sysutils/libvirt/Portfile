@@ -1,13 +1,19 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           legacysupport 1.0
+
+# O_CLOEXEC
+legacysupport.newest_darwin_requires_legacy 10
 
 # Remember to update libvirt and py-libvirt at the same time.
 name                libvirt
-version             4.8.0
-checksums           rmd160  9eb47748d5b6ac4fe58bfe18d9e295971d3cdba7 \
-                    sha256  c2fd7112d6689fbb4d700b31c01aadd8a0eb275e127dc959cdc166f5f60b3032 \
-                    size    14739652
+version             6.6.0
+revision            0
+checksums           rmd160  72294aa39f53386cfcd8812ddf243bd7aa9ee29c \
+                    sha256  94e52ddd2d71b650e1a7eb5ab7e651f9607ecee207891216714020b8ff081ef9 \
+                    size    9305836
 
 categories          sysutils
 license             LGPL-2.1+
@@ -23,30 +29,38 @@ homepage            https://libvirt.org
 master_sites        ${homepage}/sources/
 use_xz              yes
 
-depends_build       port:pkgconfig \
+depends_build       port:autoconf \
+                    port:automake \
                     port:bash-completion \
-                    port:python27 \
+                    port:libtool \
+                    port:pkgconfig \
+                    port:python38 \
+                    port:py38-docutils \
                     port:perl5
 
 depends_lib         port:curl \
+                    path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:gnutls \
                     port:libiconv \
                     port:libxml2 \
                     port:readline \
                     port:yajl \
                     port:zlib
 
-compiler.blacklist-append apple-gcc* gcc-3.3 gcc-4.* *llvm-gcc-4.2 macports-gcc-4.3
+# error: You need at least XCode Clang v5.1 to compile QEMU
+compiler.blacklist-append apple-gcc* gcc-3.3 *gcc-4.* macports-clang-3.3 {clang < 503}
 
-# libvirt build scripts work with python 2.x only
-configure.python    ${prefix}/bin/python2.7
+# libvirt build scripts require python 3.x
+configure.python    ${prefix}/bin/python3.8
 configure.perl      ${prefix}/bin/perl5
 
-configure.args      --disable-silent-rules \
+configure.args      ac_cv_path_RST2HTML=${prefix}/bin/rst2html-3.8.py \
+                    ac_cv_path_RST2MAN=${prefix}/bin/rst2man-3.8.py \
+                    --disable-silent-rules \
                     --enable-debug \
                     --without-apparmor \
                     --without-attr \
                     --without-audit \
-                    --without-avahi \
                     --with-bash-completion \
                     --with-bash-completions-dir=${prefix}/share/bash-completion/completions \
                     --without-bhyve \
@@ -59,19 +73,18 @@ configure.args      --disable-silent-rules \
                     --with-esx \
                     --without-fuse \
                     --without-glusterfs \
-                    --without-gnutls \
                     --without-hal \
                     --without-hyperv \
                     --with-init-script=none \
                     --without-libpcap \
                     --without-libssh \
                     --with-libvirtd \
+                    --without-libxl \
                     --without-lxc \
                     --without-macvtap \
                     --without-netcf \
                     --without-network \
                     --without-numactl \
-                    --without-openssl \
                     --without-openvz \
                     --without-openwsman \
                     --without-phyp \
@@ -88,35 +101,33 @@ configure.args      --disable-silent-rules \
                     --without-sysctl \
                     --with-test \
                     --without-udev \
-                    --without-uml \
                     --with-vbox \
                     --without-virtualport \
                     --with-vmware \
                     --without-vz \
                     --without-wireshark-dissector \
-                    --without-xen \
-                    --without-xenapi \
-                    --without-xen-inotify \
                     --with-yajl
 
-if {![variant_isset openssl]} {
-    default_variants +gnutls
+# As of 5.10.0, an out-of-source build is required.
+configure.cmd       ../${worksrcdir}/autogen.sh --no-git
+configure.dir       ${workpath}/build
+build.dir           ${configure.dir}
+post-extract {
+    file mkdir ${configure.dir}
 }
 
-variant gnutls description {Use GnuTLS} conflicts openssl {
-    depends_lib-append     port:gnutls
-    configure.args-replace  --without-gnutls --with-gnutls
-}
+# As of 5.10.0, pregenerated files are no longer included in the tarball,
+# and rpcgen on OS X 10.11 and earlier is not able to generate them; see:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1785575
+depends_build-append \
+                    port:rpcgen-mt
+configure.args-append \
+                    ac_cv_path_RPCGEN=${prefix}/bin/rpcgen-mt
 
-variant openssl description {Use OpenSSL} conflicts gnutls {
-    depends_lib-append     path:lib/libssl.dylib:openssl
-    configure.args-replace  --without-openssl --with-openssl
-}
-
-variant avahi description {Use Avahi to advertise remote daemon} {
-    depends_lib-append      port:avahi
-    configure.args-replace  --without-avahi --with-avahi
-}
+# As of 5.10.0, disabling dependency tracking causes build failure; see:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1783626
+# Upstream will not fix this; instead, they will switch to meson.
+configure.universal_args-delete --disable-dependency-tracking
 
 variant fuse description {FUSE support} {
     depends_lib-append      port:osxfuse

@@ -6,15 +6,11 @@ PortGroup                   compiler_blacklist_versions 1.0
 
 # Please keep the wine, wine-devel and wine-crossover ports as similar as possible.
 
-# When updating the version of wine, update wine_gecko and wine_mono to compatible versions
-# as referenced in the source code. Check here by replacing X.Y with the version:
-# https://source.winehq.org/git/wine.git/blob/refs/tags/wine-X.Y:/dlls/appwiz.cpl/addons.c
-# see also http://wiki.winehq.org/Gecko and http://wiki.winehq.org/Mono
-
 name                        wine-devel
 conflicts                   wine wine-crossover
 set my_name                 wine
-version                     3.19
+version                     4.9
+revision                    0
 set branch                  [lindex [split ${version} .] 0].x
 license                     LGPL-2.1+
 categories                  x11
@@ -28,20 +24,20 @@ set wine_distfile           ${distname}${extract.suffix}
 set wine_gecko_version      2.47
 set wine_gecko_distfile     wine_gecko-${wine_gecko_version}-x86.msi
 set wine_gecko64_distfile   wine_gecko-${wine_gecko_version}-x86_64.msi
-set wine_mono_version       4.7.3
+set wine_mono_version       4.8.3
 set wine_mono_distfile      wine-mono-${wine_mono_version}.msi
 use_parallel_build          yes
 
 description                 A Windows API implementation
 
 long_description            Wine is a compatibility layer capable of running \
-                            Windows applications. Instead of simulating \
-                            internal Windows logic like a virtual machine \
-                            or emulator, Wine translates Windows API calls \
-                            into POSIX calls on-the-fly, eliminating the \
-                            performance and memory penalties of other methods \
-                            and allowing you to cleanly integrate Windows \
-                            applications into your desktop.
+                            Windows applications. \
+                            Instead of simulating internal Windows logic like \
+                            a virtual machine or emulator, Wine translates \
+                            Windows API calls into POSIX calls on-the-fly, \
+                            eliminating the performance and memory penalties \
+                            of other methods and allowing you to cleanly \
+                            integrate Windows applications into your desktop.
 
 master_sites                http://mirrors.ibiblio.org/wine/source/${branch}/:winesource \
                             http://dl.winehq.org/wine/source/${branch}/:winesource \
@@ -59,9 +55,9 @@ distfiles                   ${wine_distfile}:winesource \
                             ${wine_mono_distfile}:winemono
 
 checksums                   ${wine_distfile} \
-                            rmd160  c70bdf0cf8a5d46b4a03db8277643115f432e5d3 \
-                            sha256  ef21c626aef09715de9640a79d42e8b5e305761d5f21491fe84d74cafa7a9c6a \
-                            size    21503304 \
+                            rmd160  bdad0bc09d02352c6ea54a02b40b5fba7bbe0649 \
+                            sha256  91848e22fff3cb17db7fe7d727d714d21c5d4229dd460b5d1506753021fc799b \
+                            size    22077528 \
                             ${wine_gecko_distfile} \
                             rmd160  abf7cc78b49dd0623bc8fe87ae0e32bb8694e13d \
                             sha256  3b8a361f5d63952d21caafd74e849a774994822fb96c5922b01d554f1677643a \
@@ -71,9 +67,9 @@ checksums                   ${wine_distfile} \
                             sha256  c565ea25e50ea953937d4ab01299e4306da4a556946327d253ea9b28357e4a7d \
                             size    50806272 \
                             ${wine_mono_distfile} \
-                            rmd160  1c4aca42bfff33ca7fc485442820c84665a3e581 \
-                            sha256  d24a8017371c7e8224a1778bb43a113ed7ed9720efd9d0cda175d42db6106d3a \
-                            size    56470528
+                            rmd160  e42fa8c06fcd727d5c2cd635ee1bbe0bbe40ebfb \
+                            sha256  d6fa1f019bfa3c572438e4a2473ce25af1e937ed4cdcbe46554164ce25db0a76 \
+                            size    116183552
 
 # Note: Most of the X11 libs are dlopen()'d
 depends_lib                 port:fontconfig \
@@ -96,6 +92,29 @@ depends_lib                 port:fontconfig \
 depends_build               port:bison \
                             port:flex \
                             port:pkgconfig
+
+post-extract {
+    set fp [open ${worksrcpath}/dlls/appwiz.cpl/addons.c r]
+    set file_contents [read ${fp}]
+    close ${fp}
+    set ok yes
+    foreach addon {gecko mono} {
+        set addon_version_var wine_${addon}_version
+        set addon_version_in_port [set ${addon_version_var}]
+        if {[regexp -lineanchor "^#define [string toupper $addon]_VERSION \"(\[^\"\]+)\"$" ${file_contents} -> addon_version_in_file] == 1} {
+            if {${addon_version_in_port} ne ${addon_version_in_file}} {
+                set ok no
+                ui_error "${addon_version_var} should be ${addon_version_in_file} not ${addon_version_in_port}"
+            }
+        } else {
+            set ok no
+            ui_error "Could not determine what ${addon_version_var} should be"
+        }
+    }
+    if {!${ok}} {
+        return -code error
+    }
+}
 
 patchfiles                  BOOL.patch \
                             cups_headers.patch \
@@ -252,17 +271,8 @@ if {[variant_isset universal]} {
                                 apple-gcc-4.2 \
                                 macports-clang-3.3 \
                                 macports-clang-3.4 \
-                                macports-clang-3.5 \
-                                macports-clang-3.6 \
                                 macports-clang-3.7
-    compiler.fallback-append    macports-clang-5.0 \
-                                macports-clang-3.9
-
-    if {${os.platform} eq "darwin" && [vercmp ${macosx_version} 10.7] < 0} {
-        # clang-5.0 on Mac OS X 10.6 emits objects that cannot be read by cctools from Xcode.
-        # /usr/bin/ranlib: object: libwine_port.a(mbtowc.o) malformed object (unknown load command 2)
-        compiler.blacklist-append   macports-clang-5.0
-    }
+    compiler.fallback-append    macports-clang-5.0
 }
 
 platform darwin {
@@ -307,6 +317,7 @@ platform darwin {
         DPI under the Graphics tab in winecfg.}
 
     if {${os.major} < 9} {
+        known_fail yes
         archive_sites
         distfiles
         depends_build
@@ -316,6 +327,7 @@ platform darwin {
             return -code error "incompatible Mac OS X version"
         }
     } elseif {${os.major} > 17} {
+        known_fail yes
         archive_sites
         distfiles
         depends_build
@@ -328,6 +340,7 @@ platform darwin {
 }
 
 if {${os.endian} eq "big"} {
+    known_fail yes
     archive_sites
     distfiles
     depends_build
@@ -339,21 +352,15 @@ if {${os.endian} eq "big"} {
 }
 
 post-destroot {
-    xinstall -d ${destroot}${prefix}/libexec/wine
-    file rename ${destroot}${prefix}/bin/wine ${destroot}${prefix}/libexec/wine/wine
-
-    xinstall ${filespath}/wine.in ${destroot}${prefix}/bin/wine
-    reinplace s|@PREFIX@|${prefix}|g ${destroot}${prefix}/bin/wine
-
     xinstall -d ${destroot}${prefix}/share/wine/gecko
-    xinstall -m 644 -W ${distpath} ${wine_gecko_distfile} ${wine_gecko64_distfile} ${destroot}${prefix}/share/wine/gecko
+    xinstall -m 0644 -W ${distpath} ${wine_gecko_distfile} ${wine_gecko64_distfile} ${destroot}${prefix}/share/wine/gecko
 
     xinstall -d ${destroot}${prefix}/share/wine/mono
-    xinstall -m 644 ${distpath}/${wine_mono_distfile} ${destroot}${prefix}/share/wine/mono
+    xinstall -m 0644 ${distpath}/${wine_mono_distfile} ${destroot}${prefix}/share/wine/mono
 
     set docdir ${prefix}/share/doc/${my_name}
     xinstall -d ${destroot}${docdir}
-    xinstall -m 644 -W ${worksrcpath} \
+    xinstall -m 0644 -W ${worksrcpath} \
         ANNOUNCE \
         AUTHORS \
         COPYING.LIB \

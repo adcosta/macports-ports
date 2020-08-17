@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-redis
-version             2.10.6
+version             3.5.3
 revision            0
 categories-append   devel
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -19,12 +19,10 @@ description         Python client for Redis key-value store
 long_description    ${description}
 
 homepage            https://github.com/andymccurdy/redis-py
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  83f8e43ad63dca7985591ba60527c24c72be999b \
-                    sha256  a22ca993cea2962dbb588f9f30d0015ac4afcc45bee27d3978c0dbe9e97c6c0f
+checksums           rmd160  8138c8bf7874fbf1b57d603b7a929f4c8e469317 \
+                    sha256  0e7e0cfca8660dea8b7d5cd8c4f6c5e29e11f31158c0b0ae91a397f00e5a05a2 \
+                    size    141112
 
 if {${name} ne ${subport}} {
     depends_build-append \

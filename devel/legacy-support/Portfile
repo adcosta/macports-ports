@@ -2,33 +2,83 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
+PortGroup           clang_dependency 1.0
+PortGroup           muniversal 1.0
 
-github.setup        cjones051073 macports-legacy-support 0.5 v
 name                legacy-support
-revision            1
-
 categories          devel
 platforms           darwin
 
 maintainers         {jonesc @cjones051073} {kencu @kencu} openmaintainer
 license             MIT
 
-description         Installs wrapper headers to add missing functionality from legacy OSX versions.
-long_description    ${description}
+description         Installs wrapper headers to add missing functionality to legacy OSX versions.
+long_description    {*}${description}
 
-checksums           rmd160  f1f5c00509f61973f7073b3362e86beb3923c1b5 \
-                    sha256  155a72aca2408354755abfc5db7872884fc62006adf57074ee84ec02f762ad30 \
-                    size    7929
+subport ${name} {
+    conflicts           ${name}-devel
+    github.setup        macports macports-legacy-support 0.12 v
+    revision            0
+    checksums           rmd160  fad931c6a6ebb4157665a0a06c12e28605857a69 \
+                        sha256  08722ba0c62df1feae9fbff8ed53372b996ce65ea3d0ed1b11d64ad33409f928 \
+                        size    35863
+}
+
+subport ${name}-devel {
+    conflicts           ${name}
+    github.setup        macports macports-legacy-support ea4b46755968c84310ddcd1e99c5313635db2df7
+    version             20200616
+    revision            0
+    livecheck.type      none
+    checksums           rmd160  7233c7f02e2e548d3e89ba70cc6a408210c6ebc9 \
+                        sha256  555649cb7e1792efe58870fa0ec4352161af24feb956425839621aa9780f4860 \
+                        size    36891
+}
 
 use_configure       no
 
-variant universal {}
+test.run            yes
+test.target         test
 
-build.env           CXX="${configure.cxx}" \
-                    CXXFLAGS="${configure.cxxflags} [get_canonical_archflags cxx]" \
-                    CC="${configure.cc}" \
-                    CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
-                    LDFLAGS="${configure.ldflags}  [get_canonical_archflags ld]" \
-                    PREFIX=${prefix}
+build.env           CXX=${configure.cxx} \
+                    CC=${configure.cc} \
+                    PREFIX=${prefix} \
+                    "LIPO=/usr/bin/lipo" \
+                    PLATFORM=${os.major}
 
 destroot.env        PREFIX=${prefix}
+
+if {[variant_isset universal]} {
+    foreach arch ${universal_archs_supported} {
+        lappend merger_build_env(${arch})   "CXXFLAGS=${configure.cxxflags} [muniversal_get_arch_flag ${arch}]" \
+                                            "CFLAGS=${configure.cflags} [muniversal_get_arch_flag ${arch}]" \
+                                            "LDFLAGS=${configure.ldflags} [muniversal_get_arch_flag ${arch}]" \
+                                            "FORCE_ARCH=${arch}"
+    }
+} else {
+    build.env-append                        "CXXFLAGS=${configure.cxxflags} [get_canonical_archflags cxx]" \
+                                            "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                                            "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]" \
+                                            "FORCE_ARCH=${build_arch}"
+}
+
+post-destroot {
+  platform darwin 8 {
+    # install Tiger-specific fixes
+
+    # very slightly modified which command to match behaviour of 10.5+
+    copy ${worksrcpath}/tiger_only/bin/which \
+         ${destroot}${prefix}/bin/which
+  }
+}
+
+if {![file exists ${prefix}/libexec/mpstats]} {
+    notes "
+    To help make sure your system continues to be well represented by MacPorts, especially\
+    if your system is not one of the latest macOS releases, please consider installing mpstats.\
+    It will periodically send an anonymous synopsis of your OS settings and installed ports.\
+    The information provided by this is useful to help determine how resources are allocated.
+
+    You can install mpstats like this:    sudo port install mpstats
+    "
+}

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           select 1.0
 
 name                ruby24
-version             2.4.5
+version             2.4.10
 revision            0
 
 categories          lang ruby
@@ -33,10 +33,10 @@ dist_subdir         ruby24
 #     /opt/local/lib/libruby.2.4.dylib
 patchfiles          patch-configure.diff
 
-checksums           md5 45d70a8bb9397d818795ffe992163d27 \
-                    rmd160 72478559b56856d77f2898148bfeb35f294c4dc1 \
-                    sha1 0e1f184556507c22bc59054496c0af7cf28fb188 \
-                    sha256 276c8e73e51e4ba6a0fe81fb92669734e741ccea86f01c45e99f2c7ef7bcd1e3
+checksums           md5 b10a7d2fcaf218c98edbaf57efc36e58 \
+                    rmd160 0249650b9da5f11b52533827af5db809e1fa6277 \
+                    sha1 96737b609f4a82f8696669a17017a46f3bd07549 \
+                    sha256 6ea3ce7fd0064524ae06dbdcd99741c990901dfc9c66d8139a02f907d30b95a8
 
 use_parallel_build  no
 
@@ -62,6 +62,13 @@ configure.args      --enable-shared \
                     --with-opt-dir="${prefix}" \
                     --program-suffix=2.4 \
                     --with-rubylibprefix="${prefix}/lib/ruby2.4"
+
+# https://github.com/ruby/ruby/commit/1961c786aab243b3eb60e7238224e87975d88056
+# * configure.ac (LIBPATHENV): use DYLD_FALLBACK_LIBRARY_PATH instead of
+# DYLD_LIBRARY_PATH on macOS, to honor runtime paths embedded in the
+# binaries.  https://bugs.ruby-lang.org/issues/14992
+configure.args-append \
+                    LIBPATHENV=DYLD_FALLBACK_LIBRARY_PATH
 
 platform darwin {
     if {${os.major} < 10} {
@@ -132,5 +139,4 @@ variant relative description "Enable relative loading of libraries to allow for 
 
 livecheck.type  regex
 livecheck.url   https://cache.ruby-lang.org/pub/ruby/2.4/
-livecheck.regex ruby-(2.4.\\d+)${extract.suffix}
-
+livecheck.regex ruby-(2\\.4\\.\\d+)[quotemeta ${extract.suffix}]

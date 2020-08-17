@@ -5,14 +5,14 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-sympy
-version             1.3
+version             1.6.2
 revision            0
 categories-append   science math
 platforms           darwin
 license             BSD
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -25,18 +25,24 @@ long_description \
     and easily extensible. SymPy is written entirely in Python and does \
     not require any external libraries.
 
-homepage            http://sympy.org/
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+homepage            https://sympy.org/
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  b119712c160313049f5979c7d94b6e39ed83def0 \
-                    sha256  e1319b556207a3758a0efebae14e5e52c648fc1db8975953b05fff12b6871b54 \
-                    size    5885611
+checksums           rmd160  26882aef86f3d21499d6a800c947e8d80f957f5a \
+                    sha256  1cfadcc80506e4b793f5b088558ca1fcbeaec24cd6fc86f1fdccaa3ee1d48708 \
+                    size    6283481
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-setuptools \
                         port:py${python.version}-mpmath
+
+    if {${python.version} <= 35} {
+        version             1.5.1
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  ea2680ccf760b469d393c72b5e1f585545231fbf \
+                            sha256  d77901d748287d15281f5ffe5b0fef62dd38f357c2b827c44ff07f35695f4e7e \
+                            size    6294719
+    }
 
     depends_run         port:py-sympy_select
 

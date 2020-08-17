@@ -4,34 +4,45 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-jupyter_console
-version             5.2.0
-revision            0
+version             6.1.0
+revision            1
 categories-append   devel
 platforms           darwin
 license             BSD
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         Jupyter terminal console.
 long_description    ${description}
 
-homepage            http://jupyter.org
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+homepage            https://jupyter.org/
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  5cf2f6363e89b378be96463dea0e9214fbdd708e \
-                    sha256  545dedd3aaaa355148093c5609f0229aeb121b4852995c2accfa64fe3e0e55cd
+checksums           rmd160  5306d349cb34f745d89cf99644c011555625468e \
+                    sha256  6f6ead433b0534909df789ea64f0a14cdf9b6b2360757756f08182be4b9e431b \
+                    size    28468
 
 if {${name} ne ${subport}} {
-    depends_lib-append  port:py${python.version}-jupyter_client \
+
+    if {${python.version} eq 27} {
+        version             5.2.0
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  5cf2f6363e89b378be96463dea0e9214fbdd708e \
+                            sha256  545dedd3aaaa355148093c5609f0229aeb121b4852995c2accfa64fe3e0e55cd \
+                            size    27063
+    } else {
+        patchfiles-append   patch-setup.py.diff
+    }
+
+    depends_lib-append  port:py${python.version}-ipykernel \
                         port:py${python.version}-ipython \
-                        port:py${python.version}-ipykernel \
+                        port:py${python.version}-jupyter_client \
                         port:py${python.version}-prompt_toolkit \
-                        port:py${python.version}-pygments
+                        port:py${python.version}-pygments \
+                        port:py${python.version}-setuptools
 
     livecheck.type      none
 }

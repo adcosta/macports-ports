@@ -4,7 +4,10 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        mesonbuild meson 0.48.1
+github.setup        mesonbuild meson 0.55.1
+
+revision            0
+
 github.tarball_from releases
 license             Apache-2
 categories          devel python
@@ -14,21 +17,21 @@ supported_archs     noarch
 installs_libs       no
 homepage            https://mesonbuild.com/
 
-description         Meson - a high productivity build system
-long_description    Meson  is  a  build system designed to optimize programmer productivity. \
+description         Meson - A high productivity build system
+long_description    Meson is a build system designed to optimize programmer productivity. \
                     It aims to do this by providing simple, out-of-the-box support for modern \
                     software development tools and practices, such as unit tests, coverage reports, \
-                    Valgrind,  CCache  and  the like. It is both extremely fast, and, even more importantly, \
+                    Valgrind, CCache and the like. It is both extremely fast, and, even more importantly, \
                     as user friendly as possible.
 
-checksums           rmd160  d418c3582e6f5f911cf6e79187e08185085ac48f \
-                    sha256  425d12edbb81498314926afa93a3eb2fca4ca6929cbe0f8abeb6ab45d1d9fa8f \
-                    size    1310184
+checksums           rmd160  dd687f633f431975fdfad2f423d1d1d04cf7e99d \
+                    sha256  3b5741f884e04928bdfa1947467ff06afa6c98e623c25cef75adf71ca39ce080 \
+                    size    1740517
 
 # as of verison 0.45.0,requires python 3.5 or better
 
-python.versions         37
-python.default_version  37
+python.versions         38
+python.default_version  38
 python.link_binaries    no
 
 depends_build-append \
@@ -42,11 +45,65 @@ depends_run-append \
 if {${os.platform} eq "darwin" && ${os.major} <= 9} {
     depends_run-append \
                     port:cctools
+}
 
+if {${os.platform} eq "darwin" && ${os.major} <= 10} {
+    patchfiles-append \
+                    remove-Wl,-no_weak_imports.patch
+}
+
+# https://github.com/mesonbuild/meson/issues/6187
+patchfiles-append   patch-meson-32bit-apple.diff
+
+# add a search path for crossfiles in our prefix
+patchfiles-append   patch-meson-search-prefix-for-cross-files.diff
+post-patch {
+    reinplace "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/data/shell-completions/bash/meson \
+                                         ${worksrcpath}/mesonbuild/coredata.py
 }
 
 post-destroot {
     set python_prefix ${frameworks_dir}/Python.framework/Versions/${python.branch}
     ln -s  ${python_prefix}/bin/meson ${destroot}${prefix}/bin/meson
     ln -s  ${python_prefix}/share/man/man1/meson.1 ${destroot}${prefix}/share/man/man1
+
+    # install our MacPorts cross files
+    xinstall -m 755 -d ${destroot}${prefix}/share/meson/
+    copy ${filespath}/cross ${destroot}${prefix}/share/meson/
+
+    fs-traverse f ${destroot}${prefix}/share/meson/cross/ {
+        reinplace "s|@@PREFIX@@|${prefix}|g" ${f}
+    }
 }
+
+# the following block avoids requiring users to 'sudo port select python3 python37'
+# doing a file test for ${prefix}/bin/python3 and requiring this
+# to be honest would have been much simpler, but not the "MacPorts way"
+pre-test {
+    reinplace "s|/usr/bin/env python3$|${python.bin}|" \
+        ${worksrcpath}/run_tests.py \
+        ${worksrcpath}/run_cross_test.py \
+        ${worksrcpath}/run_meson_command_tests.py \
+        ${worksrcpath}/run_project_tests.py \
+        ${worksrcpath}/run_unittests.py
+
+    set testpath "${worksrcpath}/test\\ cases"
+    fs-traverse f ${testpath} {
+        if { [string match *.py ${f}] } {
+            reinplace "s|/usr/bin/env python3$|${python.bin}|" ${f}
+        }
+    }
+}
+
+test.run            yes
+test.env            CXX=${configure.cxx} \
+                    "CXXFLAGS=${configure.cxxflags} [get_canonical_archflags cxx]" \
+                    CC=${configure.cc} \
+                    "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]" \
+                    PREFIX=${prefix}
+test.cmd            ./run_tests.py
+test.target
+
+# restrict livecheck to release versions only, no pre-releases
+github.livecheck.regex  {(\d+(?:\.\d+)*)}

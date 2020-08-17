@@ -23,9 +23,9 @@ extract.mkdir    yes
 patchfiles       patch-te_subs.c Makefile.patch
 use_configure    no
 build.target
-build.env        CC="${configure.cc}" \
-                 CFLAGS="${configure.cflags} ${configure.cc_archflags}" \
-                 LDFLAGS="${configure.ldflags} ${configure.ld_archflags}"
+build.env        CC=${configure.cc} \
+                 "CFLAGS=${configure.cflags} ${configure.cc_archflags}" \
+                 "LDFLAGS=${configure.ldflags} ${configure.ld_archflags}"
 
 destroot {
     xinstall -m 755 -W ${worksrcpath} te ${destroot}${prefix}/bin

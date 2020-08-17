@@ -169,7 +169,9 @@ if {![info exists building_qt4]} {
         }
 
     } else {
-        depends_lib-append      path:lib/libQtCore.so.4:qt4-x11
+        pre-fetch {
+            return -code error "MacPorts does not support qt4 on platforms other than darwin"
+        }
     }
 }
 
@@ -213,6 +215,7 @@ if {![info exists building_qt4]} {
 }
 
 # use PKGCONFIG for Qt discovery in configure scripts
+depends_build-delete    port:pkgconfig
 depends_build-append    port:pkgconfig
 
 # standard destroot environment

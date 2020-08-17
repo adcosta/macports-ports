@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           cxx11 1.1
 PortGroup           octave 1.0
 
-octave.setup        image 2.8.0
-revision            2
+octave.setup        image 2.12.0
+revision            0
 platforms           darwin
 license             GPL-3+ MIT FreeBSD
 maintainers         {mps @Schamschula} openmaintainer
@@ -17,9 +17,9 @@ description         The Octave-forge Image package provides functions \
                     much more.
 long_description    ${description}
 
-checksums           rmd160  49ad88f333bdb037715d47a786cfc764d4a6d968 \
-                    sha256  977be1fe7cf395aab556a95091895a690ecf074f4c32d73fc4a0cd12ca640302 \
-                    size    397368
+checksums           rmd160  2975b0cdcee2898dcefcfd59067b9d1af1c93c48 \
+                    sha256  e7d58ced612bc6420d99bb06313250694e5f1d8dcc093293604c253c17c473b4 \
+                    size    440633
 
 depends_lib-append  port:octave-signal
 

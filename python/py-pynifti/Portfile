@@ -26,7 +26,7 @@ if {${name} ne ${subport}} {
                         port:nifticlib \
                         port:swig-python
 
-    build.env           CCFLAGS="-I${prefix}/include -L${prefix}/lib -I${prefix}/include/nifti"
+    build.env           "CCFLAGS=-I${prefix}/include -L${prefix}/lib -I${prefix}/include/nifti"
 
     distname            pynifti_${version}
     worksrcdir          pynifti-${version}

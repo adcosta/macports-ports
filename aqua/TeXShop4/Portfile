@@ -6,7 +6,8 @@ PortGroup           xcodeversion 1.0
 
 name                TeXShop4
 conflicts           TeXShop
-version             4.14
+version             4.44
+revision            0
 
 set major           [lindex [split ${version} .] 0]
 categories          aqua editors
@@ -30,9 +31,9 @@ set propername      TeXShop
 # TeXShop4 has frequent stealth updates, keep in sync with revision number
 #dist_subdir         TeXShop/${version}_${revision}
 
-checksums           rmd160  da208237bdf0c257fbfad0312ea4892f27c51013 \
-                    sha256  5929bb0cff98e63a7fc7bbef156c01d1cae5fcc9c6cf98143e63843cedb7fbea \
-                    size    142668422
+checksums           rmd160  bcbccbd35ecbf9f09d38e43a7bc5392f1e0f419c \
+                    sha256  e73f79a87cb02faa37b080fbdddec5edc384b7e80ff5b1d3828f86a3160da032 \
+                    size    151971878
 
 minimum_xcodeversions   {13 6.2}
 
@@ -40,17 +41,19 @@ minimum_xcodeversions   {13 6.2}
 # destroot this for reasons that are poorly understood.
 # Remove this when a better fix is known.
 if {[vercmp ${xcodeversion} 10.0] >= 0} {
+    build.pre_args      -UseNewBuildSystem=NO
     destroot.pre_args   -UseNewBuildSystem=NO
 }
 
 configure.cxx_stdlib    libstdc++
 
-pre-fetch {
-    platform darwin {
-        if {${os.major} < 13} {
-            ui_error "${name} @${version} requires at least macOS 10.9 Mavericks"
-            return -code error "imcompatible macOS version"
+platform darwin {
+    if {${os.major} < 13} {
+        pre-fetch {
+            ui_error "${name} @${version} requires at least OS X 10.9 Mavericks"
+            return -code error "incompatible OS X version"
         }
+        known_fail  yes
     }
 }
 
@@ -63,15 +66,6 @@ post-patch {
             reinplace "s|#define MOJAVEORHIGHER|// #define MOJAVEORHIGHER|g" ${worksrcpath}/Sources/globals.h
         }
     }
-}
-
-# error: -fobjc-arc is not supported on platforms using the legacy runtime
-supported_archs     x86_64
-
-post-extract    {
-    set ogrekit "OgreKit.framework/Versions/A/OgreKit"
-    # thin the bundled frameworks
-    system -W ${worksrcpath} "lipo -thin ${configure.build_arch} ${ogrekit} -output ${ogrekit}"
 }
 
 build.target        ${propername}

@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Sub-Quote 2.005001
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Sub-Quote 2.006006
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Sub::Quote - efficient generation of subroutines via string eval
@@ -12,9 +12,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  588a464a725ff56949865ee4ae7f214d720b0ba1 \
-                    sha256  d6ab4f0775def015367a05e02024b403f991b2be11d774f3d235fe7e9bdbba07 \
-                    size    20957
+checksums           rmd160  4ecfc359458ab7371632118445c3e85ab0cb8028 \
+                    sha256  6e4e2af42388fa6d2609e0e82417de7cc6be47223f576592c656c73c7524d89d \
+                    size    32485
 
 if {${perl5.major} != ""} {
     depends_build-append \

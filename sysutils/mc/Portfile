@@ -1,9 +1,10 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem 1.0
+PortGroup  legacysupport 1.0
 
 name                mc
-version             4.8.19
+version             4.8.24
 categories          sysutils
 maintainers         nomaintainer
 license             GPL-3+
@@ -23,8 +24,9 @@ master_sites        ${homepage}downloads
 
 use_xz              yes
 
-checksums           rmd160  a8629b5baa71bb124f61bfcb8f38abbdc7c54ab3 \
-                    sha256  eb9e56bbb5b2893601d100d0e0293983049b302c5ab61bfb544ad0ee2cc1f2df
+checksums           rmd160  685bcc747dff4d41d0e5b0e4acf27af6e6b50637 \
+                    sha256  859f1cc070450bf6eb4d319ffcb6a5ac29deb0ac0d81559fb2e71242b1176d46 \
+                    size    2434988
 
 depends_build       port:pkgconfig
 depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2

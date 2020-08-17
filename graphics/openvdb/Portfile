@@ -1,0 +1,111 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+PortGroup               cmake 1.1
+PortGroup               active_variants 1.1
+PortGroup               compiler_blacklist_versions 1.0
+
+github.setup            AcademySoftwareFoundation openvdb 7.0.0 v
+revision                1
+homepage                https://www.openvdb.org/
+categories              graphics
+license                 MPL-2
+maintainers             {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+description             sparse volume data structure and tools
+long_description        OpenVDB is an open source C++ library comprising a novel hierarchical data structure \
+                        and a large suite of tools for the efficient storage and manipulation of \
+                        sparse volumetric data discretized on three-dimensional grids.
+platforms               darwin
+
+checksums               rmd160  7849e4e24d19a5b0338a54564b121bb3c0b58d2c \
+                        sha256  a55bea5914cbd5de60607cd94bb1fa946ff919d44fb75f1fcf1ab56defb67fd6 \
+                        size    1874285
+
+compiler.cxx_standard   2014
+
+# /openvdb/../openvdb/version.h:226:8: error: unknown type name 'constexpr'
+# inline constexpr const char* getLibraryVersionString() { return OPENVDB_LIBRARY_VERSION_STRING; }
+compiler.blacklist-append *gcc* {clang < 920} {macports-clang-3.[0-9]} {macports-clang-[4-6].0}
+
+# Find correct Python version
+patchfiles-append       patch-python_version.diff
+
+# OpenVDB does not currently correctly detect GLFW dependencies and falls
+# back to (incorrectly) requesting X11 dependencies. :-
+#  CMake Warning at cmake/OpenVDBGLFW3Setup.cmake:128 (message):
+#  GLFW does not have the INTERFACE_LINK_LIBRARIES property set, so
+#  hard-coding to expect a dependency on X11.
+# Fixed upstream so this should be removed once in a release
+# https://github.com/AcademySoftwareFoundation/openvdb/commit/a37f5cb89a45320c03824117277967e7d6d07ebe
+patchfiles-append       patch-find-glfw-deps.diff
+
+configure.env-append    BLOSC_ROOT=${prefix} \
+                        TBB_ROOT=${prefix} \
+                        GLFW3_ROOT=${prefix} \
+                        ILMBASE_ROOT=${prefix} \
+                        OPENEXR_ROOT=${prefix} \
+                        ZLIB_ROOT=${prefix}
+
+depends_build-append    port:pkgconfig
+
+depends_lib-append      port:zlib \
+                        port:boost \
+                        port:blosc \
+                        port:tbb \
+                        path:lib/pkgconfig/glfw3.pc:glfw \
+                        port:ilmbase \
+                        port:openexr
+
+# avoid
+#    ccache: error: Failed to create directory ${prefix}/var/macports/build/.ccache/tmp: Operation not permitted
+# use latest ABI version (default is 3)
+configure.args-append   -DUSE_CCACHE=OFF \
+                        -DOPENVDB_ABI_VERSION_NUMBER=[lindex [split ${version} .] 0] \
+                        -DOPENVDB_BUILD_VDB_LOD=ON \
+                        -DOPENVDB_BUILD_VDB_RENDER=ON \
+                        -DOPENVDB_BUILD_VDB_VIEW=ON
+
+# do not "Build the OpenVDB unit tests" (avoid dependency on cppunit)
+configure.args-append   -DOPENVDB_BUILD_UNITTESTS=OFF
+
+set pythons_suffixes    {27 36 37 38}
+
+set pythons_ports       {}
+foreach s ${pythons_suffixes} {
+    lappend pythons_ports python${s}
+}
+
+foreach s ${pythons_suffixes} {
+    set p python${s}
+    set v [string index ${s} 0].[string index ${s} 1]
+    set i [lsearch -exact ${pythons_ports} ${p}]
+    set c [lreplace ${pythons_ports} ${i} ${i}]
+    variant ${p} description "Build the Python ${v} bindings" conflicts {*}${c} "
+        depends_lib-append      port:${p} \
+                                port:py${s}-numpy \
+        port:boost-numpy
+
+        configure.args-append   -DOPENVDB_BUILD_PYTHON_MODULE=ON \
+                                -DUSE_NUMPY=ON
+
+    post-patch {
+            reinplace s|__MACPORTS_PYTHON_VERSION__|${v}|g ${worksrcpath}/openvdb/python/CMakeLists.txt
+    }
+
+        require_active_variants boost       ${p}
+        require_active_variants boost-numpy ${p}
+    "
+}
+
+set set_python_default  yes
+foreach s ${pythons_suffixes} {
+    if {[variant_isset python${s}]} {
+        set set_python_default  no
+    }
+}
+# this default version should stay synchronized with python_get_default_version
+#    in the python PortGroup
+if {${set_python_default}} {
+    default_variants        +python38
+}

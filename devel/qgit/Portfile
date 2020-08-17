@@ -7,9 +7,9 @@ name                qgit
 version             2.5.20140910
 categories          devel
 license             GPL-2
-maintainers         free.fr:ocroquette openmaintainer
+maintainers         nomaintainer
 description         A Qt graphical interface to git repositories
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            http://libre.tibirna.org/projects/qgit
 

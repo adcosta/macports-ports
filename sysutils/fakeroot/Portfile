@@ -3,11 +3,16 @@
 PortSystem          1.0
 
 name                fakeroot
-version             1.22
+version             1.24
+revision            0
+checksums           rmd160  4a1098a2bfa2ed6eccaf61879b6c0f035354ca82 \
+                    sha256  2e045b3160370b8ab4d44d1f8d267e5d1d555f1bb522d650e7167b09477266ed \
+                    size    522497
+
 categories          sysutils
 platforms           darwin
 license             GPL-3+
-maintainers         nomaintainer
+maintainers         {ryandesign @ryandesign} openmaintainer
 
 description         Tool for simulating superuser privileges
 long_description    fakeroot runs a command in an environment where it \
@@ -20,11 +25,6 @@ homepage            https://wiki.debian.org/FakeRoot/
 master_sites        debian:f/${name}
 distname            ${name}_${version}.orig
 worksrcdir          ${name}-${version}
-
-use_bzip2           yes
-
-checksums           rmd160  685a45a61dcb64e996610fef6e482a3f1aa28cd8 \
-                    sha256  bd806a4a1e641203eb3d4571a10089e8a038c10ec7e492fa1e061b03ae3ec6fe
 
 patchfiles          patch-libfakeroot.c.diff \
                     patch-message.h.diff \
@@ -40,29 +40,42 @@ autoreconf.args
 depends_build       port:autoconf port:automake port:libtool
 depends_skip_archcheck-append libtool
 
-default_variants    +universal
-variant_set         universal
-switch -- ${os.major} {
-    8 {
-        configure.universal_archs   x86_64 i386 ppc64 ppc
-        configure.cflags-append     -mmacosx-version-min=10.4
+configure.args      --disable-static
+
+platform darwin {
+    if {${os.major} >= 18} {
+        universal_variant                       no
+    } else {
+        default_variants                        +universal
+        variant_set                             universal
+
+        configure.universal_archs               x86_64 i386
+
+        if {${os.major} <= 9} {
+            configure.universal_archs-append    ppc64
+        }
+
+        if {${os.major} <= 10} {
+            configure.universal_archs-append    ppc
+        }
+
+        if {${os.major} == 8} {
+            configure.cflags-append             -mmacosx-version-min=10.4
+        }
+
+        if {${os.major} >= 9 && ${os.major} <= 10} {
+            configure.ldflags-append            -Wl,-force_cpusubtype_ALL
+        }
     }
-    9 {
-        configure.universal_archs   x86_64 i386 ppc64 ppc
-        configure.ldflags-append    -Wl,-force_cpusubtype_ALL
+
+    if {${os.major} >= 10} {
+        configure.cflags-append                 -Wno-deprecated-declarations
     }
-    10 {
-        configure.universal_archs   x86_64 i386 ppc
-        configure.cflags-append     -Wno-deprecated-declarations
-        configure.ldflags-append    -Wl,-force_cpusubtype_ALL
-    }
-    default {
-        configure.universal_archs   x86_64 i386
-        configure.cflags-append     -Wno-deprecated-declarations -Wno-extra-tokens
+
+    if {${os.major} >= 11} {
+        configure.cflags-append                 -Wno-extra-tokens
     }
 }
-
-configure.args      --disable-static
 
 test.run            yes
 test.target         check

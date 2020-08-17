@@ -1,9 +1,14 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
-                    
+
 PortSystem          1.0
 PortGroup           github 1.0
+PortGroup           clang_dependency 1.0
 
-github.setup        rockdaboot libpsl 0.20.2 libpsl-
+github.setup        rockdaboot libpsl 0.21.0 libpsl-
+# when incrementing version or revision please check
+# that psl_data_commit and psl_data_date refer to latest
+# publicsuffix/list git master commit
+revision            0
 license             MIT
 description         A C library and utility to handle the Public Suffix List
 long_description    ${description}
@@ -14,8 +19,8 @@ platforms           darwin
 github.tarball_from releases
 set main_distfile   ${distfiles}
 
-set psl_data_commit     f8d8b7af8a195611a6a9d3910230e549a18d8b51
-set psl_data_date       20180522
+set psl_data_commit     ca5418da33dbd13c063ddf2ac4207a4949e29402
+set psl_data_date       20200315
 set psl_data_worksrcdir publicsuffix-list-[string range ${psl_data_commit} 0 6]
 set psl_data_distname   ${psl_data_worksrcdir}
 set psl_data_distfile   ${psl_data_distname}${extract.suffix}
@@ -29,17 +34,26 @@ master_sites        ${github.master_sites}:main \
                     https://github.com/publicsuffix/list/tarball/${psl_data_commit}:list
 
 checksums           ${main_distfile} \
-                    rmd160  418230d331d2976c111263f3c1280d47929f48cb \
-                    sha256  f8fd0aeb66252dfcc638f14d9be1e2362fdaf2ca86bde0444ff4d5cc961b560f \
-                    size    9228099 \
+                    rmd160  6b8672d15e8d3fef30456b02202894534358e77e \
+                    sha256  41bd1c75a375b85c337b59783f5deb93dbb443fb0a52d257f403df7bd653ee12 \
+                    size    9217951 \
                     ${psl_data_distfile} \
-                    rmd160  5db74efee271820c1dd6cea5122dd1ac1fba19fe \
-                    sha256  7c96a321da6fcddaf63b56987a0dfe2cafd89d42189b9fded818c8276b38bf18 \
-                    size    85139
+                    rmd160  182aab12c485055e4a6a0f986f2aa2a6b54c0039 \
+                    sha256  cf6d5a33beec6adf4016846fd95b60487454dfe174a8fb2bc52bbd28cb949f64 \
+                    size    94116
+
+# Please note this port is (indirectly, via cmake) a dependency of the
+# various clang-X ports. When updating the port versions (e.g. python)
+# used here make sure to ensure that the new port being used uses the
+# clang_dependency PortGroup to avoid circular dependencies whilst building.
+# See e.g. https://trac.macports.org/ticket/60419
+
+set py_ver          3.8
+set py_ver_nodot    [string map {. {}} ${py_ver}]
 
 depends_build-append \
                     port:pkgconfig \
-                    port:python27
+                    port:python${py_ver_nodot}
 
 depends_lib-append  path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     port:gettext \
@@ -47,7 +61,7 @@ depends_lib-append  path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     port:libidn2 \
                     port:libunistring
 
-license_noconflict  python27
+license_noconflict  python${py_ver_nodot}
 
 post-extract {
     # Replace older bundled publicsuffix list.
@@ -55,12 +69,14 @@ post-extract {
     move ${workpath}/${psl_data_worksrcdir} ${worksrcpath}/list
 }
 
+patchfiles          gtk-doc-1.30.patch
+
 post-patch {
-    reinplace "s|^#!.*|#!${prefix}/bin/python2.7|" \
+    reinplace "s|^#!.*|#!${prefix}/bin/python${py_ver}|" \
         ${worksrcpath}/src/psl-make-dafsa
 }
 
-configure.python    ${prefix}/bin/python2.7
+configure.python    ${prefix}/bin/python${py_ver}
 
 configure.args      --enable-builtin=libidn2 \
                     --disable-silent-rules

@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-invoke
-version             1.1.1
+version             1.4.1
 revision            0
 categories-append   devel
 platforms           darwin
 license             Apache-2
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {danchr @danchr} openmaintainer
 
@@ -28,9 +28,9 @@ master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
 distname            ${python.rootname}-${version}
 
-checksums           rmd160  c578b403a8f5999c528e74a6e584fe15245bd5ed \
-                    sha256  1c2cf54c9b9af973ad9704d8ba81b225117cab612568cacbfb3fc42958cc20a9 \
-                    size    311831
+checksums           rmd160  7dfdc6217ead0fb9df1601a0e2b824b4a4069f8d \
+                    sha256  de3f23bfe669e3db1085789fd859eb8ca8e0c5d9c20811e2407fa042e8a5e15d \
+                    size    332271
 
 if {${name} ne ${subport}} {
     depends_build-append \

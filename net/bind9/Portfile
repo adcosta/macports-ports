@@ -1,7 +1,8 @@
 PortSystem 1.0
+PortGroup  legacysupport 1.0
 
 name			bind9
-version			9.12.3
+version			9.16.5
 categories		net
 maintainers		{geeklair.net:dluke @danielluke}
 platforms		darwin freebsd sunos
@@ -23,16 +24,26 @@ homepage		https://www.isc.org/
 distname		bind-${version}
 master_sites		isc:${name}/${version}
 
-checksums	rmd160	bbfc7901afad2f2bcfa1d0515fd4eac01539da5e \
-		sha256	0e80762631258e1c193552efa7c56c05ec5e8c2f98e4b2a3b91a61fd8d96b938 \
-		size	8616664
+checksums	rmd160	28228bd5d7531026e9b0cc324235d347e704bf57 \
+		sha256	6378b3e51fef11a8be4794dc48e8111ba92d211c0dfd129a0c296ed06a3dc075 \
+		size	3474044
 
-depends_lib		path:lib/libssl.dylib:openssl port:libxml2
+use_xz			yes
 
-patchfiles-append	gssapi-link.patch
+depends_build		port:pkgconfig
+
+depends_lib		path:lib/libssl.dylib:openssl  \
+			port:libuv \
+			port:libxml2 \
+			port:python38 \
+			port:py38-ply
 
 use_parallel_build	no
 universal_variant	no
+
+compiler.blacklist	gcc-4.2
+
+patchfiles		atomics.patch
 
 test.run		yes
 test.target		test
@@ -47,10 +58,8 @@ configure.env		STD_CDEFINES=-DDIG_SIGCHASE=1
 
 configure.args		--mandir=${prefix}/share/man \
 				--with-openssl=${prefix} \
-				--with-libxml2=${prefix} \
 				--without-libjson \
-				--enable-threads \
-				--enable-ipv6
+				--with-python=${prefix}/bin/python3.8
 
 platform darwin 8 {
 	configure.args-append --with-dlopen=no \
@@ -104,19 +113,6 @@ notes "******************************************************
 * logging into a directory where this new user can write files.
 ******************************************************"
 
-variant python27 description {Build python27 module} {
-	depends_lib-append port:python27 \
-			port:py27-configargparse \
-			port:py27-ply
-	configure.args-append --with-python=${prefix}/bin/python2.7
-}
-
-variant python36 description {Build python36 module} {
-	depends_lib-append port:python36 \
-			port:py36-configargparse \
-			port:py36-ply
-	configure.args-append --with-python=${prefix}/bin/python3.6
-}
 livecheck.type	regex
 livecheck.url	${homepage}downloads/
-livecheck.regex	"bind-(\\d+\.\\d+\.\\d+(?:-P\\d+)?).tar.gz - tar.gz\\s*</a>"
+livecheck.regex	"BIND(\\d+\.\\d+\.\\d+(?:-P\\d+)?).tar.gz - tar.gz\\s*</a>"

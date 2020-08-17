@@ -5,12 +5,14 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-autopep8
-version             1.4.2
+version             1.5.3
+revision            0
+
 categories-append   devel
 platforms           darwin
 supported_archs     noarch
 license             MIT
-maintainers         {@reneeotten gmail.com:ottenr.work} openmaintainer
+maintainers         {reneeotten @reneeotten} openmaintainer
 
 description         A tool that automatically formats Python code to \
                     conform to the PEP 8 style guide
@@ -23,26 +25,32 @@ long_description    autopep8 automatically formats Python code to \
 
 homepage            https://github.com/hhatto/autopep8
 
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
-distname            ${python.rootname}-${version}
+checksums           rmd160  b305b43a7b3ba2a732a0510b81278c2bb4547166 \
+                    sha256  60fd8c4341bab59963dafd5d2a566e94f547e660b9b396f772afe67d8481dbf0 \
+                    size    116297
 
-checksums           rmd160  50415c5e70e2f8430822495c79ab229ed4165747 \
-                    sha256  1b8d42ebba751a91090d3adb5c06840b1151d71ed43e1c7a9ed6911bfe8ebe6c \
-                    size    113510
-
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
-    depends_lib-append    port:py${python.version}-setuptools
+    depends_lib-append \
+                    port:py${python.version}-setuptools \
+                    port:py${python.version}-toml
 
-    depends_run-append    port:${python.rootname}_select \
-                          port:py${python.version}-codestyle
+    depends_run-append \
+                    port:${python.rootname}_select \
+                    port:py${python.version}-codestyle
 
-    test.run              yes
-    test.cmd              ${python.bin} setup.py
+    test.run        yes
 
-    select.group          ${python.rootname}
-    select.file           ${filespath}/${python.rootname}-${python.version}
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst LICENSE \
+            AUTHORS.rst ${destroot}${docdir}
+    }
+
+    select.group    ${python.rootname}
+    select.file     ${filespath}/${python.rootname}-${python.version}
     notes "
 To make the Python ${python.branch} version of autopep8 the one that is run\
 when you execute the commands without a version suffix, e.g. 'autopep8', run:

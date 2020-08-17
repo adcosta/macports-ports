@@ -3,45 +3,36 @@
 PortSystem          1.0
 PortGroup           python 1.0
 
-set _name           bson
-set _n              [string index ${_name} 0]
+name                py-bson
+version             0.5.9
+revision            0
 
-name                py-${_name}
-version             0.4.3
 categories-append   devel databases
 platforms           darwin
 supported_archs     noarch
 license             BSD
-
 maintainers         nomaintainer
 
 description         BSON codec for Python that independent on MongoDB
+long_description    Independent BSON codec for Python that does not depend on MongoDB.
 
-long_description    \
-    Independent BSON codec for Python that does not depend on MongoDB.
+homepage            https://github.com/py-bson/bson
 
-homepage            https://pypi.python.org/pypi/${_name}
+checksums           rmd160  6f734353c8e0671042c591c7cbd74ab6b43af524 \
+                    sha256  84a06dd1fa350d5814d9845abad982e8ac4c9768c4f41afeaa5fdb6d58570158 \
+                    size    10709
 
-distname            ${_name}-${version}
-master_sites        pypi:${_n}/${_name}/
-
-checksums           md5     be14a8e89f86970e873f9b64822412e3 \
-                    rmd160  f86ad4349e4b465bdc6a7e9bdf3f98534653309b \
-                    sha256  b3fe82fb5cd4ac5958b5839d211ae35d2a29418a588a63fa054f9916173324a4
-
-python.versions     27 34 35 36
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
-    conflicts               py${python.version}-pymongo
+    conflicts       py${python.version}-pymongo
 
-    depends_build-append    port:py${python.version}-setuptools
+    depends_build-append \
+                    port:py${python.version}-setuptools
 
-    depends_lib-append      port:py${python.version}-six \
-                            port:py${python.version}-tz
+    depends_lib-append \
+                    port:py${python.version}-dateutil \
+                    port:py${python.version}-six
 
     livecheck.type  none
-} else {
-    livecheck.type  regex
-    livecheck.url   https://pypi.python.org/pypi/${_name}/json
-    livecheck.regex "\"${_name}-(\[.\\d\]+)\\${extract.suffix}\""
 }

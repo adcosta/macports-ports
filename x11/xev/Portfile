@@ -1,7 +1,10 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
 PortSystem          1.0
 
 name                xev
-version             1.2.2
+version             1.2.4
+revision            0
 categories          x11
 license             X11
 maintainers         {jeremyhu @jeremyhu} openmaintainer
@@ -20,8 +23,9 @@ homepage            https://www.x.org/
 master_sites        xorg:individual/app/
 use_bzip2           yes
 
-checksums           rmd160  09cc057d9547ba345210898c10dea765601793cc \
-                    sha256  d94ae62a6c1af56c2961d71f5782076ac4116f0fa4e401420ac7e0db33dc314f
+checksums           rmd160  6c44d1439d4bc3b04657787c7828976f9ee18846 \
+                    sha256  d700e08bfe751ed2dbf802baa204b056d0e49348b6eb3c6f9cb035d8ae4885e2 \
+                    size    136792
 
 depends_build       port:pkgconfig
 
@@ -30,4 +34,4 @@ depends_lib         port:xorg-libX11 \
 
 livecheck.type      regex
 livecheck.regex     ${name}-(\[\\d.\]+)${extract.suffix}
-livecheck.url       http://xorg.freedesktop.org/archive/individual/app/?C=M&O=D
+livecheck.url       https://xorg.freedesktop.org/archive/individual/app/?C=M&O=D

@@ -4,11 +4,11 @@ PortSystem          1.0
 
 name                pazpar2
 version             1.12.5
-revision            1
+revision            3
 categories          databases net www devel
 license             GPL-2+
 platforms           darwin
-maintainers         coateconnection.com:dlc
+maintainers         nomaintainer
 description         metasearch daemon and server
 long_description    Pazpar2 is a high-performance, user interface-independent, \
                     data model-independent metasearching middleware webservice \

@@ -4,12 +4,23 @@ PortSystem              1.0
 PortGroup               muniversal 1.0
 
 name                    freetype
-version                 2.9.1
+version                 2.10.2
+revision                1
+set docdistname         ${name}-doc-${version}
+use_xz                  yes
+checksums               ${distname}${extract.suffix} \
+                        rmd160  24422bafc6753ae0579a9deaf3ddde0abf3f31b7 \
+                        sha256  1543d61025d2e6312e0a1c563652555f17378a204a61e99928c9fcef030a2d8b \
+                        size    2404456 \
+                        ${docdistname}${extract.suffix} \
+                        rmd160  87badd809f631972d6275ed17593add2de5ead96 \
+                        sha256  22b9584040a2e3c4387b5998cb9b4340183888eef15c2ac0fd9115cad837cf91 \
+                        size    2078712
+
 categories              print graphics
 maintainers             {ryandesign @ryandesign}
 license                 {FreeType GPL-2}
 homepage                https://www.freetype.org
-use_bzip2               yes
 platforms               darwin
 use_parallel_build      yes
 
@@ -28,19 +39,8 @@ master_sites            sourceforge:project/freetype/freetype2/${version}:source
                         sourceforge:project/freetype/freetype-docs/${version}:docs \
                         https://download.savannah.gnu.org/releases/freetype/
 
-set docdistname         ${name}-doc-${version}
-
 distfiles               ${distname}${extract.suffix}:source \
                         ${docdistname}${extract.suffix}:docs
-
-checksums               ${distname}${extract.suffix} \
-                        rmd160  c01d82acf7062b07146f61f43a8d17d5805b9471 \
-                        sha256  db8d87ea720ea9d5edc5388fc7a0497bb11ba9fe972245e0f7f4c7e8b1e1e84d \
-                        size    1926385 \
-                        ${docdistname}${extract.suffix} \
-                        rmd160  44d57b5e54ad1792565b36f9324944035beabb8b \
-                        sha256  aa2f835ef8f50072630ddc48b9eb65f1f456014ffa3b5adddcb6bf390a3c5828 \
-                        size    2130292
 
 patchfiles \
     freetype-config-no-pkg-config.patch \
@@ -49,14 +49,16 @@ patchfiles \
 
 depends_build           port:pkgconfig
 
-depends_lib             port:bzip2 \
+depends_lib             port:brotli \
+                        port:bzip2 \
                         port:libpng \
                         port:zlib
 
 # See http://trac.macports.org/ticket/18232
 configure.cppflags-replace  -I${prefix}/include -isystem${prefix}/include
 
-configure.args          --with-bzip2 \
+configure.args          --with-brotli \
+                        --with-bzip2 \
                         --with-png \
                         --with-zlib \
                         --without-harfbuzz \

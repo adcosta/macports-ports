@@ -37,12 +37,15 @@ post-patch {
 
 use_configure       no
 
-variant universal {}
+if {[string match *clang* ${configure.cxx}]} {
+    configure.ldflags-append -stdlib=${configure.cxx_stdlib}
+}
 
+variant universal {}
 build.env           BOOST_PO=-lboost_program_options-mt \
                     CXX=${configure.cxx} \
-                    CXXFLAGS="${configure.cxxflags} [get_canonical_archflags cxx]" \
-                    LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]"
+                    "CXXFLAGS=${configure.cxxflags} [get_canonical_archflags cxx]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]"
 
 destroot.keepdirs   ${scoredir}
 

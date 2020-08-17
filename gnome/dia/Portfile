@@ -5,7 +5,7 @@ PortGroup           active_variants 1.1
 
 name                dia
 version             0.97.3
-revision            4
+revision            5
 set branch          [join [lrange [split ${version} .] 0 1] .]
 maintainers         nomaintainer
 license             GPL-2+
@@ -78,6 +78,10 @@ configure.args      --with-cairo \
                     --disable-silent-rules \
                     --with-xslt-prefix=${prefix}
 
+# required for for ICU
+compiler.cxx_standard     2011
+configure.cxxflags-append -std=c++11
+
 post-activate {
     system "${prefix}/bin/update-mime-database ${prefix}/share/mime"
     system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"
@@ -100,8 +104,8 @@ variant python27 description {Add python 2.7 bindings} {
     configure.args-append   --with-swig \
                             --with-python
     configure.python        ${python_prefix}/bin/python2.7
-    configure.env-append    am_cv_python_pyexecdir=${python_prefix} \
-                            am_cv_python_pythondir=${python_prefix}
+    # find correct python-config
+    configure.env-append    PATH=${python_prefix}/bin:$env(PATH)
 }
 
 livecheck.type      gnome-with-unstable

@@ -4,10 +4,10 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-rasa-nlu
-version             0.13.7
-checksums           rmd160  012063ecb903138c984c87aed3861b3ca32005b0 \
-                    sha256  8c62ad16e9111cc9b95d99bc400f4440d5bcffd6a1b78b90cddc133576b535ff \
-                    size    108079
+version             0.15.1
+checksums           rmd160  a82c3474f1a8df0613df0c9e0aab5b6a0ca75547 \
+                    sha256  69d8b788ea74f764343a2381228843d3dd8452636ba1441f0752ec695bb31cd6 \
+                    size    113457
 
 categories-append   devel
 platforms           darwin
@@ -27,6 +27,8 @@ distname            ${python.rootname}-${version}
 python.versions     36 37
 
 if {${name} ne ${subport}} {
+    conflicts   py${python.version}-dopamine-rl
+
     depends_lib-append  \
         port:py${python.version}-boto3 \
         port:py${python.version}-coloredlogs \
@@ -34,10 +36,12 @@ if {${name} ne ${subport}} {
         port:py${python.version}-klein \
         port:py${python.version}-numpy \
         port:py${python.version}-requests \
+        port:py${python.version}-ruamel-yaml\
         port:py${python.version}-setuptools \
         port:py${python.version}-simplejson \
         port:py${python.version}-six \
         port:py${python.version}-tqdm \
         port:py${python.version}-yaml
+
     livecheck.type  none
 }

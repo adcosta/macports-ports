@@ -4,32 +4,37 @@ PortSystem 1.0
 PortGroup muniversal 1.0
 
 name            openldap
-version         2.4.46
+version         2.4.50
+revision        1
 categories      databases
 maintainers     nomaintainer
 license         openldap
 description     OpenLDAP Software 
-long_description    OpenLDAP Software is an open source implementation \
-                    of the Lightweight Directory Access Protocol.  
+long_description  OpenLDAP Software is an open source implementation \
+                  of the Lightweight Directory Access Protocol.  
 
 platforms       darwin
 homepage        http://www.openldap.org/
 master_sites    ftp://ftp.OpenLDAP.org/pub/OpenLDAP/openldap-release/ \
                 http://www.openldap.org/software/download/OpenLDAP/openldap-release/ \
                 ftp://ftp.nl.uu.net/pub/unix/db/openldap/openldap-release/
-extract.suffix    .tgz
+extract.suffix  .tgz
 
-checksums       rmd160  d7038355b1c13a0b2d5104a0c75735b63e9c4148 \
-                sha256  9a90dcb86b99ae790ccab93b7585a31fbcbeec8c94bf0f7ab0ca0a87ea0c4b2d
+checksums       rmd160  e2e62e98cf9ea46e83ff9d111d0330d6d50b58a4 \
+                sha256  5cb57d958bf5c55a678c6a0f06821e0e5504d5a92e6a33240841fbca1db586b8 \
+                size    5712635
 
 depends_lib     path:bin/perl:perl5 \
                 port:tcp_wrappers \
                 port:cyrus-sasl2 \
+                port:libfetch \
                 path:lib/libssl.dylib:openssl \
                 port:db48 \
                 port:icu
 
 patchfiles      patch-ltmain \
+                dynamic_lookup-11.patch \
+                fix_implicit.patch \
                 libressl.patch
 
 configure.env-append        LANG=C
@@ -45,6 +50,7 @@ configure.ldflags-append    -L${prefix}/lib/db48
 configure.args  --mandir=${prefix}/share/man \
                 --localstatedir=${prefix}/var \
                 --with-cyrus-sasl \
+                --with-fetch \
                 --with-tls \
                 --enable-crypt \
                 --enable-wrappers \
@@ -82,7 +88,7 @@ pre-build {
         lappend dirs ${worksrcpath}
     }
     foreach dir ${dirs} {
-        system "cd ${dir} && make depend"
+        system -W ${dir} "make depend"
     }
 }
 

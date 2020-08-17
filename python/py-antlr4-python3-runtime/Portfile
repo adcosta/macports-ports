@@ -4,7 +4,9 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-antlr4-python3-runtime
-version             4.7.1
+version             4.8
+revision            0
+
 categories-append   lang
 platforms           darwin
 license             BSD
@@ -13,21 +15,17 @@ maintainers         nomaintainer
 description         ANTLR4 runtime for Python 3
 long_description    ${description}
 
-homepage            http://www.antlr.org
-master_sites        pypi:a/antlr4-python3-runtime
-distname            antlr4-python3-runtime-${version}
+homepage            https://www.antlr.org
 
-checksums           rmd160  29916b2cd3078aaf0f78c9a4f21c4f7e93784b14 \
-                    sha256  1b26b72c4492cef310542da10bf6b2ab4aa1775618fc6003f75b55ae9eaa3fd3 \
-                    size    111381
+checksums           rmd160  f12fd8bf482d1d45ec47e40ea809084314696c01 \
+                    sha256  15793f5d0512a372b4e7d2284058ad32ce7dd27126b105fb0b2245130445db33 \
+                    size    112404
 
-python.versions     36
+python.versions     36 37
 
 if {${name} ne ${subport}} {
     depends_build-append \
                         port:py${python.version}-setuptools
 
     livecheck.type      none
-} else {
-    livecheck.type      pypi
 }

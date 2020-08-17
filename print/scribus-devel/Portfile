@@ -1,20 +1,23 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           cxx11 1.1
 PortGroup           cmake 1.1
+PortGroup           github 1.0
 PortGroup           qt5 1.0
 
+qt5.depends_component qttools qttranslations
+qt5.min_version     5.11.0
+
+set git_commit      9e328e04526c2573a6c780b5889437988cabfd11
+set git_date        20200809
+github.setup        scribusproject scribus ${git_commit}
 name                scribus-devel
-version             1.5.4
-revision            6
+version             1.5.6.svn-${git_date}
+revision            0
 categories          print
 license             LGPL-2+ BSD MIT
 platforms           darwin
 maintainers         nomaintainer
-
-# Scribus does not link to openssl
-#license_noconflict  openssl
 
 description         qt5-based WYSIWYG desktop publishing application
 
@@ -24,17 +27,11 @@ long_description    Scribus is an open source desktop publishing program. It \
                     options. This port tracks the development branch, \
                     currently 1.5.x.
 
-homepage            http://www.scribus.net/
-master_sites        sourceforge:project/scribus/${name}/${version}/
-distname            scribus-${version}
-use_7z              yes
+homepage            https://www.scribus.net/
 
-checksums           rmd160  64af5755f7a2cc4bc7da157555cce9c5b3186732 \
-                    sha256  c756037464cfc1f760ddad0cce5cc323d4091e65cd119dd1d69ad16be32b7d6c \
-                    size    53538127
-
-# Builds forever with llvm-gcc-4.2. https://trac.macports.org/ticket/30835
-compiler.blacklist-append   llvm-gcc-4.2
+checksums           rmd160  58cff3067ff986d85d08627302c90a57f87dee40 \
+                    sha256  ba94c0ffbdd5c55d6cfbe669f5384382233ff67e1ebb2bcbddda3d388e0e49fb \
+                    size    87542682
 
 depends_build-append \
                     path:bin/perl:perl5
@@ -61,11 +58,13 @@ depends_lib-append \
                     port:libxml2 \
                     port:podofo \
                     port:poppler \
-                    port:python27 \
-                    port:qt5-qttools \
-                    port:qt5-qttranslations \
+                    port:python38 \
                     port:tiff \
                     port:zlib
+
+use_parallel_build  no
+
+compiler.cxx_standard   2011
 
 set PyFRM           ${frameworks_dir}/Python.framework/Versions
 
@@ -76,8 +75,9 @@ configure.args-append \
                     -DWITH_BOOST=YES \
                     -DWANT_GRAPHICSMAGICK=NO \
                     -DWANT_NOOSG=YES \
-                    -DPYTHON_LIBRARY="${prefix}/lib/libpython2.7.dylib" \
-                    -DPYTHON_INCLUDE_DIR="${PyFRM}/2.7/include/python2.7"
+                    -DPython3_EXECUTABLE=${prefix}/bin/python3.8 \
+                    -DPython3_LIBRARIES=${PyFRM}/3.8/Python \
+                    -DPython3_INCLUDE_DIR=${PyFRM}/3.8/include/python3.8
 
 variant bitmap description {Input filters for most GraphicsMagick bitmap formats} {
     configure.args-delete   -DWANT_GRAPHICSMAGICK=NO
@@ -87,8 +87,6 @@ variant bitmap description {Input filters for most GraphicsMagick bitmap formats
 
 build.env           HOME=${worksrcpath}
 
-patchfiles          poppler.patch
-
 # These can be uncommented to livecheck for the devel version
-livecheck.url       https://www.scribus.net/downloads/unstable-branch/
-livecheck.regex     /scribus-devel/(\[a-z0-9\]+(\\.\[a-z0-9\]+)+)/
+#livecheck.url       https://www.scribus.net/downloads/unstable-branch/
+#livecheck.regex     /scribus-devel/(\[a-z0-9\]+(\\.\[a-z0-9\]+)+)/

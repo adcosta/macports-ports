@@ -4,7 +4,8 @@ PortSystem          1.0
 
 name                fping
 epoch               1
-version             4.1
+version             5.0
+revision            0
 categories          net
 platforms           darwin
 maintainers         nomaintainer
@@ -26,9 +27,9 @@ long_description    fping is different from ping in that you can specify \
 homepage            http://fping.org/
 master_sites        ${homepage}dist/
 
-checksums           rmd160  c58f6441245c3e289ecb4c39caa83f14c887c546 \
-                    sha256  2733e2a18cc2b5b935c4e3b5b84ccf2080c38043f1864d7c43326e8048ddab73 \
-                    size    170851
+checksums           rmd160  8c48aa65006414e566a9832d668159c4d8cef9ba \
+                    sha256  ed38c0b9b64686a05d1b3bc1d66066114a492e04e44eef1821d43b1263cd57b8 \
+                    size    185281
 
 configure.args      --enable-ipv4 \
                     --enable-ipv6

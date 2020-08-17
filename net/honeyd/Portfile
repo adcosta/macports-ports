@@ -2,7 +2,7 @@ PortSystem        1.0
 
 name              honeyd
 version           1.5c
-revision          4
+revision          5
 categories        net
 maintainers       nomaintainer
 
@@ -37,8 +37,8 @@ post-patch {
 
 configure.args	  --with-python
 configure.env     PATH_PYTHON=${prefix}/bin/python2.7 \
-                  EVENTINC="-I${prefix}/include/libevent1" \
-                  EVENTLIB="-L${prefix}/lib/libevent1 -levent"
+                  EVENTINC=-I${prefix}/include/libevent1 \
+                  "EVENTLIB=-L${prefix}/lib/libevent1 -levent"
 
 variant rrdtool {
 	depends_lib-append	port:rrdtool

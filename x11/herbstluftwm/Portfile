@@ -44,10 +44,9 @@ depends_lib             path:lib/pkgconfig/glib-2.0.pc:glib2 \
 variant universal       {}
 
 use_configure           no
-
 build.env-append        PKG_CONFIG_PATH=${prefix}/lib/pkgconfig \
-                        CFLAGS="${configure.cflags} [get_canonical_archflags]" \
-                        LDFLAGS="${configure.ldflags} [get_canonical_archflags]"
+                        "CFLAGS=${configure.cflags} [get_canonical_archflags]" \
+                        "LDFLAGS=${configure.ldflags} [get_canonical_archflags]"
 
 build.args-append       CC=${configure.cc} \
                         LD=${configure.cc} \

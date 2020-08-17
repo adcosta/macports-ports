@@ -4,28 +4,25 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-nbconvert
-version             5.4.0
+version             5.6.1
 revision            0
 categories-append   textproc
 platforms           darwin
 license             BSD
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         Jupyter Notebooks converter.
 long_description    ${description}
 
-homepage            http://jupyter.org
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+homepage            https://jupyter.org/
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  dafca6b9d5ff6a9711a9c51a268a0a25320fa466 \
-                    sha256  a8a2749f972592aa9250db975304af6b7337f32337e523a2c995cc9e12c07807 \
-                    size    539634
+checksums           rmd160  47b6634e6660409d8fc9dda92757eaad6252e9c8 \
+                    sha256  21fb48e700b43e82ba0e3142421a659d7739b65568cc832a13976a77be16b523 \
+                    size    703233
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-setuptools \
@@ -40,6 +37,15 @@ if {${name} ne ${subport}} {
                         port:py${python.version}-pandocfilters \
                         port:py${python.version}-testpath \
                         port:py${python.version}-defusedxml
+
+    if {${python.version} eq 27} {
+        version             5.5.0
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  9bbc61ecc4d33c03ebaa0c5b552af9b8d86afeec \
+                            sha256  138381baa41d83584459b5cfecfc38c800ccf1f37d9ddd0bd440783346a4c39c \
+                            size    583216
+    }
 
     livecheck.type      none
 }

@@ -4,12 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-wrapt
-version             1.10.11
+version             1.12.1
 revision            0
 platforms           darwin
 license             BSD
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -17,12 +17,10 @@ description         A Python module for decorators, wrappers and monkey patching
 long_description    ${description}
 
 homepage            https://github.com/GrahamDumpleton/wrapt
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  351af35eda7ebdc61ab4bf11139d7331c628f2e4 \
-                    sha256  d4d560d479f2c21e1b5443bbd15fe7ec4b37fe7e53d335d3b9b0a7b1226fe3c6
+checksums           rmd160  3a7943cc5072f8e341badac12000e489b7a42fbb \
+                    sha256  b62ffa81fb85f4332a4f609cab4ac40709470da05643a082ec1eb88e6d9b97d7 \
+                    size    27488
 
 if {${name} ne ${subport}} {
     livecheck.type      none

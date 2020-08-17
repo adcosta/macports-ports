@@ -2,7 +2,7 @@ PortSystem 1.0
 
 name			ctool
 version			1.2.3
-revision		3
+revision		4
 categories		security
 license			Noncommercial
 maintainers		nomaintainer
@@ -23,6 +23,6 @@ build.env		CC=${configure.cc} \
 			CFLAGS=${configure.cflags} \
 			CPPFLAGS=${configure.cppflags} \
 			LDFLAGS=${configure.ldflags}
-destroot.env		${build.env}
+destroot.env		{*}${build.env}
 post-configure		{ reinplace "s|/usr/local|${destroot}${prefix}|g" \
 				${worksrcpath}/Makefile }

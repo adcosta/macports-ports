@@ -4,33 +4,45 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pluggy
-version             0.7.1
+version             0.13.1
+revision            0
+
 categories-append   devel
 platforms           darwin
 supported_archs     noarch
 license             MIT
 maintainers         {gmail.com:pedro.salgado @steenzout} openmaintainer
-homepage            https://github.com/pytest-dev/pluggy
 
 description         Plugin and hook calling mechanisms for Python
 long_description    This is the plugin manager as used by pytest but \
                     stripped of pytest specific details.
 
+homepage            https://github.com/pytest-dev/pluggy
 master_sites        pypi:p/pluggy
 distname            pluggy-${version}
 
-checksums           rmd160  75c196d15a34fe64fa0c86846645256a0d5de1db \
-                    sha256  95eb8364a4708392bae89035f45341871286a333f749c3141c20573d2b3876e1 \
-                    size    47784
+checksums           rmd160  98db928a51f7eacceb43aa7fe08bfeafb137abc6 \
+                    sha256  15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0 \
+                    size    57962
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append \
                         port:py${python.version}-setuptools_scm
 
-    depends_lib-append  port:py${python.version}-py \
-                        port:py${python.version}-setuptools
+    depends_lib-append  port:py${python.version}-py
+
+    if {${python.version} < 38} {
+        depends_lib-append port:py${python.version}-importlib-metadata
+    }
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst LICENSE \
+            CHANGELOG.rst ${destroot}${docdir}
+    }
 
     livecheck.type      none
 }

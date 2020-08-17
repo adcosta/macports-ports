@@ -3,7 +3,7 @@
 PortSystem      1.0
 PortGroup       github 1.0
 
-github.setup    erlang rebar3 3.6.1
+github.setup    erlang rebar3 3.12.0
 categories      erlang devel
 platforms       darwin
 maintainers     {ciserlohn @ci42}
@@ -24,9 +24,9 @@ long_description    Rebar3 will: respect and enforce standard Erlang/OTP \
                     treat documentation as a feature, and errors or lack of \
                     documentation as a bug.
 
-checksums           rmd160  42c4fc6dae8170951c8b18491fd54ed6ad703348 \
-                    sha256  8eff331236428782aee7c68a4c666c8daa546981684da59b93e5282bc1b657fd \
-                    size    289029
+checksums           rmd160  fa943d981ba8bec93198355b91fc5af1b59bd2e2 \
+                    sha256  b90a29b88fdacc5eecac47e0ef0c0ac213925088221a4625d665a28402f56870 \
+                    size    378085
 
 depends_lib         port:erlang
 

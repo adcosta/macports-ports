@@ -7,10 +7,11 @@ PortGroup           bitbucket 1.0
 name                mercurial
 # don't forget to update dependents for mercurial:
 # port echo rdepends:mercurial and \( name:hg or name:mercurial \) | grep -v 'py[[:digit:]]'
-version             4.7.2
+version             5.4.2
+revision            0
 categories          devel python
 license             GPL-2+
-maintainers         {sean @seanfarley} openmaintainer
+maintainers         nomaintainer
 description         A fast, lightweight, distributed SCM system written in \
                     Python.
 long_description    Mercurial is a fast, lightweight Source Control Management \
@@ -29,34 +30,26 @@ long_description    Mercurial is a fast, lightweight Source Control Management \
 homepage            http://www.mercurial-scm.org
 platforms           darwin
 master_sites        https://www.mercurial-scm.org/release/
-checksums           rmd160  772218d91d26fa934b03632e4841a86d3f44a446 \
-                    sha256  97f0594216f2348a2e37b2ad8a56eade044e741153fee8c584487e9934ca09fb \
-                    size    6481684
+checksums           rmd160  96668cbce8c870da560732c8e2c2b1275728d4ec \
+                    sha256  5c8b93da701ee39e312da9e35a7f3163e17ed173a4707857bc467c3b3ab74853 \
+                    size    7730738
 
-depends_build       port:py27-docutils
+depends_build       port:py38-docutils
 
-depends_run         path:share/curl/curl-ca-bundle.crt:curl-ca-bundle
+depends_run         path:share/curl/curl-ca-bundle.crt:curl-ca-bundle \
+                    port:py38-gnureadline
 
 patchfiles          patch-setup.py.diff
 
-python.default_version 27
-
-conflicts           mercurial-devel
+python.default_version 38
 
 build.cmd           make
 build.target        all PYTHON=${python.bin}
 
+# obsolete 20190301
 subport mercurial-devel {
-    bitbucket.setup     seanfarley mercurial 2049a21c8396
-    name                mercurial-devel
-    version             4.6.99
-    revision            0
-
-    conflicts           mercurial
-    master_sites        ${bitbucket.master_sites}
-    checksums           rmd160  e743601beb6cf57447c388f8d68048f4ca462f79 \
-                        sha256  41d10394f36dcb80586f569552434063b7d0e50b9d6b6baa5ca5ddb937ffc20a \
-                        size    5969734
+    replaced_by         ${name}
+    PortGroup           obsolete 1.0
 }
 
 # chg is not installed by default yet
@@ -64,8 +57,8 @@ post-build {
     system -W ${worksrcpath}/contrib/chg "${build.cmd} CC=\"${configure.cc} \
         [get_canonical_archflags]\" CFLAGS=\"${configure.cflags}\" \
         HGPATH=${prefix}/bin/hg \
-        PYTHON=${prefix}/bin/python2.7 HG=${prefix}/bin/hg \
-        HGEXTDIR=${frameworks_dir}/Python.framework/Versions/2.7/lib/python2.7/site-packages/hgext"
+        PYTHON=${prefix}/bin/python3.8 HG=${prefix}/bin/hg \
+        HGEXTDIR=${frameworks_dir}/Python.framework/Versions/3.8/lib/python3.8/site-packages/hgext"
 }
 
 post-destroot {
@@ -80,21 +73,17 @@ post-destroot {
 
     # install html docs
     xinstall -m 644 -W ${worksrcpath}/doc hg.1.html hgrc.5.html hgignore.5.html \
-            ${destroot}${prefix}/share/doc/mercurial
+        ${destroot}${prefix}/share/doc/mercurial
 
     # install man pages
     xinstall -m 644 -W ${worksrcpath}/doc hg.1 \
-            ${destroot}${prefix}/share/man/man1
+        ${destroot}${prefix}/share/man/man1
     xinstall -m 644 -W ${worksrcpath}/doc hgrc.5 hgignore.5 \
-            ${destroot}${prefix}/share/man/man5
+        ${destroot}${prefix}/share/man/man5
 
     # install contrib
     xinstall -d -m 755 ${destroot}${prefix}/share/mercurial
     file copy ${worksrcpath}/contrib ${destroot}${prefix}/share/mercurial/contrib
-
-    if {[string first "-devel" $subport] == 0} {
-        file copy ${worksrcpath}/contrib/mergetools.hgrc ${destroot}${prefix}/etc/mercurial/hgrc.d/mergetools.rc
-    }
 
     # copy hgweb.cgi hgwebdir.cgi
     file copy ${worksrcpath}/hgweb.cgi ${destroot}${prefix}/share/mercurial/

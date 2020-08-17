@@ -3,13 +3,15 @@
 PortSystem          1.0
 PortGroup           active_variants 1.1
 PortGroup           cmake 1.1
-PortGroup           cxx11 1.1
 PortGroup           github 1.0
 
-github.setup        ledger ledger 3.1.1 v
-revision            4
+github.setup        ledger ledger 3.2.1 v
+
+revision            0
 homepage            https://ledger-cli.org/
 categories          finance
+
+github.tarball_from archive
 
 description         A command-line, double-entry accounting tool.
 long_description    Ledger is a powerful, double-entry accounting system that \
@@ -19,20 +21,24 @@ maintainers         nomaintainer
 
 platforms           darwin
 
-checksums           rmd160  521cba111fb3fd3a5c586568497a6c661e8b4d48 \
-                    sha256  3ec4914f2a25b2de8faf867a561b87e4550c75ac69c9400fd6fae2e2a7361b13 \
-                    size    842440
+checksums           rmd160  6286315fcad52f51c59f9b41261713aa141e9fae \
+                    sha256  92bf09bc385b171987f456fe3ee9fa998ed5e40b97b3acdd562b663aa364384a \
+                    size    790959
 
 depends_lib-append  port:boost \
-                    port:python27 \
+                    port:boost-jam \
+                    port:python38 \
                     port:libedit \
                     port:gmp \
                     port:mpfr \
                     port:gettext
 
-require_active_variants boost python27
+require_active_variants boost python38
 
-configure.args      -DBOOST_ROOT=${prefix} \
+compiler.cxx_standard   2011
+
+configure.args-append \
+                    -DBOOST_ROOT=${prefix} \
                     -DBUILD_DOCS=OFF \
                     -DEDIT_LIB=${prefix}/lib/libedit.dylib \
                     -DEDIT_PATH=${prefix}/include \
@@ -40,7 +46,8 @@ configure.args      -DBOOST_ROOT=${prefix} \
                     -DGMP_PATH=${prefix}/include \
                     -DMPFR_LIB=${prefix}/lib/libmpfr.dylib \
                     -DMPFR_PATH=${prefix}/include \
-                    -DPYTHON_EXECUTABLE=${prefix}/bin/python2.7 \
+                    -DPYTHON_EXECUTABLE=${prefix}/bin/python3.8 \
+                    -DUSE_PYTHON38_COMPONENT=ON \
                     -DUSE_DOXYGEN=OFF \
                     -DUSE_PYTHON=ON
 

@@ -35,16 +35,15 @@ use_configure       no
 pre-build {
     touch ${worksrcpath}/makefile.inc
 }
-
-build.env-append    CC="${configure.cxx}"
-build.env-append    CFLAGS="-fPIC -m64 -Wall -g -O3 -msse4 -mpopcnt -fopenmp \
+build.env-append    CC=${configure.cxx}
+build.env-append    "CFLAGS=-fPIC -m64 -Wall -g -O3 -msse4 -mpopcnt -fopenmp \
                             -Wno-sign-compare -std=c++11 -I/usr/include/malloc/"
-build.env-append    LDFLAGS="-g -fPIC -fopenmp"
-build.env-append    SHAREDEXT="dylib"
-build.env-append    SHAREDFLAGS="-Wl,-F. -bundle -undefined dynamic_lookup"
-build.env-append    FAISSSHAREDFLAGS="-dynamiclib"
-build.env-append    BLASCFLAGS="-DFINTEGER=int"
-build.env-append    BLASLDFLAGS="-framework Accelerate"
+build.env-append    "LDFLAGS=-g -fPIC -fopenmp"
+build.env-append    SHAREDEXT=dylib
+build.env-append    "SHAREDFLAGS=-Wl,-F. -bundle -undefined dynamic_lookup"
+build.env-append    FAISSSHAREDFLAGS=-dynamiclib
+build.env-append    BLASCFLAGS=-DFINTEGER=int
+build.env-append    "BLASLDFLAGS=-framework Accelerate"
 build.target        libfaiss.a libfaiss.dylib
 
 destroot.target
@@ -55,9 +54,9 @@ destroot.cmd        mkdir -p ${destroot}${prefix}/lib && \
                     cp -R ./*.h ${destroot}${prefix}/include/faiss/
 
 variant openblas description {Use OpenBLAS instead of Apple's Accelerate framework} {
-    depends_lib-append  port:openblas
-    build.env-delete    BLASLDFLAGS="-framework Accelerate"
-    build.env-append    BLASLDFLAGS="${prefix}/lib/libopenblas.dylib"
+    depends_lib-append  port:OpenBLAS
+    build.env-delete    "BLASLDFLAGS=-framework Accelerate"
+    build.env-append    BLASLDFLAGS=${prefix}/lib/libopenblas.dylib
 }
 
 default_variants +openblas

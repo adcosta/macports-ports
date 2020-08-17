@@ -31,11 +31,10 @@ post-patch {
 }
 
 use_configure       no
-
-build.env           CFLAGS="${configure.cflags}" \
-                    CPATH="${compiler.cpath}" \
-                    LIBRARY_PATH="${compiler.library_path}" \
-                    MACHINE_FLAGS="${configure.cc_archflags}"
+build.env           CFLAGS=${configure.cflags} \
+                    CPATH=${compiler.cpath} \
+                    LIBRARY_PATH=${compiler.library_path} \
+                    MACHINE_FLAGS=${configure.cc_archflags}
 
 destroot {
     xinstall -m 755 -d ${destroot}${prefix}/include/msieve \

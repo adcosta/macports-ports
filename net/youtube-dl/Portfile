@@ -1,12 +1,13 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           github 1.0
 
-name                youtube-dl
-version             2018.10.29
-checksums           rmd160  1164671fbe3217729fef7aef3593db3718be5ada \
-                    sha256  47e8949b3e525d7c57aa2c5e3f0113aad3600e0a4eed2ae52bdf3759ed9db3d9 \
-                    size    3045428
+github.setup        ytdl-org youtube-dl 2020.07.28
+revision            0
+checksums           rmd160  f045747796d3069e3244dd072857f4d412489b3a \
+                    sha256  1fb3e34d80400464e55aeeb61256c36468116ad9efe82543b437a777a2efc7c5 \
+                    size    3179686
 
 categories          net
 platforms           darwin
@@ -18,8 +19,8 @@ description         command-line program to download videos from YouTube.com and
 
 long_description    ${name} is a small ${description}.
 
-homepage            https://rg3.github.io/youtube-dl/
-master_sites        https://yt-dl.org/downloads/${version}
+homepage            https://ytdl-org.github.io/youtube-dl/
+github.tarball_from releases
 
 depends_build       bin:zip:zip
 
@@ -69,34 +70,40 @@ variant ffmpeg description {Add ffmpeg dependency, used to extract audio} {
 
 default_variants    +ffmpeg
 
-variant python27 conflicts python35 python36 python37 description {Use Python 2.7} {
+variant python27 conflicts python35 python36 python37 python38 description {Use Python 2.7} {
     depends_run-append      port:python27
     depends_build-append    port:python27
     configure.python        ${prefix}/bin/python2.7
 }
 
-variant python35 conflicts python27 python36 python37 description {Use Python 3.5} {
+variant python35 conflicts python27 python36 python37 python38 description {Use Python 3.5} {
     depends_run-append      port:python35
     depends_build-append    port:python35
     configure.python        ${prefix}/bin/python3.5
 }
 
-variant python36 conflicts python27 python35 python37 description {Use Python 3.6} {
+variant python36 conflicts python27 python35 python37 python38 description {Use Python 3.6} {
     depends_run-append      port:python36
     depends_build-append    port:python36
     configure.python        ${prefix}/bin/python3.6
 }
 
-variant python37 conflicts python27 python35 python36 description {Use Python 3.7} {
+variant python37 conflicts python27 python35 python36 python38 description {Use Python 3.7} {
     depends_run-append      port:python37
     depends_build-append    port:python37
     configure.python        ${prefix}/bin/python3.7
 }
 
-if {![variant_isset python27] && ![variant_isset python35] && ![variant_isset python36] && ![variant_isset python37]} {
-    default_variants +python37
+variant python38 conflicts python27 python35 python36 python37 description {Use Python 3.8} {
+    depends_run-append      port:python38
+    depends_build-append    port:python38
+    configure.python        ${prefix}/bin/python3.8
 }
 
-livecheck.type      regex
-livecheck.url       ${homepage}update/LATEST_VERSION
-livecheck.regex     {^([0-9.]+)$}
+if {![variant_isset python27] && ![variant_isset python35] && ![variant_isset python36] && ![variant_isset python37] && ![variant_isset python38]} {
+    default_variants +python38
+}
+
+livecheck.type              regex
+livecheck.url               ${homepage}update/LATEST_VERSION
+livecheck.regex             {^([0-9.]+)$}

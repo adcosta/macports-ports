@@ -3,7 +3,6 @@
 PortSystem          1.0
 PortGroup           cmake 1.1
 PortGroup           mpi 1.0
-PortGroup           cxx11 1.1
 
 name                sundials
 version             3.1.2
@@ -11,7 +10,7 @@ revision            1
 categories          math devel
 license             BSD
 platforms           darwin
-maintainers         {sean @seanfarley} openmaintainer
+maintainers         nomaintainer
 
 description         SUite of Nonlinear and DIfferential/ALgebraic equation Solvers
 
@@ -38,6 +37,8 @@ conflicts           sundials2
 patchfiles-append   patch-find_lapack.diff
 
 depends_lib-append  port:SuiteSparse_KLU
+
+compiler.cxx_standard   2011
 
 mpi.setup \
         default \
@@ -82,7 +83,7 @@ configure.args-append \
 # Only Apple Clang compilers support tbd files.
 # See https://trac.macports.org/ticket/53151
 # See https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_SYSROOT.html
-configure.env-append SDKROOT="/"
+configure.env-append SDKROOT=/
 
 variant examples description {Install Examples} {
     set example_langs {C CXX F90 F77}

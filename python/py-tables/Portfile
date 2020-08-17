@@ -4,17 +4,16 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           mpi 1.0
 
-set realname        tables
-name                py-${realname}
-version             3.4.4
+name                py-tables
+version             3.6.1
 revision            0
 categories-append   science
 platforms           darwin
 license             BSD
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
-maintainers         {mmoll @mamoll} openmaintainer
+maintainers         nomaintainer
 
 description         Package for managing hierarchical datasets
 long_description    PyTables is a package for managing hierarchical datasets \
@@ -25,15 +24,25 @@ homepage            https://pytables.github.io/
 master_sites        pypi:t/tables/ \
                     http://sourceforge.net/projects/pytables/files/pytables/${version}
 
-checksums           rmd160  da09f5344098d9ed904d6a408f4fa450392b9928 \
-                    sha256  bdc5c073712af2a43babd139c4855fc99496bb2c3f3f5d1b4770a985e6f9ce29 \
-                    size    4626053
+checksums           rmd160  05833282f4c44e48f6f39afada9cb2684aa3249a \
+                    sha256  49a972b8a7c27a8a173aeb05f67acb45fe608b64cd8e9fa667c0962a60b71b49 \
+                    size    4641089
 
-distname            ${realname}-${version}
+distname            ${python.rootname}-${version}
 
 mpi.setup
 
 if {${name} ne ${subport}} {
+    # Last version that supports python 2.7
+    if {${python.version} eq 27} {
+        version        3.5.2
+        revision       2
+        distname       ${python.rootname}-${version}
+        checksums      rmd160  9e5aa9f3b270888c853eb5f30cd6461a362bb1c1 \
+                       sha256  b220e32262bab320aa41d33125a7851ff898be97c0de30b456247508e2cc33c2 \
+                       size    7825372
+    }
+
     build.target        build_ext
     build.args          --inplace \
                         --hdf5=${prefix} \
@@ -78,7 +87,8 @@ if {${name} ne ${subport}} {
     }
 
     post-patch {
-        reinplace "s:utils.h:xxx_utils.h:" {*}[glob ${worksrcpath}/{src,tables}/*.c]
+        delete {*}[glob ${worksrcpath}/tables/*.c]
+        reinplace -q "s:utils.h:xxx_utils.h:" {*}[glob ${worksrcpath}/{src,tables}/*.{c,pxd,pyx}]
     }
 
     post-destroot    {
@@ -87,12 +97,6 @@ if {${name} ne ${subport}} {
             RELEASE_NOTES.txt THANKS VERSION \
             ${destroot}${prefix}/share/doc/${subport}
     }
-}
 
-if {${name} eq ${subport}} {
-    livecheck.type      regex
-    livecheck.url       https://pypi.python.org/pypi/tables/json
-    livecheck.regex     {tables-(\d+(?:\.\d+)*)\.[tz]}
-} else {
     livecheck.type      none
 }

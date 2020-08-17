@@ -6,7 +6,8 @@ PortGroup           python 1.0
 
 name                py-pygmsh
 set real_name       pygmsh
-github.setup        nschloe pygmsh 4.3.6 v
+github.setup        nschloe pygmsh 6.1.1 v
+revision            0
 supported_archs     noarch
 
 worksrcdir          ${real_name}-${version}
@@ -20,16 +21,17 @@ long_description    ${description} with the versatility of Python and to provide
                     create complex geometries more easily.
 categories-append   science
 
-python.versions     27 36 37
+python.versions     27 36 37 38
 
 platforms           darwin
 
-checksums           rmd160  ae01aefa4243259288b554d4732a6d5d49b3b879 \
-                    sha256  8b969345c50e74c54eec0dfa67a9568287940dcf2646cd58fccc7cbeb19f4b64 \
-                    size    39480
+checksums           rmd160  e5d0131497b62a8b8eacff55eeaf47c0eee791c1 \
+                    sha256  1e1b20bf2476155046e89c86b5feac3d894f71b4905f3cb16ea020b6b3dbdc70 \
+                    size    54870
 
 if {${name} ne ${subport}} {
     depends_lib-append  \
                     port:py${python.version}-pbr \
-                    port:py${python.version}-setuptools
+                    port:py${python.version}-setuptools \
+                    port:py${python.version}-wheel
 }

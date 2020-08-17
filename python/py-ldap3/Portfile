@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        cannatag ldap3 2.5.1
+github.setup        cannatag ldap3 2.7 v
 name                py-ldap3
 
 categories-append   net www
@@ -12,33 +12,34 @@ platforms           darwin
 supported_archs     noarch
 license             LGPL-3+
 
-maintainers         {yan12125 @yan12125} openmaintainer
+maintainers         nomaintainer
 
 description         A strictly RFC 4510 conforming LDAP V3 pure Python client library
 long_description    \
     ldap3 is a strictly RFC 4510 conforming LDAP V3 pure Python client \
     library. The same codebase runs in Python 2, Python 3, PyPy and PyPy3.
 
-checksums           rmd160  9a1b418b7b3841dd94688fc9362c3704f25ccef2 \
-                    sha256  fae86570e8a78318655399b1ed5d4155c09bf6c27cedea3576f6c7ae6de33e0b \
-                    size    926082
+checksums           rmd160  10c1cd30028117cc60c8ffb474e10646c35c9ebe \
+                    sha256  bbf1b6edf30759e033a17b44f65611198bb6c157335fa1cd5710aa0f27e21def \
+                    size    957979
 
-python.versions     27 36 37
+python.versions     37 38
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools
 
     depends_lib-append      port:py${python.version}-asn1
 
-
-    depends_test-append     port:py${python.version}-nose
-
-    test.env                USERDOMAIN=travis
-    test.run                yes
-    test.cmd                nosetests-${python.branch}
-    test.target             -s test
+    # No tests as upstream tests are designed not for running outside Travis CI
 
     livecheck.type  none
 } else {
     livecheck.type  pypi
+}
+
+foreach {old new} {27 37 36 37} {
+    subport py${old}-${python.rootname} "
+        replaced_by py${new}-${python.rootname}
+        PortGroup obsolete 1.0
+    "
 }

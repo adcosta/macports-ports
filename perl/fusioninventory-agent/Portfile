@@ -3,18 +3,16 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-# should allow perl5 port group to set default perl variant
-# but for now locally set the default perl to perl5.26
-# until the global default perl is updated (#52081)
+# allow perl5 portgroup to set default perl variant
 
 perl5.require_variant   yes
 perl5.conflict_variants yes
-perl5.branches          5.26
-perl5.default_branch    5.26
+perl5.branches          5.26 5.28 5.30
+perl5.default_branch    5.28
 perl5.create_variants   ${perl5.branches}
 
 name                fusioninventory-agent
-perl5.setup         FusionInventory-Agent 2.4.1 ../../authors/id/G/GR/GROUSSE/
+perl5.setup         FusionInventory-Agent 2.5.2
 
 platforms           darwin
 maintainers         nomaintainer
@@ -28,14 +26,11 @@ long_description    Perl application that runs an agent connecting to a \
                     for inventorying purposes.
 
 homepage            http://www.fusioninventory.org/overview/
-
-# no longer released to CPAN
-# now mandatory to download releases from github
 master_sites        https://github.com/fusioninventory/fusioninventory-agent/releases/download/${version}/
 
-checksums           rmd160  86b0520638fc3c1d0caf012550275432f796a402 \
-                    sha256  aa72f0ff89178e9fff3271b15e1eceeffe1cc7cb34085a9c8fe1160262949606 \
-                    size    2566207
+checksums           rmd160  38e6b7ba09e15f2e122fc9eef4e5e95d9e7bee5b \
+                    sha256  37ee3b83600b99b0f552d3c41be0e9c3fb04faf57c5e709aa8c58750810df0cc \
+                    size    2700174
 
 depends_build-append \
                     port:p${perl5.major}-http-proxy \
@@ -64,7 +59,8 @@ depends_lib-append \
                     port:p${perl5.major}-text-template \
                     port:p${perl5.major}-universal-require \
                     port:p${perl5.major}-xml-treepp \
-                    port:p${perl5.major}-xml-xpath
+                    port:p${perl5.major}-xml-xpath \
+                    port:p${perl5.major}-yaml-tiny
 
 patchfiles          patch-Makefile.PL.diff
 

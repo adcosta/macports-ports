@@ -2,20 +2,23 @@
 
 PortSystem 1.0
 PortGroup select 1.0
+PortGroup deprecated 1.0
 
 name                python33
 
 epoch               20141012
 # Remember to keep py33-tkinter and py33-gdbm's versions sync'd with this
 version             3.3.7
-revision            2
+revision            3
+
+deprecated.eol_version  yes
 
 set major           [lindex [split $version .] 0]
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          lang
 license             PSF
 platforms           darwin
-maintainers         nomaintainer
+maintainers         {jmr @jmroot}
 
 description         An interpreted, object-oriented programming language
 long_description    Python is an interpreted, interactive, object-oriented \
@@ -37,13 +40,14 @@ patchfiles          patch-setup.py.diff \
                     patch-libedit.diff \
                     omit-local-site-packages.patch \
                     patch-Include-pyport.h.diff \
-                    uuid-64bit.patch
+                    uuid-64bit.patch \
+                    darwin20.diff
 
 # https://bugs.python.org/issue21811
 patchfiles-append   yosemite-configure-fixes.patch \
                     yosemite-python-fixes.patch
 
-depends_lib         port:zlib path:lib/libssl.dylib:openssl \
+depends_lib         port:zlib port:openssl10 \
                     port:sqlite3 port:ncurses \
                     port:bzip2 port:libedit port:gettext \
                     port:xz
@@ -58,6 +62,8 @@ configure.args      --enable-framework=${frameworks_dir} \
                     --enable-loadable-sqlite-extensions \
                     --with-computed-gotos
 configure.ccache    no
+configure.cppflags-prepend -I${prefix}/include/openssl-1.0
+configure.ldflags-prepend -L${prefix}/lib/openssl-1.0
 
 post-patch {
     reinplace "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/Lib/cgi.py

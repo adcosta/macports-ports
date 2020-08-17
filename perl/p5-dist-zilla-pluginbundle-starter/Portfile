@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Dist-Zilla-PluginBundle-Starter v3.0.1
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Dist-Zilla-PluginBundle-Starter v4.0.1
 license             Artistic-2
 maintainers         {devans @dbevans} openmaintainer
 description         Dist::Zilla::PluginBundle::Starter - A minimal Dist::Zilla plugin bundle
@@ -12,9 +12,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  45155b249cec3ca1ff6c1047e38cc8fa197c6f4b \
-                    sha256  642e52a82eed230a6f953c2635f1902840fd54e74166d11a246643183d13994e \
-                    size    30879
+checksums           rmd160  6dbfa81c7688a94dfacef83bb5cb7fecdb81fce9 \
+                    sha256  ed3cb7f91b31cce04df8f5473724e13b8d9245fc8b07d64c208782e8dfdeedde \
+                    size    38530
 
 if {${perl5.major} != ""} {
     depends_build-append \

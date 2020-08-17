@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Time-Format 1.12
-revision            1
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Time-Format 1.16
 license             unrestricted
 platforms           darwin
 maintainers         nomaintainer
 description         Easy-to-use date/time formatting
 long_description    ${description}
 
-checksums           rmd160  879a8a1b466b4e2c83af6bdb3fa505142969a77e \
-                    sha256  ef96ba090268a568367c83ecdcac349b0cfe164329bc34de9fbcc2dbe66b8c9e
+checksums           rmd160  420b658e63784b1d107353e1b6c97361a2d86cad \
+                    sha256  b4655882e1d28f5772182d553753c4f49343bb44de9f8429b5e8fea6b496a38f \
+                    size    47523
 
 supported_archs     noarch

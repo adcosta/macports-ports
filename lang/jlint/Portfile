@@ -30,7 +30,7 @@ use_configure       no
 variant universal {}
 
 build.args          CC=${configure.cxx}
-build.env           CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
-                    LFLAGS="${configure.ldflags} [get_canonical_archflags ld]"
+build.env           "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                    "LFLAGS=${configure.ldflags} [get_canonical_archflags ld]"
 
 destroot.destdir    INSTALL_DIR=${destroot}${prefix}/bin

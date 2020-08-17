@@ -2,6 +2,7 @@ PortSystem 1.0
 
 name			pftp
 version			0.4
+revision			2
 categories		net
 license			GPL-2
 platforms		darwin
@@ -21,5 +22,5 @@ checksums		md5 013e51a49fc4d718d2ed4a88dc94251d \
 depends_lib		port:libpftp \
 				port:libpftputil \
 				port:ncurses \
-				port:openssl \
+				path:lib/libssl.dylib:openssl \
 				port:readline

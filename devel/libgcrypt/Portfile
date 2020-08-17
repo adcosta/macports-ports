@@ -4,13 +4,14 @@ PortSystem      1.0
 PortGroup       muniversal 1.0
 
 name            libgcrypt
-version         1.8.4
+version         1.8.6
+revision        0
 categories      devel security
 # libs are LGPL, executables and docs are GPL
 license         {GPL-2+ LGPL-2.1+}
 maintainers     {mps @Schamschula} openmaintainer
 description     Crypto library
-homepage        http://www.gnupg.org/
+homepage        https://www.gnupg.org/
 platforms       darwin
 
 long_description \
@@ -23,9 +24,9 @@ long_description \
 master_sites    gnupg
 use_bzip2       yes
 
-checksums       rmd160  57a23952989b6a852d0654218206876c4a878087 \
-                sha256  f638143a0672628fde0cad745e9b14deb85dffb175709cacc1f4fe24b93f2227 \
-                size    2990108
+checksums       rmd160  2f67a8f7214feb0eb4370be94ae555cdcda27940 \
+                sha256  0cba2700617b99fc33864a0c16b1fa7fdf9781d9ed3509f5d767178e5fd7b975 \
+                size    2997781
 
 depends_lib     port:libgpg-error
 

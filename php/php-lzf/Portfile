@@ -4,21 +4,25 @@ PortSystem          1.0
 PortGroup           php 1.1
 
 name                php-lzf
-version             1.6.6
 categories          php devel
 platforms           darwin
 maintainers         {ryandesign @ryandesign} openmaintainer
 license             PHP-3.01
 
-php.branches        5.3 5.4 5.5 5.6 7.0 7.1 7.2
+php.branches        5.3 5.4 5.5 5.6 7.0 7.1 7.2 7.3 7.4
 php.pecl            yes
 
 description         Handles LZF compression / decompression.
 
 long_description    ${description}
 
-checksums           rmd160  5b1350856f2834164f731e66c73b3fe80407505a \
-                    sha256  2205f167bc423341b8b198592951f72e4f6c294cc10fe11d8504d829bac92063
+if {[vercmp ${php.branch} 4.0] >= 0} {
+    version         1.6.8
+    revision        0
+    checksums       rmd160  6e3577eb73fcd3e91ea3245f5a4bf09d1fcb87fd \
+                    sha256  8e1c2ed211439a78f6efb80116a1fb0bf24aec2f659e90669b8f03ed8142f589 \
+                    size    18071
+}
 
 distname            LZF-${version}
 

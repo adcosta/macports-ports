@@ -4,14 +4,15 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        RDFLib sparqlwrapper 1.7.6
+github.setup        RDFLib sparqlwrapper 1.8.5
+revision            0
 name                py-sparqlwrapper
+
 categories-append   devel databases
 platforms           darwin
+supported_archs     noarch
 license             W3C
 maintainers         nomaintainer
-
-python.versions     27 35 36
 
 description         SPARQL Endpoint interface to Python
 long_description    This is a wrapper around a SPARQL service. It helps in \
@@ -20,15 +21,25 @@ long_description    This is a wrapper around a SPARQL service. It helps in \
 
 homepage            https://rdflib.github.io/sparqlwrapper
 
-checksums           rmd160  8bc26ea28dd6ea3021cee49f3eb9e695aace8ab2 \
-                    sha256  9d5aa9cfb8d393ee64a60b72417d8aa8e6fa0c162b2104af9be7ba83bc2a95ec \
-                    size    32977
+checksums           rmd160  6f1eca5820f34f2e6258bb46ec08a8f5e1a6f73b \
+                    sha256  c04563e30e39d9b3132c8ac455a0ee15d4816d189bdf0f443b558d880e3f18e9 \
+                    size    97364
+
+python.versions     27 35 36 37
 
 if {${name} ne ${subport}} {
-    depends_lib-append  port:py${python.version}-setuptools
-    depends_run-append  port:py${python.version}-rdflib
+    depends_lib-append \
+                    port:py${python.version}-setuptools
 
-    patchfiles          make-keepalive-optional.patch
+    depends_run-append \
+                    port:py${python.version}-rdflib
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst MANAGEMENT.md \
+            LICENSE.txt ChangeLog.txt AUTHORS.md ${destroot}${docdir}
+    }
 
     livecheck.type      none
 }

@@ -1,10 +1,11 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           clang_dependency 1.0
 
 name                texinfo
-version             6.5
-revision            2
+version             6.7
+revision            1
 categories          textproc
 platforms           darwin
 license             GPL-3+
@@ -25,9 +26,7 @@ long_description    Texinfo is the official documentation format of \
 homepage            https://www.gnu.org/software/texinfo/
 
 # set pbranch to desired perl version
-# currently 5.24 (#52081)
-
-set pbranch         5.26
+set pbranch         5.30
 
 depends_build       port:help2man
 depends_lib         port:gettext \
@@ -37,14 +36,16 @@ depends_lib         port:gettext \
 
 master_sites        gnu
 use_xz              yes
-checksums           rmd160  a490883f71a7bd0723045357fe6617b0982f1cf9 \
-                    sha256  77774b3f4a06c20705cc2ef1c804864422e3cf95235e965b1f00a46df7da5f62
+
+checksums           rmd160  c0b9b544c235908ccdbb4a63dec898967e1c7a40 \
+                    sha256  988403c1542d15ad044600b909997ba3079b10e03224c61188117f3676b02caa \
+                    size    4337984
 
 configure.perl      ${prefix}/bin/perl${pbranch}
 pre-configure {
     configure.env-append \
-        PERL_EXT_CFLAGS="[get_canonical_archflags cc]" \
-        PERL_EXT_LDFLAGS="[get_canonical_archflags ld]"
+        PERL_EXT_CFLAGS=[get_canonical_archflags cc] \
+        PERL_EXT_LDFLAGS=[get_canonical_archflags ld]
 }
 
 destroot.target-append  install-tex

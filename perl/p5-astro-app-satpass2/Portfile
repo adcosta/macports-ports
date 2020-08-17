@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Astro-App-Satpass2 0.036
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Astro-App-Satpass2 0.045
 license             {Artistic-1 GPL}
 maintainers         {devans @dbevans} openmaintainer
 description         Astro::App::Satpass2 - Forecast satellite visibility.
@@ -12,9 +12,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  144c203c89adfba647f87ebefea8bff3f7fb1bf5 \
-                    sha256  d8656207090bef9491fa57a4f0d853e8b49b8247801c5f99904edf0cb96b1c61 \
-                    size    311738
+checksums           rmd160  8e0b8dfbb606d269133cefbe08e86eab1a0e2e66 \
+                    sha256  f855c4382d515a4502a68807aefed302a75390960377d6f62aad443065a60d84 \
+                    size    319189
 
 if {${perl5.major} != ""} {
     depends_lib-append \

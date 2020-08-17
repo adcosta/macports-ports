@@ -10,13 +10,14 @@ name                py-pyflakes
 # Please DO NOT update without cross-checking version compatibility and
 # perform updates in a coordinated way.
 
-version             2.0.0
+version             2.2.0
+revision            0
 categories-append   devel
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -27,13 +28,10 @@ long_description    Pyflakes is program to analyze Python programs and \
                     with side effects. It's also much faster.
 
 homepage            https://github.com/pycqa/pyflakes
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            pyflakes-${version}
-
-checksums           rmd160  9a04c07af00adf6772a5777e12d8c4ef0d38245c \
-                    sha256  9a7662ec724d0120012f6e29d6248ae3727d821bba522a0e6b356eff19126a49 \
-                    size    49002
+checksums           rmd160  6407c4188cec3290f251c8f8523a647c3612431a \
+                    sha256  35b2d75ee967ea93b55750aa9edbbf72813e06a66ba54438df2cfac9e3c27fc8 \
+                    size    65307
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-setuptools
@@ -51,7 +49,10 @@ port select --set ${select.group} [file tail ${select.file}]
 "
 
     test.run        yes
-    test.cmd        ${python.bin} setup.py
+    test.cmd        ${python.bin}
+    test.args       -m unittest discover pyflakes
+    test.target
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
 
-    livecheck.type      none
+    livecheck.type  none
 }

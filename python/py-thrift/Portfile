@@ -4,12 +4,19 @@ PortSystem      1.0
 PortGroup       python 1.0
 
 name            py-thrift
-version         0.10.0
+
+# NOTE: This port must be kept at the same version as port:thrift and port:p5-thrift
+version         0.13.0
+checksums       rmd160 04cd735494a9d8558c2d22d1b99315ca859749c8 \
+                sha256 7ad348b88033af46ce49148097afe354d513c1fca7c607b59c33ebb6064b5179 \
+                size   4154357
+revision        0
+
 categories      python
 license         Apache-2
 platforms       darwin
 
-maintainers     {blair @blair}
+maintainers     nomaintainer
 
 description     Python bindings to Thrift
 
@@ -20,17 +27,13 @@ long_description \
     seamlessly between C++, Java, Python, PHP, Ruby, Erlang, Perl, \
     Haskell, C#, Cocoa, Smalltalk, and OCaml.
 
-homepage        http://thrift.apache.org/
+homepage        https://thrift.apache.org/
 dist_subdir     thrift
 master_sites    apache:${dist_subdir}/${version}
 distname        thrift-${version}
 
-checksums       sha1   5c67fb6d2e01fa4ee02823a9c577f4d985f0ecfe \
-                rmd160 cf7d49bf4d39c980c7549088e947c12df4d1046d \
-                sha256 2289d02de6e8db04cbbabb921aeb62bfe3098c4c83f36eec6c31194301efa10b
-
-python.versions 27 35 36
-python.default_version 36
+python.versions 27 35 36 37 38
+python.default_version 37
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:thrift
@@ -44,7 +47,7 @@ if {${name} ne ${subport}} {
         set docdir ${prefix}/share/doc/${subport}
         xinstall -d ${destroot}${docdir}
         xinstall -m 644 -W ${worksrcpath} \
-            CHANGES \
+            CHANGES.md \
             LICENSE \
             NOTICE \
             README.md \
@@ -53,5 +56,5 @@ if {${name} ne ${subport}} {
 }
 
 livecheck.type  regex
-livecheck.url   http://www.apache.org/dist/thrift/
+livecheck.url   https://www.apache.org/dist/thrift/
 livecheck.regex {(\d+(?:\.\d+)*)/}

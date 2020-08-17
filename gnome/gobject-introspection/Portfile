@@ -4,7 +4,8 @@ PortSystem          1.0
 PortGroup           active_variants 1.1
 
 name                gobject-introspection
-version             1.58.0
+version             1.60.2
+revision            0
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          gnome
 platforms           darwin
@@ -19,9 +20,9 @@ homepage            https://wiki.gnome.org/Projects/GObjectIntrospection
 master_sites        gnome:sources/${name}/${branch}/
 use_xz              yes
 
-checksums           rmd160  292e869f3b5d18812f510a1f0167f7f8885c8aef \
-                    sha256  27c1590a32749de0a5481ce897772547043e94bccba4bc0a7edb3d8513e401ec \
-                    size    1370824
+checksums           rmd160  6455f1b5e4427b8f0a26efb94597a476ed9ca96e \
+                    sha256  ffdfe2368fb2e34a547898b01aac0520d52d8627fdeb1c306559bcb503ab5e9c \
+                    size    1285000
 
 depends_build       port:pkgconfig \
                     port:autoconf-archive
@@ -29,43 +30,25 @@ depends_build       port:pkgconfig \
 depends_lib         path:lib/pkgconfig/cairo.pc:cairo \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     port:libffi \
-                    port:py27-mako \
-                    port:py27-markdown
+                    port:py38-mako \
+                    port:py38-markdown
 
 depends_run         bin:glibtool:libtool
 
-patchfiles          no-env-shebang.patch
+patchfiles          no-env-shebang.patch \
+                    patch-fix-rpath-gir-typelib.diff
 
 post-patch {
-    reinplace "s|libcairo-gobject.2.dylib|${prefix}/lib/libcairo-gobject.2.dylib|g" ${worksrcpath}/configure
+    reinplace "s|libcairo-gobject.2.dylib|${prefix}/lib/libcairo-gobject.2.dylib|g" ${worksrcpath}/configure.ac
 }
 
-configure.python    ${prefix}/bin/python2.7
+configure.python    ${prefix}/bin/python3.8
 
 # use autoreconf to sync with our build tools
 use_autoreconf      yes
 autoreconf.args     -fvi
 
 build.args          CC="${configure.cc} ${configure.cc_archflags}" V=1
-
-# gobject-introspection needs to be aware whether it was compiled against python +ucs4, see #35603
-variant python_ucs4 description {Build against Python with +ucs4} {
-    require_active_variants python27 ucs4
-}
-
-if {![variant_isset python_ucs4]} {
-    pre-configure {
-        if {![active_variants python27 "" ucs4]} {
-            error "You have python installed with the +ucs4 variant. Please build ${name} with +python_ucs4"
-        }
-    }
-}
-
-if {![catch {set result [active_variants python27 ucs4]}]} {
-    if {$result} {
-        default_variants +python_ucs4
-    }
-}
 
 platform darwin 8 {
     # GObject introspection doesn't build with tiger's make, #32358

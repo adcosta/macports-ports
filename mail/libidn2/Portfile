@@ -1,9 +1,11 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           clang_dependency 1.0
 
 name                libidn2
-version             2.0.5
+version             2.3.0
+revision            0
 categories          mail
 license             {LGPL-2.1+ GPL-3+}
 description         GNU International Domain Name Library (current version 2)
@@ -14,12 +16,12 @@ long_description    ${description}.\
                     Libidn2 is believed to be a complete IDNA2008 / TR46 implementation.
 homepage            https://www.gnu.org/software/libidn/#libidn2
 platforms           darwin
-maintainers         nomaintainer
+maintainers         {mps @Schamschula} openmaintainer
 master_sites        gnu:libidn
 
-checksums           rmd160  e85a3910edfb870be573dd3fb1174ec1d0db9d5e \
-                    sha256  53f69170886f1fa6fa5b332439c7a77a7d22626a82ef17e2c1224858bb4ca2b8 \
-                    size    2091929
+checksums           rmd160  b14992e57a02ed507f11c8f169370c9c98ea0e08 \
+                    sha256  e1cb1db3d2e249a6a3eb6f0946777c2e892d5c5dc7bd91c74394fc3a01cab8b5 \
+                    size    2164993
 
 depends_build       port:pkgconfig
 
@@ -31,5 +33,14 @@ use_autoreconf      yes
 autoreconf.args     -fvi
 
 configure.args      --disable-silent-rules
+
+if {${os.platform} eq "darwin" && ${os.major} < 10} {
+    depends_build-append port:cctools
+    configure.env-append NM=${prefix}/bin/nm
+    configure.args-append lt_cv_path_NM=${prefix}/bin/nm
+}
+
+test.run            yes
+test.target         check
 
 livecheck.distname  ${name}

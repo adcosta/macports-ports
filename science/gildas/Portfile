@@ -5,12 +5,11 @@ PortGroup           compilers 1.0
 PortGroup           active_variants 1.1 
 
 name                gildas
-version             201810b
+version             202008a
 set my_version      [string tolower [clock format [clock scan 2000-[string range ${version} 4 5]-10] -format %b]][string range ${version} 2 3][string range ${version} 6 end]
 categories          science
 platforms           darwin
-maintainers         {smaret @smaret} \
-                    {@bardeau iram.fr:bardeau}
+maintainers         {bardeau @bardeau}
 license             permissive
 
 description         Radioastronomy data analysis software
@@ -29,26 +28,29 @@ homepage            http://www.iram.fr/IRAMFR/GILDAS/gildas.html
 master_sites        http://www.iram.fr/~gildas/dist/ \
                     http://www.iram.fr/~gildas/dist/archive/gildas/
 distname            ${name}-src-${my_version}
+use_xz              yes
 
-checksums           rmd160  a69c59e2688afffd2ed31a055ec09ecde5eed076 \
-                    sha256  47788ebd53b2d3c3e59d39ec91a548d94f325ef1755f24f24e5db54ffcc1a4e0 \
-                    size    32223343
+checksums           rmd160  81d5086a45978dbae2122ec3994075b1363c59d5 \
+                    sha256  5ec2fb22b2859780e51306ed7241291a3a0c91f9d2d7d9ba5b279e611a4b10db \
+                    size    43007496
 
 patch.pre_args      -p1
 patchfiles          patch-admin-Makefile.def.diff \
                     patch-admin-Makefile.python.diff \
+                    patch-admin-Makefile.build.diff \
                     patch-admin-gildas-env.sh.diff \
-                    patch-admin-define-system.sh.diff \
-                    patch-lapack.diff
+                    patch-admin-define-system.sh.diff
 
 depends_lib         port:gtk2 \
                     port:libpng \
-                    port:python27 \
-                    port:py27-numpy
+                    port:python38 \
+                    port:py38-numpy
 
+# coreutils needed to use GNU gsort instead of native BSD sort as older version
+# of sort do not support sort -V:
 depends_build       port:cfitsio \
                     port:pkgconfig \
-                    port:slatec
+                    port:coreutils
 
 set my_build_opts   ""
 variant openmp description {Add OpenMP support} {set my_build_opts "-o openmp"}
@@ -61,13 +63,7 @@ compilers.enforce_some_fortran cfitsio
 
 compilers.choose    fc
 compilers.setup     -g95 -gcc44 -gcc45 -gcc46 require_fortran
-configure.python    ${prefix}/bin/python2.7
-
-post-extract {
-    if {![gcc_variant_isset]} {
-        reinplace -W ${worksrcpath}/admin "s|-Wrealloc-lhs-all||" define-system.sh
-    }
-}
+configure.python    ${prefix}/bin/python3.8
 
 configure {
     set cxxstdlib {}
@@ -75,6 +71,7 @@ configure {
         set cxxstdlib [string map {lib -l} ${configure.cxx_stdlib}]
     }
 
+    reinplace -W ${worksrcpath}/admin "s|@PREFIX@|${prefix}|g" define-system.sh
     reinplace -W ${worksrcpath}/admin "s|@CC@|${configure.cc}|g" Makefile.def Makefile.python gildas-env.sh define-system.sh
     reinplace -W ${worksrcpath}/admin "s|@CCFLAGS@|${configure.cflags}|g" Makefile.def Makefile.python gildas-env.sh define-system.sh
     reinplace -W ${worksrcpath}/admin "s|@FC@|${configure.fc}|g" Makefile.def Makefile.python gildas-env.sh define-system.sh
@@ -83,7 +80,7 @@ configure {
     reinplace -W ${worksrcpath}/admin "s|@CPP@|${configure.cpp}|g" Makefile.def Makefile.python gildas-env.sh define-system.sh
     reinplace -W ${worksrcpath}/admin "s|@CPPFLAGS@|${configure.cppflags}|g" Makefile.def Makefile.python gildas-env.sh define-system.sh
     reinplace -W ${worksrcpath}/admin "s|@LDFLAGS@|${configure.ldflags}|g" Makefile.def Makefile.python gildas-env.sh define-system.sh
-    reinplace -W ${worksrcpath}/admin "s|@PYTHON@|${configure.python}|g" Makefile.def Makefile.python gildas-env.sh define-system.sh
+    reinplace -W ${worksrcpath}/admin "s|@PYTHON@|${configure.python}|g" Makefile.build Makefile.def Makefile.python gildas-env.sh define-system.sh
     reinplace -W ${worksrcpath}/admin "s|@STDCXXLIB@|${cxxstdlib}|g" Makefile.def Makefile.python gildas-env.sh define-system.sh
 }
 
@@ -103,8 +100,9 @@ destroot {
     xinstall ${filespath}/mrtcal.in ${destroot}${prefix}/bin/mrtcal
     xinstall ${filespath}/sic.in ${destroot}${prefix}/bin/sic
     xinstall ${filespath}/sched-30m.in ${destroot}${prefix}/bin/sched-30m
+    xinstall ${filespath}/imager.in ${destroot}${prefix}/bin/imager
 
-    reinplace -W ${destroot}${prefix}/bin s|@PREFIX@|${prefix}|g astro class clic greg mapping mira mrtcal sic sched-30m
+    reinplace -W ${destroot}${prefix}/bin s|@PREFIX@|${prefix}|g astro class clic greg mapping mira mrtcal sic sched-30m imager
 
     # delete broken module
     delete ${destroot}${prefix}/lib/gildas/x86_64-darwin-gfortran/python/pyclassfiller

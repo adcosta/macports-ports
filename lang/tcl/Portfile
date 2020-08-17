@@ -3,8 +3,8 @@
 PortSystem          1.0
 
 name                tcl
-version             8.6.8
-revision            1
+version             8.6.10
+revision            0
 # Tk (x11/tk) port depends on this version
 categories          lang
 license             Tcl/Tk
@@ -18,14 +18,13 @@ long_description    \
     Open source and business-friendly, Tcl is a mature yet evolving language \
     that is truly cross platform, easily deployed and highly extensible.
 
-homepage            http://www.tcl.tk/
+homepage            https://www.tcl-lang.org/
 master_sites        sourceforge:project/tcl/Tcl/${version}
 
-checksums           rmd160  53723adf560606dc0403af568b6fc0d27a4fd93d \
-                    sha256  c43cb0c1518ce42b00e7c8f6eaddd5195c53a98f94adc717234a65cbcfd3f96a \
-                    size    9793786
+checksums           rmd160  e44c76e48b77c825dc6fb7a78ef8f7297106784a \
+                    sha256  5196dbf6638e3df8d5c87b5815c8c2b758496eb6f0e41446596c9a4e638d87ed \
+                    size    10144235
 
-dist_subdir         tcltk
 distname            ${name}${version}-src
 worksrcdir          ${name}${version}/unix
 configure.args      --mandir=${prefix}/share/man \
@@ -33,6 +32,11 @@ configure.args      --mandir=${prefix}/share/man \
                     --disable-threads
 configure.cppflags-delete  -I${prefix}/include
 configure.ldflags-delete   -L${prefix}/lib
+
+pre-configure {
+    # sqlite3 package is provided by sqlite3-tcl
+    delete [glob ${worksrcpath}/../pkgs/sqlite*]
+}
 
 post-configure {
     reinplace -E {s|-arch [^ ]+||g} ${worksrcpath}/tclConfig.sh
@@ -45,12 +49,12 @@ destroot.destdir    INSTALL_ROOT=${destroot}
 post-destroot {
     ln -s tclsh8.6 ${destroot}${prefix}/bin/tclsh
     ln -s libtcl8.6.dylib ${destroot}${prefix}/lib/libtcl.dylib
-    # sqlite3_analyzer is provided by sqlite3
-    delete ${destroot}${prefix}/bin/sqlite3_analyzer
+
+    if {${configure.ccache}} {
+        reinplace {/TCL_CC/s/ccache //} ${destroot}${prefix}/lib/tclConfig.sh
+    }
 }
 
-# dont enable threads by default as Tcl uses thread-local storage which makes
-# passing Tcl_Obj* around between threads fatal
 variant threads description {add multithreading support} {
     configure.args-replace --disable-threads \
                            --enable-threads
@@ -69,6 +73,10 @@ variant memdebug description {enable memory debugging support} {
     configure.args-append --enable-symbols=mem
 }
 
+variant dtrace description {Enable DTrace static probes} {
+    configure.args-append --enable-dtrace
+}
+
 platform darwin {
     configure.args-append tcl_cv_type_64bit="long long"
 }
@@ -79,6 +87,11 @@ platform darwin 8 {
     # See http://trac.macports.org/ticket/32930 for why this is needed.
     configure.cppflags-append -DSQLITE_WITHOUT_ZONEMALLOC
 }
+
+notes "
+The Sqlite3 Tcl package is now being provided by the sqlite3-tcl port:
+sudo port install sqlite3-tcl
+"
 
 test.run            yes
 

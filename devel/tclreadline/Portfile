@@ -3,7 +3,8 @@
 PortSystem                  1.0
 PortGroup                   github 1.0
 
-github.setup                flightaware tclreadline 2.3.1 v
+github.setup                flightaware tclreadline 2.3.8 v
+revision                    0
 categories                  devel
 platforms                   darwin
 maintainers                 {dons.net.au:darius @DanielO}
@@ -22,10 +23,10 @@ long_description            The tclreadline package makes the GNU Readline \
                             In this case the ::tclreadline::readline read \
                             command has to be called explicitly.
 
-
-checksums                   rmd160  7973aa63fa521c8437b43712ce1798c9f66b050b \
-                            sha256  d702e3b8acfebd588b93348e220fc98f4181346c7f9a56ea7aeda334f107bbc5 \
-                            size    153243
+checksums                   sha1    cfe7e8b6f55ad16e2ee9487133ebe387c7e08278 \
+                            rmd160  630963cc272bac192d42473f4d472c7d050ad306 \
+                            sha256  bf9a1fe60eb8ac2aff42d42f878dab74ec0ecd41129fe769e07f5bb9da2ce45e \
+                            size    393212
 
 depends_lib                 port:readline \
                             port:tcl
@@ -33,4 +34,6 @@ depends_lib                 port:readline \
 use_autoreconf              yes
 
 configure.args-append       --with-tcl=${prefix}/lib/ \
-                            --with-readline-includes=${prefix}/include/readline
+                            --with-tk=no \
+                            --with-readline-includes=${prefix}/include/readline \
+                            --enable-tclstub

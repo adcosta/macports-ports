@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 name                rancid
-version             3.8
+version             3.12
 categories          net
 license             BSD-old
 maintainers         nomaintainer
@@ -16,21 +16,20 @@ long_description    Rancid maintains a CVS/SVN/git repository of router and \
                     device config files.  It emails you when changes \
                     occur and tells you what commands were changed.
 
-homepage            http://www.shrubbery.net/rancid
+homepage            https://www.shrubbery.net/${name}
 master_sites        ftp://ftp.shrubbery.net/pub/rancid/
 
-checksums           rmd160  456fb1a9a262dd61c15f7351040940fdfffac8e2 \
-                    sha256  cecdeed2379c832fb5988f4dc8c45fbbbb382723882a9ffea577e54f5ab8cc5f \
-                    size    523950
+checksums           rmd160  21d3990c283a425cbbbbe13f7b21be537ff3d893 \
+                    sha256  b1c1415d16ac291e29ff356a3c4f688160f07f1a091869290a95cd1793d4d3fb \
+                    size    522382
 
-perl5.branches      5.26
+perl5.branches      5.28
 depends_lib-append  port:perl${perl5.major} \
                     port:p${perl5.major}-lockfile-simple \
                     path:lib/libssl.dylib:openssl
 
 patchfiles          patch-etc-Makefile.am.diff \
-                    patch-bin-Makefile.in.diff \
-                    patch-bin-fxlogin.in.diff
+                    patch-bin-Makefile.in.diff
 
 post-patch {
 # Set path for lg.conf.sample so Looking Glass will work

@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        JuliaStrings utf8proc 2.2.0 v
+github.setup        JuliaStrings utf8proc 2.5.0 v
+revision            0
 name                libutf8proc
 categories          textproc
 platforms           darwin
@@ -14,9 +15,9 @@ long_description    ${description}
 
 homepage            https://julialang.org/utf8proc/
 
-checksums           rmd160  789d5b6db0e97c6ed27f578c4f5454d7cc06022e \
-                    sha256  679d2d229991b0723325e58365025e9537a63c7ad83019ffcb4e1b2f7139fc93 \
-                    size    156361
+checksums           rmd160  76b2932e9ae8dbdd91649dcfba468982ffbc769c \
+                    sha256  934dbc84c25c5fab6f7450f9634be31b76e2d36dd6aad20f7256c9b108723b20 \
+                    size    155521
 
 use_configure       no
 

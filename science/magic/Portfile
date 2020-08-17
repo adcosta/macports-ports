@@ -8,10 +8,11 @@ PortGroup           conflicts_build 1.0
 
 name                magic
 conflicts           magic-devel
-version             8.1.218
-checksums           rmd160  c4ab86c08c57c608f3bab56a0073b4d40fbe4500 \
-                    sha256  3dd3c49ce8eea01e2e8fc1f051c7bacbce4ca08c85949bf52492f6fd1b76456b \
-                    size    3936622
+version             8.1.224
+revision            0
+checksums           rmd160  8d7c33a654239da2ba518a98bd33e2a915f11ac3 \
+                    sha256  618b872c69f291fd24dfa47d73807a03f80e9bb4ac781dee681090506c679bd8 \
+                    size    3937007
 
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          science
@@ -34,7 +35,7 @@ master_sites        ${homepage}archive/
 extract.suffix      .tgz
 
 depends_lib         port:blt \
-                    port:libglu \
+                    port:libGLU \
                     port:mesa \
                     port:tcl \
                     port:tk

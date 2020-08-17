@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-amqp
-version             2.3.2
+version             2.6.1
 revision            0
 categories-append   devel
 platforms           darwin
 license             BSD
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -19,13 +19,10 @@ description         Low-level AMQP client for Python (fork of amqplib).
 long_description    ${description}
 
 homepage            https://github.com/celery/py-amqp
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  a1ae8d36bb72e493e54e740b00ca73dca093e64c \
-                    sha256  073dd02fdd73041bffc913b767866015147b61f2a9bc104daef172fc1a0066eb \
-                    size    105854
+checksums           rmd160  2e20b43d72c92a3dcf4415ea713931cc1609c8f9 \
+                    sha256  70cdb10628468ff14e57ec2f751c7aa9e48e7e3651cfd62d431213c0c4e58f21 \
+                    size    119956
 
 if {${name} ne ${subport}} {
     depends_build-append \

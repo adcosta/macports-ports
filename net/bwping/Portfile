@@ -1,0 +1,26 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+
+name                    bwping
+version                 1.17
+categories              net
+platforms               darwin
+maintainers             {@oleg-derevenetz gmail.com:oleg.derevenetz} openmaintainer
+license                 BSD
+
+description             Tool to measure bandwidth and RTT between two hosts using ICMP
+long_description        A tool to measure bandwidth and response times between two \
+                        hosts using Internet Control Message Protocol (ICMP) echo \
+                        request/echo reply mechanism.
+
+homepage                https://bwping.sourceforge.io/
+
+master_sites            sourceforge
+
+checksums               md5     a40810014c29147091eab2375cb63ac9 \
+                        rmd160  a0597bb53f20c53ed994a9f4120092891e4c4353 \
+                        sha256  4bbbadcfa5a06ef57c673136731dd92c1b79389c8287f75108c5f1000420daf8 \
+                        size    104254
+
+configure.args          --mandir=${prefix}/share/man/

@@ -5,7 +5,8 @@ PortGroup           waf 1.0
 PortGroup           python 1.0
 
 name                ntpsec
-version             1.1.2
+version             1.1.9
+revision            0
 categories          sysutils net
 maintainers         {fwright.net:fw @fhgwright} openmaintainer
 description         A secure, hardened, and improved implementation of NTP
@@ -18,22 +19,38 @@ homepage            https://www.ntpsec.org/
 conflicts           ntp openntpd
 
 master_sites        ftp://ftp.ntpsec.org/pub/releases/
-checksums           rmd160  b876eca0fca5cd92fd813fa9520f1c110e5df320 \
-                    sha256  9dfaf1d791109160b3632a203bd75c784c54902442cea36983d5131b9f3b0111 \
-                    size    2458805
+checksums           rmd160  ff7d8c93a18d9020b327b843dc121c3f53fbce26 \
+                    sha256  0acade979a807a047c2a8fd7f497235d9d6a5d0d54726e5d27505506d6ec00cc \
+                    size    2606066
 
-depends_build       port:bison
-depends_lib         path:lib/libssl.dylib:openssl port:python${python.version}
+# To avoid breaking any code that uses our Python package, keep the Python
+# version at 2.7 until we add variants for Python versions.  The upstream
+# code itself works with 2.6, 2.7, and 3.3+.
+python.versions     27
+
+# Note that the upstream --python option doesn't work correctly, so waf
+# must be run with the target Python version.  The waf PortGroup doesn't
+# currently allow selecting its Python version, but since it's hard-coded
+# for 2.7, we can ignore this for now.
+
+depends_build-append    port:bison port:pkgconfig
+# NOTE: doesn't work with libressl
+depends_lib-append      port:openssl \
+                        port:python${python.version}
 
 patchfiles          patch-PreHighSierra.diff
 
 post-destroot {
     foreach f {ntpdig ntpkeygen ntploggps ntplogtemp ntpmon ntpq ntpsnmpd ntpsweep ntptrace ntpviz ntpwait} {
-        reinplace "s,^#!/usr/bin/env python,#!${python.bin}," ${destroot}${prefix}/bin/$f
+        # Some programs may not exist, e.g. ntploggps w/o gpsd
+        if {[file exists ${destroot}${prefix}/bin/$f]} {
+            reinplace "s,^#!/usr/bin/env python,#!${python.bin}," ${destroot}${prefix}/bin/$f
+        }
     }
 }
 
 use_configure       yes
+configure.post_args-delete --nocache
 configure.args      --alltests \
                     --define=CONFIG_FILE=${prefix}/etc/ntp.conf \
                     --disable-manpage \
@@ -43,11 +60,16 @@ destroot.cmd        ${build.cmd}
 
 default_variants    +doc
 
+# ntpsec has issues with universal builds:
+# 1) It expects endianness to be single-valued at configure time.
+# 2) There are problems with Python compiled extensions and universality.
+universal_variant   no
+
 variant classic description {Enable classic mode} {
     configure.args-append   --enable-classic-mode
 }
 variant doc description {Build manpages and HTML documentation} {
-    depends_build-append    port:asciidoc port:docbook-xsl-nons
+    depends_build-append    port:asciidoctor
     configure.args-append   --enable-doc --htmldir=${prefix}/share/doc/${name}
     configure.args-delete   --disable-manpage
 }
@@ -74,6 +96,8 @@ post-activate {
         file copy ${prefix}/etc/ntp.conf.dist ${prefix}/etc/ntp.conf
     }
 }
+
+notes "The default access restrictions have changed; this may affect ntpq."
 
 startupitem.create      yes
 startupitem.netchange   yes

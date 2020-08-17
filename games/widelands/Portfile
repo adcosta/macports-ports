@@ -4,14 +4,13 @@ PortSystem          1.0
 
 # cmake 1.1 PG fails as release type MACPORTS is not recognized as valid
 PortGroup           cmake 1.0
-PortGroup           cxx11 1.1
 
 name                widelands
 categories          games
 platforms           darwin
-maintainers         {kencu @kencu} openmaintainer
+maintainers         nomaintainer
 license             GPL-2+
-homepage            https://wl.widelands.org/
+homepage            https://widelands.org/
 description         open-source real-time strategy game inspired by Settlers
 
 depends_lib         port:libsdl2 \
@@ -20,33 +19,34 @@ depends_lib         port:libsdl2 \
                     port:libsdl2_ttf \
                     port:boost \
                     port:doxygen \
+                    port:gettext \
+                    port:icu \
                     port:libpng \
                     port:glew \
-                    port:lua
+                    port:lua \
+                    port:zlib
 
 subport             ${name}-devel {}
 
 if {${subport} eq ${name}} {
 
     # release
-    version             build19
-    revision            3
+    version             build20
+    revision            2
     master_sites        https://launchpad.net/${name}/${version}/${version}/+download/
     use_bzip2           yes
-    distfiles           ${distname}-src${extract.suffix}
-    worksrcdir          ${distname}-src/
-    checksums           rmd160  5fd3e33dd0e9014811936a125d8f1b64607b2914 \
-                        sha256  e511f9d26828a2b71b64cdfc6674e6e847543b2da73961ab882acca36c7c01a6
-
+    checksums           rmd160  4adfa2f3ae2e4ceae7a04ca1162deed0f3e7632f \
+                        sha256  38594d98c74f357d4c31dd8ee2b056bfe921f42935935af915d11b792677bcb2 \
+                        size    232364340
     conflicts           ${name}-devel
-    
-    # builds before 8377 required this
-    # to be deleted when release version is build20 or more
-    depends_lib-append  port:libsdl2_net
 
     long_description ${description}: \
-        This port follows the release version of ${name}, which is typically updated every 6 months. If for some reason this port does not build or function as desired, try the ${name}-devel port.
+        This port follows the release version of ${name}, which is typically updated every  \
+        6 months. If for some reason this port does not build or function as desired, try the ${name}-devel port.
 
+    livecheck.type      regex
+    livecheck.url       https://launchpad.net/widelands/+download
+    livecheck.regex     "${name}-(build\\d+)${extract.suffix}"
 } else {
 
     # devel
@@ -57,13 +57,9 @@ if {${subport} eq ${name}} {
     fetch.type          bzr
     bzr.url             lp:widelands
 
-    version             20180719
-    bzr.revision        8759
+    version             20190913
+    bzr.revision        9203
 
-    # older systems don't build ASAN
-    if {${os.platform} eq "darwin" && ${os.major} < 11} {
-        configure.args-append -DOPTION_ASAN=OFF
-    }
     variant HEAD description "build tip of bzr commit tree" {
         bzr.revision    -1
     }
@@ -72,11 +68,22 @@ if {${subport} eq ${name}} {
 
     long_description ${description}: \
         This port follows the master version of ${name}, which is typically updated every few weeks.
+
+    livecheck.type      none
 }
+
+compiler.cxx_standard   2011
 
 cmake.out_of_source     yes
 
 configure.args-append   -DCMAKE_INSTALL_PREFIX:PATH="${applications_dir}/Widelands.app/Contents/MacOS"
+
+# older systems don't build ASAN
+if {${os.platform} eq "darwin" && ${os.major} < 11} {
+    configure.args-append -DOPTION_ASAN=OFF
+}
+
+patchfiles          patch-widelands-disable-werror-deprecated.diff
 
 pre-destroot {
     xinstall -d ${destroot}${applications_dir}/Widelands.app/Contents/Resources \

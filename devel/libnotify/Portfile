@@ -1,10 +1,10 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           gobject_introspection 1.0
+PortGroup           meson 1.0
 
 name                libnotify
-version             0.7.7
+version             0.7.9
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          devel gnome
 maintainers         nomaintainer
@@ -21,19 +21,25 @@ master_sites        gnome:sources/${name}/${branch}
 
 use_xz              yes
 
-checksums           rmd160  5d2e10b8e25c7ba383ce884ba8faeb3635a80893 \
-                    sha256  9cb4ce315b2655860c524d46b56010874214ec27e854086c1a1d0260137efc04
+checksums           rmd160  688b9378c50403c48dbccf607f60b9e384ee5528 \
+                    sha256  66c0517ed16df7af258e83208faaf5069727dfd66995c4bbc51c16954d674761 \
+                    size    98148
 
-depends_build       port:pkgconfig
+depends_build-append \
+                    port:pkgconfig \
+                    port:gtk-doc \
+                    port:docbook-xsl-ns \
+                    port:libxslt \
+                    port:xmlto
 
 depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:gobject-introspection \
                     port:gdk-pixbuf2 \
                     port:gtk3 \
                     port:xorg-libsm
 
-configure.args      --disable-silent-rules
-
-gobject_introspection yes
+# ensure g-ir-scanner uses correct link command
+build.env-append    "CC=${configure.cc} [get_canonical_archflags cc]"
 
 pre-activate {
 	if {${os.major} == 11 && ${os.minor} < 2 && ${os.platform} eq "darwin"} {

@@ -5,15 +5,16 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-pylint
-version             2.1.1
+version             2.5.3
+revision            0
 categories-append   devel
 platforms           darwin
 license             GPL-2+
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
-maintainers         {blair @blair} {stromnov @stromnov} openmaintainer
+maintainers         {stromnov @stromnov} openmaintainer
 
 description         Error (and style) checking for python
 
@@ -26,13 +27,10 @@ long_description    Pylint is a tool that checks for errors in python code, \
                     by pylint is close to `Guido's style guide`_.
 
 homepage            https://pylint.org
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  8caa95cd011b974fb0e450bc2f92ce6adbfa3736 \
-                    sha256  31142f764d2a7cd41df5196f9933b12b7ee55e73ef12204b648ad7e556c119fb \
-                    size    555770
+checksums           rmd160  c23fb00d6e402f98a7d669f1923052d7b2c72a47 \
+                    sha256  7dd78437f2d8d019717dbf287772d0b2dbdfd13fc016aa7faa08d67bccc46adc \
+                    size    684449
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -41,19 +39,22 @@ if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-setuptools \
                         port:py${python.version}-astroid \
                         port:py${python.version}-isort \
-                        port:py${python.version}-flake8-mccabe
+                        port:py${python.version}-flake8-mccabe \
+                        port:py${python.version}-toml
 
     if {${python.version} eq 27} {
-        version             1.9.2
+        version             1.9.4
+        revision            0
         distname            ${python.rootname}-${version}
-        checksums           rmd160  9b682e1380ad5eea89fa6ffbc3fc61548ac52f20 \
-                            sha256  fff220bcb996b4f7e2b0f6812fd81507b72ca4d8c4d05daf2655c333800cb9b3 \
-                            size    516869
+        checksums           rmd160  763a56b52da567df22a09caa965da3e15dccbd9a \
+                            sha256  ee1e85575587c5b58ddafa25e1c1b01691ef172e139fc25585e5d3f02451da93 \
+                            size    519076
 
         depends_lib-append  port:py${python.version}-configparser \
                             port:py${python.version}-backports-functools_lru_cache \
                             port:py${python.version}-singledispatch \
                             port:py${python.version}-six
+        depends_lib-delete  port:py${python.version}-toml
     }
 
     depends_run-append  port:pylint_select

@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        kkos oniguruma 6.9.0 v
+github.setup        kkos oniguruma 6.9.5 v
+revision            0
 name                oniguruma6
 maintainers         {mps @Schamschula} openmaintainer
 categories          devel
@@ -16,9 +17,9 @@ long_description    Oniguruma is a regular expressions library in which \
                     different character encoding can be specified for every \
                     expression. Supports Unicode Porperty/Script.
 
-checksums           rmd160  c3737b79cd086ca7adf62bb071504b682fbb7fba \
-                    sha256  d00d6f9fcb02792b8bd07e4fbe4ecd1ff591eba89f6850aceefe933818fe01e9 \
-                    size    535367
+checksums           rmd160  364fbbc8c2d59bea2a5fea4fd979f298e02606a4 \
+                    sha256  3b951f876ff409d137b3f2f512fc870278d1b27ae44ba1624e00c4c06e4070e7 \
+                    size    612886
 
 conflicts           oniguruma5
 
@@ -32,3 +33,5 @@ post-destroot {
         ${dest_doc}
     copy ${worksrcpath}/doc ${dest_doc}
 }
+
+github.livecheck.regex  {(\d\.\d+(\.\d+)?(?!_))}

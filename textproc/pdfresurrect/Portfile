@@ -3,11 +3,17 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        enferex pdfresurrect 0.15 v
+github.setup        enferex pdfresurrect 0.21 v
+revision            0
+checksums           rmd160  b03bc8ac4cb06430c17b3b4a2d76bd6391308e64 \
+                    sha256  7b6fd72dd56789490e755579283a8f5f5811fe48f1eff9f917cd8074f7dd0a4b \
+                    size    67266
+
 categories          textproc
 platforms           darwin
 maintainers         {ryandesign @ryandesign} openmaintainer
 license             GPL-3+
+github.tarball_from archive
 
 description         tool for analyzing PDF documents
 
@@ -23,14 +29,10 @@ long_description    PDFResurrect is a tool aimed at analyzing PDF documents. \
                     previous versions that might not be intended for anyone \
                     else to read.
 
-checksums           rmd160  2102aef2302192ca678b8ec5b701ceca747c7a85 \
-                    sha256  024f8d474063bdecce31d505485e69e90f2b5a3c815159167d1bf2b0ad9eae1c \
-                    size    66268
-
 post-destroot {
     set docdir ${prefix}/share/doc/${subport}
     xinstall -d ${destroot}${docdir}
-    xinstall -m 644 -W ${worksrcpath} \
+    xinstall -m 0644 -W ${worksrcpath} \
         AUTHORS \
         ChangeLog \
         LICENSE \

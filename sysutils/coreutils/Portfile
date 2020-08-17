@@ -4,7 +4,8 @@ PortSystem      1.0
 
 name            coreutils
 conflicts       gexpr
-version         8.30
+version         8.32
+revision        0
 categories      sysutils
 platforms       darwin
 license         GPL-3+
@@ -25,9 +26,9 @@ homepage        https://www.gnu.org/software/${name}/
 master_sites    gnu
 use_xz          yes
 
-checksums       rmd160  44c3e42a7aa2ab78487fa849fd9788cc5369d2b8 \
-                sha256  e831b3a86091496cdba720411f9748de81507798f6130adeaef872d206e1b057 \
-                size    5359532
+checksums       rmd160  625540e058255b81b9ff2b3c334a90230fa05f40 \
+                sha256  4458d8de7849df44ccab15e16b1548b285224dbba5f08fac070c1c0e0bcc4cfa \
+                size    5547836
 
 depends_lib \
     port:gettext \
@@ -70,8 +71,8 @@ post-destroot {
         ln -s ${prefix}/bin/${binary} ${destroot}${prefix}/libexec/gnubin/[string range $binary 1 end]
     }
 
-    # Fix symlink to gnucut
-    move ${destroot}${prefix}/libexec/gnubin/nucut ${destroot}${prefix}/libexec/gnubin/gnucut
+    # Fix symlink to gnu cut
+    move ${destroot}${prefix}/libexec/gnubin/nucut ${destroot}${prefix}/libexec/gnubin/cut
 
     xinstall -m 755 -d ${destroot}${prefix}/libexec/gnubin/man/man1
     foreach manpage [glob -tails -directory ${destroot}${prefix}/share/man/man1 g*] {

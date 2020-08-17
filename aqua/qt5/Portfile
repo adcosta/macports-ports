@@ -13,7 +13,7 @@ license             {LGPL-3 GPL-3 OpenSSLException}
 
 homepage            https://www.qt.io
 
-version             5.11.2
+version             5.14.2
 set middle_name     everywhere
 if { ${subport} eq "${name}-qtwebkit" ||
      ${subport} eq "${name}-qtwebkit-examples" ||
@@ -31,7 +31,7 @@ set branch          [join [lrange [split ${version} .] 0 1] .]
 set qt_major        [lindex [split ${version} .] 0]
 
 # see https://wiki.qt.io/New_Features_in_Qt_5.7
-PortGroup           cxx11 1.1
+compiler.cxx_standard 2011
 
 master_sites        \
     https://download.qt.io/official_releases/qt/${branch}/${version}/submodules
@@ -77,7 +77,7 @@ foreach {qt_test_name qt_test_info} [array get available_qt_versions] {
 # port provides `find ./ -name \*.dylib -exec otool -L {} \; | grep /opt/local/libexec/qt5 | cut -d ' ' -f1` | cut -d : -f2 | sort -u
 # port provides `find ./ -name \*.dylib -exec otool -L {} \; | grep /opt/local/lib/ | cut -d ' ' -f1` | cut -d : -f2 | sort -u
 #
-# https://code.qt.io/cgit/qt/qt5.git/tree/.gitmodules?h=5.11
+# https://code.qt.io/cgit/qt/qt5.git/tree/.gitmodules?h=5.14
 #
 ###############################################################################
 
@@ -125,15 +125,15 @@ foreach {qt_test_name qt_test_info} [array get available_qt_versions] {
 #     license replacement
 # }
 #
-# module info found at https://doc.qt.io/qt-5.11/qtmodules.html
+# module info found at https://doc.qt.io/qt-5.14/qtmodules.html
 #
 ###############################################################################
 array set modules {
     qt3d {
         {
-            7381d2223db6106e48d2f3ac0f3a99834ceb1027
-            7f72c823ec10a2effba95d08d9439215472d2cb1e3229de50a6b3d2523c8f962
-            84932180
+            820677fc9e200ff4c364a958ce3ab9cbdef5cfbe
+            9da82f1cc4b7d416d31ec96224c59d221473a48f6e579eef978f7d2e3932c674
+            81576496
         }
         ""
         "port:assimp"
@@ -146,39 +146,24 @@ array set modules {
     }
     qtbase {
         {
-            dcbc0b2dcba794c243253be747f7d624b4ef9459
-            6381e7c3468d5a1dcfe3683b29eeced192faa0f8a32434fec071a59b8bcd0107
-            46954920
+            103d9c42037393a8c3e6467c9bd1eab447d3c4fb
+            48b9e79220941665a9dd827548c6428f7aa3052ccba8f4f7e039a94aa1d2b28a
+            49865752
         }
         ""
-        "port:zlib port:libpng port:jpeg port:freetype path:bin/dbus-daemon:dbus port:tiff port:libmng path:lib/pkgconfig/glib-2.0.pc:glib2 port:icu port:pcre2 port:harfbuzz"
+        "port:zlib port:libpng port:jpeg port:freetype path:bin/dbus-daemon:dbus path:lib/pkgconfig/glib-2.0.pc:glib2 port:icu port:pcre2 port:harfbuzz port:double-conversion port:zstd"
         ""
         {"Qt Core" "Qt GUI" "Qt Network" "Qt SQL" "Qt Test" "Qt Widgets" "Qt Concurrent" "Qt D-Bus" "Qt OpenGL" "Qt Platform Headers" "Qt Print Support" "Qt XML"}
         ""
         "variant overrides: "
-        "revision 0"
-        "License: "
-    }
-    qtcanvas3d {
-        {
-            58f7760a20ef7874be673275118e7c0490dc6d99
-            fd9ca31268e81d4864da961de7635ef7316a815b8fc77910e512647eb4ceea40
-            10909652
-        }
-        ""
-        ""
-        "qtdeclarative"
-        {"Qt Canvas 3D"}
-        ""
-        "variant overrides: "
-        "revision 0"
+        "revision 1"
         "License: "
     }
     qtcharts {
         {
-            8bad62ecb73dd10ae48a64878c09ec550bae967b
-            f6a312c596bfffa5074a3a5606dff1ef197dac075b3c1bd6443e3a6db1c3a114
-            4239784
+            20e8775cfda1b7bf6aabd08f8bbd3cd68dd36461
+            adb25203ea748d886cc3d8993c20def702115eccea311594592058134ba83bb7
+            4250508
         }
         ""
         ""
@@ -191,9 +176,9 @@ array set modules {
     }
     qtconnectivity {
         {
-            c3d113ae7a2cc959daf1899067e63b0ff7b6a666
-            58901bbd14d3bc472f27fe305fd8dc33cffbd10da83616e9691c04c3290d42c5
-            2729556
+            2ec5b5213dcf6850313c611e3c7891084c94f7a3
+            abe67b3e3a775e2a2e27c62a5391f37007ffbe72bce58b96116995616cfcbc28
+            2804940
         }
         ""
         ""
@@ -206,9 +191,9 @@ array set modules {
     }
     qtdatavis3d {
         {
-            d31e4253c2ed9e63cfa8d39914c3e5e66b04447f
-            67b499d2aa3cfb9cca33c08d89623d997ed92de5307745b6a2b2c3be61deff16
-            5196328
+            89cd6d2fbde42f13661ea72b8964148111aa930c
+            723c03db2d2805b1be4ca534ac7bc867a1a21894d33a7e9261a382f3fa9d0e20
+            5190800
         }
         ""
         ""
@@ -221,13 +206,13 @@ array set modules {
     }
     qtdeclarative {
         {
-            67be20bd74bfca77aa79520f1d55d3a749c269e1
-            220d86f8031e9d45f3c369c3fd517aaa4c5783ad62c843a21fa7cc3c0a36f2cd
-            22217460
+            b5af85ffa37ef1a4b9c51432cb02b80fd0766a7e
+            a3c4617adc9760347c93d2eb6c25d22f620cd22f44afa0494eb499a805831650
+            21305980
         }
         "port:python27"
         ""
-        "qtbase qtsvg qtxmlpatterns"
+        "qtbase qtsvg"
         {"Qt QML" "Qt Quick" "Qt Quick Layouts" "Qt Quick Widgets"}
         ""
         "variant overrides: "
@@ -236,13 +221,13 @@ array set modules {
     }
     qtdoc {
         {
-            bf258888d8e2e784a852ba6fbaaa279386f25ecc
-            2186971f9399c8f4cafe1109a8e63c363cd288c9a645717a6f8a069dd1d370fe
-            3327968
+            98f0f1c8f7b93eb902703a9f94691e81cbe1bf53
+            5a55cdb55af35eb222d06179567851c175f24a3732f7dee5be073df4a893172b
+            5736088
         }
         ""
         ""
-        "qtdeclarative qttools sqlite-plugin"
+        "qtdeclarative qttools qtmultimedia qtquickcontrols qtquickcontrols2 sqlite-plugin"
         {"Qt Reference Documentation"}
         "requires all documentation"
         "variant overrides: ~examples ~tests ~debug noarch ~docs"
@@ -251,9 +236,9 @@ array set modules {
     }
     qtgamepad {
         {
-            573a41a75c688d1df6c68a915ee4b0b6436d012e
-            ae2f378e1739ff527b5cd3b014ad26112d7b8a80444c9aefbc4736e52339c81c
-            381908
+            182f7e03463dfb48587ae247476d277ac9c76ed2
+            f77daadb4755cf760e11812264259fb103396fd1b06df1e06b5df162081c8d03
+            386940
         }
         ""
         "port:libsdl2"
@@ -266,9 +251,9 @@ array set modules {
     }
     qtgraphicaleffects {
         {
-            0eb7ffe54fbafedfa0eca8c47266c245673a6030
-            a9dcaaa3932f7b71717a393700e1387bcd6f9c03538d0ffca2a64128a0e4a9fd
-            14262460
+            f54cbd0cffa95ff512e83a4f6a102b077675a954
+            487a7f858244a08264363733055a8cf8b00e77c658c5608cc462817d15e4b50f
+            14040880
         }
         ""
         ""
@@ -281,9 +266,9 @@ array set modules {
     }
     qtimageformats {
         {
-            53bc3849cbd6719f4f0405f26daf028c2945ab76
-            27e5d10551d0b5bf4799d09e5412ea2e6898b09aa1521ea24bce660ee6183a68
-            2183956
+            cf1d51d69a297601e7c2fe6198cdd2238b54b57e
+            733eca0165c15e046b106039c989dac7f6bc2ecf215396d965ed065369264f8c
+            1805208
         }
         ""
         "port:jasper port:libmng port:tiff port:webp"
@@ -296,24 +281,39 @@ array set modules {
     }
     qtlocation {
         {
-            130106e7493f074cea5bf5618a22579c56cac542
-            d698911edfb2d45b7adca6557b3de880e966cb8823a8adf1beb3a3079560024e
-            5584420
+            cbea15ad47dff58f1c6d8b06c18b1202e46ce312
+            c37708bc396f6dac397b49a6a268d5edb39e1c8296ca2337ce9e80bde04775cc
+            6120852
         }
         ""
-        ""
+        "port:icu port:zlib"
         "qtbase qtdeclarative qtquickcontrols qtquickcontrols2 qtserialport"
         {"Qt Location" "Qt Positioning"}
         ""
         "variant overrides: "
-        "revision 0"
+        "revision 1"
         "License: "
+    }
+    qtlottie  {
+        {
+            8d40131f11f5c5b521da22e92f68f52921526c39
+            55d1392dc92cbec11263084360075dc5fc3fdc25c1969adfbdec84299b285978
+            82572
+        }
+        ""
+        ""
+        "qtbase qtdeclarative"
+        {"A QML API for rendering graphics and animations in JSON format"}
+        "technology preview module"
+        "variant overrides: "
+        "revision 0"
+        "License: {GPL-3 OpenSSLException}"
     }
     qtmacextras {
         {
-            89ce8ba19e0b8627e5fd3f0957447d4406bfe3d7
-            44f69d019ddadece89552db0ea465824eb76227d92b7decac909945fff8dcf4c
-            65276
+            96f1a74a2f4e9a493dfa36188aacb39832756309
+            d12587b46c84a7822194fc3ccf46f7c18ff3b31566d3dde4f5fe772f1d8776e5
+            69360
         }
         ""
         ""
@@ -326,9 +326,9 @@ array set modules {
     }
     qtmultimedia {
         {
-            941139f2f7a281a67572886a6b240aa844e6c4ee
-            25608f3d08636026387394956fe72cedcb78eb786fb32fd87deb41d574cf726d
-            3701832
+            b531cc7ca42cf9737064ea2eee8f162a12720467
+            7acd8ede6835314206e407b35b668f0add67544577fb51fe67afb03137fb9fe9
+            3793964
         }
         ""
         ""
@@ -341,9 +341,9 @@ array set modules {
     }
     qtnetworkauth {
         {
-            f9b60337f0e4b87d8cadf0e4bd63fac0f3b7cf04
-            79379cef7801fb909ed1cd23379eaef6b2d2ca31581aa537cab64ee1e0dcb7fe
-            135160
+            65591f9e8ae006806d8e9e54af13b4336cb9df72
+            4f00513dd18598487d02187b80b54c669662cf8a8f2573858c7f9282d7b9265e
+            141424
         }
         ""
         ""
@@ -356,9 +356,9 @@ array set modules {
     }
     qtpurchasing {
         {
-            7e1cedd6cdfc43623bb9c23a50efbc7f7fed83a3
-            2d7189242eded07be4aec473501d3cc6a9e2bd7849f81b1bb6b01604ba0f8df6
-            204216
+            5338fe693067c469b40d936df49154f7714a5c82
+            69b087001e8fcec5bb49ca333d5f44e6b7eb09f76421dc792fc9cd76dee9e851
+            208664
         }
         ""
         ""
@@ -369,11 +369,26 @@ array set modules {
         "revision 0"
         "License: {GPL-3 OpenSSLException}"
     }
+    qtquick3d {
+        {
+            f18e90ba83a610ea5bd9cde0d38b37fc6d5352e2
+            0640696d501f2b0bf57f64e98f30bfa3e1cc19c11c0e05e43d4fdb0d20488b2e
+            61600360
+        }
+        ""
+        "port:assimp"
+        "qtbase qtdeclarative"
+        {"Provides a high-level API for creating 3D content or UIs based on Qt Quick."}
+        "technology preview module; GPLv3 license only"
+        "variant overrides: "
+        "revision 0"
+        "License: {GPL-3 OpenSSLException}"
+    }
     qtquickcontrols {
         {
-            271a70c0c75f7f8a17b0e3414fd7f84b83024ea5
-            9c772e30fb1ba107168498328585063f4303c6562baf4a5cfedd0c5250b621e0
-            6047528
+            d41a9f259939edc2e6c59c694a34479d59b929e0
+            d55def1dd4ee1250bd6a4e76849f4e362368b6411c2216d5f669c761216d4461
+            5981560
         }
         ""
         ""
@@ -386,9 +401,9 @@ array set modules {
     }
     qtquickcontrols2 {
         {
-            768b9a961891710a5385e4fbc4da3de2078de4a5
-            aa0549f9a4135f9d600b57f53347ebf344e60d21f90c6d844109755da12dcb84
-            9035620
+            574218f9a41523a6686d2ba82b5d3499fe9a4032
+            faf7d349d8f4a8db36cd3c62a5724bcf689300f2fdb7dc1ea034392aab981560
+            8153752
         }
         ""
         ""
@@ -399,30 +414,45 @@ array set modules {
         "revision 0"
         "License: "
     }
+    qtquicktimeline {
+        {
+            72f266b59b090542b8fc61a3f825c738699dae44
+            83a45d0998cbc77f8094854a477ab1ac0838ae7fd822563d995df40149893a9e
+            102636
+        }
+        ""
+        ""
+        "qtbase qtdeclarative"
+        {"A platform target to compile Qt applications for the web browsers using WebAssembly."}
+        "technology preview module; GPLv3 license only"
+        "variant overrides: "
+        "revision 0"
+        "License: {GPL-3 OpenSSLException}"
+    }
     qtremoteobjects {
         {
-            0c78e69bd657c13ac435e1ccb06e43fc18e574c1
-            f2bc6d65f4d4b90fc222c0fd0539120f29452b6d336171930f90e5129cd25c19
-            315708
+            b9ccaa5ad821d4d0a1b33e079584b073fc46f45f
+            a6a601c4f4aab6fe41a462dae57033819f697e3317240a382cee45c08be614d6
+            376740
         }
         ""
         ""
         "qtbase qtdeclarative"
         {"Qt Remote Objects"}
-        "technology preview module"
+        ""
         "variant overrides: "
         "revision 0"
         "License: "
     }
     qtscript {
         {
-            df42406013dc91b64fe71b0db88b8ff78b7498d1
-            b2c2466a83653a9473ea4810462d8a88e0fb1fb691f85d1c6e60d8bc4283f976
-            2661200
+            707919651feb565d8154a77f48ba662bc376aca0
+            e9fd487ccb3cbf00e86b0b803aa79e9f6bbe7a337b8e97d069e040c3e0789bfe
+            2654528
         }
         ""
         ""
-        "qtbase qttools"
+        "qtbase"
         {"Qt Script" "Qt Script Tools"}
         "deprecated in favor QJS* in Qt QML"
         "variant overrides: "
@@ -431,9 +461,9 @@ array set modules {
     }
     qtscxml {
         {
-            aa6c803ddfe7c0563cd46b9afa4e89705f4402c1
-            d625cb2149f5bfef5747b1d40b22327fd36132307c8b76d358f235d5422ff7a4
-            430496
+            4885374fdebcf5068d3e20b37fa150ef9efe1e33
+            030cea352a56074f577200f967ef37c959b2767127de61f766f59b0d99763790
+            433268
         }
         ""
         ""
@@ -446,9 +476,9 @@ array set modules {
     }
     qtsensors {
         {
-            d37f87d9828a553918bc706dfdc161b6fa389ef0
-            0e27c38824f7a1deb506f6195156eed79b80aa7034356272c3be0611667d63c7
-            2028412
+            27c509504b76ac4405520e7d6c626d10ce43c563
+            bccfca6910b0383d8f65823496ff5011abed2fa8fd446b4b27333d0fd7bb8c61
+            2050616
         }
         ""
         ""
@@ -461,13 +491,13 @@ array set modules {
     }
     qtserialbus {
         {
-            1a598c86a6de29d8850d808045135cc4a7a2f42a
-            1774c2c162f85f7cbcb2bdd2ef47507b110a01bc261627b46aa718e87079641e
-            315080
+            7fc5f35f154361e41192e5ff58689441722f2927
+            0b7762175a649a40c4dd619c5de61d772235dc86099343278e2c3229d0836a91
+            349808
         }
         ""
         ""
-        "qtserialport"
+        "qtbase qtserialport"
         {"Qt Serial Bus"}
         ""
         "variant overrides: "
@@ -476,9 +506,9 @@ array set modules {
     }
     qtserialport {
         {
-            e197a2c28942528f52f755da8820d43461bbfebd
-            b01b69ce421d449402363c0cf617fcc8856e39d6d2c28aa3d06d1f5359dc6f6e
-            295876
+            92c5f0baad1e3b5f0379dee563760b6aba1e69f9
+            a6d977dd723ad4d3368b5163691405b8852f809974a96ec54103494e834aea21
+            316492
         }
         ""
         ""
@@ -491,9 +521,9 @@ array set modules {
     }
     qtspeech {
         {
-            5ce3eb98716d9f4ecf24dc64b1f6c0005f080f93
-            0abd6f9672cbea3597e88db99813d7a4d7d379b89f6be352f44a9313bcc81d84
-            96080
+            3b15521943828941234338329fff1e14369388ef
+            5e9e8ea62f0207ba894df1e136df0af9fc5443c7817d28c39f0ea2bbae9ec6da
+            101100
         }
         ""
         ""
@@ -506,9 +536,9 @@ array set modules {
     }
     qtsvg {
         {
-            c0bd00e346f678f48710ee02d750bd7d404c0882
-            bc16bbf855b466e77dda996d8c91fa73db7fe14d3aa98ce6d92145ca1a1bd166
-            1837076
+            ca837b599d53b818ce416309e6a13c30ee9c9062
+            c7d7faa01a3e7a6e4d38fafcec5529a488258218749779e6fa0e09a21173b5a1
+            1880100
         }
         ""
         ""
@@ -521,12 +551,12 @@ array set modules {
     }
     qttools {
         {
-            4dc542d972d862d20dd8f78768171aeb0f64162d
-            f0e8332c771958b4aa373ac643d35e2fabb1a2dcdbaca756ebf3d1ace7c631b8
-            9691816
+            35f435253529301da39d017931da4f3c1778fd04
+            5bb0cf7832b88eb6bc9d4289f98307eb14b16a453ad6cf42cca13c4fe1a053c5
+            8815020
         }
         ""
-        "port:clang-7.0"
+        "port:clang-9.0"
         "qtbase qtdeclarative"
         {"Qt Designer" "Qt Help" "Qt UI Tools"}
         ""
@@ -536,9 +566,9 @@ array set modules {
     }
     qttranslations {
         {
-            c3cf68e0c158c779825f02d2185d76fa29f53f1d
-            cec1a83757e9c776f6c65020bf8963e9d2037963e5a93531e6274442128d034b
-            1418228
+            abc83f4522d6daa92cb7f7463c3559baab29db61
+            2088ebee9f5dd0336c9fd11436899a95b7ce0141ce072290de1e8f315d82d1a6
+            1348684
         }
         ""
         ""
@@ -551,9 +581,9 @@ array set modules {
     }
     qtvirtualkeyboard {
         {
-            d14cde39db1f514569b664dd2772de1d1d83a69f
-            2709500071e7e98ca6f6eecef0f5c80d19ae22aba562293352debd516633b197
-            10690564
+            a876b77ab3f1aff8387dbfb3fb3cd4904e674c46
+            364f3338563e617e7c964a37170b415b546c5f82965e781271f9dada3e3868d7
+            10957372
         }
         ""
         "port:hunspell"
@@ -566,9 +596,9 @@ array set modules {
     }
     qtwebchannel {
         {
-            13a1560fb2dfb5301b299bef64f1365c329edd99
-            945fdae8f1ea8dfc8e47a6d8421cef00690d6d4bfe26ce61bb59c0d0326c02fc
-            173956
+            13b2305239dad6c64409362ff31ce719560f7e82
+            7d1dc8441523638c3d455c7d408ec65aebc073acab80e24063865f929231f874
+            202592
         }
         ""
         ""
@@ -581,24 +611,24 @@ array set modules {
     }
     qtwebengine {
         {
-            33dfae4bdfb000c105adf1751377d391dbfaffb8
-            3ff9bba5f631cfdd454ce298489360b3e2d9a2de4eb82bb121d838ef65f9b772
-            233642812
+            00b8e62bc9cc7348dfa2f92bab8f9e30f83b4cfa
+            e169d6a75d8c397e04f843bc1b9585950fb9a001255cd18d6293f66fa8a6c947
+            242467568
         }
-        "port:python27 port:py27-ply port:ninja"
-        ""
-        "qtquickcontrols qtwebchannel qtlocation qttools"
+        "port:python27 port:py27-ply path:bin/ninja:ninja port:gperf port:bison port:flex"
+        "port:fontconfig port:dbus port:harfbuzz path:lib/pkgconfig/glib-2.0.pc:glib2 port:zlib port:minizip port:libevent port:libxml2 port:jsoncpp port:protobuf3-cpp port:poppler port:pulseaudio port:icu path:lib/libavcodec.dylib:ffmpeg port:libopus port:webp port:libpng port:lcms2 port:freetype port:re2 port:snappy"
+        "qtdeclarative qtquickcontrols qtquickcontrols2 qtlocation qtwebchannel qttools"
         {"Qt WebEngine"}
         "very large and relatively new"
         "variant overrides: "
-        "revision 0"
+        "revision 1"
         "License: "
     }
     qtwebglplugin {
         {
-            742a89382b7305dc28f6f35395620f9198a0cb60
-            16682ba6aeeef0420bcf3149be9792d0f82e734d6f9f730f66f7e1907dfa5f6d
-            63904
+            8a30662273570df0d24effcf354b4dd516642523
+            eb4118910b65d03d8448658ac1646e860d337e59b82d6575beda21824e313417
+            74140
         }
         ""
         ""
@@ -621,7 +651,7 @@ array set modules {
         {"Qt WebKit" "Qt WebKit Widgets"}
         "community support only (use Qt WebEngine)"
         "variant overrides: "
-        "revision 2"
+        "revision 5"
         "License: "
     }
     qtwebkit-examples {
@@ -636,14 +666,14 @@ array set modules {
         {"examples for Qt WebKit"}
         "community support only (use Qt WebEngine)"
         "variant overrides: ++examples ~docs "
-        "revision 2"
+        "revision 3"
         "License: "
     }
     qtwebsockets {
         {
-            2b3431fbf4be7a1114ac594c6c11799a6eefabb9
-            ae6197619ce0c4104bdc43e097d79082f90ba6567fa286eae6306ce7aec88b8d
-            225948
+            f26dc43353b8ee9117f0be2c8984c6ccee450528
+            f06e62b18313fe1b40a35566e79645de4a8e7ac9f7717d1d98a06c5b49afca84
+            252820
         }
         ""
         ""
@@ -656,9 +686,9 @@ array set modules {
     }
     qtwebview {
         {
-            f6387263ccf0f74aaef15548b9b2a76d7aee587e
-            346267a9df2366cb9d022ce3385aceeffc552fe7dc311f4563023e2677b260e4
-            127124
+            62e14451ac6a35f2ad6324a1711fbf740f3c730c
+            c61f9213ee84fd7408898c0194468208ffb51af9d257e87e6b53daf24f65ff4b
+            132840
         }
         ""
         ""
@@ -671,13 +701,13 @@ array set modules {
     }
     qtxmlpatterns {
         {
-            b27b63c6c79927b219d73a0a0226e91d9481da93
-            5fd5f680ba40dadf81665417501e1f3778982aea0e268bf4f75a420d54a86746
-            1372836
+            0ddfeb4d31bf4855aa866febeb877b18aea8464e
+            219a876665345e3801baff71f31f30f5495c1cb9ab23fbbd27602632c80fcfb7
+            1404028
         }
         ""
         ""
-        "qtbase"
+        "qtbase qtdeclarative"
         {"Qt XML Patterns"}
         ""
         "variant overrides: "
@@ -710,6 +740,30 @@ array set sql_plugins {
         }
     }
     {psql PostgreSQL "revision 0"} {
+        {
+            "postgresql12"
+            "port:postgresql12"
+            "${prefix}/include/postgresql12"
+            "${prefix}/lib/postgresql12"
+            "-lpq"
+            ""
+        }
+        {
+            "postgresql11"
+            "port:postgresql11"
+            "${prefix}/include/postgresql11"
+            "${prefix}/lib/postgresql11"
+            "-lpq"
+            ""
+        }
+        {
+            "postgresql10"
+            "port:postgresql10"
+            "${prefix}/include/postgresql10"
+            "${prefix}/lib/postgresql10"
+            "-lpq"
+            ""
+        }
         {
             "postgresql96"
             "port:postgresql96"
@@ -781,9 +835,10 @@ build.env-append \
     PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 \
     PKG_CONFIG_ALLOW_SYSTEM_LIBS=1
 
-if { ${os.major} < 15 } {
+if { ${os.major} < 16 } {
+    known_fail  yes
     pre-fetch {
-        ui_error "${subport} requires OS X 10.11 or later"
+        ui_error "${subport} requires macOS 10.12 or later"
         return -code error "incompatible OS version"
     }
 }
@@ -797,9 +852,7 @@ foreach {module module_info} [array get modules] {
 
         distname        ${module}-${middle_name}-src-${version}
 
-        if { ${revision_string} ne "0" } {
-            revision ${revision_string}
-        }
+        revision ${revision_string}
 
         # see https://bugreports.qt.io/browse/QTBUG-35514
         build.target
@@ -847,6 +900,7 @@ foreach {module module_info} [array get modules] {
         if { ${module} eq "qtbase" } {
             # this subport uses configure script (NOT qmake)
             PortGroup           qt5 1.0
+            PortGroup           developerversion 1.0
 
             if { ${os.platform} ne "darwin" } {
                 pre-fetch {
@@ -861,14 +915,15 @@ foreach {module module_info} [array get modules] {
                 }
             }
 
-            # undo part of https://codereview.qt-project.org/#/c/140954/
-            # .pc files still needed by some ports
-            # see https://github.com/Homebrew/homebrew-core/blob/master/Formula/qt5.rb
-            patchfiles-append patch-pc_files.diff
+            # see https://trac.macports.org/ticket/59315
+            minimum_developerversions 16 9
 
-            # see https://stackoverflow.com/questions/14506151/invalid-symbol-redefinition-in-inline-asm-on-llvm
-            # only runs test code on 32-bit systems
-            patchfiles-append patch-tst_benchlibcallgrind.diff
+            # Neither "pkg-config --cflags Qt5Core" nor "pkg-config --cflags-only-I Qt5Core" will allow
+            #     a configure script to find CPPFLAGS since the include mechanism relies on
+            #     -F and -framework BOTH being set
+            # See e.g. octave
+            # See the files mkspecs/features/qt_module.prf and qmake/generators/makefile.cpp
+            patchfiles-append patch-pc_files.diff
 
             # find the Rez program
             patchfiles-append patch-find_rez.diff
@@ -967,11 +1022,9 @@ foreach {module module_info} [array get modules] {
                     ${worksrcpath}/mkspecs/common/clang-mac.conf
 
                 # respect macosx_deployment_target
-                foreach spec {macx-clang macx-g++ macx-icc} {
-                    reinplace \
-                        "s|__MACPORTS_DEPLOYMENT_TARGET__|${macosx_deployment_target}|g" \
-                        ${worksrcpath}/mkspecs/${spec}/qmake.conf
-                }
+                reinplace \
+                    "s|__MACPORTS_DEPLOYMENT_TARGET__|${macosx_deployment_target}|g" \
+                    ${worksrcpath}/mkspecs/common/macx.conf
 
                 #respect configure.optflags
                 reinplace \
@@ -979,14 +1032,19 @@ foreach {module module_info} [array get modules] {
                     ${worksrcpath}/mkspecs/common/gcc-base.conf
             }
 
-            if { [vercmp ${xcodeversion} "7.0"] >= 0 } {
-                # starting with Xcode 7.0, the SDK for build OS version might not be available
-                # see https://trac.macports.org/ticket/53597
-
-                set sdks_dir ${developer_dir}/Platforms/MacOSX.platform/Developer/SDKs
-                if { ![file exists ${sdks_dir}/MacOSX${configure.sdk_version}.sdk] } {
-                    configure.sdk_version
+            # starting with Xcode 7.0, the SDK for build OS version might not be available
+            # see https://trac.macports.org/ticket/53597
+            if { ${use_xcode} } {
+                if {[vercmp $xcodeversion 4.3] < 0} {
+                    set sdks_dir ${configure.developer_dir}/SDKs
+                } else {
+                    set sdks_dir ${configure.developer_dir}/Platforms/MacOSX.platform/Developer/SDKs
                 }
+            } else {
+                set sdks_dir ${configure.developer_dir}/SDKs
+            }
+            if { ![file exists ${sdks_dir}/MacOSX${configure.sdk_version}.sdk] } {
+                configure.sdk_version
             }
 
             # respect configure.sdk_version
@@ -1003,11 +1061,9 @@ foreach {module module_info} [array get modules] {
                 } else {
                     set arch_replace ${build_arch}
                 }
-                foreach spec {macx-clang macx-g++ macx-icc} {
-                    reinplace \
-                        "s|__MACPORTS_DEVICE_ARCHS__|${arch_replace}|g" \
-                        ${worksrcpath}/mkspecs/${spec}/qmake.conf
-                }
+                reinplace \
+                    "s|__MACPORTS_DEVICE_ARCHS__|${arch_replace}|g" \
+                    ${worksrcpath}/mkspecs/common/macx.conf
             }
 
             # use MacPorts X11
@@ -1016,6 +1072,22 @@ foreach {module module_info} [array get modules] {
                     reinplace \
                         "s|__MACPORTS_PREFIX__|${prefix}|g" \
                         ${worksrcpath}/mkspecs/${spec}/qmake.conf
+                }
+            }
+
+            # see https://bugreports.qt.io/browse/QTBUG-72903
+            post-configure {
+                foreach del {QMAKE_LIBS_OPENGL QMAKE_INCDIR_OPENGL} {
+                    reinplace \
+                        "/${del}\ =/d" \
+                        ${worksrcpath}/src/gui/qtgui-config.pri
+                }
+            }
+            post-destroot {
+                foreach del {QMAKE_LIBS_OPENGL QMAKE_INCDIR_OPENGL} {
+                    reinplace \
+                        "/${del}\ =/d" \
+                        ${destroot}${qt_mkspecs_dir}/modules/qt_lib_gui_private.pri
                 }
             }
 
@@ -1095,7 +1167,6 @@ foreach {module module_info} [array get modules] {
                 -no-openssl         \
                 -no-libproxy        \
                 -system-pcre        \
-                --disable-xcb       \
                 -glib               \
                 -no-gtk
 
@@ -1133,7 +1204,6 @@ foreach {module module_info} [array get modules] {
                 -no-directfb            \
                 -no-linuxfb             \
                 -no-kms                 \
-                -no-mirclient           \
                 -no-libinput            \
                 -no-system-proxies
 
@@ -1351,9 +1421,15 @@ foreach {module module_info} [array get modules] {
                     }
                 }
 
-                # std::auto_ptr was removed in C++17
-                # see https://bugreports.qt.io/browse/QTBUG-64441
-                configure.args-append DEFINES+=BOOST_NO_AUTO_PTR
+                # avoid unnecessary dependency on OpenSSL
+                configure.args-append "QMAKE_LIBS_OPENSSL="
+            }
+
+            # special case
+            if { ${module} eq "qtquick3d" } {
+                # see config_help.txt
+                configure.post_args-append   -- \
+                                             -system-assimp
             }
 
             # special case
@@ -1370,6 +1446,15 @@ foreach {module module_info} [array get modules] {
                 #    "may change from version to version"
                 patchfiles-append patch-qtwebkit_internal_api.diff
 
+                # find OpenGL headers
+                patchfiles-append patch-qtwebkit_opengl_location.diff
+
+                # see https://bugs.webkit.org/show_bug.cgi?id=171612
+                patchfiles-append patch-qtwebkit_fix_icu.diff
+
+                # avoid: Project ERROR: Could not find feature mirclient.
+                patchfiles-append patch-qtwebkit_fix_mirclient_test.diff
+
                 # qtwebkit uses
                 #    glx
                 #    libXcomposite
@@ -1381,6 +1466,12 @@ foreach {module module_info} [array get modules] {
                         reinplace "s|return 0;|return 0;\\\n#error turn off test|g" ${worksrcpath}/Tools/qmake/config.tests/${test}/${test}.cpp
                     }
                 }
+            }
+
+            # special case
+            if { ${module} eq "qtwebkit-examples" } {
+                # in Qt 5.12, qmake changed how it generated Makefiles
+                patchfiles-append patch-qtwebkit-examples_header_location.diff
             }
 
             # special case
@@ -1415,6 +1506,7 @@ foreach {module module_info} [array get modules] {
                     set qt_list        [lreplace ${qt_list}        0 0]
                     set framework_list [lreplace ${framework_list} 0 0]
                 }
+
                 set libreplace [string repeat ../ [llength ${qt_list}]][join ${framework_list} /]
                 if { ${libreplace} ne "lib" } {
                     patchfiles-append patch-shared.diff
@@ -1425,17 +1517,18 @@ foreach {module module_info} [array get modules] {
 
                 # qdoc now uses libclang for parsing C/C++ code
                 # see https://wiki.qt.io/New_Features_in_Qt_5.11
-                configure.env-append LLVM_INSTALL_DIR=${prefix}/libexec/llvm-7.0
+                configure.env-append LLVM_INSTALL_DIR=${prefix}/libexec/llvm-9.0
             }
 
             # special case
             if { ${module} eq "qtwebengine" } {
+                PortGroup           conflicts_build 1.0
                 # see https://doc.qt.io/qt-5/qtwebengine-platform-notes.html
                 PortGroup           xcodeversion 1.0
-                minimum_xcodeversions   {15 7.3}
-                if { ${os.major} < 15 } {
+                minimum_xcodeversions   {16 8.3.3}
+                if { ${os.major} < 16 } {
                     pre-fetch {
-                        ui_error "${subport} requires OS X 10.11 or later"
+                        ui_error "${subport} requires macOS 10.12 or later"
                         return -code error "incompatible OS version"
                     }
                 }
@@ -1443,22 +1536,38 @@ foreach {module module_info} [array get modules] {
                 # UsingTheRightCompiler (https://trac.macports.org/wiki/UsingTheRightCompiler)
                 build.env-append      CXX=${configure.cxx}
                 build.env-append      CC=${configure.cc}
+                build.env-append      SAMUFLAGS=-j${build.jobs}
                 configure.args-append QMAKE_LINK=${configure.cxx}
 
-                # see https://chromium.googlesource.com/chromium/src/+/cd7154e0bb5f3ca9c72586da79f87d13afb5361a%5E%21/
-                patchfiles-append patch-qtwebengine_xcode10.diff
+                # avoid
+                #     Undefined symbols for architecture x86_64
+                conflicts_build-append ${subport}
 
-                # the following libraries, even when available, do not seem to affect the build
-                # so turn them off
-                configure.post_args-append  \
-                    --                      \
-                    -no-pulseaudio          \
-                    -no-alsa                \
-                    -qt-webengine-icu       \
-                    -qt-ffmpeg              \
-                    -qt-opus                \
-                    -qt-webp
+                # do not opportunistically find MacPorts libraries (e.g. X11 libraries)
+                patchfiles-append patch-qtwebengine_tests.diff
 
+                # chromium/build/mac/find_sdk.py expects the SDK version (mac_sdk_min) in Major.Minor format
+                # If Patch version is provided it fails with "Exception: No Major.Minor.Patch+ SDK found"
+                patchfiles-append patch-qtwebengine_sdk.diff
+
+                # see https://trac.macports.org/ticket/60978
+                patchfiles-append patch-rule_bison.py.diff
+
+                # see https://trac.macports.org/ticket/59294
+                use_xcode yes
+
+                # see config_help.txt
+                configure.post_args-append         \
+                    --                             \
+                    -webengine-native-spellchecker \
+                    -webengine-kerberos \
+                    -system-webengine-icu \
+                    -system-webengine-ffmpeg
+
+                # missing file spell_check_host_chrome_impl_mac.cc
+                # TODO: investigate further
+                configure.post_args-delete \
+                    -webengine-native-spellchecker
             }
 
             # special case
@@ -1483,7 +1592,7 @@ foreach {module module_info} [array get modules] {
                 }
 
                 variant gstreamer description {Compile GStreamer support} {
-                    depends_lib-append port:gstreamer1 port:gstreamer1-gst-plugins-base
+                    depends_lib-append port:gstreamer1 port:gstreamer1-gst-plugins-base port:gstreamer1-gst-plugins-bad
                 }
 
                 # for commands must follow -spec set in PortGroup
@@ -1521,6 +1630,11 @@ foreach {module module_info} [array get modules] {
             if { ${module} eq "qtscript" } {
                 # see https://trac.macports.org/ticket/54453
                 patchfiles-append patch-qtscript_ceil.diff
+
+                # See https://code.qt.io/cgit/qt/qt5.git/commit/?id=758d922716ebdedeaa6fa26369c8dbb9dff4bae4
+                if {[variant_isset examples]} {
+                    depends_lib-append  port:${name}-qttools
+                }
             }
         }
     }
@@ -1535,9 +1649,7 @@ foreach {module module_info} [array get modules] {
 
             distname        ${module}-${middle_name}-src-${version}
 
-            if { ${revision_string} ne "0" } {
-                revision ${revision_string}
-            }
+            revision ${revision_string}
 
             description       Documentation for the port ${name}-${module}
             long_description  ${description}
@@ -1579,7 +1691,14 @@ foreach {module module_info} [array get modules] {
                 build.env-append      CXX=${configure.cxx}
                 build.env-append      CC=${configure.cc}
                 configure.args-append QMAKE_LINK=${configure.cxx}
+                # see https://trac.macports.org/ticket/59294
+                use_xcode yes
+                # chromium/build/mac/find_sdk.py expects the SDK version (mac_sdk_min) in Major.Minor format
+                # If Patch version is provided it fails with "Exception: No Major.Minor.Patch+ SDK found"
+                patchfiles-append patch-qtwebengine_sdk.diff
             } elseif { ${module} eq "qtwebkit" } {
+                # avoid: Project ERROR: Could not find feature mirclient.
+                patchfiles-append patch-qtwebkit_fix_mirclient_test.diff
                 post-extract {
                     # without this file, the makefile ${worksrcpath}/qtwebkit/Source/WebCore/Makefile.WebCore.Target
                     #    keeps generating itself over and over again
@@ -1605,9 +1724,7 @@ foreach {sql_names sql_info} [array get sql_plugins] {
 
         distname        qtbase-${middle_name}-src-${version}
 
-        if { ${revision_string} ne "0" } {
-            revision ${revision_string}
-        }
+        revision ${revision_string}
 
         checksums                                          \
             rmd160  [lindex [lindex $modules(qtbase) 0] 0] \
@@ -1669,7 +1786,7 @@ foreach {sql_names sql_info} [array get sql_plugins] {
 
                 configure.args-append                                                                \
                     [subst QMAKE_INCDIR_${use_name}+=\"[lindex ${variant_info} 2]\"]  \
-                    [subst QMAKE_LIBDIR_${use_name}+=\"[lindex ${variant_info} 3]\"]  \
+                    [subst QMAKE_LIBDIR+=\"[lindex ${variant_info} 3]\"]  \
                     [subst QMAKE_LIBS_${use_name}+=\"[lindex ${variant_info} 4]\"]
             }
         }
@@ -1685,7 +1802,7 @@ foreach {sql_names sql_info} [array get sql_plugins] {
 subport ${name}-docs {
     # meta-port to install documentation for various modules
 
-    #revision 0
+    revision            0
 
     description         Documentation for Qt Tool Kit ${qt_major}
     long_description    Documentation for Qt Tool Kit ${qt_major}
@@ -1720,7 +1837,7 @@ subport ${name}-docs {
 if { ${subport} eq ${name} } {
     # the main port is Meta-port to install various modules
 
-    #revision 0
+    revision 0
 
     description         Qt Tool Kit ${qt_major}
     long_description    Qt Tool Kit: A cross-platform framework \
@@ -1870,13 +1987,11 @@ foreach {component component_info} [array get qt5pg::qt5_component_lib] {
     if { [vercmp ${qt_version_removed} ${qt_version}] <= 0 } {
         subport ${name}-${component}${suffix} {
             PortGroup obsolete 1.0
-            #revision 0
         }
 
         if { ${component} ne "qtquick1" && ${component} ne "qtwebkit-examples" && ${component} ne "qtdoc" && ${suffix} ne "-plugin" } {
             subport ${name}-${component}${suffix}-docs {
                 PortGroup obsolete 1.0
-                #revision 0
             }
         }
     }
@@ -1886,8 +2001,10 @@ foreach {component component_info} [array get qt5pg::qt5_component_lib] {
 # Qt 5.8 will not work on OS X 10.8
 # Qt 5.9 will not work on OS X 10.9
 # Qt 5.10 will not work on OS X 10.10
-# replace qt5-XYZ port with qt5{6,7,8,9}-XYZ port
-if { ${os.major} < 15} {
+# Qt 5.12 will not work on OS X 10.11
+# Qt 5.14 will not work on OS X 10.12
+# replace qt5-XYZ port with qt5{6,7,8,9,11,13}-XYZ port
+if { ${os.major} < 17} {
 
     if { ${os.major} < 12 } {
         set qt_replace_version 5.6
@@ -1895,8 +2012,12 @@ if { ${os.major} < 15} {
         set qt_replace_version 5.7
     } elseif { ${os.major} < 14 } {
         set qt_replace_version 5.8
-    } else {
+    } elseif { ${os.major} < 15 } {
         set qt_replace_version 5.9
+    } elseif { ${os.major} < 16 } {
+        set qt_replace_version 5.11
+    } else {
+        set qt_replace_version 5.13
     }
 
     set qt_replace_name qt[join [split ${qt_replace_version} .] ""]
@@ -1920,6 +2041,14 @@ if { ${os.major} < 15} {
         if { [vercmp ${qt_version_introduced} ${qt_replace_version}] <= 0 && [vercmp ${qt_version_removed} ${qt_replace_version}] > 0 } {
             replaced_by      ${qt_replace_port}
             conflicts-delete ${qt_replace_port}
+        } elseif {[vercmp ${qt_version_introduced} ${qt_replace_version}] > 0 && ![catch {set installed [lindex [registry_active ${subport}] 0]}]} {
+            # this should not really be possible
+            # Qt 5.14.0 built on macOS Sierra, but Qt 5.14.1 did not
+            # so the upgrade path could be qt5 (5.14.0) --> qt513 (5.13.2)
+            # this is a problem for qtquick3d and qtquicktimeline because they were introduced in 5.14.0
+            # see https://trac.macports.org/ticket/60045
+            replaced_by      ${qt_replace_name}-qtbase
+            conflicts-delete ${qt_replace_name}-qtbase
         }
     }
 }

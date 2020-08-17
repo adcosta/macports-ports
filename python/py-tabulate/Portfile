@@ -4,14 +4,15 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-tabulate
-version             0.8.2
+version             0.8.7
 revision            0
+
 categories-append   devel
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -19,13 +20,10 @@ description         Pretty-print tabular data
 long_description    ${description}
 
 homepage            https://bitbucket.org/astanin/python-tabulate
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  3d9ac75ebe95d6be225ad2300fd862c794913c8d \
-                    sha256  e4ca13f26d0a6be2a2915428dc21e732f1e44dad7f76d7030b2ef1ec251cf7f2 \
-                    size    45758
+checksums           rmd160  9cf3e6a3323c48e0ce236e1c5327c520358dc45f \
+                    sha256  db2723a20d04bcda8522165c73eea7c300eda74e0ce852d9022e0159d7895007 \
+                    size    50913
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-setuptools

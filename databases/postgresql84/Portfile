@@ -2,10 +2,14 @@
 
 PortSystem 1.0
 PortGroup select 1.0
+PortGroup deprecated 1.0
+
+# Final release was on 2014-07-24
+deprecated.upstream_support no
 
 name			postgresql84
 version			8.4.22
-revision		3
+revision		6
 
 categories		databases
 platforms		darwin
@@ -28,9 +32,12 @@ checksums           rmd160  c46d1fd3405150f0ed25012dad1ef8110d2c2d64 \
 
 use_bzip2		yes
 
-depends_lib		port:readline path:lib/libssl.dylib:openssl port:zlib port:libxml2 port:libxslt port:ossp-uuid
+depends_lib		port:readline port:openssl10 port:zlib port:libxml2 port:libxslt port:ossp-uuid
 depends_build		port:bison
 depends_run		port:postgresql_select
+
+configure.cppflags-prepend -I${prefix}/include/openssl-1.0
+configure.ldflags-prepend  -L${prefix}/lib/openssl-1.0
 
 worksrcdir		postgresql-${version}
 

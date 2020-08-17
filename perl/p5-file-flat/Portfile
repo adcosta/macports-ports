@@ -3,17 +3,17 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         File-Flat 1.04
-revision            4
+perl5.branches      5.26 5.28 5.30
+perl5.setup         File-Flat 1.06
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 platforms           darwin
 description         Implements a flat filesystem
 long_description    ${description}
 
-checksums           sha1    09d9bef3425ef9bec75b5fb7a664e2e33052707e \
-                    rmd160  36847040787880043b569b2fac86509eb094b7a0
+checksums           rmd160  b6407f3abad6d1ad34052dd1c10b25c29d3a1ced \
+                    sha256  9542867d7a33222dd50b17b7eaca7d4efce4da1254583ddfd35f8bd245e54b41 \
+                    size    49541
 
 if {${perl5.major} != ""} {
     depends_build-append \
@@ -23,8 +23,6 @@ if {${perl5.major} != ""} {
                     port:p${perl5.major}-file-copy-recursive \
                     port:p${perl5.major}-file-remove \
                     port:p${perl5.major}-prefork
-
-    patchfiles      patch-default-inc-excludes-dot.diff
 
     supported_archs noarch
 }

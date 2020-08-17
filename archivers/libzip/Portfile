@@ -2,9 +2,11 @@
 
 PortSystem          1.0
 PortGroup           cmake 1.1
+PortGroup           legacysupport 1.0
 
 name                libzip
-version             1.5.1
+version             1.7.3
+revision            0
 categories          archivers
 license             BSD
 platforms           darwin
@@ -18,9 +20,9 @@ homepage            https://libzip.org/
 master_sites        ${homepage}download/
 use_xz              yes
 
-checksums           rmd160  a7b7ff86a06fda34841c16aeed38f51add5eb293 \
-                    sha256  04ea35b6956c7b3453f1ed3f3fe40e3ddae1f43931089124579e8384e79ed372 \
-                    size    717908
+checksums           rmd160  51efb3e8b7b219e05b9146604cd6398a6ab391ff \
+                    sha256  a60473ffdb7b4260c08bfa19c2ccea0438edac11193c3afbbb1f17fbcf6c6132 \
+                    size    747372
 
 depends_build-append \
                     port:coreutils
@@ -30,10 +32,39 @@ depends_lib-append  port:bzip2 \
 configure.args-append \
                     -DENABLE_COMMONCRYPTO:Bool=OFF \
                     -DENABLE_GNUTLS:Bool=OFF \
+                    -DENABLE_MBEDTLS:Bool=OFF \
                     -DENABLE_OPENSSL:Bool=OFF
 
 test.run            yes
 test.target         check
+
+variant gnutls conflicts mbedtls openssl description {install gnutls crypto support} {
+    configure.args-replace \
+                    -DENABLE_GNUTLS:Bool=OFF \
+                    -DENABLE_GNUTLS:Bool=ON
+
+    depends_lib-append  \
+                    port:gnutls \
+                    port:nettle
+}
+
+variant mbedtls conflicts gnutls openssl description {install mbedtls crypto support} {
+    configure.args-replace \
+                    -DENABLE_MBEDTLS:Bool=OFF \
+                    -DENABLE_MBEDTLS:Bool=ON
+
+    depends_lib-append  \
+                    port:mbedtls
+}
+
+variant openssl conflicts gnutls mbedtls description {install openssl crypto support} {
+    configure.args-replace \
+                    -DENABLE_OPENSSL:Bool=OFF \
+                    -DENABLE_OPENSSL:Bool=ON
+
+    depends_lib-append  \
+                    port:openssl
+}
 
 livecheck.type      regex
 livecheck.regex     ${name}-(\[0-9.\]+)\\.tar

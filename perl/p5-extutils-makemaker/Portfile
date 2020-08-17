@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         ExtUtils-MakeMaker 7.34
+perl5.branches      5.26 5.28 5.30
+perl5.setup         ExtUtils-MakeMaker 7.46
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Create a module Makefile
@@ -13,9 +13,9 @@ long_description    This utility is designed to write a Makefile for an \
 
 platforms           darwin
 
-checksums           rmd160  631856e14797c64b150d49da0cf64f3363e03a57 \
-                    sha256  95f1eb44de480d00b28d031b574ec868f7aeeee199eb5abe5666f6bcbbf68480 \
-                    size    471349
+checksums           rmd160  bf52198db449a26b210d25716b056f73e5cf3530 \
+                    sha256  8f4a107565392d0f36c99c849a3bfe7126ba58148a4dca334c139add0dd0d328 \
+                    size    477747
 
 perl5.link_binaries no
 if {${perl5.major} != ""} {

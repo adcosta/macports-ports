@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        pipxproject pipx 0.15.1.3
+categories          python sysutils
+license             MIT
+maintainers         {lbschenkel @lbschenkel} openmaintainer
+supported_archs     noarch
+platforms           darwin
+
+description         Execute binaries from Python packages in isolated environments
+long_description    ${description}
+
+checksums           rmd160  64b198d937c3c7b12531a81828c7b813fa9a597a \
+                    sha256  af7f4cf388bfdae6547117a6be222d1d7b7edd3bccd3a77e2c96b8c858ac791f \
+                    size    356746
+
+github.livecheck.regex  {([\d.]+)}
+
+if {![variant_isset python36] && ![variant_isset python37] && ![variant_isset python38]} {
+    default_variants +python38
+}
+
+variant python36 conflicts python37 python38 description {Use Python 3.6} {}
+variant python37 conflicts python36 python38 description {Use Python 3.7} {}
+variant python38 conflicts python36 python37 description {Use Python 3.8} {}
+
+if {[variant_isset python38]} {
+    python.default_version 38
+} elseif {[variant_isset python37]} {
+    python.default_version 37
+} elseif {[variant_isset python36]} {
+    python.default_version 36
+}
+
+depends_lib-append \
+                    port:py${python.version}-argcomplete \
+                    port:py${python.version}-setuptools \
+                    port:py${python.version}-userpath

@@ -1,9 +1,11 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           meson 1.0
 
 name                mm-common
-version             0.9.12
+version             1.0.1
+revision            0
 license             GPL-2
 set branch          [join [lrange [split ${version} .] 0 1] .]
 
@@ -25,14 +27,30 @@ master_sites        gnome:sources/${name}/${branch}/
 
 use_xz              yes
 
-checksums           sha256  ceffdcce1e5b52742884c233ec604bf6fded12eea9da077ce7a62c02c87e7c0b \
-                    rmd160  0b3377636578bd07bc319061feccb026823c9147 \
-                    size    304588
+checksums           sha256  28a2d775afbf05c5c957b24b220ed6e9b2023179b98ecde471d89e9754ea5ac9 \
+                    rmd160  12e745e01cf665123ca320ae30ab4105fe94e08d \
+                    size    271144
 
 supported_archs     noarch
 
-depends_build       port:gsed \
+depends_build-append \
+                    port:gsed \
                     port:curl \
                     port:wget
 
-livecheck.type      gnome-with-unstable
+depends_lib-append  port:python38
+
+patchfiles          patch-use-our-python3.diff
+
+post-patch {
+    reinplace "s|@@PYTHON3_BIN@@|${prefix}/bin/python3.8|" \
+                    ${worksrcpath}/meson.build \
+                    ${worksrcpath}/util/mm-common-get.in \
+                    ${worksrcpath}/util/build_scripts/check-dllexport-usage.py\
+                    ${worksrcpath}/util/build_scripts/dist-build-scripts.py \
+                    ${worksrcpath}/util/build_scripts/doc-reference.py \
+                    ${worksrcpath}/util/build_scripts/dist-changelog.py \
+                    ${worksrcpath}/util/build_scripts/generate-binding.py
+}
+
+livecheck.type      gnome

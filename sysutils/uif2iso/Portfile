@@ -29,7 +29,7 @@ depends_lib             port:zlib
 
 patchfiles              Types.h.patch
 
-build.env               CC=${configure.cc} CFLAGS="${configure.cc_archflags}"
+build.env               CC=${configure.cc} CFLAGS=${configure.cc_archflags}
 
 destroot {
 	xinstall -m 755 ${worksrcpath}/uif2iso ${destroot}${prefix}/bin

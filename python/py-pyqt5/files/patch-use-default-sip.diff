@@ -1,15 +1,6 @@
---- configure.py.orig	2018-08-16 09:10:53.000000000 -0500
-+++ configure.py	2018-08-16 09:12:34.000000000 -0500
-@@ -644,7 +644,7 @@
- 
-         # Check there is a private copy of the sip module already installed.
-         try:
--            from PyQt5 import sip
-+            import sip
-         except ImportError:
-             error(
-                     "Unable to import PyQt5.sip.  Make sure you have "
-@@ -2438,7 +2438,7 @@
+--- configure.py.orig	2020-06-11 19:40:15.000000000 -0400
++++ configure.py	2020-06-11 19:41:02.000000000 -0400
+@@ -2506,7 +2506,7 @@
      the target configuration.
      """
  
@@ -18,12 +9,28 @@
  
      # If we don't check for signed interpreters, we exclude the 'VendorID'
      # feature
-@@ -2916,7 +2916,7 @@
+--- designer/pluginloader.cpp.orig	2020-06-11 19:40:42.000000000 -0400
++++ designer/pluginloader.cpp	2020-06-11 19:41:02.000000000 -0400
+@@ -167,7 +167,7 @@
+     // Make sure we have sip.unwrapinstance.
+     if (!sip_unwrapinstance)
+     {
+-        sip_unwrapinstance = getModuleAttr("PyQt5.sip", "unwrapinstance");
++        sip_unwrapinstance = getModuleAttr("sip", "unwrapinstance");
  
-     # Check there is a private copy of the sip module already installed.
-     try:
--        from PyQt5 import sip
-+        import sip
-     except ImportError:
-         error(
-                 "Unable to import PyQt5.sip.  Make sure you have configured "
+         if (!sip_unwrapinstance)
+             return true;
+--- qmlscene/pluginloader.cpp.orig	2020-06-11 19:40:51.000000000 -0400
++++ qmlscene/pluginloader.cpp	2020-06-11 19:41:02.000000000 -0400
+@@ -412,9 +412,9 @@
+ void PyQt5QmlPlugin::getSipAPI()
+ {
+ #if defined(SIP_USE_PYCAPSULE)
+-    sip = (const sipAPIDef *)PyCapsule_Import("PyQt5.sip._C_API", 0);
++    sip = (const sipAPIDef *)PyCapsule_Import("sip._C_API", 0);
+ #else
+-    PyObject *c_api = getModuleAttr("PyQt5.sip", "_C_API");
++    PyObject *c_api = getModuleAttr("sip", "_C_API");
+ 
+     if (c_api)
+     {

@@ -1,58 +1,65 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           deprecated 1.0
+
+# Support ended 2019-03-31, see https://mariadb.org/about/maintenance-policy/
+deprecated.upstream_support no
 
 name                mariadb-10.0
 set name_mysql      ${name}
-version             10.0.33
+version             10.0.38
 set version_branch  [join [lrange [split ${version} .] 0 1] .]
-# Please set revision_client and revision_server to 0 if you bump version.
+# Please set revision_client and revision_server to 0 if you bump
+# version; these can be changed independently for the 2 subports, but
+# can be changed at the same time if that's what's required.
 set revision_client 0
-set revision_server 0
+set revision_server 1
 categories          databases
 platforms           darwin
 license             GPL-2
-maintainers         {pixilla @pixilla} openmaintainer
-homepage            https://mariadb.org/
+maintainers         {michaelld @michaelld} openmaintainer
 
 if {$subport eq $name} {
 
-    PortGroup           cmake 1.0
+    PortGroup           cmake 1.1
     PortGroup           select 1.0
+    PortGroup           github 1.0
 
-    revision            ${revision_client}
+    compiler.cxx_standard 2011
+
+    github.setup        MariaDB server ${version}
+    git.branch          ${version_branch}
+
     license             GPL-2
     description         Multithreaded SQL database server
     long_description    Mariadb is a fork of the MySQL server, a multi-threaded SQL database.
-
-    master_sites \
-        http://ftp.osuosl.org/pub/mariadb/mariadb-${version}/source/ \
-        http://mirror2.hs-esslingen.de/mariadb/mariadb-${version}/source/ \
-        http://mirror3.layerjet.com/mariadb/mariadb-${version}/source/ \
-        http://ftp.yz.yamagata-u.ac.jp/pub/dbms/mariadb/mariadb-${version}/source/ \
-        http://mirrors.supportex.net/mariadb/mariadb-${version}/source/ \
-        http://mirrors.fe.up.pt/pub/mariadb/mariadb-${version}/source/ \
-        http://gd.tuwien.ac.at/db/mariadb/mariadb-${version}/source/ \
-        https://mirror.aarnet.edu.au/pub/MariaDB/mariadb-${version}/source/ \
-        http://ftp.heanet.ie/mirrors/mariadb/mariadb-${version}/source/ \
-        http://mirror.switch.ch/mirror/mariadb/mariadb-${version}/source/
-
-    distname            mariadb-${version}
-    cmake.out_of_source yes
-    use_parallel_build  yes
 
     patch.pre_args      -p1
     patchfiles          patch-cmake-install_layout.cmake.diff \
                         patch-CMakeLists.txt.diff
 
-    checksums           rmd160  79cdce650892d6c77c214c30e8fc20f1c35ab725 \
-                        sha256  e3e3d583c51761aee2fcd0e51bfa7d592c1299cf5eb977e61ea9dc72932e8870
+    checksums           rmd160 dc325783cae3bfcda44754ae8776066478549874 \
+                        sha256 9d51dae4822f6ec392b8768f38ccc095d5ac2e5f2a9482e29676afe88cc6a186 \
+                        size   62845969
+    revision            ${revision_client}
+
+    # stealth update equivalent from moving to Github
+    dist_subdir         ${name}/${version}_1
 
     depends_lib-append  port:zlib port:tcp_wrappers port:ncurses port:judy
     depends_run-append  port:mysql_select
 
     select.group        mysql
     select.file         ${filespath}/${name_mysql}
+
+    # override the cmake PG's build type setting, as Mariadb doesn't
+    # build using 'MacPorts' for this setting
+    if {[variant_isset debug]} {
+        cmake.build_type Debug
+    } else {
+        cmake.build_type Release
+    }
 
     post-extract {
         file mkdir ${cmake.build_dir}/macports
@@ -93,6 +100,7 @@ if {$subport eq $name} {
                         -DWITH_UNIT_TESTS:BOOL=ON \
                         -DWITHOUT_TOKUDB_STORAGE_ENGINE:BOOL=ON \
                         -DWITHOUT_MROONGA_STORAGE_ENGINE:BOOL=ON \
+                        -DWITHOUT_CASSANDRA_STORAGE_ENGINE:BOOL=ON \
                         -DENABLE_GCOV:BOOL=OFF \
                         -DENABLE_DTRACE:BOOL=OFF \
                         -DWITH_READLINE:BOOL=ON \
@@ -141,30 +149,11 @@ if {$subport eq $name} {
         }
     }
 
-    pre-activate {
-        # The macports-default.cnf is installed by ${name_mysql}.
-        # Early versions of ${name_mysql}-server installed macports-default.cnf so for a
-        # reasonable period we need to deactivate older versions of the ${name_mysql}-server.
-        if { [file exists ${prefix}/etc/${name_mysql}/macports-default.cnf]
-            && ![catch {set vers [lindex [registry_active ${name_mysql}-server] 0]}]
-            && [vercmp [lindex $vers 1] 5.5.24] < 0 } {
-
-            registry_deactivate_composite ${name_mysql}-server "" [list ports_nodepcheck 1]
-        }
-    }
-
     post-activate {
         if {![file exists ${prefix}/etc/${name_mysql}/my.cnf]} {
             copy ${prefix}/share/${name_mysql}/support-files/macports/my.cnf \
                 ${prefix}/etc/${name_mysql}/
         }
-    }
-
-    variant openssl description {Enable OpenSSL support} {
-
-        depends_lib-append      path:lib/libssl.dylib:openssl
-        configure.args-delete   -DWITH_SSL:STRING=no
-        configure.args-append   -DWITH_SSL:STRING=system
     }
 
     variant system_readline description {Use system readline instead of bundled readline} {
@@ -197,9 +186,6 @@ possible to install and have running all the MacPorts mysql ports
 simultaneously.
 "
 
-    livecheck.type      regex
-    livecheck.url       https://downloads.mariadb.org
-    livecheck.regex     "btn-large\" href=\"/mariadb/(${version_branch}\[^/\]+)/\">"
 }
 
 subport ${name_mysql}-server {
@@ -207,7 +193,7 @@ subport ${name_mysql}-server {
     revision            ${revision_server}
     license             BSD
     description         Run ${name_mysql} as server
-    long_description    ${description}
+    long_description    {*}${description}
 
     supported_archs     noarch
     distfiles
@@ -271,5 +257,7 @@ If this is a new install you might want to run:
 \$ sudo -u ${mysqluser} ${prefix}/lib/${name_mysql}/bin/mysql_install_db
 "
 
-    livecheck.type          none
 }
+
+homepage       https://mariadb.org/
+livecheck.type none

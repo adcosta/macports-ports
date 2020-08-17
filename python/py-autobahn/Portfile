@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-autobahn
+version             20.2.2
+platforms           darwin
+license             MIT
+maintainers         {mojca @mojca} openmaintainer
+
+description         WebSocket client & server library WAMP real time framework
+long_description    ${description}
+
+homepage            https://crossbar.io/autobahn
+master_sites        pypi:a/autobahn
+distname            autobahn-${version}
+
+checksums           rmd160  90a33d2f405a0581681cb0be4354507250d46202 \
+                    sha256  8fb9f3e7f6de5b7ee5479a56582873b927cc25d72319d0a86f43d992048d8171 \
+                    size    682775
+
+python.versions     27 37 38
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    livecheck.type  none
+} else {
+    livecheck.type  pypi
+}

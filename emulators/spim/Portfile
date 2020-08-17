@@ -3,9 +3,9 @@
 PortSystem          1.0
 
 name                spim
-version             9.1.20
-svn.revision        717
-revision            1
+version             9.1.22
+svn.revision        732
+revision            0
 license             BSD
 categories          emulators devel lang x11
 platforms           darwin
@@ -41,9 +41,8 @@ worksrcdir          code/spim
 use_configure       no
 
 variant universal {}
-
-build.env           CXXFLAGS="${configure.cxxflags} [get_canonical_archflags cxx]" \
-                    LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]"
+build.env           "CXXFLAGS=${configure.cxxflags} [get_canonical_archflags cxx]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]"
 build.target        spim
 build.args          CXX=${configure.cxx} \
                     MYLEX=${prefix}/bin/flex \

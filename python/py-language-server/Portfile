@@ -5,41 +5,55 @@ PortGroup           github 1.0
 PortGroup           python 1.0
 PortGroup           select 1.0
 
-github.setup        palantir python-language-server 0.21.2
 name                py-language-server
+github.setup        palantir python-language-server 0.34.1
+revision            0
+
 categories-append   devel
+platforms           darwin
+supported_archs     noarch
 license             MIT
-maintainers         {sean @seanfarley} openmaintainer
+maintainers         {reneeotten @reneeotten} openmaintainer
+
 description         An implementation of the Language Server Protocol for Python
 long_description    ${description}
 
-platforms           darwin
-supported_archs     noarch
+checksums           rmd160  58ac2d5e87f10a823fd40f7db3ec4286becf771a \
+                    sha256  05b5e24254e8c79ad8b02f8611a0ec8145e277944d17cd58f5aefe55d7c8b11b \
+                    size    457974
 
-checksums           rmd160  0c889cac5177d1f5ecdf2be2f3cb2cf810fed46b \
-                    sha256  657553c79249c62e8765a41c5ac8aeb0445ed6ccca8082e0c8e7b561a9ac7c0e \
-                    size    439093
+python.versions     27 35 36 37 38
 
-python.versions     27 35 36 37
-
-if {$subport ne $name} {
+if {${subport} ne ${name}} {
     depends_lib-append \
                     port:py${python.version}-autopep8 \
                     port:py${python.version}-codestyle \
                     port:py${python.version}-docstyle \
+                    port:py${python.version}-flake8 \
                     port:py${python.version}-flake8-mccabe \
-                    port:py${python.version}-future \
                     port:py${python.version}-jedi \
                     port:py${python.version}-pluggy \
                     port:py${python.version}-pyflakes \
+                    port:py${python.version}-pylint \
                     port:py${python.version}-python-jsonrpc-server \
                     port:py${python.version}-rope \
                     port:py${python.version}-setuptools \
+                    port:py${python.version}-ujson \
                     port:py${python.version}-yapf
 
     if {${python.version} eq 27} {
-        depends_lib-append  port:py${python.version}-configparser \
-                            port:py${python.version}-futures
+        depends_lib-append  port:py${python.version}-backports-functools_lru_cache \
+                            port:py${python.version}-configparser \
+                            port:py${python.version}-future
+    }
+
+    patchfiles-append   patch-pyls_plugins_flake8_lint.py.diff \
+                        patch-test_plugins_flake8_lint.py.diff
+
+    post-patch {
+        reinplace "s|@@FLAKE8_BIN@@|flake8-${python.branch}|g" ${worksrcpath}/pyls/plugins/flake8_lint.py
+        reinplace "s|@@FLAKE8_BIN@@|flake8-${python.branch}|g" ${worksrcpath}/test/plugins/test_flake8_lint.py
+        reinplace "s|@@PYTHON_BIN@@|${python.bin}|g" ${worksrcpath}/pyls/plugins/flake8_lint.py
     }
 
     depends_test-append \
@@ -50,6 +64,14 @@ if {$subport ne $name} {
     test.cmd        py.test-${python.branch}
     test.args       -o addopts=''
     test.target
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst LICENSE \
+            ${destroot}${docdir}
+    }
 
     depends_run-append \
                     port:python-language-server_select

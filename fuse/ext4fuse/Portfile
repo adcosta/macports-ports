@@ -25,10 +25,9 @@ use_configure       no
 
 # osxfuse is not universal
 universal_variant   no
-
 build.env           CC=${configure.cc} \
-                    CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
-                    LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]"
+                    "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]"
 
 build.target
 

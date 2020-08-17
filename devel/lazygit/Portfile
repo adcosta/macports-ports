@@ -1,0 +1,27 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           golang 1.0
+
+go.setup            github.com/jesseduffield/lazygit 0.20.9 v
+categories          devel
+license             MIT
+maintainers         {gmail.com:herby.gillot @herbygillot} openmaintainer
+
+description         A simple terminal UI for git commands, written in Go
+long_description    {*}$description
+
+checksums           rmd160  feb754635e0bcf05d233e023d57bae9f108cd402 \
+                    sha256  849ffab98ff96141bb9dfccb5d13dc422dbf500373de57d7cf47ce070a8bceb2 \
+                    size    9196625
+
+set build_date      [exec date +%FT%T%z]
+build.args          -ldflags \
+                      '-X main.date=${build_date} \
+                       -X main.version=${version} \
+                       -X main.buildSource=macports'
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+    file copy ${worksrcpath}/docs ${destroot}${prefix}/share/doc/${name}
+}

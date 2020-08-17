@@ -10,11 +10,11 @@ description     library for USB device access
 long_description \
     library for use by user level applications to \
     access USB devices regardless of OS
-homepage        http://libusb.info/
+homepage        https://libusb.info/
 
 platforms       darwin
 license         LGPL-2.1+
-maintainers     {michaelld @michaelld}
+maintainers     {michaelld @michaelld} openmaintainer
 
 use_parallel_build no
 
@@ -22,15 +22,13 @@ subport libusb-devel {}
 
 if {${subport} eq ${name}} {
 
-    github.setup    libusb libusb 1.0.22 v
-    checksums       rmd160 15d8595131575d3a3479a5fde33aee0e7e58834a \
-                    sha256 32fe50b229bc5358b1865dc40cb308c685823b9bbb4069e7ecdb81d8c48b113f \
-                    size   380661
+    github.setup   libusb libusb 1.0.23 v
+    checksums      rmd160 0630bc588dd839986c8ca21374473ec4c3b5b76d \
+                   sha256 68de7c676ac17a87c508d01370cc7a656afd7a2b26f90b484fb0e911160cd4d5 \
+                   size   394009
+    revision       0
 
     conflicts      libusb-devel
-
-    # see https://trac.macports.org/ticket/56156
-    patchfiles-append    patch-10.7-nospeedsuper.diff
 
     # overload the github livecheck regex to look for versions that
     # are just numbers and '.', no letters (e.g., "1.0.19rc1").
@@ -39,24 +37,22 @@ if {${subport} eq ${name}} {
 
 } else {
 
-    long_description ${long_description} \
+    long_description {*}${long_description} \
         This port provides devel version of ${name}, updated weekly to monthly.
 
-    github.setup   libusb libusb 270bef4002e3a34e234bda12915c1da2b1e9af88
-    version        20181022
-    checksums      rmd160 de98d85c2d773ddff06d239d988a721740cf8e5d \
-                   sha256 af29e18d12bf211c70b2117fd6a65e799d9fc759403dd06e92367ed62cf2be02 \
-                   size   380861
+    github.setup   libusb libusb 26611eaa494ed9e077b5b0e1f999f5ae377de958
+    version        20200429-[string range ${github.version} 0 7]
+    checksums      rmd160 f19679b0bb3ac2c46869daaabefd1123354f8e35 \
+                   sha256 78317fa357d0320934c379ccde873bff4b2d948cd0376405aa7a46378de11e6d \
+                   size   353628
+    revision       0
 
     conflicts      libusb
 
-    # see https://trac.macports.org/ticket/56156
-    # this will likely be fixed in trunk soon
-    patchfiles-append    patch-10.7-nospeedsuper.diff
-
 }
 
-homepage         http://libusb.info/
+# see https://trac.macports.org/ticket/56156
+patchfiles-append patch-10.7-nospeedsuper.diff
 
 depends_build    port:libtool \
                  port:automake \

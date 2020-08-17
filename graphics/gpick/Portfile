@@ -45,9 +45,9 @@ build.cmd               ${prefix}/bin/scons
 build.target            build
 build.env               CC=${configure.cc} \
                         CXX=${configure.cxx} \
-                        CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
-                        CXXFLAGS="${configure.cxxflags} [get_canonical_archflags cxx]" \
-                        LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]"
+                        "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                        "CXXFLAGS=${configure.cxxflags} [get_canonical_archflags cxx]" \
+                        "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]"
 
 destroot.env            {*}${build.env}
 

@@ -2,10 +2,10 @@ PortSystem 1.0
 PortGroup python 1.0
 
 name			trac
-version			1.2.3
+version			1.4.2
 categories		devel python
 platforms		darwin
-maintainers		{geeklair.net:dluke @danielluke}
+maintainers		nomaintainer
 description		Wiki and issue tracking system.
 # modified BSD, see http://trac.edgewall.org/wiki/TracLicense
 license			BSD
@@ -21,32 +21,39 @@ master_sites	https://download.edgewall.org/trac/ \
 		https://ftp.edgewall.org/pub/trac/
 distname	Trac-${version}
 
-checksums	md5	7d430c8769cd21bdbcd7222e4cabc9ee \
-		sha1	b426e8af41adef1d82709e23b771e24dbff8a0b2 \
-		rmd160	2d11d3a371142b17dce5c510e5056755b4607558 \
-		sha256	f373114d0be88f216c47ca31185238780cde898cd7256526a501e95007dd9f90 \
-		size	6297767
+checksums	md5	021a7a2ba976483596f7a771a77239d1     \
+		sha1	091efd792411f3c8b70c6d44fb5ddf7cea698e87 \
+		rmd160	d9ddf6a83834b387c9241cac8000996e128ecbd0 \
+		sha256	42372fcd9f2ac46264656287fe6edb8230f59b44e991ee098b399f1bb475ae8f \
+		size	5645681
 
 variant python27 description {Use Python 2.7} {}
 
 default_variants +python27
 python.default_version 27
 
-depends_lib	port:py${python.version}-pygments port:py${python.version}-genshi \
-		port:py${python.version}-babel port:py${python.version}-sqlite
+depends_lib	port:py${python.version}-pygments \
+		port:py${python.version}-genshi \
+		port:py${python.version}-jinja2 \
+		port:py${python.version}-babel \
+		port:py${python.version}-docutils \
+		port:py${python.version}-pygments \
+		port:py${python.version}-textile \
+		port:py${python.version}-tz \
+		port:py${python.version}-sqlite
 
 notes		"See http://projects.edgewall.com/trac/wiki/TracInstall for information on setting up a new trac environment."
 
 variant postgres description {Build with postgresql support instead of sqlite} {
 				depends_lib-delete port:py${python.version}-sqlite
-				depends_lib-append port:py${python.version}-psycopg2 port:py${python.version}-mx-base
+				depends_lib-append port:py${python.version}-psycopg2
 			}
 
 variant mysql description {Build with mysql support instead of sqlite} {
 				depends_lib-delete port:py${python.version}-sqlite
-				depends_lib-append port:py${python.version}-mysql
+				depends_lib-append port:py${python.version}-pymysql
 
-				ui_msg "Warning: MySQL support is currently experimental. That means it works for some people, but several issues remain, in particular regarding the use of unicode and the key length in the repository cache."
+				ui_msg "Warning: Trac supports the MySQL database backend, although there are a couple of KnowIssues."
 				ui_msg "See http://trac.edgewall.org/wiki/MySqlDb for more detailed information."
 			}
 

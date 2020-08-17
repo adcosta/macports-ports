@@ -3,7 +3,7 @@
 PortSystem              1.0
 
 name                    zsh
-version                 5.6.2
+version                 5.8
 categories              shells
 platforms               darwin
 license                 Permissive
@@ -39,13 +39,13 @@ distfiles               ${distname}${extract.suffix}:src \
                         ${distname}-doc${extract.suffix}:doc
 
 checksums               ${distname}${extract.suffix} \
-                            rmd160  565369ebdba7d89c1ff46df0d42f20ffc93e34b8 \
-                            sha256  a50bd66c0557e8eca3b8fa24e85d0de533e775d7a22df042da90488623752e9e \
-                            size    3077368 \
+                            rmd160  4d387cbdaf9db52e24678871cd399c3bd5564429 \
+                            sha256  dcc4b54cc5565670a65581760261c163d720991f0d06486da61f8d839b52de27 \
+                            size    3193284 \
                         ${distname}-doc${extract.suffix} \
-                            rmd160  66bf49d84d18c211cc95f2a89d1f5fdfe1e4b6ee \
-                            sha256  98973267547cbdd8471b52e3a2bbe415be2c2c473246536ed8914f685e260114 \
-                            size    3198932
+                            rmd160  a36bd8e8294a1ce8e008a8e12b3ea7a27c24c516 \
+                            sha256  9b4e939593cb5a76564d2be2e2bfbb6242509c0c56fd9ba52f5dba6cf06fdcc4 \
+                            size    3088696
 
 patchfiles              prevent-doc-regeneration.patch
 
@@ -54,8 +54,7 @@ set docdir ${prefix}/share/doc/${name}
 configure.args          --enable-cap \
                         --enable-pcre \
                         --htmldir='${docdir}/html' \
-                        --with-tcsetpgrp \
-                        DL_EXT=bundle
+                        --with-tcsetpgrp
 
 # NOTE: The zpty tests can't open pseudoterminals from "port test".
 test.run                yes

@@ -1,17 +1,15 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
 PortSystem          1.0
 
 name                isync
-version             1.3.0
-checksums           rmd160  01d7b028fc61e7ad3b51b529a082637fbc4a6816 \
-                    sha256  8d5f583976e3119705bdba27fa4fc962e807ff5996f24f354957178ffa697c9c
-
+version             1.3.3
+revision            0
 categories          mail
 platforms           darwin
 license             GPL-2
-maintainers         nomaintainer
+maintainers         {gmail.com:emanuele.giaquinta @exg} openmaintainer
 description         Synchronizes a maildir with an imap server, provides mbsync command
-homepage            http://isync.sourceforge.net/
-
 long_description    isync is a command line utility for synchronizing a \
                     remote IMAP mailbox with a local maildir-style mailbox. \
                     This is useful for working in disconnected mode, such as \
@@ -19,40 +17,35 @@ long_description    isync is a command line utility for synchronizing a \
                     synchronized so that no message status flags are lost. \
                     Due to massive changes in interfaces the new command is \
                     called mbsync, isync is still provided for compatibility.
-
+homepage            http://isync.sourceforge.net/
 master_sites        sourceforge:project/isync/isync/${version}/
 
-depends_build       port:perl5
+checksums           rmd160  81fe630c8084a2022956c9479838fceecd94563d \
+                    sha256  f2213bf7f90266e1295deafe39b02d1ba0b4c7f3b897c09cd17c60f0d4f4c882 \
+                    size    315912
 
-depends_lib         port:db53 \
+depends_build       port:perl5 \
+                    port:pkgconfig
+
+depends_lib         port:cyrus-sasl2 \
+                    port:db53 \
                     path:lib/libssl.dylib:openssl \
                     port:zlib
 
 depends_run         path:share/curl/curl-ca-bundle.crt:curl-ca-bundle
 
-patchfiles          patch-src-drv_proxy_gen.pl.diff \
-                    patch-src-socket.diff
-
-if {[string match *gcc-4.2* ${configure.compiler}] || [string match *clang* ${configure.compiler}]} {
-    patchfiles-append \
-                    patch-src-util.c.diff
-}
+# Patch the sample configuration to use MacPorts certificates and
+# drv_proxy_gen.pl to use MacPorts perl for building on OS X 10.8 and
+# earlier: https://sourceforge.net/p/isync/bugs/37/
+patchfiles          patch-paths.diff
 
 post-patch {
-    reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/src/drv_proxy_gen.pl
-    # Patch the sample configuration to use MacPorts certificates
-    reinplace -E "s#^CertificateFile .*\$#CertificateFile ${prefix}/share/curl/curl-ca-bundle.crt#g" \
+    reinplace "s|@PREFIX@|${prefix}|" \
+        ${worksrcpath}/src/drv_proxy_gen.pl \
         ${worksrcpath}/src/mbsyncrc.sample
 }
 
-configure.args              --mandir=${prefix}/share/man
 configure.cppflags-append   -I${prefix}/include/db53
 configure.ldflags-append    -L${prefix}/lib/db53
-
-post-destroot {
-    xinstall -m 644 -W ${worksrcpath}/src \
-        compat/isync.1 mbsync.1 mdconvert.1 \
-        ${destroot}${prefix}/share/man/man1
-}
 
 notes "A sample configuration file has been installed in ${prefix}/share/doc/${name}/examples/mbsyncrc.sample"

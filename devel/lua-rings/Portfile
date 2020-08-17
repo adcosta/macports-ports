@@ -30,8 +30,8 @@ post-patch {
 variant universal {}
 
 # it is needed to manually set flags env variable as well
-build.env-append    CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
-                    LDFLAGS="${configure.ldflags} [get_canonical_archflags ld] -llua -lm" 
+build.env-append    "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld] -llua -lm"
 
 post-destroot {
     xinstall -d ${destroot}${prefix}/share/doc/${name}

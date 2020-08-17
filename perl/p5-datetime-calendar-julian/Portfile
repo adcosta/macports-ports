@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         DateTime-Calendar-Julian 0.04
+perl5.branches      5.26 5.28 5.30
+perl5.setup         DateTime-Calendar-Julian 0.102
 license             {Artistic-1 GPL}
 maintainers         {devans @dbevans} openmaintainer
 description         DateTime::Calendar::Julian - Dates in the Julian calendar
@@ -12,8 +12,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  57fa55f680a3697bc0c002a45d07e9fca5872829 \
-                    sha256  bb5968ad18bcd0772d2c311cd2deb23b777475ea05aa1099688247cd27a5000e
+checksums           rmd160  3f631f27d0e33006f2c94fe7049a554a696b6675 \
+                    sha256  468b82a34aa8a6663fb055809eed8a700c7a3ccf267e029697571ba32a6c2549 \
+                    size    17643
 
 if {${perl5.major} != ""} {
     depends_lib-append \

@@ -4,13 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-regex
-version             2018.11.02
+version             2020.07.14
+set distversion     [regsub -all {(\.)0} ${version} {\1}]
 revision            0
 categories-append   devel
 platforms           darwin
 license             PSF
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -18,14 +19,18 @@ description         Alternate regular expression module, to replace re.
 long_description    ${description}
 
 homepage            https://bitbucket.org/mrabarnett/mrab-regex
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
+distname            ${python.rootname}-${distversion}
 
-checksums           rmd160  c2f1cc14f61e7cf846b7ccb996e44bbfa128cca7 \
-                    sha256  3fe15a75fe00f04d1ec16713d55cf1e206077c450267a10b33318756fb8b3f99 \
-                    size    644177
+checksums           rmd160  ab45e226291aad8a17fa77a0187177dabf71a382 \
+                    sha256  3a3af27a8d23143c49a3420efe5b3f8cf1a48c6fc8bc6856b03f638abc1833bb \
+                    size    690069
 
 if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools
+
     livecheck.type      none
+} else {
+    livecheck.version   ${distversion}
 }

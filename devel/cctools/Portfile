@@ -3,13 +3,13 @@
 PortSystem              1.0
 
 name                    cctools
-# Xcode 8.1
-version                 895
-revision                7
-set ld64_version        274.1
+# Xcode 10.2
+version                 927.0.2
+set ld64_version        450.3
+revision                5
 categories              devel
 platforms               darwin
-maintainers             {jeremyhu @jeremyhu} openmaintainer
+maintainers             {jeremyhu @jeremyhu} {kencu @kencu} openmaintainer
 license                 {APSL-2 GPL-2+}
 installs_libs           no
 description             Compiler Tools for Mac OS X and Darwin
@@ -17,40 +17,45 @@ long_description        A set of essential tools to support development \
                         on Mac OS X and Darwin. Conceptually similar \
                         similar to binutils on other platforms.
 
-homepage                http://opensource.apple.com/source/${name}/
-master_sites            http://opensource.apple.com/tarballs/${name} \
-                        http://opensource.apple.com/tarballs/ld64
+homepage                https://opensource.apple.com/source/${name}/
+master_sites            https://opensource.apple.com/tarballs/${name}:main \
+                        https://opensource.apple.com/tarballs/ld64:ld64
 
-distfiles               ld64-${ld64_version}.tar.gz ${name}-${version}.tar.gz
+distfiles               ld64-${ld64_version}.tar.gz:ld64 ${name}-${version}.tar.gz:main
 
-checksums               ld64-274.1.tar.gz \
-                        rmd160  c86030f9d6d44a6a53d262952d9508b5eff46353 \
-                        sha256  6cbe886717de833789fa562ec4889ebf9136ae5f7573d17d39836d3f5755b7ab \
-                        cctools-895.tar.gz \
-                        rmd160  e46dd79bd87c727f1326c569d0b8e9eadcc57495 \
-                        sha256  ce66034fa35117f9ae76bbb7dd72d8068c405778fa42e877e8a13237a10c5cb7
+checksums               ld64-450.3.tar.gz \
+                        rmd160  4d263cff143228e021c438d3c2d1800ff367c895 \
+                        sha256  140619e676e099581771dbad98277850ff731cd23938bed95b4d7171616acca1 \
+                        size    729639 \
+                        cctools-927.0.2.tar.gz \
+                        rmd160  74c906d45173aaa804cba911677dbf64407cfada \
+                        sha256  3d5d35e7120aac187de306019d4b53b3b08dd7ebf48764fcd5c8cefef40b3dbf \
+                        size    1842624
 
 patchfiles              cctools-829-lto.patch \
                         PR-37520.patch \
                         cctools-839-static-dis_info.patch \
                         PR-12400897.patch \
                         cctools-862-prunetrie.patch \
-                        cctools-895-big_endian.patch \
-                        cctools-895-OFILE_LLVM_BITCODE.patch \
-                        not-clang.patch
+                        cctools-921-noavx512.patch \
+                        as-try-clang.patch
+
+# there is a change in cctools/include/mach/i386/_structs.h
+# that causes the build to fail on older systems.
+patchfiles-append cctools-927-revert-i386-struct-header-changes.diff
 
 if {${os.major} < 11} {
     patchfiles-append snowleopard-strnlen.patch
 }
 
-set all_llvm_variants {llvm39 llvm40 llvm50 llvmdev}
+set all_llvm_variants {llvm50 llvm60 llvm70 llvm80 llvm90 llvm10 llvmdev}
 if {${os.major} < 12} {
     lappend all_llvm_variants llvm34
 }
 if {${os.major} < 14} {
     lappend all_llvm_variants llvm37
 }
-array set llvm_variant_version {llvm34 3.4 llvm37 3.7 llvm39 3.9 llvm40 4.0 llvm50 5.0 llvmdev devel}
+array set llvm_variant_version {llvm34 3.4 llvm37 3.7 llvm50 5.0 llvm60 6.0 llvm70 7.0 llvm80 8.0 llvm90 9.0 llvm10 10 llvmdev devel}
 set llvm_version {}
 
 foreach variantname $all_llvm_variants {
@@ -59,19 +64,6 @@ foreach variantname $all_llvm_variants {
         set llvm_version        $this_llvm_version
         depends_lib-append      port:llvm-${this_llvm_version}
     "
-}
-
-# Disable all llvm variants on Xcode 9 systems, to force use of xcode variant
-# base has variant_set, but no variant_unset, so emulate it.
-global variations
-if {[vercmp $xcodeversion 9.0] >= 0} {
-    foreach variantname $all_llvm_variants {
-        if {[variant_isset ${variantname}]} {
-            ui_msg "Forcibly disabling variant ${variantname}"
-            default_variants -${variantname}
-            set variations(${variantname}) -
-        }
-    }
 }
 
 proc some_llvm_variant_set {} {
@@ -85,7 +77,9 @@ proc some_llvm_variant_set {} {
 }
 
 if { ![some_llvm_variant_set] && ![variant_isset xcode] } {
-    if {${os.major} == 12 || ${os.major} == 13} {
+    if {${os.major} == 14 || ${os.major} == 15} {
+        default_variants +llvm90
+    } elseif {${os.major} == 12 || ${os.major} == 13} {
         # Using llvm-3.7 to break a dependency cycle (https://trac.macports.org/ticket/53138)
         default_variants +llvm37
     } elseif {${os.major} == 10 || ${os.major} == 11} {
@@ -98,14 +92,17 @@ if { ![some_llvm_variant_set] && ![variant_isset xcode] } {
     #     default_variants +llvm33
     # }
 
-    if {[vercmp $xcodeversion 9.0] >= 0} {
-        default_variants +xcode
-    } elseif {![some_llvm_variant_set] && ${os.major} >= 10} {
-        default_variants +llvm50
+    if {![some_llvm_variant_set] && ${os.major} >= 10} {
+        default_variants +llvm10
     }
 }
 
-variant xcode conflicts universal description "Use Xcode supplied toolkit" {
+if {[variant_isset llvm34] && ${os.major} < 11} {
+    # This port is used by clang-3.4 to bootstrap libcxx
+    configure.cxx_stdlib    libstdc++
+}
+
+variant xcode conflicts universal description "Use Xcode supplied cctools" {
     supported_archs noarch
     patchfiles
     distfiles
@@ -151,25 +148,90 @@ post-patch {
 
         # Use our chosen version of llvm
         if {${llvm_version} ne ""} {
+            foreach file ${worksrcpath}/otool/main.c {
+
+                ui_debug "deleting stray rsrc fork from ${file}"
+                if {${os.major} >= 9} {
+                    system "cp -X  ${file} ${file}.tmp"
+                    system "mv ${file}.tmp ${file}"
+                } else {
+                    system "cp /dev/null ${file}/rsrc"
+                }
+            }
+
             reinplace "s:\"llvm-objdump\":\"llvm-objdump-mp-${llvm_version}\":" ${worksrcpath}/otool/main.c
             reinplace "s:\"llvm-mc\":\"llvm-mc-mp-${llvm_version}\":" ${worksrcpath}/as/driver.c
             reinplace "s:@@LLVM_LIBDIR@@:${prefix}/libexec/llvm-${llvm_version}/lib:" ${worksrcpath}/libstuff/lto.c
         }
 
+        # List of clang versions to search for at runtime internally by 'as'
+        # Build list from llvm variants, excluding clang < 5 and devel version
+        # (unless devel variant is used in which case it is included first)
+        set as_comps ""
+        foreach variantname ${all_llvm_variants} {
+            set ver $llvm_variant_version($variantname)
+            # Use all non-devel and clang > 4 versions
+            if { ${ver} ne "devel" && ${ver} > 4.999 } {
+                if { ${as_comps} ne "" } {
+                    set as_comps ",${as_comps}"
+                }
+                set as_comps "\"clang-mp-${ver}\"${as_comps}"
+            }
+        }
+        # If llvmdev variant is active, include at start of list
+        if {[variant_isset llvmdev]} {
+            set as_comps "\"clang-mp-devel\",${as_comps}"
+        }
+        ui_debug "as compiler list ${as_comps}"
+        reinplace "s:__MP_CLANG_NAMES__:${as_comps}:" ${worksrcpath}/as/driver.c
+
+        if {${os.major} >= 11} {
+            set try_system_clang 1
+        } else {
+            # clang's integrated assembler may not work well on 10.6 and doesn't
+            # exist on older OS versions.
+            set try_system_clang 0
+        }
+        reinplace "s:__TRY_SYSTEM_CLANG__:${try_system_clang}:" ${worksrcpath}/as/driver.c
+
+        foreach file [glob ${worksrcpath}/man/*] {
+            ui_debug "deleting stray rsrc fork from ${file}"
+            if {${os.major} >= 9} {
+                system "cp -X  ${file} ${file}.tmp"
+                system "mv ${file}.tmp ${file}"
+            } else {
+                system "cp /dev/null ${file}/rsrc"
+            }
+        }
+
         foreach file [glob ${worksrcpath}/{*/,}Makefile] {
-            reinplace "s:/usr/local:@PREFIX@:g" ${file}
-            reinplace "s:/usr:@PREFIX@:g" ${file}
-            reinplace "s:@PREFIX@:${prefix}:g" ${file}
-            reinplace "s:${prefix}/efi:${prefix}:g" ${file}
-            reinplace "s:/Developer${prefix}:${prefix}:g" ${file}
-            reinplace "s:${prefix}/man:${prefix}/share/man:g" ${file}
+
+            ui_debug "deleting stray rsrc fork from ${file}"
+            if {${os.major} >= 9} {
+                system "cp -X  ${file} ${file}.tmp"
+                system "mv ${file}.tmp ${file}"
+            } else {
+                system "cp /dev/null ${file}/rsrc"
+            }
+
+            reinplace -q "s:/usr/local:@PREFIX@:g" ${file}
+            reinplace -q "s:/usr:@PREFIX@:g" ${file}
+            reinplace -q "s:@PREFIX@:${prefix}:g" ${file}
+            reinplace -q "s:${prefix}/efi:${prefix}:g" ${file}
+            reinplace -q "s:/Developer${prefix}:${prefix}:g" ${file}
+            reinplace -q "s:${prefix}/man:${prefix}/share/man:g" ${file}
 
             # Don't strip installed binaries
-            reinplace "s:\\(install .*\\)-s :\\1:g" ${file}
+            reinplace -q "s:\\(install .*\\)-s :\\1:g" ${file}
 
             if {${os.major} < 10} {
-                reinplace "s:${prefix}/bin/mig:/usr/bin/mig:g" ${file}
+                reinplace -q "s:${prefix}/bin/mig:/usr/bin/mig:g" ${file}
             }
+        }
+
+        # macOS 10.14's SDKs have newer versions that are needed to compile
+        if {${os.major} > 17} {
+            file delete -force ${worksrcpath}/include/mach/i386
         }
     }
 }

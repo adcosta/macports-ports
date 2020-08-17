@@ -2,21 +2,27 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
-PortGroup           github 1.0
 
-github.setup        pydanny cached-property 1.3.0
 name                py-cached-property
+version             1.5.1
+revision            1
 categories-append   devel
+
 platforms           darwin
+supported_archs     noarch
 license             BSD
-maintainers         {sean @seanfarley} openmaintainer
+maintainers         nomaintainer
+
 description         A decorator for caching properties in classes
 long_description    ${description}
 
-checksums           rmd160  3ec81facf050c0fe5e43deddb1fc5acc94d97817 \
-                    sha256  afb2bf7637ee3fab7351262b9d3f9fc4c51608a8fb0beff6294f669f0cb0389a
+homepage            https://github.com/pydanny/cached-property
 
-python.versions     27 34 35 36
+checksums           rmd160  084bed8505a97d24368726fa96d5732978e69ae6 \
+                    sha256  9217a59f14a5682da7c4b8829deadbfc194ac22e9908ccf7c8820234e80a1504 \
+                    size    12791
+
+python.versions     27 35 36 37 38
 
 if {${subport} ne ${name}} {
     depends_build-append \

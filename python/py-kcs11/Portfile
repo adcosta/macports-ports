@@ -2,10 +2,13 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
+PortGroup           github 1.0
 
+github.setup        LudovicRousseau PyKCS11 1.5.7
 name                py-kcs11
-version             1.2.4
-license             GPL-3
+revision            0
+
+license             GPL-2+
 platforms           darwin
 maintainers         nomaintainer
 
@@ -14,13 +17,25 @@ long_description    PyKCS11 let you access to almost all PKCS#11 functions and d
                     using any PKCS#11 library, such as the various modules supplied by \
                     smartcard vendors.
 
-homepage            http://www.bit4id.org/trac/pykcs11
-master_sites        sourceforge:project/pkcs11wrap/pykcs11/pykcs11-${version}
-distname            PyKCS11-${version}
-
-checksums           rmd160  b2783443913db5263410de5fb58a7ae396938936 \
-                    sha256  dd90a64771b2bbf8e122ecb2c6bf83fcc127753422c0be3b10075d4a2e4da264
-
-python.versions     27
+checksums           rmd160  04ab479229c74ea871aade0b60bfe335c47bc8ac \
+                    sha256  a669af699a444e171b77e3ef09538fc129c2cbcf7a83bd803d01f0cc97eceb2a \
+                    size    74223
 
 patchfiles          patch-setup.py-no-usr-local.diff
+
+python.versions     27 37 38
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools \
+                    port:swig-python
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.md COPYING \
+            ${destroot}${docdir}
+    }
+
+    livecheck.type  none
+}

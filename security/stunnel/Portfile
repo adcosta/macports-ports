@@ -3,7 +3,8 @@
 PortSystem          1.0
 
 name                stunnel
-version             5.49
+version             5.56
+revision            0
 set major           [lindex [split ${version} .] 0]
 categories          security net
 platforms           darwin
@@ -25,9 +26,9 @@ master_sites        https://www.stunnel.org/downloads/archive/${major}.x/ \
                     http://ftp.nluug.nl/pub/networking/stunnel/archive/${major}.x/ \
                     http://stunnel.cybermirror.org/archive/${major}.x/
 
-checksums           rmd160  18e28ea26928ba6992f0873b199b7c1bfe46e751 \
-                    sha256  3d6641213a82175c19f23fde1c3d1c841738385289eb7ca1554f4a58b96d955e \
-                    size    713560
+checksums           rmd160  6934239db636aadffe5d6559164f07efb8b2e7aa \
+                    sha256  7384bfb356b9a89ddfee70b5ca494d187605bb516b4fff597e167f97e2236b22 \
+                    size    981163
 
 depends_lib         path:lib/libssl.dylib:openssl
 

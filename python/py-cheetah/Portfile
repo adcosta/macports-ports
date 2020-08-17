@@ -4,11 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-cheetah
-
-version             3.1.0
-checksums           rmd160 803f2b0e201b05d51c6cbc145b13ed80760da976 \
-                    sha256 293f8776a5dea7c3dffd26fce8495c2daf912b9cb46cc49c41cb50da597a0ac6 \
-                    size   872411
+python.rootname     Cheetah3
+version             3.2.5
+revision            0
+checksums           rmd160 a99f7e6c0a38f6b8680bd22846ef4872dd2eeef5 \
+                    sha256 ececc9ca7c58b9a86ce71eb95594c4619949e2a058d2a1af74c7ae8222515eb1 \
+                    size   295455
 
 categories-append   www
 platforms           darwin
@@ -24,24 +25,23 @@ long_description    Cheetah is a Python-powered template engine and \
                     developers looking for a viable alternative to \
                     ASP, JSP, PHP and PSP are expected to be its \
                     principle user group.
-homepage            http://www.cheetahtemplate.org/
 
+homepage            https://www.cheetahtemplate.org/
 master_sites        pypi:C/Cheetah3/
 distname            Cheetah3-${version}
 
-python.versions     27 34 35 36
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
 
     post-destroot {
-        xinstall -m 644 -W ${worksrcpath} \
-            ANNOUNCE.rst \
-            BUGS \
-            README.rst \
-            TODO \
-            ${destroot}${prefix}/share/doc/${subport}
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} ANNOUNCE.rst \
+            BUGS LICENSE README.rst TODO ${destroot}${docdir}
     }
 
+    livecheck.type  none
 }
-
-livecheck.name cheetah3

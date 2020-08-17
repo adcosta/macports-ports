@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        marcobambini gravity 0.5.1
+github.setup        marcobambini gravity 0.7.8
 categories          lang
 platforms           darwin
 license             MIT
@@ -12,11 +12,11 @@ description         Gravity Programming Language
 long_description    Gravity is a powerful, dynamically typed, lightweight, \
                     embeddable programming language written in C without any \
                     external dependencies.
-homepage            https://marcobambini.github.io/gravity
+homepage            https://marcobambini.github.io/gravity/
 
-checksums           rmd160  9f47ae229eb2a30238784457c0b42d19df1a06aa \
-                    sha256  d47496042f33b526e8558d53c50c2cdff16bfb70dc374430de1c3fe4a7ce8acf \
-                    size    845847
+checksums           rmd160  c35e52aa8686f0f4391807a6839e1ccdf89826df \
+                    sha256  9515a5e2f1bcd777d79afb18b9a9991372bc512d80a258d1e1c49c44fa62630d \
+                    size    874080
 
 use_configure       no
 build.args-append   CC=${configure.cc}

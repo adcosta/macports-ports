@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Carp-Clan 6.06
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Carp-Clan 6.08
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Report errors from perspective of caller of a "clan" of modules
@@ -17,12 +17,8 @@ long_description    This module reports errors from the perspective of the \
 
 platforms           darwin
 
-checksums           rmd160  5bb184cf42b0d3a1d4f1d3f308f83ac1688b299f \
-                    sha256  ea4ac8f611354756d43cb369880032901e9cc4cc7e0bebb7b647186dac00c9d4
+checksums           rmd160  58aece12b67685ec316980c92b4e0c481eb1d1f9 \
+                    sha256  c75f92e34422cc5a65ab05d155842b701452434e9aefb649d6e2289c47ef6708 \
+                    size    34173
 
-if {${perl5.major} != ""} {
-    depends_lib-append \
-                    port:p${perl5.major}-test-exception
-
-    supported_archs noarch
-}
+supported_archs     noarch

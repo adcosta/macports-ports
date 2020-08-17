@@ -4,7 +4,8 @@ PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 
 name                yelp
-version             3.28.1
+version             3.36.0
+revision            1
 license             GPL-2
 set branch          [join [lrange [split ${version} .] 0 1] .]
 description         Help browser for GNOME.
@@ -20,20 +21,18 @@ master_sites        gnome:sources/${name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  f726e1f4ee266fca590161fba918b45469eb51c7 \
-                    sha256  e88a5d05af20e497c50430b36fb523f8fda79a986359a6b7bd25910a2d2e7c0c \
-                    size    1381180
+checksums           rmd160  f83274017ce6ca078055baa74494d62b4307af9f \
+                    sha256  fd4b3e23d31ad2bebe42ac8f80242b2d9bef51418bf62b59acdf2440bd94ed24 \
+                    size    1538076
 
 depends_build       port:pkgconfig \
-                    port:intltool \
+                    port:gettext \
                     port:itstool \
                     port:appstream-glib \
-                    port:autoconf \
-                    port:automake \
-                    port:libtool \
                     port:gtk-doc
 
 depends_lib         port:desktop-file-utils \
+                    port:icu \
                     port:gtk3 \
                     port:sqlite3 \
                     port:xz \
@@ -52,22 +51,15 @@ depends_run         port:gnome-user-docs \
 
 patchfiles          patch-m4-ax_compiler_flags_ldflags.m4.diff
 
+use_autoreconf      yes
+autoreconf.args     -vfi
+
 # error: redefinition of typedef ‘WebKitWebEditor’
 compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
 
-# reconfigure using upstream autogen.sh for intltool 0.51 compatibility
-
-configure.cmd       ./autogen.sh
-
 configure.args      --enable-compile-warnings=minimum \
                     --disable-schemas-compile \
-                    --disable-silent-rules \
-                    --enable-debug
-
-# dependency tracking breaks configuration in 3.28.1
-# disable for now
-configure.args-append \
-                    --disable-dependency-tracking
+                    --disable-silent-rules
 
 post-activate {
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"

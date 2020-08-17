@@ -3,17 +3,17 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Glib-Object-Introspection 0.046 ../../authors/id/X/XA/XAOC
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Glib-Object-Introspection 0.048 ../../authors/id/X/XA/XAOC
 platforms           darwin
 maintainers         {devans @dbevans} openmaintainer
 license             LGPL-2.1+
 description         Glib::Object::Introspection - Dynamically create Perl language bindings
 long_description    ${description}
 
-checksums           rmd160  91bfb547d9b373048a35e232984aecabed2b26ee \
-                    sha256  6632da2075d5b4ce4edf327caad9bbaf945fae4e31b03e0569ef883b48a26fb4 \
-                    size    86145
+checksums           rmd160  30313cc06691ea42481712c12282b1ae6f2c8259 \
+                    sha256  a64f100c21b884616669255d90fcaf1d11a51cde6ff3f3edcb835a920d2fbd05 \
+                    size    87660
 
 if {${perl5.major} != ""} {
     depends_lib-append \

@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        qalculate qalculate-gtk 2.6.1 v
+github.setup        qalculate qalculate-gtk 3.12.0 v
+revision            0
 
 categories          math
 platforms           darwin
@@ -19,9 +20,9 @@ long_description    Qalculate! is a multi-purpose desktop calculator. \
 
 github.tarball_from releases
 
-checksums           rmd160  14bb87733f8cfa7acfa3079f4de390335a2387ca \
-                    sha256  54f12b79a569973ade2c3fd5fea0b4c4077af65ef8b14388ff335f2589790c18 \
-                    size    2619516
+checksums           rmd160  5734326f7da8fbbbf8f9370f577acbe179c30ffe \
+                    sha256  463151f21720c5596571b9c80036612c8fbc156e9e2d85a617d715fdd2964d51 \
+                    size    2682154
 
 # autoreconf to reconfigure for intltool
 use_autoreconf      yes

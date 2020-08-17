@@ -1,8 +1,7 @@
 PortSystem 1.0
 
 name             gunits
-version          2.01
-revision         1
+version          2.19
 categories       math
 license          GPL-3+
 maintainers      nomaintainer
@@ -14,15 +13,17 @@ homepage         https://www.gnu.org/software/units/
 platforms        darwin
 master_sites     gnu:units
 distname         units-${version}
-checksums        rmd160  2d3670658414ae77ae885c133880c515991d28ad \
-                 sha256  138b12c70bffa0e484fdfe579927412b1ac573e8351c17d8938592f9ba9a88f2
+
+checksums           rmd160  09a4e2fbc344ce01a8516f49386bb3cc2de8becd \
+                    sha256  4262136bdfc152b63ff5a9b93a7d80ce18b5e8bebdcffddc932dda769e306556 \
+                    size    1271288
 
 depends_lib      port:readline
 
 configure.cflags-append {*}${configure.cppflags}
 configure.args   --program-prefix=g \
-                 --mandir=\\\${prefix}/share/man \
-                 --infodir=\\\${prefix}/share/info
+                 --mandir=${prefix}/share/man \
+                 --infodir=${prefix}/share/info
 
 livecheck.type  regex
 livecheck.url   https://ftp.gnu.org/gnu/units/?C=M&O=D

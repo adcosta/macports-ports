@@ -4,7 +4,7 @@ PortSystem          1.0
 
 name                tlswrap
 version             1.04
-revision            2
+revision            3
 categories          net security
 platforms           darwin
 maintainers         nomaintainer
@@ -22,6 +22,11 @@ checksums           md5     68a4d937c1e817fa3056751e8902b691 \
                     rmd160  ab03253fae341cf8104c69930c7890b2e95f9efc
 
 depends_lib         path:lib/libssl.dylib:openssl
+
+# from https://svnweb.freebsd.org/ports/head/security/tlswrap/
+patchfiles          patch-conf.h.in \
+                    patch-configure \
+                    patch-tls.c
 
 configure.args      --with-ssl=${prefix}
 

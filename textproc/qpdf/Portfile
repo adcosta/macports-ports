@@ -3,10 +3,10 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        qpdf qpdf 8.1.0 release-qpdf-
-checksums           rmd160  8001ee0003dd8534c071719aa9fd19823fa42cd5 \
-                    sha256  7d1f4827a3801a4b7d63f66fa50bbe237e74911801f3d31ee9f22f73e36370d4 \
-                    size    8243624
+github.setup        qpdf qpdf 10.0.1 release-qpdf-
+checksums           rmd160  cc0864688a307219ca72e1671ab39f9092e87503 \
+                    sha256  5d2277c738188b7f4e3f01a6db7f2937ed6df54671f1fba834cd3d7ff865827b \
+                    size    18399985
 
 categories          textproc pdf
 platforms           darwin
@@ -18,10 +18,10 @@ long_description    QPDF is a command-line program that does structural, \
                     content-preserving transformations on PDF files.
 
 homepage            http://qpdf.sourceforge.net/
-#github.tarball_from releases
-master_sites        sourceforge:project/qpdf/qpdf/${version}
+github.tarball_from releases
 
 depends_lib         port:jpeg \
+                    port:gnutls \
+                    port:libxml2 \
+                    port:libxslt \
                     port:zlib
-
-patchfiles-append   LDFLAGS.patch

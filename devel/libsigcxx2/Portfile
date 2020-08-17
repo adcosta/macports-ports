@@ -2,12 +2,9 @@
 
 PortSystem          1.0
 
-# libsigc++ > 2.4.1 requires C++11 or better
-PortGroup           cxx11 1.1
-
 name                libsigcxx2
 set gname           libsigc++
-version             2.10.0
+version             2.10.3
 license             LGPL-2.1
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          devel
@@ -24,8 +21,9 @@ master_sites        gnome:sources/${gname}/${branch}/
 distname            ${gname}-${version}
 use_xz              yes
 
-checksums           sha256  f843d6346260bfcb4426259e314512b99e296e8ca241d771d21ac64f28298d81 \
-                    rmd160  d062261610749e7640197b97393f46f9ca7c5ffe
+checksums           rmd160  92d1c0a29a19a28633d87f61da2f7589025efeb3 \
+                    sha256  0b68dfc6313c6cc90ac989c6d722a1bf0585ad13846e79746aa87cb265904786 \
+                    size    4558428
 
 depends_build       port:pkgconfig \
                     port:mm-common \
@@ -34,9 +32,12 @@ depends_build       port:pkgconfig \
                     port:doxygen \
                     port:libxslt
 
+# libsigc++ > 2.4.1 requires C++11 or better
+compiler.cxx_standard 2011
+
 configure.perl      /usr/bin/perl
 configure.env-append \
-                    "M4=${prefix}/bin/gm4"
+                    M4=${prefix}/bin/gm4
 configure.args      --enable-static \
                     --disable-silent-rules
 
@@ -53,3 +54,4 @@ post-destroot {
 
 livecheck.type      gnome
 livecheck.name      ${gname}
+livecheck.regex     LATEST-IS-(2\\.\\d*\[02468\](?:\\.\\d+)*)

@@ -8,7 +8,8 @@ legacysupport.newest_darwin_requires_legacy 10
 
 name                sslh
 epoch               1
-version             1.19c
+version             1.21c
+revision            0
 categories          net security www
 platforms           darwin
 maintainers         {amake @amake} openmaintainer
@@ -27,19 +28,22 @@ master_sites        http://rutschle.net/tech/sslh/
 
 distname            ${name}-v${version}
 
-checksums           rmd160  2d3340514fe2b3b6089cd94f1b58d18f649197b1 \
-                    sha256  bb11dfa88b27ae1ec825a1b8156000c3f17f7e8f042311f19b7a249193c47bf3
+checksums           rmd160  c1e6ba33aab928f2a78cc16fe4ba57980d784128 \
+                    sha256  3bfe783726f82c1f5a4be630ddc494ebb08dbb69980662cd7ffdeb7bc9e1e706 \
+                    size    111894
 
 depends_lib         port:libconfig-hr \
                     port:pcre
+
+depends_build-append \
+                    port:conf2struct
 
 use_configure       no
 use_parallel_build  no
 
 variant universal {}
 
-build.args          CC="${configure.cc} [get_canonical_archflags cc]" \
-                    LIBS="${configure.ldflags} -lconfig"
+build.args          CC="${configure.cc} [get_canonical_archflags cc]"
 
 destroot {
     xinstall -W ${worksrcpath} sslh-fork sslh-select ${destroot}${prefix}/sbin/
@@ -49,7 +53,8 @@ destroot {
 
     set docdir ${prefix}/share/doc/${name}
     xinstall -d ${destroot}${docdir}
-    xinstall -m 0644 -W ${worksrcpath} ChangeLog README.md README.MacOSX example.cfg ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} ChangeLog README.md example.cfg ${destroot}${docdir}
+    copy ${worksrcpath}/doc ${destroot}${docdir}
 }
 
 livecheck.type      regex

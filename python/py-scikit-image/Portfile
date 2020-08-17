@@ -4,13 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-scikit-image
-version             0.14.1
+version             0.17.2
 revision            0
 categories-append   science
 platforms           darwin
 license             BSD
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,31 +20,44 @@ long_description    Image processing algorithms for SciPy, including IO, \
                     morphology, filtering, warping, color manipulation, \
                     object detection, etc.
 
-homepage            http://scikit-image.org/
+homepage            https://scikit-image.org/
 master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
 distname            ${python.rootname}-${version}
 
-checksums           rmd160  47acd78a5cf9749dd6287e41adb885d2f0070178 \
-                    sha256  86a9b3b4f74f231e0a6bcfd3235dcf3f0118df25dac21201da5e064d681e2c50 \
-                    size    27521651
+checksums           rmd160  5c990500ca1977a410190238be3785dbfc8f8071 \
+                    sha256  bd954c0588f0f7e81d9763dc95e06950e68247d540476e06cb77bcbcd8c2d8b3 \
+                    size    29818001
 
 if {${name} ne ${subport}} {
+
+    if {${python.version} < 36} {
+        version             0.14.2
+        revision            1
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  2126c9e2d11c46e3cabb73656bc048cc27d2c960 \
+                            sha256  1afd0b84eefd77afd1071c5c1c402553d67be2d7db8950b32d6f773f25850c1f \
+                            size    27785514
+
+        depends_lib-append  port:py${python.version}-six
+
+        depends_run-append  port:py${python.version}-dask \
+                            port:py${python.version}-toolz \
+                            port:py${python.version}-cloudpickle
+    }
+
     depends_build-append \
                         port:py${python.version}-setuptools \
                         port:py${python.version}-cython
 
     depends_lib-append  port:py${python.version}-numpy \
-                        port:py${python.version}-scipy \
-                        port:py${python.version}-six
+                        port:py${python.version}-scipy
 
     depends_run-append  port:py${python.version}-matplotlib \
                         port:py${python.version}-networkx \
-                        port:py${python.version}-dask \
-                        port:py${python.version}-toolz \
-                        port:py${python.version}-pywavelets \
-                        port:py${python.version}-cloudpickle \
-                        path:${python.pkgd}/PIL:py${python.version}-Pillow
+                        port:py${python.version}-Pillow \
+                        port:py${python.version}-imageio \
+                        port:py${python.version}-pywavelets
 
     livecheck.type      none
 }

@@ -3,7 +3,8 @@
 PortSystem          1.0
 
 name                xterm
-version             337
+version             358
+revision            0
 categories          x11
 license             X11
 platforms           darwin
@@ -14,42 +15,48 @@ long_description    The xterm program is a terminal emulator for the X \
                     including colors, Unicode, etc.
 
 homepage            https://invisible-island.net/xterm/
-master_sites        ftp://ftp.invisible-island.net/xterm/ \
+master_sites        ftp://ftp.invisible-island.net/pub/xterm/ \
                     https://invisible-mirror.net/archives/xterm/
 
-checksums           rmd160  543c36de7b0adf56ba13dbae382ed88eb002125f \
-                    sha256  ccac77ded347e78d5ffb69b381adf8b2377ce66644b8bec6308aaf19b9aecfa7 \
-                    size    1336781
+checksums           rmd160  be9dc43c6b465f3c6ee9d64bb3aaed575165bc07 \
+                    sha256  7cdb106962910a99700b3c45fa1a1493e46e97a5aa3785093a786e07196fbf7b \
+                    size    1421546
 
 extract.suffix      .tgz
 
-depends_build \
-	port:xorg-xorgproto
+depends_build       port:xorg-xorgproto
 
-depends_run \
-	bin:luit:luit
+depends_run         bin:luit:luit
 
-depends_lib \
-	port:ncurses \
-	port:expat \
-	port:zlib \
-	port:xorg-libXaw \
-	port:Xft2
+depends_lib         port:ncurses \
+                    port:expat \
+                    port:zlib \
+                    port:xorg-libXaw \
+                    port:Xft2
 
-patchfiles PR-7191532.patch
+patchfiles          PR-7191532.patch
 
 patch.pre_args -p1
 
 configure.args      --mandir=${prefix}/share/man --enable-luit \
                     --enable-logging --enable-wide-chars \
                     --enable-256-color --enable-load-vt-fonts \
+                    --enable-double-buffer \
                     --x-include=${prefix}/include --x-lib=${prefix}/lib \
                     --with-app-defaults=${prefix}/share/X11/app-defaults
 
-# If -ltermcap stays in the LDFLAGS, xterm is linked against both
-# /usr/lib's and ${prefix}/lib's libncurses.
-post-configure {
-    reinplace "s|-ltermcap|-lncurses|" ${worksrcpath}/Makefile
+
+if {${os.platform} eq "darwin" && ${os.major} > 19} {
+    # add missing ncurses library to Makefile
+    post-configure {
+        reinplace "s|-lfontconfig|-lfontconfig -lncurses|" ${worksrcpath}/Makefile
+    }
+} else {
+    # If -ltermcap stays in the LDFLAGS, xterm is linked against both
+    # /usr/lib's and ${prefix}/lib's libncurses.
+    post-configure {
+        reinplace "s|-ltermcap|-lncurses|" ${worksrcpath}/Makefile
+    }
 }
 
 livecheck.type      regex

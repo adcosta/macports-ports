@@ -4,13 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-jedi
-version             0.13.1
+version             0.17.2
 categories-append   devel
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -18,18 +18,15 @@ description         An autocompletion tool for Python that can be used for text 
 long_description    ${description}
 
 homepage            https://github.com/davidhalter/jedi
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  b1053ede7c6e01efa66dbcffb863785b31ed8eaf \
-                    sha256  b7493f73a2febe0dc33d51c99b474547f7f6c0b2c8fb2b21f453eef204c12148 \
-                    size    365356
+checksums           rmd160  3ef7a2b0f643edccf2d533aabcd8e6f096952a63 \
+                    sha256  86ed7d9b750603e4ba582ea8edc678657fb4007894a12bcf6f4bb97892f31d20 \
+                    size    1139617
 
 if {${name} ne ${subport}} {
-    # setuptools is mandatory due to 'include_package_data' option
     depends_build-append \
                         port:py${python.version}-setuptools
+
     depends_lib-append  port:py${python.version}-parso
 
     livecheck.type      none

@@ -2,13 +2,13 @@
 
 PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
-PortGroup           cxx11 1.1
 
 name                dar
-version             2.5.17
-checksums           rmd160  6f0f71ea4ce25baba1b05a0f8fbde167473e3dc5 \
-                    sha256  7bf4a5f3f9ac78a5b5cd37d7e94cd3299239f26fdc5404b53f36f1036da286df \
-                    size    1905938
+version             2.6.10
+revision            0
+checksums           rmd160  dc2f647a4be8c3069267b8a6105d430675c8155b \
+                    sha256  16a0b755c648c4ce6598e258ccf375f55d4f2f943448341ed41085ac7a27d2e7 \
+                    size    2140424
 
 categories          archivers
 platforms           darwin
@@ -23,17 +23,25 @@ long_description    dar is a shell command that backs up directory trees \
 homepage            http://dar.sourceforge.net/
 master_sites        sourceforge:project/dar/dar/${version}
 
-depends_build       port:doxygen
+depends_build       port:doxygen \
+                    port:pkgconfig
 
 depends_lib         port:bzip2 \
+                    port:curl \
                     port:gettext \
                     port:libgcrypt \
                     port:libiconv \
                     port:lzo2 \
                     path:lib/libssl.dylib:openssl \
+                    port:xz \
                     port:zlib
+
+compiler.cxx_standard 2011
 
 # error: unknown type name 'thread_local'
 compiler.blacklist-append {clang < 800}
 
 universal_variant   no
+
+# don't opportunistically try to build Python bindings
+configure.args      --disable-python-binding

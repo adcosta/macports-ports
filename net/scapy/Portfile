@@ -33,10 +33,11 @@ subport ${name}-devel {}
 
 if {${subport} eq ${name}} {
 
-    github.setup    secdev ${name} 2.4.0 v
-    checksums       rmd160 544c57cca1ead4f116e8d6f61323f08c007e226f \
-                    sha256 445c2d8c966ddfbc541784e8d1b53182a7a4f8ee56ff88980488ae4d802c98e8 \
-                    size   3181887
+    github.setup secdev ${name} 2.4.3 v
+    checksums rmd160 71ef31e63c9de8e158bcc57dafe50b2a36c01a7b \
+              sha256 d9f4d27553418463273b0aab7c11dea2f4121c53a493fe9dc91d7feaf057af60 \
+              size   2970127
+    revision  0
 
     conflicts       ${name}-devel
 
@@ -47,11 +48,12 @@ if {${subport} eq ${name}} {
 
 } else {
 
-    github.setup    secdev scapy e64b2617c2ca4eced0d31cafb0dc05f4827aaefd
-    version         20181024
-    checksums       rmd160 fe7e3e21da22d71600359d527579d6d3824eb4cb\
-                    sha256 a235954a6acbd8ca42de58d8908f787b389e672ca961fbddc59a18a9c7209708\
-                    size   3306048
+    github.setup secdev scapy 349259209d4f6292a9644e68a9aced300f32e623
+    version   20200521-[string range ${github.version} 0 7]
+    checksums rmd160 ba4f5e6b4045a2a7f2fe95508eca0852506b05dc \
+              sha256 b3826a4e6a960bf450c74dcd67bf6b6555cab5c0180d41cadad7e1e64222977b \
+              size   3208714
+    revision  0
 
     long_description    ${long_description} \
         This port is kept up with the ${name} GIT 'master' branch, is typically updated weekly to monthly.

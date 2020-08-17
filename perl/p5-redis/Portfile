@@ -3,17 +3,17 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Redis 1.991
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Redis 1.996 ../../authors/id/D/DA/DAMS
 license             Artistic-2
 platforms           darwin
 maintainers         komatasche.de:macportscf openmaintainer
-supported_archs     noarch
 description         Redis - perl binding for Redis database
 long_description    ${description}
 
-checksums           rmd160  dfa972737f161fe65c65749912851e09d2862f46 \
-                    sha256  f7d1a934fa9360a26e480f896f97be0fd62807f9d9baca65a9aa8d007ff2acaa
+checksums           rmd160  6fb8243dcb85c6161c1b62a13c61d0436faf81d2 \
+                    sha256  5c196d56a4d771abb2042fd52f252096497fc86f35910581e0956b5710ea74b6 \
+                    size    59381
 
 if {${perl5.major} != ""} {
     depends_build-append \
@@ -32,4 +32,5 @@ if {${perl5.major} != ""} {
                     port:p${perl5.major}-try-tiny
 
     perl5.use_module_build
+    supported_archs noarch
 }

@@ -1,69 +1,43 @@
-PortSystem 1.0
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-name		dynamips
-version		0.2.7
-revision	2
-categories	net
-maintainers	vexate.net:jstrine
-description	Cisco router emulator
-homepage	http://www.ipflow.utc.fr/index.php/Cisco_7200_Simulator
-platforms	darwin
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           cmake 1.1
+PortGroup           legacysupport 1.0
 
-long_description \
-		Dynamips emulates a variety of Cisco routers on a \
-		traditional PC.  It supports the emulation of select 7200, \
-		3600, 3700, and 2600 series routers.  It uses real Cisco \
-		IOS images (which are not part of this package).  Of \
-		course, this emulator cannot replace a real router. It is \
-		simply a complementary tool to real labs for administrators \
-		of Cisco networks or people wanting to pass their \
-		CCNA/CCNP/CCIE exams.
+# clock_gettime
+legacysupport.newest_darwin_requires_legacy 15
 
-master_sites	http://www.ipflow.utc.fr/dynamips
-distname	dynamips-${version}
-checksums	md5 0fe1875bb4e7e3624ca420dd75c85279 \
-		sha1 6f65a2e92f5d27aca9d8608369cb20c9539a8121
+github.setup        GNS3 dynamips 0.2.21 v
+revision            0
 
-depends_lib	port:libelf \
-		port:libpcap
+license             GPL-2
+categories          net
+maintainers         {gmail.com:lasticppc @lastic} openmaintainer
+platforms           darwin
 
-patchfiles	Makefile.diff
-use_configure no
+description         Cisco router emulator
+long_description    Dynamips emulates a variety of Cisco routers on a \
+                    traditional PC.  It supports the emulation of select 7200, \
+                    3600, 3700, and 2600 series routers.  It uses real Cisco \
+                    IOS images (which are not part of this package).  Of \
+                    course, this emulator cannot replace a real router. It is \
+                    simply a complementary tool to real labs for administrators \
+                    of Cisco networks or people wanting to pass their \
+                    CCNA/CCNP/CCIE exams.
 
-# patch.pre_args set to allow use of unmodified idle_pcs patch from developer
-patch.pre_args	-p1
+checksums           rmd160  f590148938c980931dc191f319c4026bf37a47de \
+                    sha256  6a9f231824669f53155e4532cac1fa9fd6b8dc5c9a583a3317d990bb76150348 \
+                    size    834032
 
-build.pre_args-append		PREFIX=${prefix} CC=${configure.cc}
-build.env-append            CFLAGS="${configure.cc_archflags}"
-use_parallel_build          no
+depends_lib         port:libelf \
+                    port:libpcap
 
-destroot.pre_args-append	PREFIX=${prefix} CC=${configure.cc}
-destroot.env-append         CFLAGS="${configure.cc_archflags}"
+configure.args-append \
+                    -DDYNAMIPS_CODE=stable
 
-if {${build_arch} eq "x86_64"} {
-	set dynamips_arch amd64
-} elseif {${build_arch} eq "i386"} {
-    set dynamips_arch x86
-} else {
-    set dynamips_arch nojit
-}
-build.pre_args-append		DYNAMIPS_ARCH=${dynamips_arch}
-destroot.pre_args-append	DYNAMIPS_ARCH=${dynamips_arch}
-
-default_variants	+idle_pcs
-
-variant no_pcap \
-	description {Without support to send/receive external traffic} {
-
-	depends_lib-delete		port:libpcap
-	build.pre_args-append		HAS_PCAP=0
-	destroot.pre_args-append	HAS_PCAP=0
-}
-
-variant idle_pcs \
-	description {With support for multiple idle-pcs. Uses patch \
-		     written by Yannick Le Teigner available at \
-		     http://dynagui.sourceforge.net.} {
-	
-	patchfiles-append	idle_pcs.diff
+post-patch {
+    if {${prefix} ne "/opt/local"} {
+        reinplace -W ${worksrcpath} "s|/opt/local/|${prefix}/|g" CMakeLists.txt cmake/FindLibElf.cmake
+    }
 }

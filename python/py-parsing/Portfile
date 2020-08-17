@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-parsing
-version             2.2.0
+version             2.4.7
 categories-append   lang
 platforms           darwin
 supported_archs     noarch
@@ -19,15 +19,21 @@ long_description    The parsing module is an alternative approach to creating \
                     parsing module provides a library of classes that client \
                     code uses to construct the grammar directly in Python code.
 
-homepage            http://pyparsing.wikispaces.com/
-master_sites        sourceforge:project/pyparsing/pyparsing/pyparsing-${version}
+homepage            https://github.com/pyparsing/pyparsing/
+master_sites        pypi:p/pyparsing
 distname            pyparsing-${version}
 
-checksums           rmd160  d0527da2c5f27bff03647157e4c50cacdc1293f0 \
-                    sha256  0832bcf47acd283788593e7a0f542407bd9550a55a8a8435214a1960e04bcb04
+checksums           rmd160  2dbbca645985bb7f4b4d7a36b6ba3958302adfb9 \
+                    sha256  c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1 \
+                    size    649718
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
     livecheck.type  none
+} else {
+    livecheck.name  pyparsing
 }

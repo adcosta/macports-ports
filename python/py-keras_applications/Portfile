@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-keras_applications
-version             1.0.6
+version             1.0.8
 revision            0
 categories-append   devel math
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -23,9 +23,9 @@ master_sites        pypi:K/Keras-Applications
 
 distname            Keras_Applications-${version}
 
-checksums           rmd160  6ea9d1f86789a31790f44f7523dbad95ce66b2bf \
-                    sha256  a03af60ddc9c5afdae4d5c9a8dd4ca857550e0b793733a5072e0725829b87017 \
-                    size    26568
+checksums           rmd160  4ca07acc1aef5535c75b9da9d75073f95ea1199a \
+                    sha256  5579f9a12bcde9748f4a12233925a59b93b73ae6947409ff34aa2ba258189fe5 \
+                    size    289095
 
 if {${name} ne ${subport}} {
     depends_build-append \

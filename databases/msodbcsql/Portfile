@@ -2,23 +2,26 @@ PortSystem          1.0
 
 name                msodbcsql
 version             13.1.9.2
+revision            1
+epoch               1
 categories          databases
 platforms           darwin
 supported_archs     x86_64
-maintainers         jann:macports
+maintainers         {jann @roederja} openmaintainer
 license             Restrictive
 
 description         ODBC Driver for Microsoft(R) SQL Server(R).
 long_description    ODBC Driver for Microsoft(R) SQL Server(R).
 
 homepage            https://msdn.microsoft.com/en-us/library/mt654048(v=sql.1).aspx
-master_sites        http://download.microsoft.com/download/4/9/5/495639C0-79E4-45A7-B65A-B264071C3D9A/
+master_sites        https://download.microsoft.com/download/4/9/5/495639C0-79E4-45A7-B65A-B264071C3D9A/
 
 checksums           rmd160  c3f5763dda0e8b6b65fe79a043906be1c504afd1 \
-                    sha256  06f4f45bbf16438d681227c6eeada89cbf03a78c61338bdc5eda51ab0e314e5d
+                    sha256  06f4f45bbf16438d681227c6eeada89cbf03a78c61338bdc5eda51ab0e314e5d \
+                    size    906899
                     
 depends_run         port:unixODBC \
-                    path:lib/libssl.dylib:openssl
+                    port:openssl10
                     
 use_configure       no
 
@@ -28,8 +31,9 @@ patch {
                     
 build {
     system "install_name_tool -change /usr/local/lib/libodbcinst.2.dylib ${prefix}/lib/libodbcinst.2.dylib ${worksrcpath}/lib/libmsodbcsql.13.dylib"
-    system "install_name_tool -change /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib ${prefix}/lib/libcrypto.1.0.0.dylib ${worksrcpath}/lib/libmsodbcsql.13.dylib"
-    system "install_name_tool -change /usr/local/opt/openssl/lib/libssl.1.0.0.dylib ${prefix}/lib/libssl.1.0.0.dylib ${worksrcpath}/lib/libmsodbcsql.13.dylib"
+    system "install_name_tool -change /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib ${prefix}/lib/openssl-1.0/libcrypto.1.0.0.dylib ${worksrcpath}/lib/libmsodbcsql.13.dylib"
+    system "install_name_tool -change /usr/local/opt/openssl/lib/libssl.1.0.0.dylib ${prefix}/lib/openssl-1.0/libssl.1.0.0.dylib ${worksrcpath}/lib/libmsodbcsql.13.dylib"
+    system "install_name_tool -id ${prefix}/lib/libmsodbcsql.13.dylib ${worksrcpath}/lib/libmsodbcsql.13.dylib"
 }
 
 destroot {

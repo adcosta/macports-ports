@@ -4,13 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-numexpr
-version             2.6.8
+version             2.7.1
 revision            0
 categories-append   math
 platforms           darwin
 license             MIT
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -28,9 +28,9 @@ master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
 distname            ${python.rootname}-${version}
 
-checksums           rmd160  5ee464bfee6a6332fd1198feedcb8594ba98decc \
-                    sha256  ee8bc7201aa2f1962c67d27c326a11eef9df887d7b87b1278a1d4e722bf44375 \
-                    size    94517
+checksums           rmd160  a2d301d01e5148b07eca9fa9e0650d0c986bde36 \
+                    sha256  b0d239d9827e1bcee08344fd05835823bc60aff97232e35a928214d03ff802b1 \
+                    size    99196
 
 if {${name} ne ${subport}} {
     depends_build-append \

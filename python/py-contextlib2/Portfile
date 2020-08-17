@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-contextlib2
-version             0.5.5
+version             0.6.0.post1
 revision            0
 categories-append   devel
 platforms           darwin
 license             PSF
 supported_archs     noarch
 
-python.versions     27 34 35 36
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -23,11 +23,13 @@ master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
 distname            ${python.rootname}-${version}
 
-checksums           rmd160  088c23e90ae94004822640c937a005fced5b7153 \
-                    sha256  509f9419ee91cdd00ba34443217d5ca51f5a364a404e1dce9e8979cea969ca48
+checksums           rmd160  c4fcdd0b568e07cb88b7e02ae29c1fe45a3fd564 \
+                    sha256  01f490098c18b19d2bd5bb5dc445b2054d2fa97f09a4280ba2c5f3c394c8162e \
+                    size    29670
 
 if {${name} ne ${subport}} {
-    depends_build       port:py${python.version}-setuptools
+    depends_build-append \
+                        port:py${python.version}-setuptools
 
     livecheck.type      none
 }

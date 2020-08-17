@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+PortGroup               cmake 1.1
+PortGroup               cxx11 1.1
+PortGroup               conflicts_build 1.0
+
+github.setup            ismrmrd ismrmrd 1.4.2.1 v
+revision                0
+categories              science
+maintainers             {eborisch @eborisch} openmaintainer
+license                 permissive
+platforms               darwin
+
+description             ISMRM Raw Data Format
+long_description        ISMRM Raw Data format tools and libraries.
+
+checksums \
+    rmd160  9f1505df2e5ae8307fb8d89a753326b5200aac79 \
+    sha256  8233243100c4ea0a8ae5b3ef6d7503ac2c8736a67dbb16c81301c251943ae2c4 \
+    size    199826
+
+depends_lib-append      port:hdf5 \
+                        port:fftw-3-single \
+                        port:boost
+
+depends_build-append    port:doxygen \
+                        port:py38-sphinx \
+                        port:py38-sphinx-bootstrap-theme
+
+conflicts_build ${name}
+
+configure.args-append   -DSPHINXBUILD=${prefix}/bin/sphinx-build-3.8
+build.target-append     doc
+build.env-append        SPHINXBUILD=${prefix}/bin/sphinx-build-3.8
+
+post-extract {
+    reinplace "/^SPHINXBUILD/s/=/?=/" doc/Makefile.sphinx.in
+}
+
+post-destroot {
+    set DOCDIR ${destroot}${prefix}/share/doc/${name}
+    xinstall -d ${DOCDIR}
+    file copy ${cmake.build_dir}/doc/html ${DOCDIR}/
+    xinstall -m 0644 -W ${worksrcpath} \
+        LICENSE \
+        README.md \
+        ${DOCDIR}
+}
+
+notes "
+    ISMRMRD documentation (HTML) installed at:
+    file://${prefix}/share/doc/${name}/html/index.html
+"

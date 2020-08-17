@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        google python-subprocess32 3.5.2
+github.setup        google python-subprocess32 3.5.4
 name                py-subprocess32
 categories-append   devel
 license             PSF
@@ -22,9 +22,9 @@ long_description    This is a backport of the subprocess standard library \
 
 python.versions     27
 
-checksums           rmd160  b48fd17b2f5050e47e5f88599836d53de5c6fb5a \
-                    sha256  f1ab6824113f6755fef7483da85161870f20ab2e0e685480f9830c40b30c68b2 \
-                    size    96815
+checksums           rmd160  eb22e8f3a1855f3bd2082a42146b0c8851ed1eae \
+                    sha256  7fbe8bec57ba436976638c1d3565c10a20ff98cd122866aceaab58518a9ddeae \
+                    size    97777
 
 if {${name} ne ${subport}} {
     depends_build-append \

@@ -5,14 +5,12 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-pip
-version             18.1
+version             20.2.2
 revision            0
 categories-append   www
 platforms           darwin
 license             MIT
 supported_archs     noarch
-
-python.versions     26 27 33 34 35 36 37
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -24,15 +22,22 @@ long_description    pip is a replacement for easy_install. It uses mostly the \
                     well.
 
 homepage            http://www.pip-installer.org/
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
+checksums           rmd160  763683c71040feb9a0291758a555a1461dc26da2 \
+                    sha256  58a3b0b55ee2278104165c7ee7bc8e2db6f635067f3c66cf637113ec5aa71584 \
+                    size    1496965
 
-checksums           rmd160  53409af5e0f06b66656d2d0d81c79ff0a7aba29f \
-                    sha256  c0a292bd977ef590379a3f05d7b7f65135487b67470f6281289a94e015650ea1 \
-                    size    1259370
+# keep older Python versions here, do add the EOL version to the list below
+python.versions     26 27 33 34 35 36 37 38
 
 if {${name} ne ${subport}} {
+    # add EOL warnings
+    if {${python.version} in "26 33 34"} {
+        PortGroup   deprecated 1.0
+
+        deprecated.eol_version  yes
+    }
+
     depends_lib-append  port:py${python.version}-setuptools
     depends_run         port:pip_select
 
@@ -41,7 +46,8 @@ if {${name} ne ${subport}} {
         revision            0
         distname            ${python.rootname}-${version}
         checksums           rmd160  9cf0429a7a7e9897339ffc5a141e9b2e1da8086e \
-                            sha256  7bf48f9a693be1d58f49f7af7e0ae9fe29fd671cde8a55e6edca3581c4ef5796
+                            sha256  7bf48f9a693be1d58f49f7af7e0ae9fe29fd671cde8a55e6edca3581c4ef5796 \
+                            size    1343076
     }
 
     if {[lsearch {33} ${python.version}] != -1} {
@@ -51,6 +57,15 @@ if {${name} ne ${subport}} {
         checksums           rmd160  008e4a069e4969ee08ad383eb1d0070eeb63b405 \
                             sha256  f2bd08e0cd1b06e10218feaf6fef299f473ba706582eb3bd9d52203fdbd7ee68 \
                             size    1246072
+    }
+
+    if {[lsearch {34} ${python.version}] != -1} {
+        version             18.1
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  53409af5e0f06b66656d2d0d81c79ff0a7aba29f \
+                            sha256  c0a292bd977ef590379a3f05d7b7f65135487b67470f6281289a94e015650ea1 \
+                            size    1259370
     }
 
     post-destroot {
@@ -65,15 +80,19 @@ if {${name} ne ${subport}} {
         delete ${destroot}${prefix}/bin/pip${python.branch}-${python.branch}
     }
 
-    select.group        ${python.rootname}
-    select.file         ${filespath}/${python.rootname}${python.version}
+    select.entries \
+        [list ${python.rootname} ${python.rootname}${python.version}] \
+        [list ${python.rootname}[string index ${python.version} 0] ${python.rootname}${python.version}]
 
     notes "
     To make the Python ${python.branch} version of pip the one that is run\
     when you execute the commands without a version suffix, e.g. 'pip', run:
 
-    port select --set ${select.group} [file tail ${select.file}]
     "
+
+    foreach entry ${select.entries} {
+        notes-append "sudo port select --set $entry"
+    }
 
     livecheck.type      none
 }

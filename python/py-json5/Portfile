@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        dpranke pyjson5 0.9.5 v
+revision            0
+name                py-json5
+
+python.versions     27 36 37 38
+categories-append   devel
+license             Apache-2
+platforms           darwin
+supported_archs     noarch
+maintainers         {aronnax @lpsinger} openmaintainer
+description         A Python implementation of the JSON5 data format
+long_description \
+  ${description}. JSON5 extends the JSON data interchange format to make it \
+  slightly more usable as a configuration language.
+
+checksums           rmd160  942ef9c2163f9ace5982077a68f480f1265ae660 \
+                    sha256  2eaefd6a0ad37aa965960963704b41e9534532e91bb5f124db779ac82fcad720 \
+                    size    109264
+
+if {${subport} ne ${name}} {
+    livecheck.type  none
+
+    depends_lib-append    port:py${python.version}-setuptools
+
+    depends_test-append \
+                    port:py${python.version}-hypothesis
+    test.run        yes
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
+}

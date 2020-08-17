@@ -4,26 +4,24 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-msgpack
-version             0.5.6
+version             1.0.0
 revision            0
 categories-append   devel
 platforms           darwin
 license             Apache
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         MessagePack (de)serializer for Python.
 long_description    ${description}
 
-homepage            https://pypi.python.org/pypi/msgpack/
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+homepage            https://msgpack.org/
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  48818b2ea891871e70754fc3720a15d04a12c28c \
-                    sha256  0ee8c8c85aa651be3aa0cd005b5931769eaa658c948ce79428766f1bd46ae2c3
+checksums           rmd160  26d86cec6d47d4cc300fe33100d967d9890117e7 \
+                    sha256  9534d5cc480d4aff720233411a1f765be90885750b07df772380b34c10ecb5c0 \
+                    size    232331
 
 if {${name} ne ${subport}} {
     depends_build-append \

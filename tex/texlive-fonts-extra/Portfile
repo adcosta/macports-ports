@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           texlive 1.0
 
 name                texlive-fonts-extra
-version             47288
+version             54583
 revision            0
 
 categories          tex
@@ -13,15 +13,18 @@ license             Copyleft Permissive
 description         TeX Live: Additional fonts
 long_description    Additional fonts
 
-checksums           texlive-fonts-extra-47288-run.tar.xz \
-                    rmd160  40e95b0f6e09ab971d38282781401fdaaed608cd \
-                    sha256  775ce49626dcab444dd9915517b3b95cde5559b81b04f0a86a6afb486135ec1b \
-                    texlive-fonts-extra-47288-doc.tar.xz \
-                    rmd160  0966fa64e7251b5d5453e50898fc90457e97f9eb \
-                    sha256  9c245f71166b6830abc9b41adb7c71d8a8fa73bf0791871361d86c7b51c29637 \
-                    texlive-fonts-extra-47288-src.tar.xz \
-                    rmd160  9f98e39311a05a65ddc2e678e34cccf371e26be8 \
-                    sha256  504c0e7df22c9ada485c41a5db5829191060fe43bbd68ff0499758287c7e6cce
+checksums           texlive-fonts-extra-54583-run.tar.xz \
+                    rmd160  0508d8a9c51f59be1db89e29b13e5a6aecd111ba \
+                    sha256  940c8aa6d4167c3c0b6f5f1f5d8eaa440c0c7529185e4a18e686bbba6024f43e \
+                    size    600917352 \
+                    texlive-fonts-extra-54583-doc.tar.xz \
+                    rmd160  27a3bab7533548f7031a84714c005a7057f36dd2 \
+                    sha256  89acae1c98e477d23f326dd468359ec77b56f2ccac7c9f571e2b4684ffef8880 \
+                    size    97007456 \
+                    texlive-fonts-extra-54583-src.tar.xz \
+                    rmd160  9ed970b2ffc4a80e92c7e853f61bc9ebf77d32fe \
+                    sha256  0da96e80e2e29a2d6d16b718341cba4ded06703d3a4d01548bce1c2f051b8f42 \
+                    size    7711100
 
 depends_lib         port:texlive-basic
 
@@ -31,8 +34,9 @@ texlive.maps      \
     {Map ArrowsADF.map} \
     {Map BulletsADF.map} \
     {Map Alegreya.map} \
-    {Map algolrevived.map} \
+    {Map AlgolRevived.map} \
     {MixedMap allrunes.map} \
+    {Map almendra.map} \
     {Map AnonymousPro.map} \
     {Map uaq.map} \
     {Map antt.map} \
@@ -53,6 +57,7 @@ texlive.maps      \
     {Map ybd.map} \
     {Map beuron.map} \
     {Map bguq.map} \
+    {Map bitter.map} \
     {Map sqrcaps.map} \
     {Map boondox.map} \
     {Map pbsi.map} \
@@ -66,25 +71,33 @@ texlive.maps      \
     {Map clm.map} \
     {Map Chivo.map} \
     {Map cinzel.map} \
+    {Map Clara.map} \
     {Map ClearSans.map} \
     {Map cm-lgc.map} \
     {Map cmexb.map} \
     {MixedMap cmll.map} \
     {Map cmsrb.map} \
+    {MixedMap cmupint.map} \
     {Map Cochineal.map} \
     {Map Coelacanth.map} \
     {Map comfortaa.map} \
     {Map ComicNeue.map} \
     {Map ComicNeueAngular.map} \
     {Map CormorantGaramond.map} \
-    {Map CountriesOfEurope.map} \
+    {Map countriesofeurope.map} \
     {Map crimson.map} \
+    {Map CrimsonPro.map} \
+    {Map cuprum.map} \
     {Map cyklop.map} \
     {Map dante.map} \
     {Map dejavu-type1.map} \
     {Map dictsym.map} \
+    {Map Domitian.map} \
     {Map dstroke.map} \
-    {Map droid.map} \
+    {Map droidsans.map} \
+    {Map droidsansmono.map} \
+    {Map droidserif.map} \
+    {Map DSSerif.map} \
     {Map dutchcal.map} \
     {Map EBGaramond.map} \
     {Map EBGaramond-Maths.map} \
@@ -94,6 +107,7 @@ texlive.maps      \
     {Map esrelation.map} \
     {Map ESSTIX.map} \
     {Map esvect.map} \
+    {Map ETbb.map} \
     {Map fbb.map} \
     {Map fdsymbol.map} \
     {Map fetamont.map} \
@@ -102,6 +116,8 @@ texlive.maps      \
     {Map foekfont.map} \
     {Map fonetika.map} \
     {Map fontawesome.map} \
+    {Map fontawesome5.map} \
+    {Map forum.map} \
     {Map fourier.map} \
     {Map fourier-utopia-expert.map} \
     {Map frcursive.map} \
@@ -143,21 +159,28 @@ texlive.maps      \
     {Map Starburst.map} \
     {Map Typocaps.map} \
     {Map Zallman.map} \
+    {Map InriaSans.map} \
+    {Map InriaSerif.map} \
     {Map ipaex-type1.map} \
     {Map iwona.map} \
+    {Map Junicode.map} \
     {Map kpfonts.map} \
     {Map kurier.map} \
     {Map lato.map} \
     {Map libertine.map} \
     {Map libertinegc.map} \
+    {Map libertinus.map} \
     {Map libertinust1math.map} \
     {Map LibreBaskerville.map} \
     {Map LibreBodoni.map} \
     {Map LibreCaslon.map} \
+    {Map LibreFranklin.map} \
     {Map yly.map} \
     {Map linearA.map} \
+    {Map LinguisticsPro.map} \
     {Map LobsterTwo.map} \
     {MixedMap lxfonts.map} \
+    {Map marcellus.map} \
     {Map mathabx.map} \
     {Map mdbch.map} \
     {Map mdgreek.map} \
@@ -171,7 +194,7 @@ texlive.maps      \
     {Map miama.map} \
     {Map mintspirit.map} \
     {Map MnSymbol.map} \
-    {Map montserrat.map} \
+    {Map Montserrat.map} \
     {Map newpx.map} \
     {Map newtx.map} \
     {Map newtxsf.map} \
@@ -203,17 +226,24 @@ texlive.maps      \
     {Map rsfso.map} \
     {Map sansmathaccent.map} \
     {Map sansmathfonts.map} \
+    {Map ScholaX.map} \
     {MixedMap semaf.map} \
     {Map SourceCodePro.map} \
     {Map SourceSansPro.map} \
     {Map SourceSerifPro.map} \
     {Map starfont.map} \
     {Map icelandic.map} \
+    {Map STEP.map} \
+    {Map SticksTooText.map} \
     {Map stix.map} \
+    {Map stix2.map} \
     {Map superiors.map} \
     {Map svrsymbols.map} \
     {Map tempora.map} \
     {Map tfrupee.map} \
+    {Map TheanoDidot.map} \
+    {Map TheanoModern.map} \
+    {Map TheanoOldStyle.map} \
     {Map tinos.map} \
     {MixedMap trajan.map} \
     {Map gptimes.map} \

@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               cmake 1.1
+PortGroup               github 1.0
+
+github.setup            mutationpp Mutationpp 1.0.1 v
+name                    mutationpp
+revision                0
+categories              science
+license                 LGPL-3+
+maintainers             {@rubendibattista gmail.com:rubendibattista} openmaintainer
+platforms               darwin
+description             The MUlticomponent Thermodynamic And Transport library for IONized gases in C++
+long_description        Mutation++ is an open-source library originally \
+                        developed at the von Karman Institute for Fluid Dynamics, designed to couple \
+                        with conventional computational fluid dynamics codes to provide thermodynamic, \
+                        transport, chemistry, and energy transfer properties associated with subsonic \
+                        to hypersonic flows.
+
+# This patch is needed in order to avoid that cmake uses `FindEigen3.cmake`
+# instead of the Eigen3Config.cmake that provides the right target
+patchfiles              eigen3-config.diff
+
+checksums               rmd160  f3562c21ff04099c49143b0d840c5521b39976d3 \
+                        sha256  16b6a0457bd0fda6d093fa9f97c242d8a095b9ba6ab35fcd5650f1e21e2506d6 \
+                        size    4022212
+
+depends_lib-append      path:include/eigen3/Eigen/Eigen:eigen3

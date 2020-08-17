@@ -3,17 +3,23 @@
 PortSystem              1.0
 PortGroup               cmake 1.1
 PortGroup               qt5 1.0
+PortGroup               compiler_blacklist_versions 1.0
 
-set build_id 10650
-
+# Check filenames in https://download.owncloud.com/desktop/stable/
+# owncloudclient-${version}.${build_id}.tar.xz (The source tarball)
+# ownCloud-${version}.${version_id}.pkg.tbz (The official macOS package)
 name                    owncloud-client
-version                 2.5.0
-checksums               rmd160  82ef6817a9740de0c9c433b44d2eebd5cf805432 \
-                        sha256  bf982cbf9a5d7a0a66e0d5c3b949f7456a5904251b02234038367977ea4ad972 \
-                        size    16651172
+version                 2.6.3
+revision                0
+set build_id            14058
+set version_id          14058
+
+checksums               rmd160  effe036ca72c8714b80947430b4aa9bdea7dff2f \
+                        sha256  e3d38de31e041f0e1836b2b74acfc1fc76eea4955968952a65643cbf36a493f5 \
+                        size    21246672
 
 categories              www aqua
-maintainers             {yan12125 @yan12125} openmaintainer
+maintainers             {mps @Schamschula} openmaintainer
 license                 GPL-2+
 description             Desktop Syncing Client for ownCloud
 
@@ -26,16 +32,26 @@ master_sites            https://download.owncloud.com/desktop/stable
 distname                owncloudclient-${version}.${build_id}
 use_xz                  yes
 
+use_xcode               yes
+
 platforms               darwin
 
 compiler.cpath
 compiler.library_path
+
+# For -fstack-protector-strong; copied from Portfile of KeePassXC
+compiler.blacklist-append {clang < 602} macports-clang-3.4 macports-clang-3.3
+compiler.fallback-append macports-clang-5.0
+
+depends_build-append    port:doxygen
 
 depends_lib-append      port:qtkeychain
 
 qt5.depends_component   qtmacextras qtwebkit
 qt5.depends_build_component \
                         qttools
+
+qt5.min_version         5.6
 
 patchfiles              patch-use-system-sqlite.diff \
                         patch-add-xcodeflags.diff
@@ -44,9 +60,20 @@ cmake.install_prefix    ${applications_dir}
 
 # This should match LIB_INSTALL_DIR in CMakeLists.txt
 configure.args-append   -DCMAKE_INSTALL_NAME_DIR=${applications_dir}/owncloud.app/Contents/MacOS \
-                        -DXCODEFLAGS="-IDECustomDerivedDataLocation=${workpath}/DerivedData"
+                        -DXCODEFLAGS="-IDECustomDerivedDataLocation=${workpath}/DerivedData" \
+                        -DMIRALL_VERSION_BUILD=${version_id}
+
+if {${os.major} < 13} {
+    # Finder extension does not compile on 10.8
+    configure.pre_args-append   -DBUILD_SHELL_INTEGRATION=OFF
+}
+
 
 post-destroot {
     ln -s ${applications_dir}/owncloud.app/Contents/MacOS/owncloudcmd \
         ${destroot}${prefix}/bin/owncloudcmd
 }
+
+livecheck.regex     owncloudclient-(${version}.${build_id})${extract.suffix}
+livecheck.url       ${master_sites}
+livecheck.version   ${version}.${build_id}

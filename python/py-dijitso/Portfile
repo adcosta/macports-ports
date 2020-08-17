@@ -11,7 +11,7 @@ categories-append   math science
 license             LGPL-3+
 platforms           darwin
 supported_archs     noarch
-maintainers         {sean @seanfarley} openmaintainer
+maintainers         nomaintainer
 
 description         A Python module for distributed just-in-time shared library building
 long_description    This module was written to improve a core component of the \
@@ -24,7 +24,7 @@ checksums           rmd160  45d6d01ab312f095e5ff68e1589a04f48fb0f072 \
                     sha256  2a768a5aac0414c1719a0ea5d66c788d6f8d0838d3b669ecb26e35ff9e452f09 \
                     size    51541
 
-python.versions     36
+python.versions     36 37 38
 python.link_binaries_suffix
 
 if {${subport} ne ${name}} {

@@ -4,10 +4,10 @@ PortSystem          1.0
 PortGroup           github 1.0
 
 # normally update mediainfolib port at the same time
-github.setup        MediaArea MediaInfo 18.05 v
-checksums           rmd160  5a07167227c64dce29807d687a5e19fddbab8c23 \
-                    sha256  8b4aa07e706c00e20d2be3b96e29b9b2f8fc9c9149e288f39f463fd5b2d6585a \
-                    size    2420181
+github.setup        MediaArea MediaInfo 20.08 v
+checksums           rmd160  fab335b0ac5d2e77a1de8a3242cbe762c9609d50 \
+                    sha256  f714087f5786392bd5f4f0aa5c4538ffc79741536cdb64c0258a66845d44ca72 \
+                    size    3121425
 
 name                mediainfo
 categories          multimedia
@@ -24,7 +24,11 @@ homepage            https://mediaarea.net
 depends_build       port:pkgconfig
 depends_lib         port:zenlib port:zlib port:mediainfolib
 
-set worksrcpath     ${worksrcpath}/Project/GNU/CLI
+if {${name} eq ${subport}} {
+    worksrcdir     ${worksrcdir}/Project/GNU/CLI
+} else {
+    worksrcdir     ${worksrcdir}/Project/GNU/GUI
+}
 
 use_autoreconf      yes
 autoreconf.args-append  --force --install
@@ -36,15 +40,13 @@ subport MediaInfo-gui {
     PortGroup           app 1.0
     PortGroup           wxWidgets 1.0
     wxWidgets.use       wxWidgets-3.2
-    revision            0
+
 
     description         Identifies audio and video codecs in a media file. GUI
     long_description    MediaInfo supplies technical and tag information about a \
                         video or audio file via graphical utility
 
     depends_lib-append  port:${wxWidgets.port}
-
-    set worksrcpath     ${workpath}/${worksrcdir}/Project/GNU/GUI
 
     configure.args      --with-wx-config=${wxWidgets.wxconfig} \
                         --with-wx-prefix=${wxWidgets.prefix}

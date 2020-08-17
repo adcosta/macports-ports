@@ -4,13 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-rasterio
-version             1.0.9
+version             1.1.5
 revision            0
 categories-append   gis
 platforms           darwin
 license             BSD
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -18,13 +18,10 @@ description         Fast and direct raster I/O for Python programmers who use Nu
 long_description    ${description}
 
 homepage            https://github.com/sgillies/rasterio
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  9e7bbda886c639599b5db2cafc58a5f032c4ddaf \
-                    sha256  8f6905bb1f0b5674f7eb289761d57fb24bd9471a994e0cc235963389eaa2cf9f \
-                    size    1814315
+checksums           rmd160  4fef45255102dd87754130d20408904a4bb0b720 \
+                    sha256  ebe75c71f9257c780615caaec8ef81fa4602702cf9290a65c213e1639284acc9 \
+                    size    2182776
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -39,7 +36,13 @@ if {${name} ne ${subport}} {
                         port:py${python.version}-click-plugins \
                         port:gdal
 
-    if { ${python.version} < 34 } {
+    if { ${python.version} eq 27 } {
+        version             1.0.28
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  25ede4fe36ff5985f7ef0e77d857c04437979960 \
+                            sha256  9def7698e7076c8f148e8bfa0b2a3334308b2f5311abe9e40269e0bf9dfc645d \
+                            size    2059598
         depends_lib-append  port:py${python.version}-enum34
     }
 

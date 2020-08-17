@@ -25,8 +25,8 @@ variant postgresql83 conflicts postgresql80 postgresql81 postgresql82 \
 	configure.args-append	--with-pgsql-include-dir=${prefix}/include/postgresql83 \
 				--with-pgsql-lib-dir=${prefix}/lib/postgresql83
 	configure.env \
-		POSTGRES_LIB="${prefix}/lib/postgresql83 -L${prefix}/lib -lssl -lcrypto" \
-		POSTGRES_INCLUDE="${prefix}/include/postgresql83 -I${prefix}/include"
+		"POSTGRES_LIB=${prefix}/lib/postgresql83 -L${prefix}/lib -lssl -lcrypto" \
+		"POSTGRES_INCLUDE=${prefix}/include/postgresql83 -I${prefix}/include"
 }
 
 variant postgresql82 conflicts postgresql80 postgresql81 postgresql83 \
@@ -35,8 +35,8 @@ variant postgresql82 conflicts postgresql80 postgresql81 postgresql83 \
 	configure.args-append	--with-pgsql-include-dir=${prefix}/include/postgresql82 \
 				--with-pgsql-lib-dir=${prefix}/lib/postgresql82
 	configure.env \
-		POSTGRES_LIB="${prefix}/lib/postgresql82 -L${prefix}/lib -lssl -lcrypto" \
-		POSTGRES_INCLUDE="${prefix}/include/postgresql82 -I${prefix}/include"
+		"POSTGRES_LIB=${prefix}/lib/postgresql82 -L${prefix}/lib -lssl -lcrypto" \
+		"POSTGRES_INCLUDE=${prefix}/include/postgresql82 -I${prefix}/include"
 }
 
 variant postgresql81 conflicts postgresql80 postgresql82 postgresql83 \
@@ -45,8 +45,8 @@ variant postgresql81 conflicts postgresql80 postgresql82 postgresql83 \
 	configure.args-append	--with-pgsql-include-dir=${prefix}/include/postgresql81 \
 				--with-pgsql-lib-dir=${prefix}/lib/postgresql81
 	configure.env \
-		POSTGRES_LIB="${prefix}/lib/postgresql81 -L${prefix}/lib -lssl -lcrypto" \
-		POSTGRES_INCLUDE="${prefix}/include/postgresql81 -I${prefix}/include"
+		"POSTGRES_LIB=${prefix}/lib/postgresql81 -L${prefix}/lib -lssl -lcrypto" \
+		"POSTGRES_INCLUDE=${prefix}/include/postgresql81 -I${prefix}/include"
 }
 
 variant postgresql80 conflicts postgresql81 postgresql82 postgresql83 \
@@ -55,6 +55,6 @@ variant postgresql80 conflicts postgresql81 postgresql82 postgresql83 \
 	configure.args-append	--with-pgsql-include-dir=${prefix}/include/postgresql80 \
 				--with-pgsql-lib-dir=${prefix}/lib/postgresql80
 	configure.env \
-		POSTGRES_LIB="${prefix}/lib/postgresql80 -L${prefix}/lib -lssl -lcrypto" \
-		POSTGRES_INCLUDE="${prefix}/include/postgresql80 -I${prefix}/include"
+		"POSTGRES_LIB=${prefix}/lib/postgresql80 -L${prefix}/lib -lssl -lcrypto" \
+		"POSTGRES_INCLUDE=${prefix}/include/postgresql80 -I${prefix}/include"
 }

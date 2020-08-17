@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+github.setup        pyviz holoviews 1.13.3 v
+revision            0
+categories-prepend  science
+license             BSD
+maintainers         {mps @Schamschula} openmaintainer
+description         HoloViews is an open-source Python library designed to make data \
+                    analysis and visualization seamless and simple.
+long_description    ${description} With HoloViews, you can usually express what you \
+                    want to do in very few lines of code, letting you focus on what you \
+                    are trying to explore and convey, not on the process of plotting.
+platforms           darwin
+
+checksums           rmd160  e41588ea53441dbd7e9dac7cd84db97b7a996a7e \
+                    sha256  e8d0a93344df3a29e9b52cb70f8aa6f308fa3bd95ec08a4471f2eb949497e9c1 \
+                    size    4706051
+
+python.versions     36 37 38
+
+depends_lib-append  port:py${python.version}-matplotlib \
+                    port:py${python.version}-notebook \
+                    port:py${python.version}-param \
+                    port:py${python.version}-pyct \
+                    port:py${python.version}-pyviz_comms \
+                    port:py${python.version}-setuptools
+
+variant python36 conflicts python37 python38 description {Use Python 3.6} {
+    python.default_version 36
+}
+
+variant python37 conflicts python36 python38 description {Use Python 3.7} {
+    python.default_version 37
+}
+
+variant python38 conflicts python36 python37 description {Use Python 3.8} {
+    python.default_version 38
+}
+
+if {![variant_isset python36] && ![variant_isset python37] && ![variant_isset python38]} {
+    default_variants +python38
+}
+
+github.livecheck.regex  {(\d\.\d+(\.\d+)?(?!a))}

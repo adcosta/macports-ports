@@ -3,11 +3,28 @@
 PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           xcodeversion 1.0
+use_xcode           yes
 
-github.setup        gnachman iTerm2 3.2.0 v
+if {${os.major} > 16} {
+    version             3.3.11
+    revision            0
+    checksums           rmd160  c3d72ebfed01d64c5bdb33dd2f04e85e07b387db \
+                        sha256  513f8840e2e45d7859d56548d998cad441d491f28355d7770854e3c5cc944b2a \
+                        size    20601571
+    patchfiles          patch-Makefile-XC10.diff
+} else {
+    version             3.2.0
+    revision            0
+    checksums           rmd160  07915ff5db0545c0c059f47e7f71761e023a26e1 \
+                        sha256  017aff348352369abcc994caaca0f6112e1f17c4d65041acdb9f19830b2b96bd \
+                        size    11969144
+    patchfiles          patch-Makefile.diff
+}
+
+github.setup        gnachman iTerm2 ${version} v
 categories          aqua shells
 platforms           darwin
-maintainers         {emer.net:emer @markemer} openmaintainer
+maintainers         {mark @markemer} openmaintainer
 license             GPL-2+
 supported_archs     x86_64
 
@@ -19,21 +36,12 @@ long_description    \
 
 homepage            https://iterm2.com/
 
-checksums           rmd160  07915ff5db0545c0c059f47e7f71761e023a26e1 \
-                    sha256  017aff348352369abcc994caaca0f6112e1f17c4d65041acdb9f19830b2b96bd \
-                    size    11969144
 
 github.livecheck.regex {(\d+(?:\.\d+)*)}
 
-patchfiles          patch-Makefile.diff
 
 post-patch {
     reinplace "s|CODE_SIGN_IDENTITY = \".*\";|CODE_SIGN_IDENTITY = \"\";|g" ${worksrcpath}/iTerm2.xcodeproj/project.pbxproj
-
-    # Fix version number
-    set versionfd [open ${worksrcpath}/version.txt "w"]
-    puts $versionfd "${version}"
-    close $versionfd
 }
 
 compiler.cpath
@@ -45,11 +53,19 @@ build.target        prod
 
 destroot.destdir    APPS=${destroot}${applications_dir}
 
-minimum_xcodeversions {16 9.0 17 9.0}
+post-destroot {
+    # Fix version number; see iTerm2/tools/updateVersion.py for version keys
+    foreach {key} {CFBundleGetInfoString CFBundleShortVersionString CFBundleVersion} {
+        system "/usr/libexec/PlistBuddy -c \"Set :${key} ${version}\" ${destroot}${applications_dir}/iTerm2.app/Contents/Info.plist"
+    }
+}
+
+minimum_xcodeversions {16 9.0 17 10.0}
 
 if {${os.platform} eq "darwin" && ${os.major} < 16} {
+    known_fail      yes
     pre-fetch {
-        ui_error "${subport} @${version} requires OS X 10.12 or newer"
-        return -code error "unsupported Mac OS X version"
+        ui_error "${subport} @${version} requires macOS 10.12 or newer"
+        return -code error "unsupported OS X version"
     }
 }

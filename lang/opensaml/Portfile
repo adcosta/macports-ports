@@ -3,12 +3,11 @@
 PortSystem          1.0
 
 name                opensaml
-version             3.0.0
-revision            1
+version             3.1.0
 categories          lang shibboleth security xml
 license             Apache-2
 maintainers         {snc @nerdling} {scantor @scantor}
-description         OpenSAML 2 library for C++
+description         OpenSAML library for C++
 long_description    SAML 2.0/1.x toolkit
 homepage            http://www.opensaml.org/
 master_sites        http://shibboleth.net/downloads/c++-opensaml/${version}/
@@ -22,8 +21,9 @@ depends_lib         port:xmltooling \
                     port:xercesc3 \
                     port:log4shib
 
-checksums           rmd160  d12b849080fac63314660e8e833e2ef6ceb4b298 \
-                    sha256  a9cb72e41cc9d1af08a3d7c7843410eb41d4e97d88d516db7f0e2da1243e296e
+checksums           rmd160  e8ac6baec220d859e83fdbc06da2c799c05dc8da \
+                    sha256  7b632d2cf6556b213e80ec1473b5298dbfa17f665cb3911f933c4ad5fe2983b0 \
+                    size    586961
 
 configure.args      --disable-static
 

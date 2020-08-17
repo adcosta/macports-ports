@@ -4,36 +4,36 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-atomicwrites
-version             1.2.1
-platforms           darwin
-license             MIT
-maintainers         {yan12125 @yan12125} openmaintainer
+version             1.4.0
+revision            0
 
-description         Atomic file writes.
+platforms           darwin
+supported_archs     noarch
+license             MIT
+maintainers         {reneeotten @reneeotten} openmaintainer
+
+description         Powerful Python library for atomic file writes
 long_description    ${description}
 
 homepage            https://github.com/untitaker/python-atomicwrites
-master_sites        pypi:a/atomicwrites
-distname            atomicwrites-${version}
 
-checksums           rmd160  773073f277b78f544242d395e903ce8655138355 \
-                    sha256  ec9ae8adaae229e4f8446952d204a3e4b5fdd2d099f9be3aaf556120135fb3ee \
-                    size    11660
+checksums           rmd160  d94a0a4e8e1fdc7e59923b48866c5db6220370a5 \
+                    sha256  ae70396ad1a434f9c7046fd2dd196fc04b12f9e91ffb859164193be8b6168a7a \
+                    size    11790
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                        port:py${python.version}-setuptools
+                    port:py${python.version}-setuptools
 
     depends_test-append \
-                        port:py${python.version}-pytest
+                    port:py${python.version}-pytest
 
-    test.run            yes
-    test.cmd            py.test-${python.branch}
+    test.run        yes
+    test.cmd        py.test-${python.branch}
     test.target
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
 
     livecheck.type      none
-} else {
-    livecheck.type      pypi
 }

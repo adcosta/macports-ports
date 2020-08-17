@@ -3,11 +3,10 @@
 PortSystem          1.0
 PortGroup           python 1.0
 
-set _name           pyshp
-set _n              [string index ${_name} 0]
+name                py-pyshp
+version             2.1.0
+revision            0
 
-name                py-${_name}
-version             1.2.12
 categories-append   gis
 platforms           darwin
 supported_archs     noarch
@@ -15,7 +14,6 @@ license             MIT
 maintainers         {petr @petrrr} openmaintainer
 
 description         Python Shapefile Library
-
 long_description    PyShp library provides read and write support for the \
                     ESRI shapefile format in pure Python. This format is a \
                     popular Geographic Information System vector data format \
@@ -23,32 +21,27 @@ long_description    PyShp library provides read and write support for the \
                     files with all types of geometry. Everything in the \
                     public ESRI shapefile specification is implemented.
 
-homepage            https://github.com/GeospatialPython/${_name}
+homepage            https://github.com/GeospatialPython/pyshp
+distname            ${python.rootname}-${version}
+master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${_name}-${version}
-master_sites        pypi:${_n}/${_name}
+checksums           rmd160  9bba1a6132c2b36a00ac5a0b6b7a0c037e0f74d2 \
+                    sha256  e65c7f24d372b97d0920b864bbeb78322bb37b83f2606e2a2212631d5d51e5c0 \
+                    size    215360
 
-checksums           md5     63d33d151ac308f1db71ea0f22c30d8b \
-                    rmd160  0327de92a09ab7716f8a5d557e844e4722527156 \
-                    sha256  8dcd65e0aa2aa2951527ddb7339ea6e69023543d8a20a73fc51e2829b9ed6179
-
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
-    depends_build-append    port:py${python.version}-setuptools
+    depends_build-append \
+                    port:py${python.version}-setuptools
 
-    # Adding documentation
+
     post-destroot {
         set dest_doc ${destroot}${prefix}/share/doc/${subport}
-        xinstall -d  ${dest_doc}
-        xinstall -m 755 -W ${worksrcpath} \
-            README.md \
-                ${dest_doc}
+        xinstall -d ${dest_doc}
+        xinstall -m 0644 -W ${worksrcpath} README.md \
+            LICENSE.TXT changelog.txt ${dest_doc}
     }
 
     livecheck.type  none
-} else {
-    livecheck.type  regex
-    livecheck.url   https://pypi.python.org/pypi/${_name}/json
-    livecheck.regex "\"${_name}-(\[.\\d\]+)\\${extract.suffix}\""
 }

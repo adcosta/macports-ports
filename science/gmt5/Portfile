@@ -2,13 +2,21 @@
 
 PortSystem          1.0
 PortGroup           cmake 1.0
+PortGroup           github 1.0
 
 name                gmt5
-version             5.4.4
-revision            1
+github.setup        GenericMappingTools gmt 5.4.5
+github.tarball_from releases
+distname            ${github.project}-${github.version}-src
+revision            6
+subport gmt6 {
+    github.setup    GenericMappingTools gmt 6.1.0
+    revision        1
+    epoch           1
+}
 categories          science
 platforms           darwin
-maintainers         {takeshi @tenomoto}
+maintainers         {takeshi @tenomoto} openmaintainer
 license             GPL-3
 description         The Generic Mapping Tools
 long_description GMT is an open source collection of ~120 tools \
@@ -17,27 +25,31 @@ long_description GMT is an open source collection of ~120 tools \
     plots via contour maps to artificially illuminated surfaces \
     and 3D perspective views.
 
-homepage            http://gmt.soest.hawaii.edu/
-master_sites        ftp://ftp.soest.hawaii.edu/gmt          \
-                    ftp://ibis.grdl.noaa.gov/pub/gmt        \
+homepage            https://www.generic-mapping-tools.org/
+master_sites        https://github.com/GenericMappingTools/gmt/releases/download/${version} \
+                    ftp://ftp.soest.hawaii.edu/gmt          \
+                    ftp://ftp.star.nesdis.noaa.gov/pub/sod/lsa/gmt \
                     ftp://ftp.iris.washington.edu/pub/gmt   \
                     ftp://ftp.iag.usp.br/pub/gmt            \
-                    ftp://ftp.geologi.uio.no/pub/gmt        \
-                    ftp://gd.tuwien.ac.at/pub/gmt           \
-                    ftp://ftp.scc.u-tokai.ac.jp/pub/gmt     \
-                    ftp://gmt.mirror.ac.za/pub/gmt
+                    ftp://gmt.mirror.ac.za/gmt              \
+                    http://mirrors.ustc.edu.cn/gmt          \
+                    http://www.scc.u-tokai.ac.jp/gmt
 use_xz              yes
 distname            gmt-${version}
 distfiles           ${distname}-src${extract.suffix}
 
-# stealth update 
-dist_subdir         ${name}/${version}_1
+if {${subport} eq "gmt5"} {
+    checksums           rmd160  900befd66ec4a9aea75c53d99ed83f7e25163e35\
+                        sha256  078d4997507cb15344c74a874568985e45bdbd6d3a72d330c74c47f4c0359bb1 \
+                        size    59175704
+} else {
+    checksums           rmd160  11c0d9edfd8e524f1cb30203458d3e4b10a40802 \
+                        sha256  ad02780153c53a1116ae0cc7945b6f533f066af44c30d7f95ff138cfede1867c \
+                        size    53811392
+}
 
-checksums           rmd160  b150622534a0bf2946fec6b412b1a21080d84919 \
-                    sha256  30fe868c91df30c51a637d54cb9ac52a64fe57e15daa9e08a73a4d1f0847e69f \
-                    size    105073748
-
-depends_lib         port:dcw-gmt \
+depends_lib         port:curl \
+                    port:dcw-gmt \
                     port:ghostscript \
                     port:gshhg-gmt \
                     port:netcdf
@@ -48,6 +60,7 @@ if {![variant_isset lgpl]} {
 }
 
 cmake.out_of_source yes
+cmake.install_prefix    ${prefix}/lib/${subport}
 
 # Mimic CMake's default FLAGS:
 if {[variant_isset debug]} {
@@ -62,8 +75,11 @@ if {[variant_isset debug]} {
 
 configure.cflags-append     -fstrict-aliasing
 configure.args-append       -DDCW_ROOT=${prefix}/share/gmt/dcw \
+                            -DCOPY_DCW=off \
                             -DGSHHG_ROOT=${prefix}/share/gmt/gshhg \
+                            -DCOPY_GSHHG=off \
                             -DNETCDF_ROOT=${prefix} \
+                            -DCURL_ROOT=${prefix} \
                             -DFFTW3_ROOT=off \
                             -DGDAL_ROOT=off \
                             -DPCRE_ROOT=off \
@@ -71,6 +87,19 @@ configure.args-append       -DDCW_ROOT=${prefix}/share/gmt/dcw \
                             -DGMT_INSTALL_MODULE_LINKS=off \
                             -DGMT_INSTALL_TRADITIONAL_FOLDERNAMES=off \
                             -DLICENSE_RESTRICTED=GPL
+
+if {${subport} eq "gmt6"} {
+    configure.args-append   -DGS_ROOT=${prefix}
+}
+
+post-destroot {
+    if {${subport} eq "gmt6"} {
+        foreach l {gmt postscriptlight} {
+            file delete ${destroot}${prefix}/lib/${subport}/bin/lib${l}.${version}.dylib
+        }
+    }
+    ln -s ${prefix}/lib/${subport}/bin/gmt ${destroot}${prefix}/bin/${subport}
+}
 
 variant fftw3 description {Optional support for FFTW-3 library} {
     depends_lib-append      port:fftw-3-single
@@ -118,6 +147,13 @@ variant nonfree conflicts lgpl description {enable nonfree code, libraries and b
     configure.args-append   -DLICENSE_RESTRICTED=no
 }
 
+notes "
+    ${subport} is installed in ${prefix}/lib/${subport}.
+    ${prefix}/bin/${subport} is a symblic link to ${prefix}/lib/${subport}/bin/gmt.
+"
+
+# livecheck for the proper branch (5 or 6) and skipping any release candidates
+set firstchar       [string range ${version} 0 0]
 livecheck.type      regex
-livecheck.url       ${homepage}
-livecheck.regex     {(?i)gmt-(5\.[0-9]+\.[0-9a-z]+)<\/a>}
+livecheck.url       ${github.homepage}/releases/
+livecheck.regex     gmt-(${firstchar}\\.\[0-9]+\\.\[0-9]+)-src${extract.suffix}

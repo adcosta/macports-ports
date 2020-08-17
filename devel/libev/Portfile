@@ -1,12 +1,9 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           muniversal 1.0
 
 name                libev
-epoch               1
-version             4.24
-revision            1
+version             4.33
 categories          devel net
 platforms           darwin
 license             {BSD GPL-2+}
@@ -21,15 +18,38 @@ long_description    libev is a full-featured and high-performance event \
 homepage            http://software.schmorp.de/pkg/libev.html
 master_sites        http://dist.schmorp.de/libev/Attic/
 
-checksums           rmd160  ec1da8e223322ac7e05d82250b5a2d0db8c144fe \
-                    sha256  973593d3479abdf657674a55afe5f78624b0e440614e2b8cb3a07f16d4d7f821
+checksums           rmd160  125519f593ed3239ea24522d3692f13df466b8a4 \
+                    sha256  507eb7b8d1015fbec5b935f34ebed15bf346bed04a11ab82b8eee848c4205aea \
+                    size    569527
 
-patchfiles          yosemite-libtool.patch
+if {${subport} eq ${name}} {
+    PortGroup       muniversal 1.0
 
-post-destroot {
-    move ${destroot}${prefix}/include/event.h ${destroot}${prefix}/include/ev-event.h
+    epoch           1
+    revision        1
+
+    post-destroot {
+        delete ${destroot}${prefix}/include/event.h
+    }
+
+    livecheck.type      regex
+    livecheck.url       http://dist.schmorp.de/libev/
+    livecheck.regex     ${name}-(\[0-9.\]+)\\.
+} else {
+    livecheck.type      none
 }
 
-livecheck.type      regex
-livecheck.url       http://dist.schmorp.de/libev/
-livecheck.regex     ${name}-(\[0-9.\]+)\\.
+subport ${name}-libevent-compat {
+    revision        0
+    description     libevent-compatible event.h header
+    long_description \
+                    ${subport} provides a {*}${description}.
+    conflicts       libevent
+    supported_archs noarch
+    depends_run     port:${name}
+    use_configure   no
+    build {}
+    destroot {
+        copy ${worksrcpath}/event.h ${destroot}${prefix}/include
+    }
+}

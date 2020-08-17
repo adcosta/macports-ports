@@ -1,69 +1,159 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-PortSystem          1.0
-PortGroup           github 1.0
+PortSystem                                             1.0
+PortGroup                github                        1.0
+PortGroup                compiler_blacklist_versions   1.0
+PortGroup                legacysupport                 1.0
+PortGroup                cmake                         1.1
 
-github.setup        ispc ispc 1.9.1 v
-categories          lang parallel               
-platforms           darwin
-supported_archs     x86_64
-license             BSD
-maintainers         {takeshi @tenomoto} openmaintainer
-description         Intel SPMD program compiler
-long_description \
-    ${name} is a compiler for a variant of the C programming language, \
-    with extensions for single program, multiple data programming. 
-homepage            http://${name}.github.com
-checksums           rmd160  07ab58ef9675d042d8b5fcd74a0b33d9edc943cf \
-                    sha256  4e3d835c57d7a4be52af5c5a8afa99c83d5416e14fc8aaaa9e6408eed9b4e025
+# link legacysupport statically for compilers
+legacysupport.use_static                       yes
+# limit legacysupport to OSX 10.10 and older
+legacysupport.newest_darwin_requires_legacy    14
 
-set llvm_version    3.9
+name                     ispc
+categories               lang parallel               
+platforms                darwin
+supported_archs          x86_64
+maintainers              {takeshi @tenomoto} openmaintainer
 
-depends_build       port:bison \
-                    port:flex \
-                    port:python27
-depends_lib         port:clang-${llvm_version}
+if { ${subport} eq ${name} } {
 
-use_configure       no
+    github.setup         ispc ispc 1.13.0 v
 
-configure.compiler  macports-clang-${llvm_version}
-patchfiles          patch-Makefile.diff
-post-patch {
-    if {[variant_isset doc]} {
-        reinplace {s|rst2html.py|rst2html-2.7.py|} ${worksrcpath}/docs/build.sh
+    checksums            rmd160  33475aba8516f361b1016d37d32d11a78a65205f \
+                         sha256  aca595508b51dd1ff065c406a3fd7c93822320c510077dd4d97a2b98a23f097a \
+                         size    19206050
+
+    license              BSD
+ 
+    description          Intel SPMD program compiler
+    long_description     ${name} is a compiler for a variant of the C programming language, \
+                         with extensions for single program, multiple data programming. 
+
+    set py_ver           3.8
+    set py_ver_nodot     [string map {. {}} ${py_ver}]
+
+    depends_build-append port:bison \
+                         port:flex \
+                         port:ispc-clang \
+                         port:python${py_ver_nodot}
+
+    patchfiles           patch-CMakeLists.txt.diff \
+                         unknown-architecture-i386.patch
+
+    post-patch {
+        if {${os.platform} eq "darwin" && ${os.major} >= 18} {
+            set sdkroot ${developer_dir}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+            reinplace "s|-emit-llvm|-isysroot ${sdkroot} -emit-llvm|" \
+                ${worksrcpath}/cmake/GenerateBuiltins.cmake
+        }
+        # Fix python shebang to use explicit path to MP python 3.x
+        foreach f [ exec find ${worksrcpath}/ -name "*.py" ] {
+            reinplace -q "s|/usr/bin/env python3|${prefix}/bin/python${py_ver}|" ${f}
+        }
     }
-}
 
-build.args          LLVM_CONFIG=${prefix}/bin/llvm-config-mp-${llvm_version} \
-                    PYTHON=${prefix}/bin/python2.7 \
-                    CLANG=${configure.cc}\
-                    CXX=${configure.cxx} \
-                    OPT="${configure.cxxflags} -fvisibility=hidden" \
-                    LEX=${prefix}/bin/flex \
-                    YACC="${prefix}/bin/bison -d -v -t" \
-                    BUILD_VERSION=${version} \
-                    LDFLAGS=${configure.ldflags}
-build.target        ""
+    # Need to use a recent MacPorts build.
+    compiler.cxx_standard  2014
+    compiler.blacklist     *gcc* clang {macports-clang-[5-8].0} macports-clang-3.*
 
-test.run            yes
-test.cmd            {python run_tests.py}
-test.target         ""
+    use_xcode              yes
+    cmake.out_of_source    yes
 
-destroot {
-    xinstall -m 755 ${worksrcpath}/ispc ${destroot}${prefix}/bin
-    xinstall -d -m 755 ${destroot}${prefix}/share/${name}
-    file copy ${worksrcpath}/examples ${destroot}${prefix}/share/${name}
-    if {[variant_isset doc]} {
-        system "cd ${worksrcpath}/docs; ./build.sh"
-        xinstall -d -m 755 ${destroot}${prefix}/share/doc/${name}
-        file copy ${worksrcpath}/docs ${destroot}${prefix}/share/doc/${name}
+    cmake.build_type       Release
+    configure.args-append  -DBISON_EXECUTABLE=${prefix}/bin/bison \
+                           -DFLEX_EXECUTABLE=${prefix}/bin/flex \
+                           -DLLVM_DIR=${prefix}/libexec/ispc-clang/lib/cmake/llvm \
+                           -DISPC_INCLUDE_TESTS=OFF
+
+    test.run               yes
+    test.dir               ${worksrcpath}
+    test.cmd               ./run_tests.py
+    test.args              --verbose --non-interactive --compiler=[file tail ${configure.cc}]
+    test.target            ""
+    depends_test-append    port:python${py_ver_nodot}
+    
+    post-destroot {
+        xinstall -d -m 755 ${destroot}${prefix}/share/${name}
+        move ${destroot}${prefix}/examples ${destroot}${prefix}/share/${name}
     }
+
 }
 
-variant doc description {build and install documentation} {
-    depends_build-append    port:py27-docutils
-}
+subport ispc-clang {
 
-livecheck.type      regex
-livecheck.url       ${homepage}/downloads.html
-livecheck.regex     {v([0-9]+\.[0-9]+\.[0-9])}
+    github.setup           llvm llvm-project 10.0.0 llvmorg-
+
+    checksums              rmd160  6733d734a728ba8d022f0cc283c6cb42a2f8ec9b \
+                           sha256  de4c766f5b3fffbe160af0f75e52804646beab0a4bdbf4fae916e3f055b8e463 \
+                           size    120817709
+
+    license                NCSA
+
+    description            Clang build specifically for ispc compiler. 
+    long_description       ${description} NOT TO BE USED IN GENERAL. This build is specifically tuned \
+                           to satisfy the requirements of ispc which uses it as a build dependency only. \
+                           Has assertions and dump enabled by default, which is not the case in the \
+                           primary MacPorts LLVM/Clang builds.
+    
+    # Build configuration is largely taken from lang/llvm ports,
+    # then simplified and adapted for usage here
+
+    patchfiles             patch-compilerrtdarwinutils-find-macosxsdkversion.diff
+    
+    set py_ver             2.7
+    set py_ver_nodot       [string map {. {}} ${py_ver}]
+    
+    depends_lib-append     port:libedit \
+                           port:ncurses port:z3 \
+                           path:lib/libxar.dylib:xar \
+                           port:zlib \
+                           port:libxml2 \
+                           port:libomp \
+                           bin:perl:perl5 \
+                           port:ld64
+    depends_build-append   port:pkgconfig \
+                           port:cctools \
+                           port:python${py_ver_nodot}
+
+    compiler.cxx_standard  2014
+    compiler.blacklist     *gcc* {clang < 801} macports-clang-3.* {macports-clang-[4-8].0}
+
+    cmake.install_prefix   ${prefix}/libexec/${subport}
+    cmake.build_type       Release
+    
+    configure.post_args    ../${worksrcdir}/llvm
+    default configure.dir  {${workpath}/build}
+    default build.dir      {${workpath}/build}
+
+    configure.args-delete  -DCMAKE_INSTALL_NAME_DIR=${cmake.install_prefix}/lib \
+                           -DCMAKE_INSTALL_RPATH=${cmake.install_prefix}/lib
+
+    configure.args-replace -DCMAKE_SYSTEM_PREFIX_PATH="${prefix}\;/usr" \
+                           -DCMAKE_SYSTEM_PREFIX_PATH="${cmake.install_prefix}\;${prefix}\;/usr"
+
+    configure.args-append  -DLLVM_ENABLE_PROJECTS="clang\;libcxx\;compiler-rt" \
+                           -DLLVM_LINK_LLVM_DYLIB=ON \
+                           -DLLVM_ENABLE_ASSERTIONS=ON \
+                           -DLLVM_ENABLE_DUMP=ON \
+                           -DLLVM_ENABLE_RTTI=ON \
+                           -DLLVM_INCLUDE_TESTS=OFF \
+                           -DLLVM_INCLUDE_EXAMPLES=OFF \
+                           -DLLVM_ENABLE_FFI=OFF \
+                           -DLLVM_BINDINGS_LIST=none \
+                           -DCMAKE_LINKER=${prefix}/bin/ld \
+                           -DCLANG_INCLUDE_TESTS=OFF \
+                           -DCLANG_ENABLE_STATIC_ANALYZER=OFF \
+                           -DCLANG_ENABLE_ARCMT=OFF \
+                           -DDARWIN_PREFER_PUBLIC_SDK=ON \
+                           -DLLVM_BUILD_RUNTIME=ON \
+                           -DLIBCXX_ENABLE_SHARED=OFF \
+                           -DLIBCXX_INSTALL_LIBRARY=OFF \
+                           -DCOMPILER_RT_BUILD_SANITIZERS=OFF \
+                           -DPYTHON_EXECUTABLE=${prefix}/bin/python${py_ver}
+
+    livecheck.url          https://github.com/llvm/llvm-project/releases
+    livecheck.regex        "LLVM (\\d+(?:\\.\\d+)*) Release"
+
+}

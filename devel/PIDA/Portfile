@@ -31,10 +31,10 @@ depends_lib     port:py${python.version}-bpython \
                 port:libmagic \
                 port:dbus-python${python.version}
 
-build.env       PKG_CONFIG_PATH="${python.prefix}/lib/pkgconfig" \
-                PATH="${python.prefix}/bin:$env(PATH)"
+build.env       PKG_CONFIG_PATH=${python.prefix}/lib/pkgconfig \
+                PATH=${python.prefix}/bin:$env(PATH)
 
-destroot.env    PKG_CONFIG_PATH="${python.prefix}/lib/pkgconfig" \
-                PATH="${python.prefix}/bin:$env(PATH)"
+destroot.env    PKG_CONFIG_PATH=${python.prefix}/lib/pkgconfig \
+                PATH=${python.prefix}/bin:$env(PATH)
 
 livecheck.type  none

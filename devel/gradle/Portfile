@@ -1,9 +1,11 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           java 1.0
 
 name                gradle
-version             4.10.2
+version             6.6
+revision            0
 categories          devel java groovy
 license             Apache-2
 maintainers         {amake @amake} openmaintainer
@@ -17,30 +19,33 @@ long_description    Gradle is a build system which offers you ease, power and fr
 
 homepage            https://gradle.org/
 platforms           darwin
+supported_archs     noarch
 distname            ${name}-${version}-bin
 master_sites        https://services.gradle.org/distributions
 
-checksums           rmd160  91ddb4be28b859e39166526228d39bbaabf91100 \
-                    sha256  b49c6da1b2cb67a0caf6c7480630b51c70a11ca2016ff2f555eaeda863143a29 \
-                    size    78420037
+# Update checksums for variant when updating these!
+checksums           rmd160  9e1d9aa49c3394885b5074208a23f118bd8cd2d5 \
+                    sha256  e6f83508f0970452f56197f610d13c5f593baaf43c0e3c6a571e5967be754025 \
+                    size    102672126
 
 worksrcdir          ${name}-${version}
 
 use_zip             yes
 use_configure       no
 
-build.cmd           true
+java.version        1.8+
+java.fallback       openjdk8
+
+build {}
 
 pre-destroot {
     # Remove extraneous bat files
-    foreach f [glob -directory ${worksrcpath}/bin *.bat] {
-        delete $f
-    }
+    delete {*}[glob ${worksrcpath}/bin/*.bat]
 }
 
-destroot    {
+destroot {
     # Create the target java directory
-    xinstall -m 755 -d ${destroot}${prefix}/share/java/${name}
+    xinstall -m 0755 -d ${destroot}${prefix}/share/java/${name}
 
     # Copy over the needed elements of our directory tree
     copy ${worksrcpath}/bin \
@@ -51,6 +56,24 @@ destroot    {
 
     # Symlink gradle into the bin directory
     ln -s ${prefix}/share/java/${name}/bin/gradle ${destroot}${prefix}/bin
+}
+
+variant all description {Install supplemental documentation and source code} {
+    distname        ${name}-${version}-all
+
+    checksums       rmd160  566c19c2dddd1a4a13a1158bca8f5e21b319e8bd \
+                    sha256  83fa7c3e5ab84c3c5c4a04fb16947338209efa9aab1f6bf09a5d0e3d2ed87742 \
+                    size    145159735
+
+    post-destroot {
+        xinstall -m 0755 -d ${destroot}${prefix}/share/doc/${name}
+        copy ${worksrcpath}/getting-started.html \
+            ${worksrcpath}/media \
+            ${worksrcpath}/src \
+            ${worksrcpath}/docs \
+            ${worksrcpath}/samples \
+            ${destroot}${prefix}/share/doc/${name}
+    }
 }
 
 livecheck.type  regex

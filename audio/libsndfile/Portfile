@@ -6,7 +6,7 @@ name                libsndfile
 version             1.0.28
 revision            1
 categories          audio
-maintainers         {stare.cz:hans @janstary}
+maintainers         nomaintainer
 platforms           darwin
 
 description         read and write files containing sampled sound
@@ -29,7 +29,7 @@ depends_build       port:pkgconfig
 depends_lib         port:flac port:libogg port:libvorbis
 
 # GCC < 4.3 does not have -Wvla
-patchfiles          patch-Wvla.diff
+patchfiles          patch-Wvla.diff patch-sndfile-play.diff
 
 configure.args \
     --disable-alsa \

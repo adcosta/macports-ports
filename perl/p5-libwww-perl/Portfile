@@ -3,8 +3,9 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         libwww-perl 6.36 ../../authors/id/E/ET/ETHER
+perl5.branches      5.26 5.28 5.30
+perl5.setup         libwww-perl 6.46 ../../authors/id/O/OA/OALDERS
+revision            1
 maintainers         nomaintainer
 license             {Artistic-1 GPL}
 supported_archs     noarch
@@ -22,9 +23,9 @@ long_description    The libwww-perl collection is a set of Perl \
                     and even classes that help you implement \
                     simple HTTP servers.
 
-checksums           rmd160  f137c794cd20e492ba1caf6e847de3f7003724a7 \
-                    sha256  75c034ab4b37f4b9506dc644300697505582cf9545bcf2e2079e7263f675290a \
-                    size    168245
+checksums           rmd160  1001926e0a8ba00d03ef07ae754d16d94d6fc281 \
+                    sha256  7a713375d0e02ad8238a5d58340ade10466fe209f752fd62fd182c173c4423c4 \
+                    size    176101
 
 platforms           darwin
 
@@ -47,7 +48,6 @@ if {${perl5.major} != ""} {
                     port:p${perl5.major}-http-message \
                     port:p${perl5.major}-http-negotiate \
                     port:p${perl5.major}-lwp-mediatypes \
-                    port:p${perl5.major}-lwp-protocol-https \
                     port:p${perl5.major}-net-http \
                     port:p${perl5.major}-try-tiny \
                     port:p${perl5.major}-uri \
@@ -61,23 +61,3 @@ if {${perl5.major} != ""} {
             ${destroot}${prefix}/share/doc/${subport}
     }
 }
-
-notes "
-As of version 6.00, libwww-perl has been split into multiple packages. If\
-you were using ${subport} for just one or two of its modules before, you may\
-be able to pare down your installation to just those modules now. Other\
-important changes have been made that may affect your code\; for details,\
-please see: ${prefix}/share/doc/${subport}/Changes
-"
-
-# Starting with version 6.02, LWP::Protocol::https began to be packaged
-# separately from libwww-perl as well.  The thinking seems to have been that
-# any package requiring HTTPS support would just declare an extra dependency
-# on LWP::Protocol::https, and those that didn't, wouldn't.
-#
-# However, at this writing, there are 59 ports in MacPorts that depend on
-# p5-libwww-perl, and I don't want to audit them all for their HTTPS
-# requirements.  So in keeping with the Principle of Least Astonishment while
-# recognizing that some people won't need or want the extra modules installed,
-# I've decided to add a new variant and have it enabled by default.
-#     --Larry Gilbert (L2G) 2011-06-02

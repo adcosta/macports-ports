@@ -7,7 +7,7 @@ PortGroup           gobject_introspection 1.0
 
 name                gtksourceview3
 set gname           gtksourceview
-version             3.24.8
+version             3.24.11
 license             LGPL-2.1+
 set branch          [join [lrange [split ${version} .] 0 1] .]
 maintainers         {devans @dbevans} openmaintainer
@@ -27,9 +27,9 @@ master_sites        gnome:sources/${gname}/${branch}/
 distname            ${gname}-${version}
 use_xz              yes
 
-checksums           rmd160  98009877ee5f9f9a2d5aa5851e48ba61346c7173 \
-                    sha256  1e9bb8ff190db705deb916dd23ff681f0e8803aec407bf0fd64c7e615ac436fe \
-                    size    1408964
+checksums           rmd160  34e86ab283b39f2778d5091a8595f5440598eb62 \
+                    sha256  691b074a37b2a307f7f48edc5b8c7afa7301709be56378ccf9cc9735909077fd \
+                    size    1438232
 
 depends_build       port:pkgconfig
 
@@ -42,12 +42,18 @@ depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
 gobject_introspection yes
 
 # blacklist compilers that do not support C11 (redefinition of typedef ‘GtkSourceTag’ at gtksourceview/gtksourcetag.h:35)
-compiler.blacklist  *gcc* {clang < 300}
+compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
+
+# use autoreconf to heal broken configure file
+# error: Something went wrong bootstrapping makefile fragments
+use_autoreconf      yes
+autoreconf.args     -fvi
 
 configure.args      --enable-compile-warnings=no \
                     --disable-silent-rules
 
 test.run            yes
+test.dir            ${worksrcpath}/testsuite
 test.target         check
 
 variant quartz {}

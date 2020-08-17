@@ -3,9 +3,10 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        ocaml opam 2.0.1
+github.setup        ocaml opam 2.0.7
 
 name                opam
+revision            1
 platforms           darwin
 categories          ocaml sysutils
 license             LGPL-2
@@ -19,9 +20,9 @@ long_description    OPAM is a package manager for OCaml that can install \
 github.tarball_from releases
 distname            opam-full-${version}
 
-checksums           rmd160  62315b15e48a92cc788cecc421529c300281f81f \
-                    sha256  81f7f1b661a0c1e04642fe02d0bea5524b32aa2cbed0ecf9b18d7145324ed97c \
-                    size    7585808
+checksums           rmd160  c6b472dd2d6cb14dd5066077fb08bb46e10845fe \
+                    sha256  9c0dac1094ed624158fff13000cdfa8edbc96798d32b9fab40b0b5330f9490a2 \
+                    size    7929123
 
 depends_build       port:ocaml
 
@@ -29,18 +30,14 @@ depends_build       port:ocaml
 # We don't need or want one.
 configure.env-append  FETCH=no
 
-# This patch dikes out a test that will prevent us from disabling fetch.
-# Otherwise FETCH=no will fail and we'll need to depend on curl or wget.
-patchfiles          patch-stop-fetch-check.diff
-
-# This is a kludge to put the documentation files into share/opam-installer
-# Without this, they'd end up in doc/opam-installer, and there is no
-# /opt/local/doc.
-# It really should go in share/doc/opam but there's no obvious way to
-# force the infra to do that yet.
-post-build {
-    reinplace "s|doc:|share:|g" ${worksrcpath}/opam-installer.install
-}
+# * patch-stop-fetch-check.diff dikes out a test that will prevent us
+#   from disabling fetch. Otherwise FETCH=no will fail and we'll need to
+#   depend on curl or wget.
+# * patch-makefile.diff is a kludge to put documentation files into
+#   share/doc/opam-installer -- without this, they'd end up in
+#   doc/opam-installer, and there is no /opt/local/doc.
+patchfiles          patch-stop-fetch-check.diff \
+                    patch-makefile.diff
 
 use_parallel_build  no
 build.target        lib-ext all

@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-mercantile
-version             1.0.4
+version             1.1.5
 revision            0
 categories-append   devel gis
 platforms           darwin
 license             BSD
 supported_archs     noarch
 
-python.versions     27 35 36
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -19,13 +19,10 @@ description         Spherical mercator and XYZ tile utilities
 long_description    ${description}
 
 homepage            https://github.com/sgillies/mercantile
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  3db7a2bd9c3038acf8f859b7a7518b1e275e70b3 \
-                    sha256  0278b393a05d17c3618c5f5da64488bb3707e14046fe36f594d7215db3b376c4 \
-                    size    9517
+checksums           rmd160  12fce6d1807766bb04f634bb6ee87f376168df70 \
+                    sha256  f345b7ffa31dc76c1cfc7fe70476e3aabea5b6b693ab1291ff0b067cffe84f30 \
+                    size    12934
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-setuptools \

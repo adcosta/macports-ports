@@ -37,24 +37,4 @@ depends_lib         port:libpng \
 use_autoreconf      yes
 autoreconf.args     -fvi
 
-pre-activate {
-    # openjpeg < 1.5.0 accidentally installed items directly into
-    # ${prefix}/share/man bypassing ${destroot}; remove them if found.
-    foreach m {man1/image_to_j2k.1.gz man1/j2k_dump.1.gz man1/j2k_to_image.1.gz man3/libopenjpeg.3.gz} {
-        set filepath ${prefix}/share/man/${m}
-        if {[file exists ${filepath}] && [registry_file_registered ${filepath}] == "0"} {
-            if {[catch {delete ${filepath}}]} {
-                ui_warn "Cannot delete ${filepath}; please remove it manually"
-            }
-        }
-    }
-
-    if {![catch {set installed [lindex [registry_active openjpeg] 0]}]} {
-        set openjpeg_version [lindex $installed 1]
-        if {[vercmp $openjpeg_version 2.0.0] < 0} {
-            registry_deactivate_composite openjpeg "" [list ports_nodepcheck 1]
-        }
-    }
-}
-
 github.livecheck.regex  {(1\.[0-9.]+)}

@@ -4,8 +4,10 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        tweepy tweepy 3.5.0 v
-name                py-${name}
+github.setup        tweepy tweepy 3.8.0 v
+revision            0
+name                py-tweepy
+
 categories-append   devel net
 platforms           darwin
 supported_archs     noarch
@@ -15,22 +17,23 @@ maintainers         nomaintainer
 description         A Python library for the Twitter API.
 long_description    ${description}
 
-homepage            http://www.tweepy.org/
+homepage            https://www.tweepy.org/
 
-checksums           rmd160  f846d121b6aa28ef9027403f1aac94ad97b6579a \
-                    sha256  37eb7230f90a7ad2ac1cae198acc98941c5089bd16c4a12256009a7231edb333
+checksums           rmd160  12234d5f6a4309341e4a3aec4ddde03f04758f21 \
+                    sha256  8abd828ba51a85a2b5bb7373715d6d3bb32d18ac624e3a4db02e4ef8ab48316b \
+                    size    25219
 
-python.versions     27 34 35 36
+python.versions     27 35 36 37
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                    port:py${python.version}-setuptools \
-                    port:py${python.version}-pip
+                    port:py${python.version}-setuptools
 
     depends_lib-append \
                     port:py${python.version}-requests \
                     port:py${python.version}-requests-oauthlib \
-                    port:py${python.version}-six
+                    port:py${python.version}-six \
+                    port:py${python.version}-socks
 
     livecheck.type  none
 }

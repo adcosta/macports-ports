@@ -4,47 +4,45 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-ipykernel
-version             5.0.0
+version             5.3.4
 revision            0
 categories-append   devel
 platforms           darwin
 license             BSD
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         IPython Kernel for Jupyter.
 long_description    ${description}
 
-homepage            http://ipython.org
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+homepage            https://ipython.org/
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  b25281f11964fe047a422a5a324abfd3934b1133 \
-                    sha256  3e0ffdf545c0bf80d9dab6523ec6829831408c474772487aeb6eb9f0348b6a1e \
-                    size    100386
+checksums           rmd160  00fcc40ddb776cc0496b63b6c2793f5266dfc361 \
+                    sha256  9b2652af1607986a1b231c62302d070bc0534f564c393a5d9d130db9abbbe89d \
+                    size    108656
 
 if {${name} ne ${subport}} {
-
-    if {${python.version} < 34} {
-        version             4.9.0
-        revision            0
-        distname            ${python.rootname}-${version}
-        checksums           rmd160  055f76d943ed8f8d1011676d418c4cf23fa891c6 \
-                            sha256  c5a498c70f7765c34f3397cf943b069057f5bef4e0218e4cfbb733e9f38fa5fa \
-                            size    95255
-    }
-
     depends_build-append \
                         port:py${python.version}-setuptools
 
     depends_lib-append  port:py${python.version}-ipython \
                         port:py${python.version}-traitlets \
                         port:py${python.version}-jupyter_client \
-                        port:py${python.version}-tornado
+                        port:py${python.version}-tornado \
+                        port:py${python.version}-appnope
+
+    if {${python.version} eq 27} {
+        version             4.9.0
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  055f76d943ed8f8d1011676d418c4cf23fa891c6 \
+                            sha256  c5a498c70f7765c34f3397cf943b069057f5bef4e0218e4cfbb733e9f38fa5fa \
+                            size    95255
+        depends_lib-delete  port:py${python.version}-appnope
+    }
 
     livecheck.type      none
 }

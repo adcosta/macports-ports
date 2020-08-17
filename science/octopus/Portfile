@@ -5,8 +5,7 @@ PortGroup           mpi 1.0
 PortGroup           linear_algebra 1.0
 
 name                octopus
-version             8.2
-revision            1
+version             9.2
 categories          science
 platforms           darwin
 license             GPL-2+
@@ -19,12 +18,12 @@ long_description    Octopus is a scientific program aimed at ab initio virtual e
                     theory (DFT), in its time-dependent form (TDDFT) when doing simulations \
                     in time. Nuclei are described classically as point particles. Electron-nucleus \
                     interaction is described within the pseudopotential approximation.
-homepage            http://www.tddft.org/programs/octopus
+homepage            http://www.octopus-code.org
 master_sites        ${homepage}/download/${version}
 
-checksums           rmd160  d12129108fd82ea8e50a4b5128d7cb5f6cb34d66 \
-                    sha256  173539b05a9bb0ede83b9f5d42bc499e8a802b0c59af5b2a21eaf94f4fc0e47c \
-                    size    49317986
+checksums           rmd160  c649c3058db31965291c512a0f293e5cd2103144 \
+                    sha256  85ff24944de5bafdee98acc6fc0b74c80d37b29ab245da6ccc749ab9cc66601a \
+                    size    49783044
 
 compilers.choose    fc cc cxx
 mpi.setup           require_fortran -g95 -clang -gfortran
@@ -50,14 +49,15 @@ configure.args      --with-libxc-prefix=${prefix} --with-fftw-prefix=${prefix} \
 configure.optflags  -O3
 configure.fcflags-append  -ffree-line-length-none
 
-# FIXME: does fortran default variant not happen in time to make fftw-3 get
-# installed +gcc48?
 # gfortran -> gfortran5?
 
 if {[mpi_variant_isset]} {
     configure.args-delete  --disable-mpi
     configure.args-append  --enable-mpi
 }
+
+# avoid gcc10 compilation type mismatch errors in basic/io_binary_f_inc.F90
+compilers.allow_arguments_mismatch yes
 
 pre-configure {
     configure.args-append --with-blas="-L${prefix}/lib ${linalglib}"
@@ -66,6 +66,12 @@ pre-configure {
         # needed for clang; clang_variant_isset would miss case of default clang compiler.
         configure.cxxflags-append "-std=c++11"
     }
+
+    if {[variant_isset gcc10]} {
+        # avoid BOZ literal constant error in math/fft.F90
+        configure.fcflags-append "-fallow-invalid-boz"
+    }
+
     # not necessary unless mixing clang++ and gfortran;
     # found automatically when using MPI wrappers
     if {![gcc_variant_isset] && ![mpi_variant_isset]} {
@@ -177,9 +183,9 @@ variant maxdim4 description {Build with support for 4D calculations} {
 
 post-destroot {
     # FIXME upstream: shouldn't install this either
-    delete ${destroot}/${prefix}/include/yaml.h
+    delete ${destroot}${prefix}/include/yaml.h
 }
 
 livecheck.type      regex
-livecheck.url       ${homepage}/wiki/index.php/Main_Page
+livecheck.url       ${homepage}/wiki/Main_Page
 livecheck.regex     (\[0-9.\]+)</a> released

@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-importlib-metadata
+python.rootname     importlib_metadata
+version             1.7.0
+revision            0
+categories-append   devel
+platforms           darwin
+license             Apache
+supported_archs     noarch
+
+# keep version for PY27 and PY34, these are (indirect) dependencies of py-virtualenv
+python.versions     27 34 35 36 37 38
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Library to access the metadata for a Python package.
+long_description    ${description}
+
+homepage            https://importlib-metadata.readthedocs.io/
+
+checksums           rmd160  68a0ef4cdaa70b57ea3e7fe28b746a852b7a4315 \
+                    sha256  90bb658cdbbf6d1735b6341ce708fc7024a3e14e99ffdc5783edea9f9b077f83 \
+                    size    29233
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools_scm
+
+    depends_lib-append  port:py${python.version}-zipp
+
+
+    if {${python.version} eq 34} {
+        version         1.0.0
+        epoch           1
+        revision        0
+        checksums       rmd160  d85c4afae2456a17c35bfc008641499918c2cd84 \
+                        sha256  a82ca8c109e194d7d6aee3f7531b0470dd4dd6b36ec14fd55087142a96bd55a7 \
+                        size    28194
+        depends_lib-append \
+                        port:py${python.version}-pathlib2
+    }
+
+    if {${python.version} eq 27} {
+        depends_lib-append \
+                        port:py${python.version}-contextlib2 \
+                        port:py${python.version}-configparser \
+                        port:py${python.version}-pathlib2
+    }
+
+    livecheck.type      none
+}

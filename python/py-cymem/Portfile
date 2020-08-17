@@ -1,0 +1,54 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem                           1.0
+PortGroup           python           1.0
+PortGroup           github           1.0
+
+name                py-cymem
+version             2.0.3
+revision            0
+github.setup        explosion cymem ${version} v
+
+checksums           rmd160  1d41abed4bac470ba25f964b1430f4cbe2df73ec \
+                    sha256  53cf30e6f9fb3f5c9f008840b649aefe2a95dd601cf4919aa02a2eaea4d52ba7 \
+                    size    9604
+
+platforms           darwin
+supported_archs     x86_64
+
+license             MIT
+
+maintainers         {jonesc @cjones051073} openmaintainer
+
+description         Cython memory pool for RAII-style memory management
+long_description    ${description}
+
+# Support python versions
+python.versions     27 35 36 37 38
+
+if {${name} ne ${subport}} {
+
+    depends_build-append \
+        port:py${python.version}-setuptools \
+        port:py${python.version}-wheel
+
+    depends_lib-append \
+        port:py${python.version}-cython
+
+    depends_test-append \
+        port:py${python.version}-pytest
+
+    post-extract {
+        # Fix hard-coded dep ...
+        reinplace "s|0.33.0|0.33.999|g" ${worksrcpath}/setup.py
+    }
+
+    livecheck.type none 
+
+} else {
+
+    # overload the github livecheck regex to look for versions that
+    # are just numbers and '.', no letters (e.g., "3.7.3_rc2").
+    github.livecheck.regex  {([0-9.]+)}
+
+}

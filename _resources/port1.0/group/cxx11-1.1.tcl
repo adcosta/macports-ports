@@ -8,6 +8,18 @@
 
 PortGroup compiler_blacklist_versions 1.0
 
+# This PG is now deprecated, as support for specifying the c++ standard is
+# available in base. So issue a warning asking maintainers to migrate over
+pre-configure {
+    ui_warn "-----------------------------------------------------------------------"
+    ui_warn "The port '${name}' uses the cxx11 PortGroup which is deprecated."
+    ui_warn "Please instead specify the required c++ standard directly using"
+    ui_warn "    compiler.cxx_standard  2011"
+    ui_warn "replacing 2011 with newer standards (e.g. 2014, 2017) as required."
+    ui_warn "For more details see https://trac.macports.org/wiki/CompilerSelection"
+    ui_warn "-----------------------------------------------------------------------"
+}
+
 # Compilers supporting C++11 are GCC >= 4.6 and clang >= 3.3.
 
 if {${configure.cxx_stdlib} eq "libstdc++"} {
@@ -17,8 +29,8 @@ if {${configure.cxx_stdlib} eq "libstdc++"} {
 
     proc cxx11.add_dependencies {} {
         global os.major os.platform
-        depends_lib-delete port:libgcc
-        depends_lib-append port:libgcc
+        depends_lib-delete path:lib/libgcc/libgcc_s.1.dylib:libgcc
+        depends_lib-append path:lib/libgcc/libgcc_s.1.dylib:libgcc
         if {${os.platform} eq "darwin" && ${os.major} < 13} {
             # prior to OS X Mavericks, libstdc++ was the default C++ runtime, so
             #    assume MacPorts libstdc++ must be ABI compatible with system libstdc++
@@ -39,20 +51,25 @@ if {${configure.cxx_stdlib} eq "libstdc++"} {
         pre-configure {
             ui_msg "C++11 ports are compiling with GCC. EXPERIMENTAL."
         }
-        compiler.whitelist  macports-gcc-6
+        compiler.whitelist  macports-gcc-6 macports-gcc-7
         universal_variant   no
     } else {
-        compiler.whitelist  macports-clang-5.0
+        compiler.whitelist  macports-clang-5.0 macports-clang-6.0 macports-clang-7.0 macports-clang-8.0
     }
 
     # see https://trac.macports.org/ticket/54766
-    depends_lib-append port:libgcc
+    depends_lib-append path:lib/libgcc/libgcc_s.1.dylib:libgcc
 
-    compiler.blacklist-append   macports-gcc-4.3 macports-gcc-4.4 macports-gcc-4.5 macports-gcc \
-        macports-llvm-gcc-4.2 apple-gcc-4.0 apple-gcc-4.2 gcc-3.3 gcc gcc-4.0 llvm-gcc-4.2 \
-        macports-dragonegg-3.3 macports-dragonegg-3.4
+    compiler.blacklist-append  \
+        macports-gcc-4.3 macports-gcc-4.4 macports-gcc-4.5 macports-gcc \
+        macports-llvm-gcc-4.2 apple-gcc-4.0 apple-gcc-4.2 gcc-3.3 gcc gcc-4.0 llvm-gcc-4.2
+
 } else {
+
     # GCC compilers cannot use libc++
     # We do not know what "cc" is, so blacklist it as well.
-    compiler.blacklist-append   *gcc* {clang < 500} cc
+    compiler.blacklist-append *gcc* {clang < 700} cc
+    # add macports 7 and 8 to fallback list (can be removed once done by base in a public release)
+    compiler.fallback-append macports-clang-8.0 macports-clang-7.0 macports-clang-9.0
+
 }

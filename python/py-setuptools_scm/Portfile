@@ -4,14 +4,15 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-setuptools_scm
-version             3.1.0
-revision            1
+version             4.1.2
+revision            0
 categories-append   devel
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+# keep version for PY27 and PY34, these are (indirect) dependencies of py-virtualenv
+python.versions     27 34 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -19,16 +20,22 @@ description         Package to manage versions by scm tags.
 long_description    ${description}
 
 homepage            https://github.com/pypa/setuptools_scm/
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  29d1b6be40ae8f197f9122f05ec4a96f010f6b8c \
-                    sha256  1191f2a136b5e86f7ca8ab00a97ef7aef997131f1f6d4971be69a1ef387d8b40 \
-                    size    35585
+checksums           rmd160  f6a08b5e4f69bec0afee23a74deeaf001cd51d8e \
+                    sha256  a8994582e716ec690f33fec70cca0f85bd23ec974e3f783233e4879090a7faa8 \
+                    size    48784
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-setuptools
+
+    if {${python.version} eq 34} {
+        version             3.5.0
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  4c63618354c506cb64dd75bd1ca605d00342c1ce \
+                            sha256  5bdf21a05792903cafe7ae0c9501182ab52497614fa6b1750d9dbae7b60c1a87 \
+                            size    46272
+    }
 
     # https://trac.macports.org/ticket/57199
     use_configure       yes

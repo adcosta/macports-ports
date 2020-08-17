@@ -7,11 +7,20 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           active_variants 1.1
 PortGroup           github 1.0
 
-github.setup        FFmpeg FFmpeg 50df4c958b641e3ee3114e1eb659a151d34d2ac1
+# https://trac.macports.org/ticket/59246
+# https://trac.macports.org/ticket/59308
+PortGroup           xcode_workaround 1.0
+
+set git_commit      fab00b0ae077207a9aa1fa2cea34beb6ed860452
+set git_release     4.3.git
+set git_date        20200806
+
+github.setup        FFmpeg FFmpeg ${git_commit}
 name                ffmpeg-devel
 conflicts           ffmpeg
-version             20180523
-revision            1
+epoch               1
+version             ${git_release}-${git_date}
+revision            0
 license             LGPL-2.1+
 categories          multimedia
 maintainers         {devans @dbevans} {jeremyhu @jeremyhu} openmaintainer
@@ -48,18 +57,16 @@ long_description    FFmpeg is a complete solution to record, convert and \
                     generators for all common audio/video formats.
 
 platforms           darwin
-homepage            http://www.ffmpeg.org/
+homepage            https://www.ffmpeg.org/
 
-checksums           rmd160  34a48e5b8219929ab506139ffc31db834bfbbe20 \
-                    sha256  34a960286e979d0e8ea7ab54e5b34992c396cced22fb28941fef48be27ed57f0 \
-                    size    12554797
+checksums           rmd160  5c43ae2939ac00d69c91a885bb8ed9a3b7e1ba88 \
+                    sha256  ea65f48a0cfebdaa6bf8543db389326b579d898e8fecf6b72de2d783f6a167c8 \
+                    size    13526974
 
 depends_build       port:pkgconfig \
                     port:gmake \
+                    port:ld64 \
                     port:texinfo
-
-# libvpx 1.7.0 now provides a shared library
-# move dependency from depends_build to depends_lib
 
 depends_lib         port:lame \
                     port:libiconv \
@@ -83,14 +90,16 @@ depends_lib         port:lame \
                     port:xz \
                     port:zlib
 
-patchfiles          patch-libavcodec-audiotoolboxenc.c.diff \
-                    patch-libavformat-mxfenc.c-parens-around-initializer-df3d962d2e736c0748b91a3c8c701d7cb96154a8.diff
+patchfiles          patch-libavcodec-audiotoolboxenc.c.diff
 
 #
 # enable auto configure of asm optimizations
 # requires Xcode 3.1 or better on Leopard
 #
 minimum_xcodeversions {9 3.1}
+
+# requires a C11 compiler
+compiler.c_standard 2011
 
 if {[lsearch [get_canonical_archs] i386] != -1} {
     # clang-3.1 hits https://trac.macports.org/ticket/30137 (<rdar://problem/11542429>)
@@ -104,11 +113,6 @@ platform darwin powerpc {
     compiler.blacklist
     compiler.whitelist    macports-gcc-6
     universal_variant     no
-}
-
-# _Nullable not available with clang < 700.
-if {[vercmp ${xcodeversion} 7.0] < 0} {
-    patchfiles-append   patch-libavcodec-videotoolboxenc.c-drop-Nullable.diff
 }
 
 # The old ffmpeg port was GPL-2+ as base and had a no_gpl variant, so this keeps us consistent
@@ -177,11 +181,21 @@ platform darwin {
     }
 
     # AudioToolbox support requires CoreMedia Framework available on 10.7+
-    # libsdl2 requires minimum Xcode 10.7 SDK to build successfully
     if {${os.major} > 10} {
         configure.args-replace --disable-audiotoolbox --enable-audiotoolbox
+    }
+
+    if {${os.major} > 9} {
+        # libsdl2 requires minimum Xcode 10.7 SDK to build successfully
+        # but builds on Snow Leopard
         configure.args-replace --disable-sdl2 --enable-sdl2
         depends_lib-append     port:libsdl2
+
+        # Dav1d: 10.6+ No PowerPC or Apple Silicon (for now)
+        if {![regexp -all (arm64|ppc*) [get_canonical_archs]]} {
+            configure.args-append   --enable-libdav1d
+            depends_lib-append      port:dav1d
+        }
     }
 
     # VideoToolbox, a new hardware acceleration framework, is supported on 10.8+ and "here to stay".
@@ -200,7 +214,9 @@ platform darwin {
         patchfiles-append patch-configure-no-error-on-missing-prototypes.diff
     }
 
-    # kCVPixelFormatType_OneComponent8 used in avfoundation indev is only available on 10.8+
+    # avfoundation is only available on 10.7+
+    # as of ffmpeg 3.4.1 build fails on 10.7 as well
+    # libavdevice/avfoundation.m:207:14: error: expected method to read dictionary element not found on object of type 'NSDictionary *'
     if {${os.major} < 12} {
         configure.args-append --disable-indev=avfoundation
     }
@@ -253,7 +269,7 @@ if {[variant_isset universal]} {
     lappend merger_configure_args(x86_64) --enable-x86asm
 } else {
     configure.args-append --arch=${configure.build_arch}
-    configure.env-append  ASFLAGS='[get_canonical_archflags]'
+    configure.env-append  ASFLAGS=[get_canonical_archflags]
     if {${build_arch} eq "i386" || ${build_arch} eq "x86_64"} {
         depends_build-append port:nasm
         configure.args-append --enable-x86asm
@@ -304,14 +320,6 @@ platform darwin {
         configure.args-append   --enable-libx265
         depends_lib-append      port:x265
     }
-}
-
-variant high10 requires gpl2 description {Build using libx264 with 10-bit output} {}
-
-if {[variant_isset high10]} {
-    require_active_variants x264 high10
-} else {
-    require_active_variants x264 "" high10
 }
 
 variant jack description {Enable jack library and indev support} {

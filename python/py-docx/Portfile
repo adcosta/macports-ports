@@ -2,35 +2,49 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
+PortGroup           github 1.0
 
+github.setup        python-openxml python-docx 0.8.10 v
 name                py-docx
-version             0.0.2
-revision            1
-categories-append   devel 
+revision            0
+
+categories-append   devel
 platforms           darwin
+supported_archs     noarch
 license             MIT
 maintainers         nomaintainer
 
-description         The docx module creates, reads and writes Microsoft Office Word 2007 docx files
-long_description    \
-    The module was created when I was looking for a Python support for \
-    MS Word .doc files, but could only find various hacks involving COM \
-    automation, calling .net or Java, or automating OpenOffice or MS Office.
+description         Create and update Microsoft Word .docx files
+long_description    ${description}
 
-homepage            https://github.com/mikemaccana/python-docx
+checksums           rmd160  b181ab2dec099fcc0dcbcd0666b34bdd1d491e10 \
+                    sha256  e06d80584418f64991690e88cb531d4e0eb52a1c09e1a1c96df8def4d6e840ee \
+                    size    45227136
 
-fetch.type          git
-git.url             ${homepage}.git
-git.branch          7f0781e7a86ba26d69f5e09850ef7e4fc35d3795
-
-python.versions     27
+python.versions     27 37 38
 
 if {${name} ne ${subport}} {
-    depends_lib-append  port:py${python.version}-lxml
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-lxml
+
+    depends_lib-append \
+                    port:py${python.version}-mock \
+                    port:py${python.version}-parsing \
+                    port:py${python.version}-pytest
+
+    test.run        yes
+    test.cmd        py.test-${python.branch}
+    test.target
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
+
+    post-destroot {
+        xinstall -d ${destroot}${prefix}/share/doc/${subport}
+        xinstall -m 0644 -W ${worksrcpath} HISTORY.rst LICENSE README.rst \
+            ${destroot}${prefix}/share/doc/${subport}
+    }
 
     livecheck.type  none
-} else {
-    livecheck.type  regex
-    livecheck.url   https://raw.github.com/mikemaccana/python-docx/master/setup.py
-    livecheck.regex {version='(\d+(?:\.\d+)*)'}
 }

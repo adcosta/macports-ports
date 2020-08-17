@@ -1,63 +1,53 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           github 1.0
 PortGroup           python 1.0
-PortGroup           active_variants 1.1
 
+github.setup        pycurl pycurl 7_43_0_5 REL_
+github.tarball_from archive
 name                py-curl
-version             7.43.0.2
+version             [string map {_ .} ${github.version}]
+revision            0
+
 categories-append   net devel
 platforms           darwin
 license             {MIT LGPL}
-maintainers         {yan12125 @yan12125} openmaintainer
+maintainers         nomaintainer
 
-description         python interface to libcurl
+description         Python interface to libcurl
 long_description    Python module interface to the cURL library which \
                     is a tool for transferring files with URL syntax, \
                     supporting many protocols.
+
 homepage            http://pycurl.io/
 
-master_sites        https://dl.bintray.com/pycurl/pycurl
-distname            pycurl-${version}
-checksums           md5     89311d1b3bb42a5dbb88609fdbdee6de \
-                    rmd160  d6f40fc0f1e3f69bead2c2b9daf71a7195635f2c \
-                    sha256  0f0cdfc7a92d4f2a5c44226162434e34f7d6967d3af416a6f1448649c09a25a4 \
-                    size    214212
+checksums           rmd160  4c16edbbfeaa82b8b552f91bc0f0efe3e88ce68a \
+                    sha256  33c8a7f7664c4259af5f03da4cbf7191d97f50223c4b093d2718fc4b4ac5f72e \
+                    size    214487
 
-python.versions     27 36 37
+python.versions     27 37 38
 
 if {${name} ne ${subport}} {
-    depends_test-append \
-        port:py${python.version}-bottle \
-        port:py${python.version}-flaky \
-        port:py${python.version}-nose \
-        port:py${python.version}-pyflakes \
-        port:coreutils
+    if {${python.version} == 27} {
+        github.setup    pycurl pycurl 7_43_0_3 REL_
+        version     [string map {_ .} ${github.version}]
+        revision    1
+        checksums   rmd160  6891ba8ee4d79fd5a10e824db47b9083309306b3 \
+                    sha256  553047902a738cc2e6b1cd42783a9d0992e47086773be30027a71e1293493c39 \
+                    size    208879
+    }
 
-    depends_lib-append  port:curl
+    worksrcdir      ${github.project}-${git.branch}
 
-    # pycurl accepts curl with OpenSSL/GnuTLS/NSS or no SSL, but not other SSL
-    # implementations
-    require_active_variants curl {} {darwinssl wolfssl}
+    depends_lib-append  port:curl \
+                        path:lib/libssl.dylib:openssl
 
-    patchfiles-append \
-        patch-allow-disable-tests.diff \
-        patch-fix-fake-curl.diff \
-        patch-no-nose-show-skipped.diff \
-        patch-grealpath.diff
-
-    post-patch {
-        reinplace "s|%PREFIX%|${prefix}|g" ${worksrcpath}/tests/fake-curl/libcurl/Makefile
+    pre-build {
+        system -W ${build.dir} "${python.bin} setup.py docstrings"
     }
 
     build.args      --curl-config=${prefix}/bin/curl-config
-
-    test.run        yes
-    test {
-        file delete {*}[glob ${worksrcpath}/tests/fake-curl/libcurl/*.so]
-        # Required variants for curl: +http2+gss+sftp_scp
-        system -W ${worksrcpath} "extra_attrs=',\!http2,\!gssapi,\!ssh' make do-test PYTHON=${python.bin} NOSETESTS=nosetests-${python.branch} PYFLAKES=pyflakes-${python.branch}"
-    }
 
     destroot.args   ${build.args}
 
@@ -66,4 +56,5 @@ if {${name} ne ${subport}} {
     livecheck.type  regex
     livecheck.url   ${homepage}
     livecheck.regex PYCURL (\[0-9\.\]+)
+    livecheck.version   ${version}
 }

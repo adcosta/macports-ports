@@ -4,7 +4,9 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-fs
-version             2.1.1
+version             2.4.11
+revision            0
+
 platforms           darwin
 license             MIT
 maintainers         nomaintainer
@@ -13,23 +15,36 @@ description         Python's filesystem abstraction layer
 long_description    ${description}
 
 homepage            https://github.com/PyFilesystem/pyfilesystem2
-master_sites        pypi:f/fs
-distname            fs-${version}
 
-checksums           rmd160  b899098308bf908bd5440c5c5a5ec8a37bdd6d6d \
-                    sha256  b20a4aeac9079b194f0160957d4265bb6c99ce68f1b12e980b0fb96f74aafb70 \
-                    size    119994
+checksums           rmd160  81c9354dbc5f8486a98849016038d13ca6c14054 \
+                    sha256  cc99d476b500f993df8ef697b96dc70928ca2946a455c396a566efe021126767 \
+                    size    128125
 
-python.versions     27 36 37
+python.versions     27 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append \
                         port:py${python.version}-setuptools
 
     depends_lib-append \
-        port:py${python.version}-appdirs \
-        port:py${python.version}-tz \
-        port:py${python.version}-six
+                        port:py${python.version}-appdirs \
+                        port:py${python.version}-six \
+                        port:py${python.version}-tz
+
+    if {${python.version} eq 27} {
+        depends_lib-append \
+                        port:py${python.version}-backports.os \
+                        port:py${python.version}-enum34 \
+                        port:py${python.version}-scandir \
+                        port:py${python.version}-typing
+    }
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.md LICENSE \
+            ${destroot}${docdir}
+    }
 
     livecheck.type      none
 }

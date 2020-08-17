@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           muniversal 1.0
 
-github.setup        dlang tools 2.081.2 v
+github.setup        dlang tools 2.088.0 v
 name                dmd-${github.project}
 categories          lang
 platforms           darwin
@@ -18,9 +18,9 @@ long_description \
     This port provides the ancilliary tools for the D programming language compiler.
 homepage            http://dlang.org/
 
-checksums           rmd160  523716c7762a391392b3b052c3efc33d7464540b \
-                    sha256  4b94231a7dccbbb3c3fd0cf1e70e07ce39e20fe51c7ef6815a3f93764aa00174 \
-                    size    110481
+checksums           rmd160  a31d052f8ab6ba46561a7395f8e9ed2a88475b57 \
+                    sha256  831bd25e8bda904e5a940baf0d5a19f13e78026d6c9d556cbbeb26d7bec1f324 \
+                    size    117130
 
 depends_lib         port:phobos \
                     port:curl

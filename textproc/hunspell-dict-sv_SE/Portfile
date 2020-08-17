@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           hunspelldict 1.0
 
-hunspelldict.setup  sv_SE 2.41 {Swedish (Sweden)} ooo
+hunspelldict.setup  sv_SE 2.43 {Swedish (Sweden)} ooo
 maintainers         {lbschenkel @lbschenkel} openmaintainer
 homepage            https://sfol.se/
 license             LGPL-3
@@ -11,9 +11,9 @@ license             LGPL-3
 set extension.url   https://extensions.libreoffice.org/extensions/swedish-spelling-dictionary-den-stora-svenska-ordlistan
 
 master_sites        ${extension.url}/${version}/@@download/file/
-checksums           rmd160  48041697f15f058a2bac4870751fa71b6d7a80c7 \
-                    sha256  48c8d0d548232215384c47ba18ac03bbef3af4c11ffd5e1057272353ba60225f \
-                    size    1461946
+checksums           rmd160  e064269eed238c15308fd5e1e0d366463e83f559 \
+                    sha256  2e8b3e1faee1158ff2d5e242b9029b9f9e148387bd6dccd852fbf9bb2c3fa706 \
+                    size    1470138
 
 post-extract {
     # portgroup expects dictionaries to be in the work dir

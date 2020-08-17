@@ -13,7 +13,7 @@ license             BSD
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         Embedded key-value store for fast storage
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            http://rocksdb.org/
 
@@ -32,20 +32,19 @@ patchfiles-append   patch-Makefile.diff
 use_configure       no
 
 variant universal {}
-
-build.env           CC="${configure.cc}" \
-                    CXX="${configure.cxx}" \
-                    CFLAGS="[get_canonical_archflags cc]" \
-                    CXXFLAGS="[get_canonical_archflags cxx]" \
+build.env           CC=${configure.cc} \
+                    CXX=${configure.cxx} \
+                    CFLAGS=[get_canonical_archflags cc] \
+                    CXXFLAGS=[get_canonical_archflags cxx] \
                     PORTABLE=1 \
                     DEBUG_LEVEL=0 \
-                    OPT="${configure.optflags}"
+                    OPT=${configure.optflags}
 
-destroot.env-append CC="${configure.cc}" \
-                    CXX="${configure.cxx}" \
-                    CFLAGS="[get_canonical_archflags cc]" \
-                    CXXFLAGS="[get_canonical_archflags cxx]" \
+destroot.env-append CC=${configure.cc} \
+                    CXX=${configure.cxx} \
+                    CFLAGS=[get_canonical_archflags cc] \
+                    CXXFLAGS=[get_canonical_archflags cxx] \
                     PORTABLE=1 \
                     DEBUG_LEVEL=0 \
-                    OPT="${configure.optflags}" \
+                    OPT=${configure.optflags} \
                     INSTALL_PATH=${destroot}${prefix}

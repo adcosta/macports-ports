@@ -1,6 +1,7 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           cmake 1.1
 PortGroup           github 1.0
 
 name                cppzmq
@@ -10,54 +11,43 @@ categories          devel sysutils net
 license             Permissive
 
 description         High-level C++ Binding for 0MQ
-long_description    ${description}
+long_description    {*}${description}
 
-subport cppzmq-devel {}
+# this can be safely removed after 20210118
+subport cppzmq-devel {
+
+    PortGroup   obsolete 1.0
+    version     20200109-bd27f249
+    revision    1
+    replaced_by cppzmq
+
+}
 
 if {${subport} eq ${name}} {
 
     # release
-
-    github.setup    zeromq cppzmq 4.3.0 v
-    checksums       rmd160 2841b8395b290cd895885881864b34e399be7d10 \
-                    sha256 5634462ee21a9dad3baf0db68812a8ac1262353d2039e2af402ff2d356b26ca2 \
-                    size   22897
+    github.setup zeromq cppzmq 4.6.0 v
+    checksums rmd160 357c74d8ab7cd5be4b761d30ca0b283dbc1b1059 \
+              sha256 a26f4f88a814f1652620ded466bf52833c85cd8007558c8950ffee641da13581 \
+              size   35093
+    revision  1
 
     # bump the epoch because I moved the version from 20170720 to 4.2.2
+    epoch     1
 
-    epoch           1
+    depends_build-append port:pkgconfig
 
-    conflicts       ${name}-devel
-    long_description ${description}: \
-        This port follows the release version of ${name}, which is typically updated every 6 months. If for some reason this port does not build or function as desired, try the ${name}-devel port.
+    depends_lib-append path:lib/libzmq.dylib:zmq
 
-} else {
+    # use C++11 to get a compiler new enough to handle
+    # "__attribute__((deprecated()))". This is used just in testing,
+    # since all this port installs is a header. But, this setting
+    # allows the port to "build" and do testing on older OSs where the
+    # default compiler isn't modern enough.
+    compiler.cxx_standard 2011
 
-    # devel
+    # disable building tests by default
+    configure.args-append \
+        -DCPPZMQ_BUILD_TESTS=NO
 
-    github.setup    zeromq cppzmq c444c5d5e2ecd9fef2da2455809599bfa34347fd
-    version         20181017
-    checksums       rmd160 e6596e2eda8314061c771b12645b992b590567c3 \
-                    sha256 cc8e7a9fd49b95b79b0d8fd783d5705b7ff75021f72321a594c88c7df8a49268 \
-                    size   22141
-
-    conflicts       ${name}
-    long_description ${description}: \
-        This port follows the GIT master version of ${name}, which is typically updated every few days to weeks.
-
-}
-
-depends_lib-append  path:lib/libzmq.dylib:zmq
-
-# this is just a header; skip all steps and manually do destroot
-
-supported_archs     noarch
-
-use_configure no
-
-build {}
-
-destroot {
-    xinstall -m 755 -d ${destroot}${prefix}/include
-    copy ${worksrcpath}/zmq.hpp ${destroot}${prefix}/include
 }

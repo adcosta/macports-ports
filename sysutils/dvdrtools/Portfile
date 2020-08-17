@@ -22,7 +22,7 @@ checksums           rmd160  ffdd13de33fdc6386dec02206a0150ef7eb1bee9 \
 
 platform darwin {
         configure.env \
-                    LIBS="-framework CoreFoundation -framework IOKit"
+                    "LIBS=-framework CoreFoundation -framework IOKit"
         patchfiles  patch-scsi-mac-iokit.c.diff \
                     patch-cdda2wav-cdda2wav.c.diff \
                     patch-cdrecord-cdrecord.c.diff

@@ -5,7 +5,7 @@ PortGroup           active_variants 1.1
 PortGroup           gobject_introspection 1.0
 
 name                gcr
-version             3.28.0
+version             3.36.0
 license             LGPL-2
 set branch          [join [lrange [split ${version} .] 0 1] .]
 description         GCR is a library for displaying certificates, and crypto UI, accessing \
@@ -23,16 +23,15 @@ master_sites        gnome:sources/${name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  8180637d78b7ca893aff5bca6d6050fb7e14d4be \
-                    sha256  15e175d1da7ec486d59749ba34906241c442898118ce224a7b70bf2e849faf0b \
-                    size    1329044
+checksums           rmd160  5b697c3c547a2153fac0dab2447898403cc8178a \
+                    sha256  aaf9bed017a2263c6145c89a1a84178f9f40f238426463e4ae486694ef5f6601 \
+                    size    1025760
 
 depends_build       port:pkgconfig \
-                    port:intltool \
-                    port:gtk-doc \
                     port:autoconf \
                     port:automake \
-                    port:libtool
+                    port:libtool \
+                    port:gtk-doc
 
 depends_lib         port:desktop-file-utils \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
@@ -43,8 +42,7 @@ depends_lib         port:desktop-file-utils \
 
 gobject_introspection yes
 
-patchfiles          patch-egg-egg-armor.c.diff \
-                    patch-ui-gcr.pc.in.diff
+patchfiles          patch-ui-gcr.pc.in.diff
 
 # gcr uses X11 specific code in UI (#41839)
 # https://bugzilla.gnome.org/show_bug.cgi?id=734366
@@ -52,28 +50,15 @@ patchfiles          patch-egg-egg-armor.c.diff \
 
 require_active_variants port:gtk3 x11
 
-# reconfigure using upstream autogen.sh for intltool 0.51 compatibility
-
-post-patch {
-    xinstall -m 755 ${filespath}/autogen.sh ${worksrcpath}
-}
-
 configure.cmd       ./autogen.sh
 
 configure.args      --enable-vala=yes \
+                    --disable-maintainer-mode \
+                    --disable-valgrind \
                     --disable-schemas-compile \
                     --disable-update-mime \
                     --disable-update-icon-cache \
                     --disable-silent-rules
-
-pre-activate {
-    if {![catch {set installed [lindex [registry_active gnome-keyring] 0]}]} {
-        set _version [lindex $installed 1]
-        if {[vercmp $_version 3.0.0] < 0} {
-            registry_deactivate_composite gnome-keyring "" [list ports_nodepcheck 1]
-        }
-    }
-}
 
 post-activate {
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"

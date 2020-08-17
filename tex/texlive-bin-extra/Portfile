@@ -4,37 +4,51 @@ PortSystem          1.0
 PortGroup           texlive 1.0
 
 name                texlive-bin-extra
-version             47446
-revision            1
+version             54608
+revision            0
 
 categories          tex
 maintainers         {dports @drkp}
 license             Copyleft Permissive
 description         TeX Live: TeX auxiliary programs
-long_description    Various useful, but non-essential, support programs. Includes programs and macros for DVI file manipulation, literate programming, patgen, and the TeX Works Editor.
+long_description    Myriad additional TeX-related support programs. Includes programs and macros for DVI file manipulation, literate programming, patgen, and plenty more.
 
-checksums           texlive-bin-extra-47446-run.tar.xz \
-                    rmd160  465d16566d0bb2545117d761e419cd72c9591767 \
-                    sha256  5834c7734dc4985b3c821757af02b8a6a0cd7e487ed1a303f217a434d0070866 \
-                    texlive-bin-extra-47446-doc.tar.xz \
-                    rmd160  0a9cd67461e8b3fea14467f22a7ae44518d3f16f \
-                    sha256  c1b813f6dfab8fd9700ca3f97949d1221226c30d1ba282917080732ea2955a40 \
-                    texlive-bin-extra-47446-src.tar.xz \
-                    rmd160  d1fdf8dc75551a3e9c4ca9e74eaaa94692fe213a \
-                    sha256  872036e0009c46de9d1c24da73d0eba42dd6f1f35e1aee29bd4afbf7f063f8df
+checksums           texlive-bin-extra-54608-run.tar.xz \
+                    rmd160  3e5eadc4835801883eee3efb73842f9bf5c9d7f3 \
+                    sha256  0fc41658f7941fbfa384361f4d53d1ad5091a8f929121381c33189535e901315 \
+                    size    123122540 \
+                    texlive-bin-extra-54608-doc.tar.xz \
+                    rmd160  c7ce7f468aa09668fd2260faadcffa4ff7a18a8d \
+                    sha256  0e3d59be1845652fd033083499000ded682553efb19af2bc545a948d5ed5c2e6 \
+                    size    27947248 \
+                    texlive-bin-extra-54608-src.tar.xz \
+                    rmd160  0e3aa29e23c1a482fe93ae166d5b5847056f1b53 \
+                    sha256  c6fa96cc5099012a16599ac68f6886530ed2068d94195bfebda1733bf71f7ff9 \
+                    size    406496
 
 depends_lib         port:texlive-basic
 
 texlive.formats      \
+    {1 luajittex luajittex language.def,language.dat.lua {luatex.ini}} \
+    {1 luajithbtex luajithbtex language.def,language.dat.lua {luatex.ini}} \
     {0 mflua mflua-nowin - {mf.ini}}
 
-texlive.binaries    a2ping a5toa4 adhocfilelist arara arlatex bibtex8 bibtexu bundledoc checklistings chktex chkweb ctan-o-mat ctangle ctanify ctanupload ctie cweave de-macro depythontex deweb dt2dv dtxgen dv2dt dviasm dvibook dviconcat dvicopy dvidvi dvihp dviinfox dvilj dvilj2p dvilj4 dvilj4l dvilj6 dvipos dviselect dvitodvi dvitype e2pall findhyph fragmaster installfont-tl ketcindy lacheck latex-git-log latex-papersize latex2man latex2nemeth latexdef latexfileversion latexindent latexpand listings-ext.sh ltxfileinfo ltximg make4ht match_parens mflua mflua-nowin mfluajit mfluajit-nowin mkjobtexmf patgen pdfatfi pdfbook2 pdfclose pdfcrop pdflatexpicscale pdfopen pdftosrc pdfxup pfarrei pkfix pkfix-helper pooltype purifyeps pythontex rpdfcrop srcredact sty2dtx synctex tangle tex4ebook texcount texdef texdiff texdirflatten texdoc texdoctk texfot texliveonfly texloganalyser texosquery texosquery-jre5 texosquery-jre8 tie tlcockpit tlshell tpic2pdftex typeoutfileinfo weave
+texlive.binaries    a2ping a5toa4 adhocfilelist allcm allec allneeded arara arlatex bibtex8 bibtexu bundledoc checklistings chkdvifont chklref chktex chkweb cllualatex cluttex clxelatex ctan-o-mat ctanbib ctangle ctanify ctanupload ctie ctwill ctwill-refsort ctwill-twinx cweave de-macro depythontex deweb dt2dv dtxgen dv2dt dvi2fax dviasm dvibook dviconcat dvicopy dvidvi dvihp dviinfox dvilj dvilj2p dvilj4 dvilj4l dvilj6 dvipos dvired dviselect dvispc dvitodvi dvitype e2pall findhyph fragmaster gsftopk installfont-tl ketcindy kpsepath kpsetool kpsewhere kpsexpand lacheck latex-git-log latex-papersize latex2man latex2nemeth latexdef latexfileversion latexindent latexpand listings-ext.sh ltxfileinfo ltximg luajithbtex luajittex make4ht match_parens mflua mflua-nowin mfluajit mfluajit-nowin mkjobtexmf mkocp mkofm pamphletangler patgen pdfbook2 pdfclose pdfcrop pdflatexpicscale pdfopen pdftex-quiet pdftosrc pdfxup pfarrei pkfix pkfix-helper pooltype ps2frag pslatex purifyeps pythontex rpdfcrop srcredact sty2dtx synctex tangle tex4ebook texconfig texconfig-dialog texconfig-sys texcount texdef texdiff texdirflatten texdoc texdoctk texfot texlinks texliveonfly texloganalyser texluajit texluajitc texosquery texosquery-jre5 texosquery-jre8 texplate tie tlcockpit tpic2pdftex typeoutfileinfo weave xindex
 
-depends_run         port:latexmk \
+depends_run         port:texlive-tlpdb \
+                    port:latexmk \
                     port:detex \
                     port:latexdiff \
                     port:pdfjam \
                     port:dvipng \
-                    port:dvisvgm
+                    path:bin/dvisvgm:dvisvgm
+
+# dependencies for latexindent
+depends_run-append  port:p5.28-yaml-tiny \
+                    port:p5.28-file-homedir \
+                    port:p5.28-getopt-long \
+                    port:p5.28-data-dumper \
+                    port:p5.28-log-log4perl \
+                    port:p5.28-log-dispatch
 
 texlive.texmfport

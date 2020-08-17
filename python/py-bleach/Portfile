@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-bleach
-version             3.0.2
-revision            0
+version             3.1.5
+revision            1
 categories-append   www
 platforms           darwin
 license             Apache
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -19,19 +19,17 @@ description         An easy safelist-based HTML-sanitizing tool.
 long_description    ${description}
 
 homepage            https://github.com/mozilla/bleach
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  56c205f477a43e4b9d8d13145b7b6d86adbb7dc9 \
-                    sha256  48d39675b80a75f6d1c3bdbffec791cf0bbbab665cf01e20da701c77de278718 \
-                    size    165682
+checksums           rmd160  428cab37cf75c23f4448cddb5114e5f24bce3496 \
+                    sha256  3c4c520fdb9db59ef139915a5db79f8b51bc2a7257ea0389f30c846883430a4b \
+                    size    177972
 
 if {${name} ne ${subport}} {
     depends_build-append \
                         port:py${python.version}-setuptools
 
-    depends_lib-append  port:py${python.version}-six \
+    depends_lib-append  port:py${python.version}-packaging \
+                        port:py${python.version}-six \
                         port:py${python.version}-webencodings
 
     livecheck.type      none

@@ -34,7 +34,7 @@ patchfiles          patch-configure.diff \
 
 # Calls ld directly which makes universal hard
 universal_variant   no
-configure.env       ARCHFLAGS="[get_canonical_archflags ld]"
+configure.env       ARCHFLAGS=[get_canonical_archflags ld]
 configure.args      --config=${prefix}/var/lib/bitlbee/ \
                     --ssl=gnutls \
                     --otr=0 \

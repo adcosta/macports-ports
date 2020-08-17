@@ -1,6 +1,6 @@
---- etc/gimprc.in.orig	2018-08-19 09:47:18.000000000 -0700
-+++ etc/gimprc.in	2018-08-21 14:53:08.000000000 -0700
-@@ -758,11 +758,13 @@
+--- etc/gimprc.in.orig	2020-02-16 07:04:57.000000000 -0800
++++ etc/gimprc.in	2020-02-22 17:04:36.000000000 -0800
+@@ -821,11 +821,13 @@
  # string value.
  # 
  # (help-locales "")
@@ -14,15 +14,7 @@
  
  # When enabled, a search of actions will also return inactive actions. 
  # Possible values are yes and no.
-@@ -778,6 +780,7 @@
- # no.
- # 
- # (user-manual-online no)
-+(user-manual-online yes)
- 
- # The location of the online user manual. This is used if
- # 'user-manual-online' is enabled.  This is a string value.
-@@ -789,6 +792,7 @@
+@@ -852,6 +854,7 @@
  # windows.  Possible values are normal, utility and keep-above.
  # 
  # (dock-window-hint utility)

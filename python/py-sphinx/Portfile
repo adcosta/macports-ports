@@ -5,7 +5,7 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-sphinx
-version             1.7.9
+version             3.2.1
 categories-append   textproc devel
 license             BSD
 maintainers         {jmr @jmroot} openmaintainer
@@ -20,14 +20,14 @@ long_description \
 platforms           darwin
 supported_archs     noarch
 
-homepage            http://sphinx-doc.org/
-master_sites        pypi:S/Sphinx/
-distname            Sphinx-${version}
+homepage            https://www.sphinx-doc.org/
+python.rootname     Sphinx
 
-checksums           rmd160 c6d675c562835578d6d4a5f95b0ea54e43f90c65 \
-                    sha256 217a7705adcb573da5bbe1e0f5cab4fa0bd89fd9342c9159121746f593c2d5a4
+checksums           md5 84aab02c279697e9414cbeed1c5c4b22 \
+                    rmd160 336fa9aa4560c6304b868e5fb67d11ef8182bd83 \
+                    sha256 321d6d9b16fa381a5306e5a0b76cd48ffbc588e6340059a729c6fdd66087e0e8
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 if {$subport ne $name} {
     depends_lib     port:py${python.version}-docutils \
@@ -39,12 +39,24 @@ if {$subport ne $name} {
                     port:py${python.version}-packaging \
                     port:py${python.version}-pygments \
                     port:py${python.version}-requests \
-                    port:py${python.version}-six \
                     port:py${python.version}-snowballstemmer \
-                    port:py${python.version}-sphinxcontrib-websupport \
                     port:sphinx_select
     if {${python.version} < 35} {
-        depends_run-append  port:py${python.version}-typing
+        version     1.8.5
+        revision    0
+        checksums   rmd160 a7a38523976288c13a8a7e5bf4a81367db9af462 \
+                    sha256 c7658aab75c920288a8cf6f09f244c6cfdae30d82d803ac1634d9f223a80ca08
+
+        depends_run-append  port:py${python.version}-six \
+                            port:py${python.version}-sphinxcontrib-websupport \
+                            port:py${python.version}-typing
+    } else {
+        depends_run-append  port:py${python.version}-sphinxcontrib-applehelp \
+                            port:py${python.version}-sphinxcontrib-devhelp \
+                            port:py${python.version}-sphinxcontrib-htmlhelp \
+                            port:py${python.version}-sphinxcontrib-jsmath \
+                            port:py${python.version}-sphinxcontrib-serializinghtml \
+                            port:py${python.version}-sphinxcontrib-qthelp
     }
 
     select.group    sphinx

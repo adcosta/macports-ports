@@ -4,30 +4,36 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-s3transfer
-version             0.1.13
+version             0.3.3
+revision            0
+checksums           rmd160  eedf68875d45ff6cab1bd4fed3ea3996c2403246 \
+                    sha256  921a37e2aefc64145e7b73d50c71bb4f26f46e4c9f414dc648c6245ff92cf7db \
+                    size    118872
+
 platforms           darwin
 license             Apache-2
-maintainers         {pixilla @pixilla} openmaintainer
+maintainers         nomaintainer
 
 description         An Amazon S3 Transfer Manager
 long_description    ${description}
 
 homepage            https://github.com/boto/${python.rootname}
-master_sites        pypi:s/${python.rootname}
-distname            ${python.rootname}-${version}
-checksums           md5     b7437bbbd3195e916f9e992b78721067 \
-                    rmd160  854b382b07989da817d022d52fe417dfaccf277b \
-                    sha256  90dc18e028989c609146e241ea153250be451e05ecc0c2832565231dacdf59c1 \
-                    size    103335
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
-    depends_build           port:py${python.version}-setuptools
-    depends_lib-append      port:py${python.version}-botocore
-    if {${python.version} < 32} {
-        depends_lib-append  port:py${python.version}-futures
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-botocore
+
+    if {${python.version} == 27} {
+        depends_lib-append \
+                    port:py${python.version}-futures
     }
-    test.run                yes
-    livecheck.type          none
+
+    test.run        yes
+
+    livecheck.type  none
 }

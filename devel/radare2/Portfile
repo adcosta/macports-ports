@@ -1,26 +1,29 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=portfile:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           conflicts_build 1.0
 PortGroup           github 1.0
 
-github.setup        radare radare2 3.0.1
+github.setup        radareorg radare2 4.5.0
+revision            0
 categories          devel
 platforms           darwin
 license             LGPL-3+
-maintainers         {g5pw @g5pw} openmaintainer
+maintainers         {g5pw @g5pw} {@i0ntempest me.com:szf1234} openmaintainer
 description         Opensource tools to disasm, debug, analyze and manipulate binary files.
-long_description    ${name} provides ${description}.
-homepage            http://radare.org
+long_description    ${name} provides {*}${description}.
+homepage            https://www.radare.org/
 
 depends_build       port:pkgconfig
 
 depends_lib         port:capstone \
                     port:zlib \
                     port:libzip
+conflicts_build     ${name}
 
-checksums           rmd160  27cb5fb71e236c7146026ed39e29212dee1a1c25 \
-                    sha256  4d215393ce2150397ba8fecfb88068167b8f643ec149d0bf1b7dd8e5d0a657c0 \
-                    size    6641301
+checksums           rmd160  361a04b407210823675fe406440c07dfb66804bf \
+                    sha256  a7d35f62fb449c4b911a90d14049c2f4b763ebc645900e4c27ac6919595784ad \
+                    size    8264274
 
 configure.args-append \
                     --with-syscapstone \

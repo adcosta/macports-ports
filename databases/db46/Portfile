@@ -8,7 +8,7 @@ revision        10
 set branch      [join [lrange [split ${version} .] 0 1] {}]
 categories      databases
 license         Sleepycat
-maintainers     {blair @blair} openmaintainer
+maintainers     nomaintainer
 platforms       darwin
 description     The Berkeley DB package, version 4.6
 long_description \
@@ -138,11 +138,6 @@ if {$subport == $name} {
         delete ${destroot}${prefix}/share/doc/${name}/java
     }
 
-    # Delete this variant on or after 2013-10-08.
-    variant java description "Java API - moved to ${name}-java port" {
-        notes "${name}'s +java variant has been replaced with the ${name}-java port."
-    }
-
     variant tcl description {build Tcl API} {
         depends_lib-append      port:tcl
         configure.args-append   --enable-tcl --with-tcl=${prefix}/lib
@@ -179,6 +174,9 @@ if {$subport == $name} {
 }
 
 if { [variant_isset universal] } {
+    # configure fails with aarch64 but it seems to work fine with arm
+    set merger_host(arm64) arm-apple-${os.platform}${os.version}
+
     if {${os.arch} eq "i386"} {
         if { ${os.major} >= 10 } {
             set merger_configure_args(ppc) --with-mutex=Darwin/_spin_lock_try

@@ -4,12 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-hypothesis
-version             3.82.1
+version             5.23.8
+revision            0
 categories-append   devel
 platforms           darwin
 license             MPL-2
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {khindenburg @kurthindenburg} openmaintainer
 
@@ -24,19 +25,29 @@ homepage            https://pypi.python.org/pypi/hypothesis
 master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 distname            ${python.rootname}-${version}
 
-checksums           rmd160  62db65ac670f0dcdf70f0e09b94b2be9b485cc01 \
-                    sha256  f33d2e50080e09dcd4e81f939b1d825c6f5b104d89ebad7f57cdd3ea11983680 \
-                    size    181435
+checksums           rmd160  78c2498ba95c0602fdabf81f8ecf7cf832237fc2 \
+                    sha256  772e85dd18c9670891e0da1b585c6fb5cffb498a681a5feca94086a70bcef07a \
+                    size    247580
 
 if {${name} ne ${subport}} {
     depends_build-append  port:py${python.version}-setuptools
     depends_lib-append    port:py${python.version}-attrs \
-                          port:py${python.version}-coverage
-    if {${python.version} == 27} {
-        depends_lib-append    port:py${python.version}-enum34
+                          port:py${python.version}-sortedcontainers
+    if {${python.version} eq 27} {
+        version             4.57.1
+        revision            0
+        epoch               1
+        # Below distname is required for this to work
+        distname            ${python.rootname}-${version}
+
+        checksums           rmd160  a7d04bf21c941fd427b0c1af5e9ab5bd87fc6610 \
+                            sha256  3c4369a4b0a1348561048bcda5f1db951a1b8e2a514ea8e8c70d36e656bf6fa0 \
+                            size    233528
+
+        depends_lib-append  port:py${python.version}-enum34
+
+        livecheck.type      none
     }
 
     livecheck.type      none
-} else {
-    livecheck.type      pypi
 }

@@ -28,15 +28,7 @@ depends_run     port:xsp
 # mono is not universal
 universal_variant   no
 
-if {[variant_isset apache22]} {
-    set apxs        ${prefix}/apache22/bin/apxs
-} else {
-    set apxs        ${prefix}/bin/apxs
-}
-
-variant apache22 description "use apache22 instead of apache2" {
-    depends_lib-replace port:apache2 port:apache22
-}
+set apxs        ${prefix}/bin/apxs
 
 configure.args  --with-mono-prefix=${prefix} \
         --with-apr-config=${prefix}/bin/apr-1-config \

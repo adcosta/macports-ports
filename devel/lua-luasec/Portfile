@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 
 github.setup        brunoos luasec 0.6alpha luasec-
-revision            1
+revision            2
 name                lua-luasec
 categories          devel
 license             MIT
@@ -14,7 +14,7 @@ description         LuaSec depends on OpenSSL, and integrates with LuaSocket \
                     to make it easy to add secure connections to any Lua \
                     applications or scripts.
 
-long_description    ${description} \
+long_description    {*}${description} \
                     This version includes a new X509 certificate API.
 
 checksums           rmd160  1944ed72f389d85f785093d1ea12b6c4e7a2c685 \
@@ -37,7 +37,7 @@ set lua_path        ${prefix}/share/lua/${lua_version}
 set lua_cpath       ${prefix}/lib/lua/${lua_version}
 
 build.target        macosx
-build.env           CC="${configure.cc} [get_canonical_archflags]" \
+build.env           "CC=${configure.cc} [get_canonical_archflags]" \
                     INC_PATH=-I${prefix}/include \
                     LIB_PATH=-L${prefix}/lib \
                     LUAPATH=${lua_path} \

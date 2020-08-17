@@ -3,10 +3,10 @@
 PortSystem          1.0
 
 name                dart-sdk
-version             2.0.0
+version             2.9.1
 categories          lang
 license             BSD
-maintainers         nomaintainer
+maintainers         {amake @amake} openmaintainer
 description         The Dart SDK
 long_description    Dart is an open-source, scalable programming language, \
                     with robust libraries and runtimes, for building web, \
@@ -15,7 +15,7 @@ long_description    Dart is an open-source, scalable programming language, \
 platforms           darwin
 supported_archs     x86_64
 
-homepage            https://www.dartlang.org/
+homepage            https://dart.dev/
 master_sites        https://storage.googleapis.com/dart-archive/channels/stable/release/${version}/sdk/
 
 distname            dartsdk-macos-x64-release
@@ -23,9 +23,9 @@ use_zip             yes
 dist_subdir         ${name}/${version}
 worksrcdir          ${name}
 
-checksums           rmd160  65f2e0760e6a9c70324d8bf05900e9f58c928a18 \
-                    sha256  7cb9e65cea94ce23b05af4e5224ec416b26c3fb6bf0718778b68f6a73e617cc3 \
-                    size    131266632
+checksums           rmd160  4ee26b46bb88a7a56c367ce6fabfd12f7a9d475c \
+                    sha256  f7e41307222fd9b856acefebb6bc9137c5af4ecbca062736367b83f4b3978eb0 \
+                    size    242074191
 
 use_configure       no
 build               {}
@@ -49,4 +49,6 @@ destroot {
     }
 }
 
-livecheck.type      none
+livecheck.type      regex
+livecheck.url       https://storage.googleapis.com/dart-archive/channels/stable/release/latest/VERSION
+livecheck.regex     "\"version\": \"(\[0-9.\]+)\""

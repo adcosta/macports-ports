@@ -4,6 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 
 github.setup        libyal libewf 20171104
+revision            1
 categories          security
 platforms           darwin
 maintainers         nomaintainer
@@ -39,7 +40,7 @@ universal_variant   no
 
 platform linux {
     configure.env-append \
-                    LIBS="-L${prefix}/lib -lintl"
+                    "LIBS=-L${prefix}/lib -lintl"
 }
 
 configure.args      --with-bzip2=${prefix} \

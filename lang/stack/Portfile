@@ -1,0 +1,97 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           gpg_verify 1.0
+PortGroup           haskell_stack 1.0
+
+github.setup        commercialhaskell stack 2.3.1 v
+revision            0
+
+name                stack
+categories          lang haskell
+maintainers         {ieee.org:s.t.smith @essandess} openmaintainer
+license             BSD
+platforms           darwin
+
+description The Haskell Tool Stack
+long_description    ${description}. \
+        Stack is a cross-platform command line interface for developing Haskell projects. \
+        It features: installing GHC automatically, installing packages needed for your project, \
+        building your project, testing your project, benchmarking your project. \
+        It is intended for Haskellers both new and experienced.
+
+homepage            https://haskellstack.org
+
+variant prebuilt \
+	    description {Do not bootstrap stack; install the pre-built binary.} {}
+
+distname            ${name}-${github.version}-osx-x86_64
+
+worksrcdir          ${name}-${github.version}
+
+set worksrcpath_prebuilt \
+                    ${workpath}/${distname}
+
+master_sites        ${github.homepage}/releases/download/v${github.version}:release \
+                    ${github.homepage}/archive:archive
+
+distfiles           ${distname}${extract.suffix}:release \
+                    v${github.version}${extract.suffix}:archive
+
+checksums           ${distname}${extract.suffix} \
+                    rmd160  297c7cafd976eb571200ae5394637eb88b5b5bbb \
+                    sha256  73eee7e5f24d11fd0af00cb05f16119e86be5d578c35083250e6b85ed1ca3621 \
+                    size    8739848 \
+                    v${github.version}${extract.suffix} \
+                    rmd160  5184c2858e5db161978e5ed48590849a146c5be8 \
+                    sha256  6701ddfc6d0be0c2bf0f75c84375e41923c5617f04222c5e582e7011c7f8fb83 \
+                    size    688104 \
+                    ${distname}${extract.suffix}.asc \
+                    rmd160  068caf245858a87f60600b5e16730e6d25b80d94 \
+                    sha256  0df76677cfa986ae3112c32c52fac1083ce693bd1023223e1eea91ad567e22f1 \
+                    size    488
+
+gpg_verify.use_gpg_verification \
+                    yes
+
+if {[option gpg_verify.use_gpg_verification]} {
+    distfiles-append \
+                    ${distname}${extract.suffix}.asc:release
+
+    post-checksum {
+        # check GPG signature: https://docs.haskellstack.org/en/stable/SIGNING_KEY/
+        set gpg_keyid 1c5c154d
+
+        gpg_verify.verify_gpg_signature \
+            ${filespath}/keyid-${gpg_keyid}.txt \
+            ${distpath}/${distname}${extract.suffix}.asc \
+            ${distpath}/${distname}${extract.suffix}
+    }
+}
+
+supported_archs     x86_64
+
+if { [variant_isset "prebuilt"] } {
+    use_configure   no
+
+    build {}
+
+    destroot {
+        xinstall -m 0755 -W ${workpath}/${distname} \
+            ./${name} ${destroot}${prefix}/bin
+    }
+} else {
+    post-extract {
+        xinstall -m 0755 -d "[option haskell_stack.stack_root]"
+
+        # standard stack install with 'curl | sh'; don't use
+        # system -W ${worksrcpath} "/bin/mkdir ./bin && /usr/bin/curl -sSL https://get.haskellstack.org/ | /bin/sh -s - -d ./bin"
+        # copy the pre-built ./stack binary to ./bin, then bootstrap
+        xinstall -W ${workpath} -d ./bin
+        xinstall -m 0755 -W ${worksrcpath_prebuilt} \
+            ./${name} ${workpath}/bin
+    }
+
+    set haskell_stack.bin ${workpath}/bin/stack
+}

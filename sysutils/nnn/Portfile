@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+PortGroup               makefile 1.0
+PortGroup               legacysupport 1.0
+
+github.setup            jarun nnn 3.2 v
+revision                0
+categories              sysutils
+license                 BSD
+maintainers             {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+platforms               darwin
+description             tiny, lightning fast, feature-packed file manager
+long_description        ${name} is a tiny, lightning fast, feature-packed file manager.
+
+checksums               rmd160  8a3ee3f18dda47f9cb720d306fabde5b87c3335a \
+                        sha256  5de81b8c91e0ef720e7c1bce23b5790fe90ea527291f16e529cd8c1aeb9dc00e \
+                        size    143157
+
+installs_libs           no
+
+depends_build           port:pkgconfig
+
+depends_lib             port:readline \
+                        port:ncurses \
+                        port:pcre
+
+compiler.c_standard     2011
+
+build.args-append       CFLAGS_OPTIMIZATION="" \
+                        O_PCRE=1

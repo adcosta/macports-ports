@@ -4,7 +4,7 @@ PortSystem              1.0
 PortGroup               python 1.0
 
 name                    py-pyside2
-version                 5.11.2
+version                 5.15.0
 categories-append       devel aqua
 platforms               darwin
 maintainers             {pmetzger @pmetzger} {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
@@ -14,29 +14,33 @@ homepage                https://wiki.qt.io/Qt_for_Python
 # see ${worksrcdir}/sources/pyside2/PySide2/licensecomment.txt
 license                 {GPL-2 GPL-3+ LGPL-3}
 master_sites            https://download.qt.io/official_releases/QtForPython/pyside2/PySide2-${version}-src
-distname                pyside-setup-everywhere-src-${version}
+distname                pyside-setup-opensource-src-${version}
 use_xz                  yes
 
-checksums               rmd160  6af60baf36f49f330b2c7d60fd171dc996d1e86b \
-                        sha256  18f572f1f832e476083d30fccabab167450f2a8cbe5cd9c6e6e4fa078ccb86c2 \
-                        size    5298804
+checksums               rmd160  6c6756018a4f76fcac5e0f9c00a0cd1564bb1a89 \
+                        sha256  f1cdee53de3b76e22c1117a014a91ed95ac16e4760776f4f12dc38cd5a7b6b68 \
+                        size    3367088
 
-python.versions         27 36 37
+python.versions         27 36 37 38
 
-set llvm_version        7.0
+set llvm_version        10
 
 if {${name} ne ${subport}} {
     PortGroup           qt5 1.0
 
+    # see https://trac.macports.org/ticket/57517
+    qt5.min_version     5.8
+
     depends_build-append \
         path:bin/cmake:cmake \
         port:py${python.version}-setuptools \
+        port:py${python.version}-sphinx \
         port:py${python.version}-wheel
 
     build.args-append \
         --qmake=${qt_qmake_cmd} \
         --cmake=${prefix}/bin/cmake \
-        --jobs=${build.jobs} \
+        --parallel=${build.jobs} \
         --macos-deployment-target=${macosx_deployment_target}
 
     if {${configure.sdkroot} != ""} {
@@ -54,6 +58,7 @@ if {${name} ne ${subport}} {
         --reuse-build
 
     depends_lib-append \
+        port:libxml2 \
         port:libxslt \
         port:clang-${llvm_version} \
         port:llvm-${llvm_version} \
@@ -76,12 +81,23 @@ if {${name} ne ${subport}} {
         qtscript \
         qtscxml \
         qtsensors \
+        qtserialport \
         qtspeech \
         qtsvg \
         qttools \
         qtwebchannel \
         qtwebengine \
         qtwebsockets
+
+    if {[vercmp ${qt5.version} 5.6] >=0 } {
+        qt5.depends_component \
+            qtquickcontrols2
+    }
+
+    if {[vercmp ${qt5.version} 5.9] >=0 } {
+        qt5.depends_component \
+            qtremoteobjects
+    }
 
     livecheck.type      none
 } else {

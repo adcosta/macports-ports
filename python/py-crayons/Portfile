@@ -4,7 +4,8 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-crayons
-version             0.1.2
+version             0.3.1
+revision            0
 platforms           darwin
 license             GPL-2
 maintainers         {khindenburg @kurthindenburg} openmaintainer
@@ -20,11 +21,11 @@ homepage            https://pypi.python.org/pypi/${python.rootname}/
 master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 distname            ${python.rootname}-${version}
 
-checksums           rmd160  48c672dc855ca054a418809d8f2efe4d75d1f6df \
-                    sha256  5e17691605e564d63482067eb6327d01a584bbaf870beffd4456a3391bd8809d \
-                    size    3168
+checksums           rmd160  78f62cca20463077feb8c707b2e77150e7bf167d \
+                    sha256  dcb85b87aa03bb65bd3a073d012796b024cabeb086033e616759e2abb769440b \
+                    size    4516
 
-python.versions     27 35 36
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools

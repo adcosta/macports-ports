@@ -5,15 +5,11 @@ PortGroup           compilers  1.0
 PortGroup           muniversal 1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           linear_algebra 1.0
-# see https://lists.gnu.org/archive/html/octave-maintainers/2016-05/msg00286.html
-PortGroup           cxx11 1.1
-# See https://trac.macports.org/ticket/53044 for restricting versions further than the cxx11 PortGroup
-compiler.blacklist-append   {*gcc-4.6} {clang < 700}
 
 name                octave
-version             4.4.1
-set package_version 4.x.x
-revision            1
+version             5.2.0
+set package_version 5.x.x
+revision            4
 categories          math science
 platforms           darwin
 license             GPL-3+
@@ -28,11 +24,13 @@ homepage            https://www.gnu.org/software/octave
 
 master_sites        gnu:octave
 
-checksums           rmd160  45d1efbd217308ff9a7b3354ccc004f37785a270 \
-                    sha256  09fbd0f212f4ef21e53f1d9c41cf30ce3d7f9450fb44911601e21ed64c67ae97 \
-                    size    28626462
+checksums           rmd160  2877818d2bb06d99bfbb24f93c0f743d73047969 \
+                    sha256  2fea62b3c78d6f38e9451da8a4d26023840725977dffee5250d3d180f56595e1 \
+                    size    33360285
 
-conflicts-append    ${name}-devel
+# see https://lists.gnu.org/archive/html/octave-maintainers/2016-05/msg00286.html
+compiler.cxx_standard \
+                    2011
 
 # if there is an error bulding octave package, avoid
 #    error: structure has no member 'dir'
@@ -47,24 +45,40 @@ if { ${os.major} >= 10 } {
 # facilitate universal builds of packages
 patchfiles-append patch-configure_make.m.diff
 
-# do not link in all dependencies when building packages
-patchfiles-append patch-link.diff
-
 # allow mkoctfile to recognize and pass along -arch compiler switch
 patchfiles-append patch-arch_arg.diff
 
 # see https://savannah.gnu.org/bugs/?50025
 patchfiles-append patch-crash_on_exit.diff
 
-# octave compiles in the hostname value and its own full version number
-# they are used to determine installation locations
+# octave compiles in the hostname value
+# it is used to determine installation locations
 #    of architecture-dependent package files
-# this means the build is dependent on the minor numbers of the OS and Octave
+# this means the build is dependent on the minor number of the OS
 # the following patch attempts to prevent this
 patchfiles-append patch-versions.diff
 
 # reports of `__opengl_info__` not working the first time
 patchfiles-append patch-__opengl_info__.diff
+
+# see https://trac.macports.org/ticket/57288
+patchfiles-append patch-run-octave.diff
+
+# find MacPorts Qt libraries
+patchfiles-append patch-link_location.diff
+
+# fix CXXFLAGS when testing for Qt5 properties
+# see https://trac.macports.org/ticket/58226
+patchfiles-append patch-qt5-cxxflags.diff
+
+# see https://savannah.gnu.org/patch/index.php?9806
+set java_version 1.8
+patchfiles-append patch-java_version.diff
+post-patch {
+    reinplace \
+        "s|__MACPORTS_JAVA_VERSION__|${java_version}|g" \
+        ${worksrcpath}/Makefile.in
+}
 
 post-patch {
     if { ${os.arch} eq "i386" } {
@@ -80,16 +94,9 @@ post-patch {
             set short_host_name powerpc-apple-${os.platform}${os.major}.x.x
         }
     }
-    if {${subport} eq ${name}} {
-        set configure_file configure
-    } else {
-        set configure_file configure.ac
-    }
     reinplace \
         "s|__MACPORTS_canonical_host_type__|${short_host_name}|g" \
-        ${configure_file}
-    reinplace \
-        "s|__MACPORTS_canonical_host_type__|${short_host_name}|g" \
+        configure \
         build-aux/subst-config-vals.in.sh
 }
 
@@ -116,35 +123,32 @@ pre-configure {
     }
 }
 
-# Block compilers: Some older versions of CLANG do not honor the CPATH
+# Some older versions of CLANG do not honor the CPATH
 # environment variables, which is required for compiling this port
 # when using MacPorts.  The versions seem to be: MacPorts CLANG 2.9 or
 # earlier, and Apple CLANG 318.0.58 or older.
+# see https://bugs.llvm.org/show_bug.cgi?id=8971
+# see https://trac.macports.org/ticket/40250
 #
-# See also < http://llvm.org/bugs/show_bug.cgi?id=8971 >
-#          < https://trac.macports.org/ticket/40250 >.
-compiler.blacklist-append { clang <= 318.0.61 }
+# Clang must be able to use cstdint.
+# see https://trac.macports.org/ticket/53044
+#
+# Clang must be able to handle VLA extension.
+# see https://clang.llvm.org/compatibility.html#vla
+# see https://trac.macports.org/ticket/57270
+#
+compiler.blacklist-append {clang <= 802}
 
-pre-patch {
-    # code located in pre-patch because variants from PortGroup compilers must
-    #    be evaluated before it can be determined if clang is being used
-
-    # see http://trac.macports.org/ticket/45011
-    # see https://savannah.gnu.org/bugs/?43298
-    set libcxxbug no
-    if { ${configure.cc} eq "/usr/bin/clang" && [lindex [split ${xcodeversion} .] 0] eq 6 } {
-        set libcxxbug yes
-    }
-    if { ${libcxxbug} } {
-        patchfiles-append   \
-            clang-libcxx-fix.patch
-    }
-}
+# see see https://trac.macports.org/ticket/53044
+compiler.blacklist-append {*gcc-4.6}
 
 # see https://wiki.octave.org/Building for a list of dependencies
 
 # avoid depends_build-append port:coreutils
-configure.env-append MKDIR_P="/bin/mkdir -p"
+configure.env-append "MKDIR_P=/bin/mkdir -p"
+
+# see https://trac.macports.org/ticket/57850
+configure.env-append "INSTALL_DATA=\${INSTALL} -m 644 -p"
 
 if { ${os.major} > 10 } {
     # avoid depends_build-append port:cctools
@@ -210,7 +214,7 @@ depends_build-append port:flex
 configure.env-append LEX=${prefix}/bin/flex
 
 depends_build-append port:bison
-configure.env-append YACC="${prefix}/bin/bison -y"
+configure.env-append "YACC=${prefix}/bin/bison -y"
 
 depends_build-append port:gperf
 configure.env-append GPERF=/usr/bin/gperf
@@ -227,10 +231,6 @@ depends_build-append \
     port:pkgconfig
 
 compilers.choose    fc f77 f90 cc cxx
-
-# overrule cxx11 PortGroup because octave can use GCC compilers
-#    even if configure.cxx_stdlib is libc++
-compiler.blacklist-delete *gcc*
 
 # GCC 6 fails in several ways
 #  in order to use the Carbon framework, -fpermissive is required
@@ -256,16 +256,6 @@ compilers.setup     \
     -clang34        \
     -clang33
 
-# offscreen rendering with OpenGL via osmesa would be nice to have, but the following
-#    causes a segmentation fault:
-#    h = figure ("visible", "off"); fn = tempname (); sombrero (); __osmesa_print__ (h, fn, "svg");
-#
-# solution is ???
-#
-#depends_lib-append port:mesa
-configure.args-append       \
-    --without-osmesa
-
 #configure.args-append --with-shell=???
 
 configure.args-append       \
@@ -286,6 +276,12 @@ configure.args-append       \
     --without-portaudio     \
     --without-magick        \
     --disable-docs
+
+# avoid
+#     Undefined symbols for architecture x86_64:
+#       "print_usage()", referenced from: ...
+configure.args-append       \
+    --enable-link-all-dependencies
 
 # in configure.ac, listed as one of "[p]rograms used when running Octave"
 depends_lib-append port:python27
@@ -400,6 +396,7 @@ pre-configure {
 variant java description {enable Java interface} {
     PortGroup java 1.0
     configure.args-replace --disable-java --enable-java
+    java.version ${java_version}+
 }
 # java variant seems to cause problems for both users and build bots
 #    https://lists.macosforge.org/pipermail/macports-users/2016-May/thread.html#41052
@@ -416,12 +413,6 @@ variant qt5 conflicts qt4 description {build the GUI using Qt5} {
     PortGroup qt5 1.0
     qt5.depends_component qttools sqlite-plugin
     depends_lib-append port:qscintilla-qt5
-
-    # see https://savannah.gnu.org/bugs/?46723
-    # see https://savannah.gnu.org/bugs/?49053
-    patchfiles-append       \
-        patch-iconsize.diff \
-        patch-figures.diff
 
     # location of libqscintilla2.dylib
     configure.ldflags-append \
@@ -440,21 +431,21 @@ if { ![variant_isset qt4] && ![variant_isset qt5] } {
     #       see http://doc.qt.io/qt-4.8/supported-platforms.html
     #    OS X 10.10 (Darwin 14) is the oldest OS supported by the current long-term support version of Qt 5 (Qt 5.9).
     #       see http://web.archive.org/web/20170702143426/https://doc.qt.io/qt-5/supported-platforms-and-configurations.html
-    if {${os.major} >= 14} {
+    if {${os.major} >= 14 || ${os.platform} ne "darwin"} {
         default_variants-append +qt5
     } else {
         default_variants-append +qt4
     }
 }
 
-variant fltk_toolkit description {enable fltk as a graphics toolkit for plotting} {
+variant fltk description {enable fltk as a graphics toolkit for plotting} {
     depends_lib-append path:lib/libfltk.dylib:fltk
     configure.args-replace --without-fltk --with-fltk
 }
-# see https://github.com/macports/macports-ports/pull/1865 for a discussion on fltk_toolkit
-#default_variants-append +fltk_toolkit
+# see https://github.com/macports/macports-ports/pull/1865 for a discussion on fltk
+#default_variants-append +fltk
 
-if {[variant_isset fltk_toolkit] || [variant_isset qt4] || [variant_isset qt5]} {
+if {[variant_isset fltk] || [variant_isset qt4] || [variant_isset qt5]} {
     # native_graphics (fltk) and gui (Qt) require OpenGL and font and printing capabilities
     depends_lib-append  \
         port:fontconfig \
@@ -464,26 +455,8 @@ if {[variant_isset fltk_toolkit] || [variant_isset qt4] || [variant_isset qt5]} 
     configure.args-replace --without-opengl --with-framework-opengl
 }
 
-if { ([variant_isset fltk_toolkit] && [variant_isset qt4]) || ([variant_isset fltk_toolkit] && [variant_isset qt5]) } {
+if { ([variant_isset fltk] && [variant_isset qt4]) || ([variant_isset fltk] && [variant_isset qt5]) } {
     notes-append "unless octave is run with --no-gui-libs, graphics_toolkit(\"fltk\") will cause a crash"
-}
-
-variant jit description {enable JIT compiler (EXPERIMENTAL)} {
-    # JIT requires LLVM, so select a version to use
-    set llvm_ver 6.0
-
-    # prevent multiple versions of llvm being required
-    # if clangXY compiler is requested, use llvm-X.Y
-    foreach clang ${compilers.clang_variants} {
-        if { [variant_exists ${clang}] && [variant_isset ${clang}] } {
-            set llvm_ver [string index ${clang} end-1].[string index ${clang} end]
-        }
-    }
-
-    depends_lib-append port:llvm-${llvm_ver}
-    configure.args-replace --disable-jit --enable-jit
-    configure.env-append LLVM_CONFIG=${prefix}/bin/llvm-config-mp-${llvm_ver}
-    configure.cxxflags-append -std=c++11
 }
 
 variant sound description {enable audio support (file I/O and playback)} {
@@ -631,16 +604,6 @@ if {${magickDefault}} {
     default_variants-append +graphicsmagick
 }
 
-# see https://trac.macports.org/ticket/53021
-foreach gccVar ${compilers.gcc_variants} {
-    if {[variant_exists ${gccVar}] && [variant_isset ${gccVar}] } {
-        if {[vercmp ${xcodeversion} 7.0] >= 0} {
-            patchfiles-append patch-force_cxx.diff
-        }
-        break
-    }
-}
-
 post-destroot {
     # put any startup commands in ${destroot}${prefix}/share/octave/${version}/m/startup/octaverc
     # see https://www.gnu.org/software/octave/doc/interpreter/Startup-Files.html
@@ -654,7 +617,7 @@ post-destroot {
     }
 
     # do not force upgrade of every dependency every time the version changes
-    foreach lib {liboctave.6.dylib liboctgui.4.dylib liboctinterp.6.dylib} {
+    foreach lib {liboctave.7.dylib liboctgui.5.dylib liboctinterp.7.dylib} {
         xinstall -d -m 0755 ${destroot}${prefix}/lib/octave/${package_version}
         ln -s ../${version}/${lib} ${destroot}${prefix}/lib/octave/${package_version}/${lib}
         system "install_name_tool -id ${prefix}/lib/octave/${package_version}/${lib} ${destroot}${prefix}/lib/octave/${version}/${lib}"
@@ -696,63 +659,3 @@ post-activate {
 
 test.run    yes
 test.target check
-
-subport ${name}-devel {
-    # http://hg.savannah.gnu.org/hgweb/octave/archive has the ability to download snapshots.
-    # This would be preferable to using mercurial.
-    # The generated files, however, are currently corrupted.
-    fetch.type          hg
-    hg.url              http://hg.savannah.gnu.org/hgweb/octave/
-    hg.tag              ea5182364e5f
-    version             5.0.0
-    revision            8
-
-    # see https://trac.macports.org/ticket/57270
-    compiler.blacklist-append {clang < 802}
-
-    conflicts-replace ${name}-devel ${name}
-
-    use_autoconf         yes
-    autoconf.cmd         ./bootstrap
-    autoconf.args        --gnulib-srcdir=gnulib --no-git
-
-    # need for autoconf
-    depends_build-append \
-        port:autoconf    \
-        port:automake    \
-        port:libtool
-
-    # create links in case patch-force_cxx-devel.diff is included in the patchfiles
-    # otherwise, they do no harm
-    post-extract {
-        ln -s cdisplay.c           ${worksrcpath}/libinterp/corefcn/cdisplay.cc
-        ln -s display-available.c  ${worksrcpath}/src/display-available.cc
-    }
-
-    # see https://savannah.gnu.org/bugs/index.php?53627
-    patchfiles-append \
-        patch-undefined-devel.diff
-
-    # see https://trac.macports.org/ticket/57288
-    patchfiles-append \
-        patch-run-octave.diff
-
-    pre-patch {
-        patchfiles-delete \
-            patch-figures.diff
-
-        patchfiles-replace  \
-            patch-bsdtar.diff         patch-bsdtar-devel.diff \
-            patch-versions.diff       patch-versions-devel.diff \
-            patch-force_cxx.diff      patch-force_cxx-devel.diff \
-            patch-iconsize.diff       patch-iconsize-devel.diff \
-            patch-link.diff           patch-link-devel.diff \
-            patch-arch_arg.diff       patch-arch_arg-devel.diff \
-            patch-crash_on_exit.diff  patch-crash_on_exit-devel.diff
-    }
-
-    livecheck.type    regexm
-    livecheck.url     http://hg.savannah.gnu.org/hgweb/octave/tags
-    livecheck.version ${hg.tag}
-    livecheck.regex   "<a href=\"/hgweb/octave/rev/(\[a-zA-Z0-9.\]+)\">\ntip"
-}

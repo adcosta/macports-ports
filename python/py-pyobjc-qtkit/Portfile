@@ -2,41 +2,22 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
+PortGroup           obsolete 1.0
 
 name                py-pyobjc-qtkit
-version             3.0.4
-categories-append   devel
+version             6.1
+revision            1
+
+categories          python devel
 license             MIT
-maintainers         nomaintainer
-platforms           darwin
-supported_archs     noarch
-description         QTKit wrappers for PyObjC
-long_description    This port provides wrappers for the QTKit framework for \
-                    use with PyObjC. QTKit is an modern, object-oriented \
-                    framework for working with QuickTime media in Cocoa \
-                    applications, and is a replacement for the older \
-                    Carbon-based Quicktime framework.
 
-homepage            http://pyobjc.sourceforge.net/
-master_sites        pypi:p/pyobjc-framework-QTKit/
-distname            pyobjc-framework-QTKit-${version}
+replaced_by         py-pyobjc
 
-checksums           rmd160  d032d56b1007fc45ca5c36b29d90717f3075508a \
-                    sha256  4dccc8bcf29c474de437a68907a6e6ff6eafe2530885fcaddcca05675f7649d6
+description         obsolete wrapper for PyObjC
 
-python.versions     27 34 35 36
-
-if {${name} ne ${subport}} {
-    depends_lib         port:py${python.version}-pyobjc-quartz
-
-    post-destroot {
-        xinstall -m 644 -W ${worksrcpath} \
-            LICENSE.txt README.txt \
-            ${destroot}${prefix}/share/doc/${subport}
-        copy ${worksrcpath}/Doc ${destroot}${prefix}/share/doc/${subport}
+foreach v {35 36 37 38} {
+    subport py$v-pyobjc-qtkit {
+        replaced_by py$v-pyobjc
     }
-} else {
-    livecheck.type  regex
-    livecheck.url   https://pypi.python.org/pypi/pyobjc-framework-QTKit/
-    livecheck.regex {pyobjc-framework-QTKit ([0-9.]+)}
 }
+#   Remove in November, 2020

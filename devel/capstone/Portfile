@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        aquynh capstone 3.0.5
-revision            1
+github.setup        aquynh capstone 4.0.2
+revision            0
 categories          devel
 platforms           darwin
 maintainers         {gmail.com:aquynh @aquynh}
@@ -16,9 +16,9 @@ long_description    Capstone is a multi-arch, multi-platform disassembly framewo
 
 homepage            http://www.capstone-engine.org/
 
-checksums           rmd160  a10436a751acd5f78aba6279787d46a22bd4a744 \
-                    sha256  7b50054bc953b153b8310773653d0ca8d85e74aa7bd3e705006b162335ab1c62 \
-                    size    2886500
+checksums           rmd160  84ace6e5d18614b0ade45b85b1c787c7cb300101 \
+                    sha256  de132746050ee08ad7afe3c22548865ad7754cad68cf1a87e313281d18b73ac5 \
+                    size    3439580
 
 patch.pre_args      -p1
 patchfiles          patch-Makefile.diff
@@ -27,11 +27,19 @@ use_configure       no
 
 universal_variant   yes
 
+if {[vercmp [macports_version] 2.5.99] >= 0} {
+build.env           CC=${configure.cc} \
+                    CFLAGS=${configure.cflags} \
+                    LDFLAGS=${configure.ldflags} \
+                    PREFIX=${prefix} \
+                    V=1
+} else {
 build.env           CC=${configure.cc} \
                     CFLAGS="${configure.cflags}" \
                     LDFLAGS="${configure.ldflags}" \
                     PREFIX=${prefix} \
                     V=1
+}
 
 pre-build {
     build.args-append \

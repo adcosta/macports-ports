@@ -2,11 +2,11 @@
 
 PortSystem              1.0
 PortGroup               cmake 1.1
-PortGroup               cxx11 1.1
 PortGroup               github 1.0
 
 epoch                   1
 github.setup            Dushistov sdcv 0.5.2 v
+revision                1
 categories              textproc
 platforms               darwin
 maintainers             {ryandesign @ryandesign} openmaintainer
@@ -29,12 +29,14 @@ depends_lib             port:gettext \
                         port:readline \
                         port:zlib
 
+compiler.cxx_standard   2011
+
 build.target-append     lang
 
 post-destroot {
     set docdir ${prefix}/share/doc/${subport}
     xinstall -d ${destroot}${docdir}
-    xinstall -m 644 -W ${worksrcpath} \
+    xinstall -m 0644 -W ${worksrcpath} \
         AUTHORS \
         LICENSE \
         NEWS \

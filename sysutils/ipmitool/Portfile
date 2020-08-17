@@ -1,10 +1,20 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-PortSystem 1.0
+PortSystem      1.0
+PortGroup       compiler_blacklist_versions 1.0
+PortGroup       github 1.0
+PortGroup       legacysupport 1.1
 
-name            ipmitool
-version         1.8.15
-revision        2
+# https://trac.macports.org/ticket/59132
+legacysupport.newest_darwin_requires_legacy 10
+
+# Using head of ipmitool until next release for openssl build fixes
+github.setup    ipmitool ipmitool 84469a9c5486b12db727c129a89ec6b584588f66
+version         1.8.18.20200616
+revision        0
+checksums       rmd160  868587a9abff4e50793c93310aa0f626a9a83974 \
+                sha256  788a50b7f86140926eb24ab31a3805bc868b7650207995f9a911c677e0d70af4 \
+                size    625527
 
 categories      sysutils
 license         BSD
@@ -24,22 +34,32 @@ long_description \
   remote chassis power control.
 
 platforms       darwin
-homepage        http://ipmitool.sourceforge.net/
-master_sites    sourceforge
 
-depends_lib     path:lib/libssl.dylib:openssl
+depends_build   port:autoconf \
+                port:automake \
+                port:libtool \
+                port:curl \
+                port:coreutils
+depends_lib     path:lib/libssl.dylib:openssl \
+                port:readline
 
-checksums \
-    rmd160  2884232d29e441b8ee136d7a75019c8fbb5d3a49 \
-    sha256  f0964e644a8e693932a3e8da6929d5598ed24645bacd51fbb1a4a09b5e47cf78
+github.tarball_from archive
 
 configure.args --enable-intf-lanplus --enable-ipmishell
 configure.cppflags-append   -Ds6_addr16=__u6_addr.__u6_addr16
 
-post-patch {
-    # remove CFLAGS that gcc 4.2 doesn't support
-    reinplace "s|-Wno-unused-result||g" ${worksrcpath}/configure
-    reinplace "s|-Wno-packed-bitfield-compat||g" ${worksrcpath}/configure
+compiler.c_standard    2011
+# Work around MacPorts base C11 compiler selection bug.
+# https://github.com/macports/macports-base/pull/196
+compiler.blacklist-append {clang < 500}
+
+pre-configure {
+    system -W ${worksrcpath} "./bootstrap"
 }
-    
-configure.args  --mandir=${prefix}/share/man
+
+post-patch {
+    reinplace {/DOWNLOAD/s/ -#/ -L/} configure.ac
+    reinplace "s|\$(INSTALL_DATA)|ginstall -m 0644|" Makefile.am
+}
+
+configure.args-append  --mandir=${prefix}/share/man

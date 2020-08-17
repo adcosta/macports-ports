@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Test-TrailingSpace 0.0301
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Test-TrailingSpace 0.0600
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Test::TrailingSpace - test for trailing space in source files.
@@ -12,8 +12,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  0b1d0f26642ab0ef062ddc5834f62bc49e43c6e0 \
-                    sha256  a28875747adb7a0e7d1ae8a4ffe71869e7ceb3a85d0cb30172959dada7de5970
+checksums           rmd160  a589e1787569fe0d0c3dfd6986d77900b0c42571 \
+                    sha256  f09d263adec06700a43a24e29f5484cf6d2939914c607dec51590f4bb8fa5a11 \
+                    size    13795
 
 if {${perl5.major} != ""} {
     depends_lib-append \

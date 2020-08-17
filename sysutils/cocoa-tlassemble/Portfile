@@ -23,7 +23,7 @@ patch {
     reinplace "s/clang/\$(CC)/g" ${worksrcpath}/makefile
 }
 
-build.env-append    CC="${configure.cc} [get_canonical_archflags cc]"
+build.env-append    "CC=${configure.cc} [get_canonical_archflags cc]"
 
 use_configure       no
 

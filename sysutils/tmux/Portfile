@@ -3,17 +3,19 @@
 PortSystem      1.0
 PortGroup       github 1.0
 
-github.setup    tmux tmux 2.8
+github.setup    tmux tmux 3.1b
 if {${subport} eq ${name}} {
+    revision        0
     conflicts       tmux-devel
 }
 subport tmux-devel {
-    github.setup    tmux tmux f54f171d5c43a22414caeecbe8a71db44f345b4e
-    version         20181017-[string range ${github.version} 0 6]
+    github.setup    tmux tmux a08f1c8c59787408529463c985929e5ae1c67211
+    version         20200504-[string range ${github.version} 0 6]
+    revision        0
     conflicts       tmux
 }
 categories      sysutils
-maintainers     {evermeet.cx:tessarek @tessus}
+maintainers     {evermeet.cx:tessarek @tessus} openmaintainer
 description     terminal multiplexer
 long_description \
     tmux is a \"terminal multiplexer\", it enables a number of terminals \
@@ -28,14 +30,14 @@ depends_lib     port:libevent port:ncurses
 
 if {${subport} eq ${name}} {
     github.tarball_from     releases
-    checksums               rmd160  13f097f02b2d3f489fb00af5b3f702cb2eae523f \
-                            sha256  7f6bf335634fafecff878d78de389562ea7f73a7367f268b66d37ea13617a2ba \
-                            size    491195
+    checksums               rmd160  10bd0c871da3fd9c450408c96bbc7231257e40e4 \
+                            sha256  d93f351d50af05a75fe6681085670c786d9504a5da2608e481c47cf5e1486db9 \
+                            size    561152
 }
 subport tmux-devel {
-    checksums               rmd160  3cbdc1f154068630455c9a571bfab060c940a1df \
-                            sha256  e78065879bffdda52f066c04683002e75538ebfca8472b9506eb62a261a6d5a8 \
-                            size    645365
+    checksums               rmd160  c379f7faa81473a610380261d0110ab580c053de \
+                            sha256  6ea3edc022326df0d902b3260c8f568bb0eae49b13e9952338ee8dc700e8e85c \
+                            size    751410
 
     use_autoreconf          yes
     autoreconf.cmd          ./autogen.sh
@@ -45,7 +47,8 @@ subport tmux-devel {
                             port:libtool \
                             port:pkgconfig
     post-extract {
-        reinplace "s|AC_INIT(tmux, master)|AC_INIT(tmux, ${version})|g" ${worksrcpath}/configure.ac
+        set reinplace_cmd [subst -nobackslashes -nocommands {s/AC_INIT\(\[tmux\], (next-[0-9]+\.[0-9]+)\)/AC_INIT([tmux], \1 (${version}))/g}]
+        reinplace -E $reinplace_cmd ${worksrcpath}/configure.ac
     }
 }
 

@@ -1,0 +1,246 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           github 1.0
+
+github.setup        opencv opencv 4.3.0
+name                opencv4
+revision            0
+categories          graphics science
+platforms           darwin
+license             BSD
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Open Source Computer Vision Library
+
+long_description    OpenCV (Open Source Computer Vision Library) is an\
+                    open source computer vision and machine learning\
+                    software library. OpenCV was built to provide a\
+                    common infrastructure for computer vision\
+                    applications and to accelerate the use of machine\
+                    perception in the commercial products. Being a\
+                    BSD-licensed product, OpenCV makes it easy for\
+                    businesses to utilize and modify the code.
+
+homepage            https://opencv.org
+
+conflicts           opencv
+
+master_sites        ${github.master_sites}:${github.project}
+
+distfiles           [lindex ${distfiles} 0]:${github.project}
+
+checksums           ${distname}${extract.suffix} \
+                    rmd160  6a01059dd1bf57a21f8663bec5e856607c342e84 \
+                    sha256  e11293aef34048f6c283c844c5260b8914e511586bc0ed30852ce18cefebbc0d \
+                    size    87942711
+
+# modify from _resources/port1.0/group/github-1.0.tcl to avoid file tag issue
+proc move_gh_repo {repo_dir_patt new_name} {
+    global distfiles workpath worksrcpath
+    if {(![file exists ${worksrcpath}] || ![file exists ${workpath}/${new_name}]) && \
+            [llength ${distfiles}] > 0 && \
+            [llength [glob -nocomplain ${workpath}/*]] > 0} {
+        if {[file exists [glob -nocomplain ${workpath}/${repo_dir_patt}]] && \
+            [file isdirectory [glob -nocomplain ${workpath}/${repo_dir_patt}]]} {
+            move [glob ${workpath}/${repo_dir_patt}] ${workpath}/${new_name}
+        } else {
+            # tarball is not "${repo_dir_patt}"
+            ui_error "\n\ngithub PortGroup: Error: \${worksrcpath} does not exist after extracting distfiles. This might indicate that the author or project is different than set in the Portfile due to a rename at GitHub. Please examine the extracted directory in ${workpath} and try to correct the Portfile by either changing the author or project or adding the worksrcdir option with the correct directory name.\n"
+            return -code error "Unexpected github tarball extract."
+        }
+    }
+}
+
+post-extract {
+    move_gh_repo ${github.author}-${github.project}-* ${distname}
+}
+
+compiler.cxx_standard 2011
+
+compiler.blacklist-append *gcc* {clang < 900} {macports-clang-3.[0-9]} {macports-clang-[4-6].0}
+
+depends_build-append \
+                    port:pkgconfig
+
+depends_lib-append  port:zlib \
+                    port:libpng \
+                    port:jpeg \
+                    port:jasper \
+                    port:tiff \
+                    port:webp \
+                    port:openexr \
+                    port:ilmbase \
+                    port:ade
+
+configure.args-append \
+                    -DCMAKE_RULE_MESSAGES:BOOL=OFF -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+                    \
+                    -DWITH_ADE:BOOL=ON \
+                    -Dade_DIR:PATH=${prefix}/share/ade/ \
+                    \
+                    -DHAVE_CXX11:BOOL=ON \
+                    -DENABLE_PIC:BOOL=OFF \
+                    -DBUILD_SHARED_LIBS:BOOL=OFF \
+                    -DBUILD_opencv_apps:BOOL=ON \
+                    -DBUILD_DOCS:BOOL=OFF \
+                    -DBUILD_EXAMPLES:BOOL=OFF \
+                    \
+                    -DENABLE_CCACHE:BOOL=OFF \
+                    -DBUILD_JAVA:BOOL=OFF \
+                    -DENABLE_LTO:BOOL=OFF \
+                    -DENABLE_THIN_LTO:BOOL=OFF \
+                    \
+                    -DOPENCV_ENABLE_NONFREE:BOOL=OFF \
+                    -DOPENCV_FORCE_3RDPARTY_BUILD:BOOL=OFF \
+                    \
+                    -DBUILD_ZLIB:BOOL=OFF \
+                    -DBUILD_TIFF:BOOL=OFF -DWITH_TIFF:BOOL=ON \
+                    -DBUILD_JASPER:BOOL=OFF -DWITH_JASPER:BOOL=ON \
+                    -DBUILD_JPEG:BOOL=OFF -DWITH_JPEG:BOOL=ON \
+                    -DBUILD_PNG:BOOL=OFF -DWITH_PNG:BOOL=ON \
+                    -DBUILD_OPENEXR:BOOL=OFF -DWITH_OPENEXR:BOOL=ON \
+                    -DBUILD_WEBP:BOOL=OFF -DWITH_WEBP:BOOL=ON \
+                    -DBUILD_TBB:BOOL=OFF -DWITH_TBB:BOOL=OFF \
+                    \
+                    -DWITH_OPENCL:BOOL=OFF \
+                    -DWITH_OPENCL_SVM:BOOL=OFF \
+                    -DWITH_OPENCLAMDFFT:BOOL=OFF \
+                    -DWITH_OPENCLAMDBLAS:BOOL=OFF \
+                    \
+                    -DWITH_LAPACK:BOOL=ON \
+                    \
+                    -DBUILD_IPP_IW:BOOL=OFF \
+                    -DBUILD_ITT:BOOL=OFF \
+                    -DWITH_1394:BOOL=OFF \
+                    -DWITH_AVFOUNDATION:BOOL=ON \
+                    -DWITH_VTK:BOOL=OFF \
+                    -DWITH_EIGEN:BOOL=OFF \
+                    -DWITH_FFMPEG:BOOL=OFF \
+                    -DWITH_GSTREAMER:BOOL=OFF \
+                    -DWITH_GTK:BOOL=OFF \
+                    -DWITH_IPP:BOOL=OFF \
+                    -DWITH_HALIDE:BOOL=OFF \
+                    -DWITH_VULKAN:BOOL=OFF \
+                    -DWITH_INF_ENGINE:BOOL=OFF \
+                    -DWITH_OPENGL:BOOL=OFF \
+                    -DWITH_OPENVX:BOOL=OFF \
+                    -DWITH_OPENNI:BOOL=OFF \
+                    -DWITH_OPENNI2:BOOL=OFF \
+                    -DWITH_GDCM:BOOL=OFF \
+                    -DWITH_PVAPI:BOOL=OFF \
+                    -DWITH_ARAVIS:BOOL=OFF \
+                    -DWITH_QT:BOOL=OFF \
+                    -DWITH_HPX:BOOL=OFF \
+                    -DWITH_OPENMP:BOOL=OFF \
+                    -DWITH_PTHREADS_PF:BOOL=ON \
+                    -DWITH_XIMEA:BOOL=OFF \
+                    \
+                    -DWITH_LIBREALSENSE:BOOL=OFF \
+                    -DWITH_VA:BOOL=OFF \
+                    -DWITH_VA_INTEL:BOOL=OFF \
+                    -DWITH_MFX:BOOL=OFF \
+                    -DWITH_GDAL:BOOL=OFF \
+                    -DWITH_GPHOTO2:BOOL=OFF \
+                    -DWITH_ITT:BOOL=OFF \
+                    -DWITH_PROTOBUF:BOOL=OFF \
+                    -DWITH_IMGCODEC_HDR:BOOL=OFF \
+                    -DWITH_IMGCODEC_SUNRASTER:BOOL=OFF \
+                    -DWITH_IMGCODEC_PXM:BOOL=OFF \
+                    -DWITH_IMGCODEC_PFM:BOOL=OFF \
+                    -DWITH_QUIRC:BOOL=OFF \
+                    \
+                    -DHAVE_COCOA:BOOL=ON \
+                    \
+                    -DBUILD_opencv_python2:BOOL=OFF \
+                    -DBUILD_opencv_python3:BOOL=OFF \
+                    -DOPENCV_PYTHON_SKIP_DETECTION:BOOL=OFF \
+                    -DPYTHON_EXECUTABLE:FILEPATH=/usr/bin/python \
+                    -DPYTHON_DEFAULT_EXECUTABLE:FILEPATH=/usr/bin/python
+
+universal_variant   no
+
+if { ${configure.ccache} } {
+    configure.args-replace \
+                        -DENABLE_CCACHE:BOOL=OFF \
+                        -DENABLE_CCACHE:BOOL=ON
+}
+
+platform darwin {
+    configure.args-append \
+                        -DZLIB_LIBRARY:FILEPATH=${prefix}/lib/libz.dylib
+
+    # do not opportunistically find other LAPACK implementations
+    # see cmake/OpenCVFindLAPACK.cmake
+    configure.args-append \
+                        -DLAPACK_IMPL=Apple \
+                        -DLAPACK_LIBRARIES="-framework Accelerate" \
+                        -DLAPACK_CBLAS_H=Accelerate/Accelerate.h \
+                        -DLAPACK_LAPACKE_H=Accelerate/Accelerate.h
+}
+
+variant opencl description {Enable OpenCL support} {
+    configure.args-replace \
+                        -DWITH_OPENCL:BOOL=OFF \
+                        -DWITH_OPENCL:BOOL=ON
+}
+
+variant eigen description {Enable eigen support} {
+    depends_lib-append  port:eigen3
+    configure.args-replace \
+                        -DWITH_EIGEN:BOOL=OFF \
+                        -DWITH_EIGEN:BOOL=ON
+    configure.args-append \
+                        -DEIGEN_INCLUDE_PATH:PATH=${prefix}/include/eigen3
+}
+
+variant gdal description {Include GDAL support} {
+    depends_lib-append  port:gdal
+    configure.args-replace \
+                        -DWITH_GDAL:BOOL=OFF \
+                        -DWITH_GDAL:BOOL=ON
+}
+
+variant openmp description {Include OpenMP support (untested)} {
+    configure.args-replace \
+                        -DWITH_OPENMP:BOOL=OFF \
+                        -DWITH_OPENMP:BOOL=ON
+}
+
+variant nonfree description {Include nonfree algorithms} {
+    configure.args-replace \
+                        -DOPENCV_ENABLE_NONFREE:BOOL=OFF \
+                        -DOPENCV_ENABLE_NONFREE:BOOL=ON
+}
+
+variant opencv_contrib description {Build OpenCV with extra modules (untested)} {
+    master_sites-append \
+                    https://github.com/${github.author}/${github.project}_contrib/tarball/${version}:${github.project}_contrib
+    distfiles-append \
+                    ${github.project}_contrib-${version}${extract.suffix}:${github.project}_contrib
+    checksums-append \
+                    ${github.project}_contrib-${version}${extract.suffix} \
+                    rmd160  edee305f9361720ae48043fa7d7325d0b2416af1 \
+                    sha256  83904a2feca4e6f48f43909fbf5e9bfe0985d408cdb9dc7c9e82d70bde71555d \
+                    size    60882932
+
+    post-extract {
+        move_gh_repo ${github.author}-${github.project}-* ${distname}
+        move_gh_repo ${github.author}-${github.project}_contrib-* ${github.project}_contrib-${version}
+    }
+
+    pre-patch {
+        delete      ${worksrcpath}/${github.project}_contrib
+        ln -s ${workpath}/${github.project}_contrib-${version} ${worksrcpath}/${github.project}_contrib
+    }
+
+    configure.args-append \
+                    -DOPENCV_EXTRA_MODULES_PATH=${worksrcpath}/${github.project}_contrib/modules
+}
+
+livecheck.type      regex
+livecheck.url       https://opencv.org/releases.html
+livecheck.regex     {/archive/([0-9.]+)[a-z]?\.[tz]}

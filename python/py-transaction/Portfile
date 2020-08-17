@@ -4,25 +4,44 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-transaction
-set real_name       transaction
-version             1.2.0
-python.versions     27 34 35 36
+version             3.0.0
+revision            0
+
 categories-append   databases
-maintainers         nomaintainer
-license             ZPL-2.1
-description         generic transaction implementation for Python
-long_description    \
-    ${description}
-
 platforms           darwin
+supported_archs     noarch
+license             ZPL-2.1
+maintainers         nomaintainer
 
-homepage            https://pypi.python.org/pypi/${real_name}
-master_sites        pypi:t/${real_name}/
-distname            ${real_name}-${version}
+description         generic transaction implementation for Python
+long_description    ${description}
 
-checksums           rmd160  a042c6f7f49f7aa7fb3ca1f71573cc7f917ca806 \
-                    sha256  41ac906c58c4cbf3635956f0cf5b4dee783dec285ac037852484f0a21181c773
+homepage            https://github.com/zopefoundation/transaction
+
+checksums           rmd160  1759e778a21451e4a35bed4d030841a0f553c405 \
+                    sha256  3b0ad400cb7fa25f95d1516756c4c4557bb78890510f69393ad0bd15869eaa2d \
+                    size    72319
+
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
-    depends_build       port:py${python.version}-setuptools
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-zopeinterface
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.rst LICENSE.txt \
+            COPYRIGHT.txt CHANGES.rst ${destroot}${docdir}
+    }
+
+    depends_test-append \
+                    port:py${python.version}-mock
+
+    test.run        yes
+
+    livecheck.type  none
 }

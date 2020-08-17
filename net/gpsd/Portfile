@@ -3,10 +3,12 @@
 PortSystem              1.0
 
 name                    gpsd
-
-license                 BSD
+version                 3.21
+revision                1
 categories              net
-maintainers             {ryandesign @ryandesign} {michaelld @michaelld} openmaintainer
+license                 BSD
+maintainers             {michaelld @michaelld} \
+                        {fwright.net:fw @fhgwright} openmaintainer
 platforms               darwin
 
 description             GPS service daemon
@@ -18,150 +20,77 @@ long_description        GPSD is a service daemon that handles GPSes and other \
                         includes a number of clients which can be run against \
                         a local GPSD or a GPSD on another machine.
 
-homepage                http://www.catb.org/${name}/
+homepage                https://gpsd.io
 
-subport gpsd-devel {}
+master_sites            savannah
+checksums               rmd160  3c521009854e2ae19bcd4f7fb0f0c33c334bcbc5 \
+                        sha256  65504c3af8d3b0cce3c07405b8815d7730d2d2be2da7d28d275f1a9c57c6fe91 \
+                        size    3984157
 
-if {${subport} eq ${name}} {
+livecheck.type          regex
+livecheck.url           https://download.savannah.gnu.org/releases/gpsd/
+livecheck.regex         "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"
 
-    # release
-    conflicts           gpsd-devel
 
-    version             3.17
-    revision            2
-    checksums           rmd160 7aeacd58b7374b392e691fc470dc9a644169ba8a \
-                        sha256 68e0dbecfb5831997f8b3d6ba48aed812eb465d8c0089420ab68f9ce4d85e77a \
-                        size   8755304
+# GPSD requires Python 2.6, 2.7, or 3.2+; don't use 2.6, 3.2, 3.3, or 3.4,
+# since we're weaning MP off of them.
 
-    master_sites        savannah
+set pythons_suffixes {27 35 36 37 38}
 
-    # change API to avoid conflict with mach's policy_t
-    # gps policy_t -> gps_policy_t.
-    # this change does not seem to conflict with dependent ports
-    patchfiles-append   patch-fix_policy_t.diff
-
-    patchfiles-append   patch-SConstruct.diff
-
-    # GPSD requires Python 2.6, 2.7, or 3.2+, but for now we just base
-    # it on 2.7.  The Python Portgroup breaks the C installs, so we
-    # can't use it until the port is split up between the C/C++ and
-    # Python code.
-
-    depends_run             port:python27
-    configure.python        ${prefix}/bin/python2.7
-
-    post-destroot {
-        reinplace "s|#!/usr/bin/env python|#!${configure.python}|" \
-            ${destroot}${prefix}/bin/gegps
-        reinplace "s|#!/usr/bin/env python|#!${configure.python}|" \
-            ${destroot}${prefix}/bin/gpscat
-        reinplace "s|#!/usr/bin/env python|#!${configure.python}|" \
-            ${destroot}${prefix}/bin/gpsfake
-        reinplace "s|#!/usr/bin/env python|#!${configure.python}|" \
-            ${destroot}${prefix}/bin/gpsprof
-        if {[variant_isset xgps]} {
-            reinplace "s|#!/usr/bin/env python|#!${configure.python}|" \
-                ${destroot}${prefix}/bin/xgps
-            reinplace "s|#!/usr/bin/env python|#!${configure.python}|" \
-                ${destroot}${prefix}/bin/xgpsspeed
-        }
-        system -W ${destroot}${prefix}/lib "install_name_tool -id ${prefix}/lib/libgps.dylib libgps.dylib"
-    }
-
-    livecheck.type          regex
-    livecheck.url           https://download.savannah.gnu.org/releases/gpsd/
-    livecheck.regex         "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"
-
-} else {
-
-    # devel
-    conflicts           gpsd
-
-    version             20180919
-    set commit          bbc75abc4f34b5bca4c0842986dffbf952d0077a
-    checksums           rmd160 aee030971a9fb559f5285a61fab536ac906fdc3a \
-                        sha256 e603aefd549f2a93576f1fbc39491073c32052955258eb180d9505654c7ece3a \
-                        size   9770512
-
-    master_sites        http://git.savannah.gnu.org/cgit/gpsd.git/snapshot
-    distname            ${name}-${commit}
-
-    # GPSD requires Python 2.6, 2.7, or 3.2+; don't use 2.6, 3.2, or
-    # 3.3, since we're weaning MP off of them.
-
-    set pythons_suffixes {27 34 35 36 37}
-
-    set pythons_ports {}
-    foreach s ${pythons_suffixes} {
-        lappend pythons_ports python${s}
-    }
-
-    foreach s ${pythons_suffixes} {
-        set p python${s}
-        set v [string index ${s} 0].[string index ${s} 1]
-        set i [lsearch -exact ${pythons_ports} ${p}]
-        set c [lreplace ${pythons_ports} ${i} ${i}]
-        variant ${p} description "Build ${name} to use Python ${v}" conflicts {*}${c} ""
-    }
-
-    # default to +python27
-    set selected_python_ver_no_dot "27"
-    foreach s ${pythons_suffixes} {
-        if {[variant_isset python${s}]} {
-            set selected_python_ver_no_dot ${s}
-        }
-    }
-    default_variants +python${selected_python_ver_no_dot}
-
-    # make sure -python27 isn't specified alone
-    set selected_python_ver_no_dot ""
-    foreach s ${pythons_suffixes} {
-        if {[variant_isset python${s}]} {
-            set selected_python_ver_no_dot ${s}
-        }
-    }
-    if {${selected_python_ver_no_dot} eq ""} {
-        ui_error "\n\nYou must select one of the Python variants: +python27, +python34, +python35, +python36, or +python37.\n"
-    return -code error "Invalid Python variant selection"
-    }
-
-    set selected_python_ver_with_dot [join [split ${selected_python_ver_no_dot} ""] .]
-
-    depends_run-append      port:python${selected_python_ver_no_dot}
-    configure.python        ${prefix}/bin/python${selected_python_ver_with_dot}
-
-    # fix Python executable to use
-    patchfiles-append patch-fix_py_exe.devel.diff
-    patch.pre_args -p1
-
-    post-patch {
-        foreach tf \
-            {SConstruct contrib/ntpshmviz contrib/ubxtool \
-             contrib/webgps.py contrib/zerk devtools/ais.py \
-             devtools/aivdmtable devtools/cycle_analyzer \
-             devtools/flocktest devtools/identify_failing_build_options.py \
-             devtools/regress-builder devtools/regressdiff devtools/sizes \
-             devtools/striplog devtools/tablegen.py \
-             devtools/test_json_validity.py devtools/uninstall_cleanup.py \
-             gegps gps/gps.py gpscat gpsfake gpsprof jsongen.py \
-             leapsecond.py maskaudit.py test_maidenhead.py test_misc.py \
-             valgrind-audit.py www/gps_report.cgi.in \
-             xgps xgpsspeed} {
-                reinplace "s|@MP_PY_EXE@|${configure.python}|" \
-                    ${worksrcpath}/${tf}
-            }
-    }
-
-    livecheck.type          regex
-    livecheck.version       ${commit}
-    livecheck.url           http://git.savannah.gnu.org/cgit/gpsd.git
-    livecheck.regex         "id=(\[0-9a-f\]*)'>HEAD"
+set pythons_ports {}
+foreach s ${pythons_suffixes} {
+    lappend pythons_ports python${s}
 }
+
+foreach s ${pythons_suffixes} {
+    set p python${s}
+    set v [string index ${s} 0].[string index ${s} 1]
+    set i [lsearch -exact ${pythons_ports} ${p}]
+    set c [lreplace ${pythons_ports} ${i} ${i}]
+    variant ${p} description "Build ${name} to use Python ${v}" conflicts {*}${c} ""
+}
+
+# default to +python27
+set pyver_no_dot "27"
+foreach s ${pythons_suffixes} {
+    if {[variant_isset python${s}]} {
+        set pyver_no_dot ${s}
+    }
+}
+default_variants +python${pyver_no_dot}
+
+# make sure -python27 isn't specified alone
+set pyver_no_dot ""
+foreach s ${pythons_suffixes} {
+    if {[variant_isset python${s}]} {
+        set pyver_no_dot ${s}
+    }
+}
+if {${pyver_no_dot} eq ""} {
+    ui_error "\n\nYou must select one of the Python variants (+pythonXY).\n"
+return -code error "Invalid Python variant selection"
+}
+
+set pyver_dotted [join [split ${pyver_no_dot} ""] .]
+
+# NOTE:  All Python dependencies which are conceptually depends_run actually
+# need to be depends_lib, since the build procedure references them, usually
+# just to verify their existence.
+#
+# The py-serial dependency is a "soft" dependency in that the programs that
+# use it can still operate with reduced functionality without it, but it's
+# a sufficiently lightweight dependency that it's not worth making optional.
+
+depends_lib-append      port:python${pyver_no_dot} \
+                        port:py${pyver_no_dot}-serial
+
+configure.python        ${prefix}/bin/python${pyver_dotted}
 
 depends_lib-append      port:ncurses
 depends_build-append    port:scons port:pkgconfig
 
 use_configure           no
+use_xcode               yes
 
 set cxx_stdlibflags {}
 if {[string match *clang* ${configure.cxx}]} {
@@ -172,31 +101,27 @@ build.cmd               ${prefix}/bin/scons
 build.target
 build.args              prefix=${prefix} \
                         target_python=${configure.python} \
+                        python_shebang=${configure.python} \
                         qt=no \
                         usb=no \
                         strip=no \
                         dbus_export=no \
                         xgps=no
-build.env-append        CC="${configure.cc} [get_canonical_archflags cc]" \
-                        CFLAGS="${configure.cflags}" \
-                        CXX="${configure.cxx} [get_canonical_archflags cxx] ${cxx_stdlibflags}" \
-                        CXXFLAGS="${configure.cxxflags}" \
-                        LDFLAGS="${configure.ldflags}"
+build.env-append        "CC=${configure.cc} [get_canonical_archflags cc]" \
+                        CFLAGS=${configure.cflags} \
+                        "CXX=${configure.cxx} [get_canonical_archflags cxx] ${cxx_stdlibflags}" \
+                        CXXFLAGS=${configure.cxxflags} \
+                        LDFLAGS=${configure.ldflags}
 
 # Allow the regression tests to be run via "port test gpsd".
 #
-# The speed of the daemon tests is highly dependent on the WRITE_PAD value.
-# Empirically, 200us seems to be adequate on a MacPro, and 500us seems to be
-# adequate on a PowerBook G4, but even 2ms is sometimes inadequate under 10.12,
-# so we use 5ms here.  If needed, this value can be overridden with
+# The speed of the daemon tests is highly dependent on the WRITE_PAD value,
+# but values that are too low may cause spurious test failures. Due to some
+# recent improvements, 1ms is now believed to be adequate on the Mac, and is
+# the current upstream default.  If needed, this value can be overridden with
 # WRITE_PAD=XXX on the command line, but only if WRITE_PAD is included in
 # extra_env in macports.conf.  In all cases, the WRITE_PAD value in use is
 # reported by the test framework and is visible with -v.
-#
-# Note also that the MacPorts sandbox doesn't allow ptys, so the daemon tests
-# report "gpsfake: ptys not available, falling back to UDP.", but still work.
-# This can be worked around by running "scons testregress" directly in
-# ${worksrcpath}, rather than running it via "port test".
 #
 # The test phase duplicates the arguments and environment (except WRITE_PAD)
 # from the build phase, mainly to avoid gratuitous rebuilds between the phases.
@@ -208,12 +133,10 @@ build.env-append        CC="${configure.cc} [get_canonical_archflags cc]" \
 test.run                yes
 test.cmd                ${build.cmd} -j${build.jobs}
 test.target             testregress
-set test.args           ${build.args}
-set test.env            ${build.env}
+test.args               {*}${build.args}
+test.env-append         {*}${build.env}
 if { [info exists ::env(WRITE_PAD)] } {
     test.env-append     WRITE_PAD=$::env(WRITE_PAD)
-} else {
-    test.env-append     WRITE_PAD=0.005
 }
 
 destroot.args           {*}${build.args}
@@ -225,50 +148,57 @@ destroot.env-append     {*}${destroot.destdir} {*}${build.env}
 #
 variant qt description {Build Qt4 bindings} {
     PortGroup               qt4 1.0
-    # The following two lines are a workaround for #50347
-    build.env-append        PKG_CONFIG_PATH=${qt_pkg_config_dir}
-    test.env-append         PKG_CONFIG_PATH=${qt_pkg_config_dir}
 
-    build.args-delete       qt=no
-    build.args-append       qt=yes
-    test.args-delete        qt=no
-    test.args-append        qt=yes
-    destroot.args-delete    qt=no
-    destroot.args-append    qt=yes
+    build.args-replace      qt=no           qt=yes
+    test.args-replace       qt=no           qt=yes
+    destroot.args-replace   qt=no           qt=yes
 }
 
 variant libusb \
 description {Include support for better USB device discovery} {
-    depends_lib-append      port:libusb
-    build.args-delete       usb=no
-    build.args-append       usb=yes
-    test.args-delete        usb=no
-    test.args-append        usb=yes
-    destroot.args-delete    usb=no
-    destroot.args-append    usb=yes
+    depends_lib-append      path:lib/libusb-1.0.dylib:libusb
+
+    build.args-replace      usb=no          usb=yes
+    test.args-replace       usb=no          usb=yes
+    destroot.args-replace   usb=no          usb=yes
 }
 
 variant dbus description {Include support for DBUS} {
     depends_lib-append      port:dbus-glib
-    build.args-delete       dbus_export=no
-    build.args-append       dbus_export=yes
-    test.args-delete        dbus_export=no
-    test.args-append        dbus_export=yes
-    destroot.args-delete    dbus_export=no
-    destroot.args-append    dbus_export=yes
+
+    build.args-replace      dbus_export=no  dbus_export=yes
+    test.args-replace       dbus_export=no  dbus_export=yes
+    destroot.args-replace   dbus_export=no  dbus_export=yes
 }
 
 variant xgps \
 description {Include xgps/xgpsspeed X11 clients (dependency-intensive)} {
-    depends_run-append      port:py27-cairo port:py27-gobject3 port:gtk3
-    build.args-delete       xgps=no
-    build.args-append       xgps=yes
-    test.args-delete        xgps=no
-    test.args-append        xgps=yes
-    destroot.args-delete    xgps=no
-    destroot.args-append    xgps=yes
+    depends_lib-append      port:py${pyver_no_dot}-cairo \
+                            port:py${pyver_no_dot}-gobject3 \
+                            port:gtk3
+
+    build.args-replace      xgps=no         xgps=yes
+    test.args-replace       xgps=no         xgps=yes
+    destroot.args-replace   xgps=no         xgps=yes
 }
 
 if {![variant_isset xgps]} {
     notes "The xgps variant is now needed to get the xgps and xgpsspeed programs."
+}
+
+
+# The gpsd-devel subport is obsolete as of 04-Jan-2020.
+# Handle it last so that it can override the dependencies.
+
+subport gpsd-devel {
+
+    PortGroup           obsolete 1.0
+
+    # Copy last pre-obsolete version, with revbump
+    git.branch          a4ecde71556018f6d7a70831165169fffd0cc3a1
+    version             20190817-[string range ${git.branch} 0 7]
+    revision            1
+
+    replaced_by         gpsd
+
 }

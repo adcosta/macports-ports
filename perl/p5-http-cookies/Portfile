@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         HTTP-Cookies 6.04
+perl5.branches      5.26 5.28 5.30
+perl5.setup         HTTP-Cookies 6.08 ../../authors/id/O/OA/OALDERS
 platforms           darwin
 maintainers         nomaintainer
 license             {Artistic-1 GPL}
@@ -13,8 +13,9 @@ supported_archs     noarch
 description         HTTP::Cookies - HTTP cookie jars
 long_description    ${description}
 
-checksums           rmd160  3ad2cca6826e9ad762ce017de699eefa9651fdb4 \
-                    sha256  0cc7f079079dcad8293fea36875ef58dd1bfd75ce1a6c244cd73ed9523eb13d4
+checksums           rmd160  91aea987abadb7c9b48d153722677b09dea5a942 \
+                    sha256  49ebb73576eb41063c04bc079477df094496deec805ae033f3be338c23c3af59 \
+                    size    41482
 
 if {${perl5.major} != ""} {
     depends_lib-append \

@@ -3,7 +3,7 @@
 PortSystem 1.0
 
 name        wtf
-version     20180816
+version     20200208
 categories  games
 license     public-domain
 maintainers nomaintainer
@@ -15,9 +15,9 @@ supported_archs noarch
 homepage    http://cvsweb.netbsd.org/bsdweb.cgi/src/games/wtf/
 master_sites     sourceforge:project/bsdwtf
 
-checksums           rmd160  0513c57ab2a73a85d77dfbc720540eba36144e8e \
-                    sha256  f3c2aa795a388aee5b9cbaa8f0c4636c1f49b29eeb463fef1de68194cea13e39 \
-                    size    27024
+checksums           rmd160  04ed920f494cadb76e4ec6da9e6603a64caa6ff4 \
+                    sha256  a5f9c8b4e7ec2b997ae6dc0c482f270a0482a3e9f3da385e98693cf63aaad97a \
+                    size    30052
 
 use_configure	no
 

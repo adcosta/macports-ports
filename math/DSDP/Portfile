@@ -5,7 +5,7 @@ PortGroup           muniversal 1.0
 
 name                DSDP
 version             5.8
-revision            5
+revision            6
 categories          math science
 platforms           darwin
 maintainers         nomaintainer
@@ -36,12 +36,12 @@ build.target        dsdpapi
 if { ![variant_isset universal] } {
     build.env-append                              \
         DSDPROOT=${worksrcpath}                   \
-        MP_ARCHFLAGS="${configure.cc_archflags}"
+        MP_ARCHFLAGS=${configure.cc_archflags}
 } else {
     foreach arch ${configure.universal_archs} {
         lappend merger_build_env(${arch})    \
             DSDPROOT=${worksrcpath}-${arch}  \
-            MP_ARCHFLAGS='-arch ${arch}'
+            "MP_ARCHFLAGS=-arch ${arch}"
     }
 }
 

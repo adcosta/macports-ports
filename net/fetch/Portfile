@@ -2,7 +2,7 @@ PortSystem 1.0
 
 name		fetch
 version		9.0.0-RELEASE
-revision 1
+revision 2
 categories	net
 maintainers	nomaintainer
 description	FreeBSD file fetching utility
@@ -19,8 +19,8 @@ checksums	md5 3788e294fbcf146495983a7dd6578ea3 \
 variant universal {}
 build.type	bsd
 build.env	CC=${configure.cc} \
-		CFLAGS="${configure.cppflags} ${configure.cflags} [get_canonical_archflags]" \
-		LDFLAGS="${configure.ldflags} [get_canonical_archflags]"
+		"CFLAGS=${configure.cppflags} ${configure.cflags} [get_canonical_archflags]" \
+		"LDFLAGS=${configure.ldflags} [get_canonical_archflags]"
 build.args	-DMK_OPENSSL
 worksrcdir	${name}
 use_configure	no

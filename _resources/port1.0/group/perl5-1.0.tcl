@@ -5,19 +5,16 @@
 #   subport will be created for each. e.g. p5.12-foo, p5.10-foo, ...
 # perl5.branches must be set in the portfile
 # perl5.default_branch: the branch used when you request p5-foo
-# perl5.use_search_cpan_org: if true use search.cpan.org instead of
-#    metacpan.org for livecheck and homepage. Default: false.
-options perl5.default_branch perl5.branches perl5.use_search_cpan_org
+options perl5.default_branch perl5.branches
 default perl5.default_branch {[perl5_get_default_branch]}
-default perl5.use_search_cpan_org {false}
 
 proc perl5_get_default_branch {} {
     global prefix perl5.branches
-    # use whatever ${prefix}/bin/perl5 was chosen, and if none, fall back to 5.26
+    # use whatever ${prefix}/bin/perl5 was chosen, and if none, fall back to 5.28
     if {![catch {set val [lindex [split [exec ${prefix}/bin/perl5 -V:version] {'}] 1]}]} {
         set ret [join [lrange [split $val .] 0 1] .]
     } else {
-        set ret 5.26
+        set ret 5.28
     }
     # if the above default is not supported by this module, use the latest it does support
     if {[info exists perl5.branches] && $ret ni ${perl5.branches}} {
@@ -134,7 +131,7 @@ set perl5.cpandir ""
 # perl5 group setup procedure
 proc perl5.setup {module vers {cpandir ""}} {
     global perl5.branches perl5.default_branch perl5.bin perl5.lib \
-           perl5.module perl5.moduleversion perl5.cpandir perl5.use_search_cpan_org \
+           perl5.module perl5.moduleversion perl5.cpandir \
            prefix subport name
 
     # define perl5.module
@@ -158,12 +155,8 @@ proc perl5.setup {module vers {cpandir ""}} {
     version             [perl5_convert_version ${perl5.moduleversion}]
     categories          perl
     
-    if {${perl5.use_search_cpan_org}} {
-        homepage        http://search.cpan.org/dist/${perl5.module}/
-    } else {
-        homepage        https://metacpan.org/pod/[string map {"-" "::"} ${perl5.module}]
-    }
-
+    homepage            https://metacpan.org/pod/[string map {"-" "::"} ${perl5.module}]
+    
     master_sites        perl_cpan:${perl5.cpandir}
     distname            ${perl5.module}-${perl5.moduleversion}
     dist_subdir         perl5
@@ -192,20 +185,28 @@ proc perl5.setup {module vers {cpandir ""}} {
         configure.cmd       ${perl5.bin}
         configure.env       PERL_AUTOINSTALL=--skipdeps
         configure.pre_args  Makefile.PL
-        if {[vercmp [macports_version] 2.5.3] <= 0} {
-            default configure.args {"INSTALLDIRS=vendor CC=\"${configure.cc}\" LD=\"${configure.cc}\""}
-        } else {
-            default configure.args {INSTALLDIRS=vendor CC=\"${configure.cc}\" LD=\"${configure.cc}\"}
-        }
+        default configure.args {INSTALLDIRS=vendor CC=\"${configure.cc}\" LD=\"${configure.cc}\"}
 
         # CCFLAGS can be passed in to "configure" but it's not necessarily inherited.
         # LDFLAGS can't be passed in (or if it can, it's not easy to figure out how).
         post-configure {
+            set extra_cflags [get_canonical_archflags cc]
+            set extra_ldflags [get_canonical_archflags ld]
+            if {${configure.sdkroot} ne ""} {
+                append extra_cflags " -isysroot${configure.sdkroot}"
+                append extra_ldflags " -Wl,-syslibroot,${configure.sdkroot}"
+            } elseif {${os.platform} eq "darwin"} {
+                append extra_cflags " -isysroot/"
+                append extra_ldflags " -Wl,-syslibroot,/"
+            }
             fs-traverse file ${configure.dir} {
                 if {[file isfile ${file}] && [file tail ${file}] eq "Makefile"} {
                     ui_info "Fixing flags in [string map "${configure.dir}/ {}" ${file}]"
-                    reinplace -locale C -q "/^CCFLAGS *=/s/$/ [get_canonical_archflags cc]/" ${file}
-                    reinplace -locale C -q "/^OTHERLDFLAGS *=/s/$/ [get_canonical_archflags ld]/" ${file}
+                    reinplace -locale C -q "/^CCFLAGS *=/s|$| ${extra_cflags}|" ${file}
+                    reinplace -locale C -q "/^OTHERLDFLAGS *=/s|$| ${extra_ldflags}|" ${file}
+                    # possible ExtUtils::MakeMaker bug: CC is set correctly in top-level
+                    # Makefile but not in subdirs. LD is correct in both.
+                    reinplace -locale C -q -E "s|^(CC *=).*|\\1 ${configure.cc}|" ${file}
                 }
             }
         }
@@ -233,14 +234,9 @@ proc perl5.setup {module vers {cpandir ""}} {
 
     livecheck.type      regexm
     
-    if {${perl5.use_search_cpan_org}} {
-        livecheck.url       http://search.cpan.org/dist/${perl5.module}/
-        livecheck.regex     >[quotemeta ${perl5.module}]-(\[^"\ \]+?)<
-    } else {
-        livecheck.url       https://fastapi.metacpan.org/v1/release/${perl5.module}/
-        livecheck.regex     \"name\" : \"[quotemeta ${perl5.module}]-(\[^"\]+?)\"
-    }
-
+    livecheck.url       https://fastapi.metacpan.org/v1/release/${perl5.module}/
+    livecheck.regex     \"name\" : \"[quotemeta ${perl5.module}]-(\[^"\]+?)\"
+    
     default livecheck.version {${perl5.moduleversion}}
 }
 
@@ -255,11 +251,7 @@ proc perl5.use_module_build {} {
     depends_lib-append  port:p${perl5.major}-module-build
 
     configure.pre_args  Build.PL
-    if {[vercmp [macports_version] 2.5.3] <= 0} {
-        default configure.args {"--installdirs=vendor --config cc=\"${configure.cc}\" --config ld=\"${configure.cc}\""}
-    } else {
-        default configure.args {--installdirs=vendor --config cc=\"${configure.cc}\" --config ld=\"${configure.cc}\"}
-    }
+    default configure.args {--installdirs=vendor --config cc=\"${configure.cc}\" --config ld=\"${configure.cc}\"}
 
     build.cmd           ${perl5.bin}
     build.pre_args      Build

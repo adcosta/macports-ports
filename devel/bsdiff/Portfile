@@ -32,10 +32,9 @@ patchfiles          patch-bspatch.c.diff \
 use_configure       no
 
 variant universal {}
-
-build.env-append    CC="${configure.cc}" \
-                    CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
-                    LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]"
+build.env-append    CC=${configure.cc} \
+                    "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]"
 
 destroot.destdir    PREFIX=${destroot}${prefix}
 

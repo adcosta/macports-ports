@@ -3,7 +3,12 @@
 PortSystem              1.0
 
 name                    webp
-version                 1.0.0
+version                 1.1.0
+revision                0
+checksums               rmd160  c84f99c0045b0f066fb8599225b340016039ade6 \
+                        sha256  98a052268cc4d5ece27f76572a7f50293f439c17a98e67c4ea0c7ed6f50ef043 \
+                        size    4033877
+
 categories              graphics science devel
 platforms               darwin
 maintainers             {ryandesign @ryandesign} openmaintainer
@@ -26,10 +31,6 @@ long_description        WebP is a new image format that provides lossy \
 
 homepage                https://developers.google.com/speed/webp/
 master_sites            http://downloads.webmproject.org/releases/webp/
-
-checksums               rmd160  ede348e5f06913f1b876e7704ea626807f637755 \
-                        sha256  84259c4388f18637af3c5a6361536d754a5394492f91be1abc2e981d4983225b \
-                        size    4023549
 
 depends_lib             port:giflib \
                         port:jpeg \
@@ -57,7 +58,7 @@ configure.args-append   --disable-sdl
 post-destroot {
     set docdir ${destroot}${prefix}/share/doc/${name}
     xinstall -d ${docdir}
-    xinstall -m 644 -W ${worksrcpath} \
+    xinstall -m 0644 -W ${worksrcpath} \
         AUTHORS \
         ChangeLog \
         COPYING \

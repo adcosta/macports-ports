@@ -2,47 +2,48 @@
 
 PortSystem              1.0
 PortGroup               github 1.0
+PortGroup               java 1.0
 
-github.setup            plantuml plantuml 1.2018.6 v
+github.setup            plantuml plantuml 1.2020.11 v
+revision                0
 categories              java editors
 platforms               darwin
 supported_archs         noarch
 license                 GPL-3+
 maintainers             nomaintainer
-
 description             PlantUML is a tool for generating UML diagrams from textual \
                         description.
 long_description        ${description}
-
 homepage                http://plantuml.com/
 
-checksums               rmd160  48858945917cc16899e4e08f247cdbd28cd3843c \
-                        sha256  69e23ed8a8cffbfea6ea3dc5815cfbed6a8e364117eb1ed7fe5e4c5db0d4bd5c \
-                        size    4394080
+checksums               rmd160  6d71695902455be81b7cab879af07c51feb07876 \
+                        sha256  038bbc9df6f94f33fb609456806f8e161e4b1ebbe03547f325989495ab6a4091 \
+                        size    5310503
 
 depends_build           bin:ant:apache-ant
-depends_lib             bin:java:kaffe
+
+java.version            1.7+
+java.fallback           openjdk11
 
 use_configure           no
 
 build.cmd               ant
 build.target            dist
 
-set wrapper             plantuml.sh
 set javadir             ${destroot}${prefix}/share/java
 set jarname             ${name}.jar
 
 post-extract {
-    file copy ${filespath}/${wrapper} ${worksrcpath}
+    copy ${filespath}/${name}.in ${worksrcpath}/${name}
 }
 
 post-patch {
     reinplace "s|__PLANTUML_LAUNCHER_PATH__|${prefix}/share/java/${jarname}|g" \
-        ${worksrcpath}/${wrapper}
+        ${worksrcpath}/${name}
 }
 
 destroot {
-    xinstall -d -m 755 ${javadir}
-    xinstall -m 755 ${worksrcpath}/${wrapper} ${destroot}${prefix}/bin
-    xinstall -m 644 ${worksrcpath}/${jarname} ${javadir}
+    xinstall -d -m 0755 ${javadir}
+    xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin
+    xinstall -m 0644 ${worksrcpath}/${jarname} ${javadir}
 }

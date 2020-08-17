@@ -6,8 +6,9 @@ PortGroup           select 1.0
 PortGroup           compilers 1.0
 PortGroup           muniversal 1.0
 
+# make sure to keep in sync with mpi-doc
 name                mpich
-version             3.2.1
+version             3.3.2
 # Note multiple revisions in Portfile (for various sub-ports to reduce builds)
 revision            0
 
@@ -15,7 +16,6 @@ license             BSD
 categories          science parallel net
 platforms           darwin
 maintainers         {eborisch @eborisch} \
-                    {sean @seanfarley} \
                     openmaintainer
 
 description         Message Passing Interface (MPI) Library
@@ -33,13 +33,13 @@ long_description    MPICH is a high-performance and widely portable\
                     through an easy-to-extend modular framework for other\
                     derived implementations.
 
-homepage            http://www.mpich.org/
+homepage            https://www.mpich.org/
 master_sites        ${homepage}static/downloads/${version}
 
 checksums \
-    rmd160  b830ba3f5cb5401c03898ad9abf87c60d5cf1e50 \
-    sha256  5db53bf2edfaa2238eb6a0a5bc3d2c2ccbfbb1badd79b664a1a919d2ce2330f1 \
-    size    11908154
+    rmd160  f8392f37058b488b1df90d43b69348662dc71454 \
+    sha256  4bfaf8837a54771d3e4922c84071ef80ffebddbb6971a006038d91ee7ef959b9 \
+    size    27311775
 
 livecheck.type      regex
 livecheck.regex     {href=.([0-9.p]+)/}
@@ -47,17 +47,17 @@ livecheck.url       ${homepage}/static/downloads/
 
 if {[string first "-devel" $subport] > 0} {
     name                mpich-devel
-    version             3.3b3
+    version             3.4a2
     revision            0
-    # To see 3.2 as newer than 3.2rcX
-    epoch               2
+    # To see 3.* as newer than 3.*(rc|b|etc.)
+    epoch               3
 
     ## Nightly versions. Disabled when alpha / beta / rc versions available.
     #set tag             g658ff0d9
     #distname            mpich-master-v${version}-${tag}
     #master_sites        ${homepage}static/downloads/nightly/master/mpich
     #livecheck.regex \
-        mpich-master-v(\[0-9.\]+-\[0-9\]+)-\[0-9a-z\]+${extract.suffix}
+    mpich-master-v(\[0-9.\]+-\[0-9\]+)-\[0-9a-z\]+${extract.suffix}
     #livecheck.url       ${master_sites}
 
     ## Alpha / rc versions (When available)
@@ -68,30 +68,41 @@ if {[string first "-devel" $subport] > 0} {
     livecheck.type      none
     # livecheck.regex     {href=.([0-9.abrcp]+)/}
     checksums \
-        rmd160  d92c79d1daec0614968872f4d6c292894c4f3395 \
-        sha256  73a881c065f798a47a7db1e0ad34ad16c4cb73bf7ebf34c97618aac152c416bf \
-        size    22784014
+        rmd160  73bc0fd6cb00ced9f15118decb8610758db8503e \
+        sha256  ca9b9a6d4d858f3f94d2ea1ed0b851fccbc6f2976eb08dfc3379be8c6278aa12 \
+        size    27708244
 }
 
 # As MPICH creates compiler wrappers, there are lots of
 # variants for what compiler the user would like to wrap.
 
-# Subport names and corresponding configure.compiler value
+# Please update the mpi portgroup whenever clist is changed.
+
+# Sub-ports names and corresponding configure.compiler value
 array set clist {
     clang   {clang}
-    clang37 {macports-clang-3.7}
-    clang39 {macports-clang-3.9}
-    clang40 {macports-clang-4.0}
     clang50 {macports-clang-5.0}
-    clang60 {macports-clang-6.0}
-    clang70 {macports-clang-7.0}
-    gcc44   {macports-gcc-4.4}
-    gcc48   {macports-gcc-4.8}
-    gcc49   {macports-gcc-4.9}
     gcc5    {macports-gcc-5}
     gcc6    {macports-gcc-6}
     gcc7    {macports-gcc-7}
     gcc8    {macports-gcc-8}
+}
+# gcc 4.x not supported on mac OS 10.12 (Darwin16) or newer
+if { ${os.major} < 16 } {
+    # Only provide gcc 4.9, as older versions do not build.
+    set clist(gcc49)   {macports-gcc-4.9}
+}
+# gcc 9+ only available on macOS10.7 (Darwin11) and newer
+if { ${os.major} > 10 } {
+    set clist(gcc9)    {macports-gcc-9}
+    set clist(gcc10)    {macports-gcc-10}
+}
+# clang 6+ only available on macOS10.9 (Darwin13) and newer
+if { ${os.major} > 12 } {
+    set clist(clang60) {macports-clang-6.0}
+    set clist(clang70) {macports-clang-7.0}
+    set clist(clang80) {macports-clang-8.0}
+    set clist(clang90) {macports-clang-9.0}
 }
 
 foreach key [array name clist] {
@@ -113,9 +124,9 @@ configure.args      --disable-dependency-tracking    \
                     --enable-cache                   \
                     --enable-cxx                     \
                     --enable-fast=O2                 \
-                    --enable-nemesis-shm-collectives \
                     --enable-shared                  \
                     --enable-versioning              \
+                    --enable-nemesis-shm-collectives \
                     --with-device=ch3:nemesis        \
                     --with-pm=hydra                  \
                     --with-thread-package=posix      \
@@ -127,6 +138,15 @@ variant threads description {Build with full thread support} {
 
 platform darwin {
     configure.args-append   --enable-timer-type=mach_absolute_time
+
+    if {${os.major} < 12} {
+        # MPICH requires OpenCL version 1.2, which was not introduced until OS X Mountain Lion
+        configure.args-append --enable-opencl=no
+    }
+
+    if {${name} ne ${subport}} {
+        patchfiles-append       patch-no_qmkshrobj.diff
+    }
 }
 
 # We're making compiler wrappers here... don't default to -O2 for wrappers.
@@ -181,12 +201,6 @@ if {${subport} != ${name}} {
         --sysconfdir=${prefix}/etc/${name}-${cname} \
         --program-suffix=-${name}-${cname} \
         --includedir=${prefix}/include/${name}-${cname}
-
-    # upstream report:
-    #    https://lists.mpich.org/pipermail/discuss/2017-November/005350.html
-    if {[string first "-devel" $subport] < 0} {
-        patchfiles-append patch-pkt_CTS_handler.diff
-    }
 
     # avoid dependency on port:bash
     configure.env-append \
@@ -287,15 +301,21 @@ if {${subport} != ${name}} {
 
     if { [string first gcc $cname] == 0 } {
         append long_description " AND FORTRAN COMPILERS"
-        revision                5
-        configure.args-delete   --disable-fortran
-        configure.args-append   --enable-fortran
+        revision                0
+        configure.args-replace  --disable-fortran \
+                                --enable-fortran
         select.file             ${filespath}/${name}-${cname}-fortran
         variant fortran description {
             Stub : fortran always enabled for gcc-based version
         } {}
         default_variants-append     +fortran
 
+        if {${cname} eq "gcc10"} {
+            # see https://lists.mpich.org/pipermail/discuss/2020-January/005862.html
+            # see https://github.com/pmodels/mpich/issues/4300
+            # see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91556
+            configure.fflags-append -fallow-argument-mismatch
+        }
 
         if {[ variant_isset tuned ] && ${os.major} >= 14} {
             if {![ file exists ${prefix}/bin/clang ]} {
@@ -315,16 +335,20 @@ if {${subport} != ${name}} {
             configure.cflags-append     -Wa,-q
             configure.cxxflags-append   -Wa,-q
         }
+
+        # GCC C++ always uses libstdc++
+        # see https://trac.macports.org/ticket/59185
+        configure.cxx_stdlib libstdc++
     } else {
         append long_description " (AND THE FORTRAN COMPILER SELECTED BY THE VARIANT, IF ANY)"
-        revision                4
+        revision                0
 
         compilers.choose   fc f77 f90
         compilers.setup    default_fortran
 
         if {[fortran_variant_isset]} {
-            configure.args-delete   --disable-fortran
-            configure.args-append   --enable-fortran
+            configure.args-replace  --disable-fortran \
+                                    --enable-fortran
             select.file             ${filespath}/${name}-${cname}-fortran
 
             # at least currently, the Fortran variants gccX and g95 match the name of the ports
@@ -332,6 +356,13 @@ if {${subport} != ${name}} {
 
             if {[variant_isset g95]} {
                 configure.args-append lt_cv_ld_force_load=no
+            }
+
+            if {[variant_isset gcc10]} {
+                # see https://lists.mpich.org/pipermail/discuss/2020-January/005862.html
+                # see https://github.com/pmodels/mpich/issues/4300
+                # see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=91556
+                configure.fflags-append -fallow-argument-mismatch
             }
         }
     }
@@ -361,32 +392,38 @@ notes "
 
 "
 
-    if {[variant_isset gcc5]} {
+    if {[variant_isset gcc48] ||
+        [variant_isset gcc49] ||
+        [variant_isset gcc5] ||
+        [variant_isset gcc6] ||
+        [variant_isset gcc7] ||
+        [variant_isset gcc8] ||
+        [variant_isset gcc9] } {
         set DEFAULT_MSG "
-NOTE: Default fortran changed to +gcc6; consider switching variants to enable
+NOTE: Default fortran changed to +gcc10; consider switching variants to enable
 pre-built packages for ${subport} by running:
-  \"sudo port clean ${subport} && sudo port upgrade ${subport} +gcc6-gcc5\"
+\"sudo port clean ${subport} && sudo port upgrade ${subport} +gcc10 -[gcc_variant_name]\"
 "
         notes-append    ${DEFAULT_MSG}
 
         pre-fetch {
             ui_msg ${DEFAULT_MSG}
             system "sleep 3"
-            ui_msg "Continuing with local +gcc5 build."
+            ui_msg "Continuing with local build."
         }
     }
 
     variant gforker description {
         Use gforker process manager instead of the default hydra
     } {
-        configure.args-append   --with-pm=gforker
-        configure.args-delete   --with-pm=hydra
+        configure.args-replace  --with-pm=hydra \
+                                --with-pm=gforker
     }
 
     variant tuned description {Build with more optimizations} {
-        configure.args-delete   --enable-fast=O2
-        configure.args-append   --enable-fast=all \
-                                MPICHLIB_CFLAGS='-fomit-frame-pointer -O2'
+        configure.args-replace  --enable-fast=O2 \
+                                --enable-fast=all
+        configure.args-append   MPICHLIB_CFLAGS='-fomit-frame-pointer -O2'
     }
 } else {
     depends_lib-append      port:$name-default

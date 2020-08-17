@@ -4,9 +4,9 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        mitsuhiko flask-sqlalchemy 2.3.1
+github.setup        pallets flask-sqlalchemy 2.4.4
 
-name                py-flask-sqlalchemy
+name                py-${name}
 categories-append   www
 platforms           darwin
 supported_archs     noarch
@@ -20,11 +20,12 @@ long_description    \
     simplify using SQLAlchemy with Flask by providing useful defaults and extra \
     helpers that make it easier to accomplish common tasks.
 
-homepage            https://pythonhosted.org/Flask-SQLAlchemy/
-checksums           rmd160  98461a11f7460a4f7fe2e3b0d6dcee9286f32499 \
-                    sha256  d3fe0ae672b0d1e34348482adf781e7af36b60e005347154fbe7594199e33457
+homepage            https://flask-sqlalchemy.palletsprojects.com/
+checksums           rmd160  5c493b912057c2f461628d1973c166e22587ffef \
+                    sha256  38cb910e652f6a45a8735321211fb6fc70a1a0c9fcb5b84bb2d33bd36929aff7 \
+                    size    131897
 
-python.versions     27 34 35 36
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools

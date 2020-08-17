@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           github 1.0
 
 # UPDATE THESE IN SYNC!
-set version         2018-10-16T23-25-25Z
-set commit          b7e87b623d835fde3283d61085037004325f66a3 
+set version         2020-07-31T23-34-13Z
+set commit          6a98216c53b36d942ed77311338e4e93e391b902
 
 set relversion      [regsub {(T..)-(..)-(..Z)} $version {\1:\2:\3}]
 # This is not used for fetching, but is compiled into the executable
@@ -23,9 +23,9 @@ long_description \
 license             Apache-2
 
 checksums \
-    rmd160  a96931b8e193f8924e19048830d20959c3a9e088 \
-    sha256  dd57adf9a885fcfdf0b3ba4a29246ec30f8ac1ea79c11657e3f5ab83ee490b0d \
-    size    1748480
+    rmd160  6fa4566e6c26353a9747757e57f96b11aa8d42bf \
+    sha256  00be34b1ca0be24c08099f9d77bda0b288b6a6270986de2838c84e33f0f9c11f \
+    size    398114
 
 set goproj          github.com/${github.author}/${github.project}
 
@@ -35,6 +35,10 @@ platforms           darwin
 use_configure       no
 worksrcdir          src/${goproj}
 
+variant altname description "Rename mc to minio-mc to avoid name conflict" {
+    conflicts-delete    mc
+}
+
 post-extract {
     xinstall -d ${workpath}/src/github.com/${github.author}
     move ${workpath}/mc-${github.version} \
@@ -42,8 +46,8 @@ post-extract {
 }
 
 build {
-    system -W ${worksrcpath} "GOPATH=${workpath} \
-      ${prefix}/bin/go build -v -o ${workpath}/${github.project} \
+    system -W ${worksrcpath} "GOPATH=${workpath} GO111MODULE=on CGO_ENABLED=0  \
+      ${prefix}/bin/go build -tags kqueue -v -o ${workpath}/${github.project} \
       -ldflags '-X ${goproj}/cmd.Version=${relversion} \
                 -X ${goproj}/cmd.ReleaseTag=RELEASE.${version} \
                 -X ${goproj}/cmd.CommitID=${commit} \
@@ -51,9 +55,15 @@ build {
 }
 
 destroot {
-    xinstall ${workpath}/mc ${destroot}${prefix}/bin
+    if {[variant_isset altname]} {
+        set instname    minio-mc
+    } else {
+        set instname    mc
+    }
 
-    set docdir ${prefix}/share/doc/mc
+    xinstall ${workpath}/mc ${destroot}${prefix}/bin/${instname}
+
+    set docdir ${prefix}/share/doc/${instname}
     xinstall -d ${destroot}${docdir}
     xinstall -m 644 -W ${worksrcpath} \
         README.md LICENSE NOTICE ${destroot}${docdir}

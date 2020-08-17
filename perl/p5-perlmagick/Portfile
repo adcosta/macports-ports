@@ -6,10 +6,13 @@ PortGroup           perl5 1.0
 # Keep relevant lines in sync between ImageMagick and p5-perlmagick.
 
 epoch               1
-perl5.branches      5.26
-perl5.setup         PerlMagick 6.9.9-40
-set reasonable_version \
-                    [lindex [split ${version} -] 0]
+perl5.branches      5.26 5.28 5.30
+perl5.setup         PerlMagick 6.9.11-25
+revision            0
+checksums           rmd160  9dd857550413560a4a02d35e48a66f6ec2bed420 \
+                    sha256  3372075771cdaccea6dafd44dda5dc98560f3b8a4d062475e60d7cf52e3f9622 \
+                    size    9317604
+
 set my_name         ImageMagick
 maintainers         {ryandesign @ryandesign}
 description         Perl extension for calling ImageMagick's libMagick methods
@@ -18,30 +21,28 @@ license             Apache-2
 platforms           darwin
 use_xz              yes
 
-# we use the ImageMagick distribution version of PerlMagick to
-# ensure it will always match ImageMagick version installed
+# We use the ImageMagick distribution version of PerlMagick to
+# ensure it will always match the ImageMagick version.
 
-master_sites        http://www.imagemagick.org/download/ \
+homepage            https://legacy.imagemagick.org/script/perl-magick.php
+master_sites        https://imagemagick.org/download/ \
                     http://mirror.checkdomain.de/imagemagick/ \
                     ftp://ftp.u-aizu.ac.jp/pub/graphics/image/ImageMagick/imagemagick.org/ \
-                    ftp://ftp.sunet.se/pub/multimedia/graphics/ImageMagick \
-                    ftp://sunsite.icm.edu.pl/packages/ImageMagick
+                    ftp://sunsite.icm.edu.pl/packages/ImageMagick/
 
 dist_subdir         ImageMagick
 distname            ${my_name}-${version}
 
-checksums           rmd160  d01d39b0da259c1296acaa37867f1a428928b72e \
-                    sha256  62f25d46bfbcffe00b84e167994d593868a9a47d4defc489a429cae1d6aab9f7 \
-                    size    8919136
-
 if {${perl5.major} != ""} {
 depends_lib-append  port:ImageMagick
+
+patchfiles          no-usr-include-ImageMagick.patch
 
 configure.dir       ${worksrcpath}/PerlMagick
 build.dir           ${configure.dir}
 
 pre-configure {
-    system -W ${worksrcpath} "CC=${configure.cc} CXX=${configure.cxx} ./configure --prefix=${prefix} --disable-openmp --with-quantum-depth=16 --with-perl=${perl5.bin}"
+    system -W ${worksrcpath} "CC=${configure.cc} CXX=${configure.cxx} ./configure --prefix=${prefix} --disable-openmp --with-quantum-depth=16 --with-perl=${perl5.bin} --without-gcc-arch"
     system -W ${worksrcpath} "make perl-sources"
 }
 
@@ -49,8 +50,7 @@ use_parallel_build  no
 
 livecheck.type      none
 } else {
-livecheck.version   ${reasonable_version}
 livecheck.type      regex
 livecheck.url       [lindex ${master_sites} 0]
-livecheck.regex     ${my_name}-(6(?:\\.\\d+)*)(?:-\\d+)?
+livecheck.regex     ${my_name}-(6(?:\\.\\d+)+(?:-\\d+)?)\.tar
 }

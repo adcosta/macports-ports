@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-jupyterlab
-version             0.34.12
+version             2.2.4
 revision            0
 categories-append   devel
 platforms           darwin
 license             BSD
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -22,33 +22,18 @@ long_description    JupyterLab enables you to work with documents and \
                     terminals, and custom components in a flexible, \
                     integrated, and extensible manner.
 
-homepage            http://jupyter.org
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+homepage            https://jupyter.org/
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  9670f03698b694b419651a43f636d525cd6e1701 \
-                    sha256  7d8378d19a0ae173e91a493db996c37828b410b7ee556da21a153486168ecf87 \
-                    size    9554622
+checksums           rmd160  016b1f176ff42427d076f12aa21caba1f58a4bcb \
+                    sha256  e9d26c4c1cf4f7760dfa9ccd3fd5ea5027ae2767f22c7766dbb2fbb5e5dfcd4b \
+                    size    8519711
 
 if {${name} ne ${subport}} {
-    depends_lib-append  port:py${python.version}-ipython_genutils \
-                        port:py${python.version}-jupyterlab_launcher \
-                        port:py${python.version}-notebook
-
-    if {${python.version} < 36} {
-        version             0.33.12
-        revision            0
-        distname            ${python.rootname}-${version}
-        checksums           rmd160  4fe0074a1202cbc3833d1a85a3b8b9c5c97701c2 \
-                            sha256  04a14b38b218c87731b519ff0f7e133b28a613ad944617ac7e07480d6a36eb5f \
-                            size    9681748
-
-        if {${python.version} == 27} {
-            depends_lib-append  port:py${python.version}-futures \
-                                port:py${python.version}-subprocess32
-        }
-    }
+    depends_lib-append  port:py${python.version}-setuptools \
+                        port:py${python.version}-notebook \
+                        port:py${python.version}-tornado \
+                        port:py${python.version}-jupyterlab_server \
+                        port:py${python.version}-jinja2
 
     build.args-append   --skip-npm
 
@@ -56,4 +41,11 @@ if {${name} ne ${subport}} {
                         --skip-npm
 
     livecheck.type      none
+}
+
+foreach {old new} {27 37 35 37 36 37} {
+    subport py${old}-${python.rootname} "
+        replaced_by py${new}-${python.rootname}
+        PortGroup obsolete 1.0
+    "
 }

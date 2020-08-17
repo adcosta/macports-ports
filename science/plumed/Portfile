@@ -2,14 +2,11 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
-# Notice that this rules out gcc variants.
-# See https://github.com/macports/macports-ports/pull/1252
-PortGroup           cxx11 1.1
 PortGroup           mpi 1.0
 PortGroup           linear_algebra 1.0
 PortGroup           debug 1.0
 
-github.setup        plumed plumed2 2.4.3 v
+github.setup        plumed plumed2 2.6.1 v
 name                plumed
 
 categories          science
@@ -28,10 +25,13 @@ platforms           darwin
 
 homepage            http://www.plumed.org/
 
-checksums           rmd160  75a56b958c3d1d64cd73011baa9ca9e5566ecada \
-                    sha256  2bcedb4576da0b24d513d2c9125abeeaff134a6e4935a8dae3af633b2940666a \
-                    size    62368138
+checksums           rmd160  be0480e4ea8405d02151305799e1994e62f39239 \
+                    sha256  8d196b01d9b06c784d0c7a57e2817faa01c8449b505bf6dbe232ed882c249110 \
+                    size    75229530
 
+# Enable optional features.
+# --enable-asmjit:        Compile internal asmjit. Notice that internal asmjit is protected in
+#                         PLUMED namespace so will not collide with other asmjit implementations.
 # Disable additional features.
 # --disable-doc:          Do not create documentation, and avoid searching for Doxygen.
 # --disable-libsearch:    Avoid searching libraries using their default names.
@@ -41,11 +41,17 @@ checksums           rmd160  75a56b958c3d1d64cd73011baa9ca9e5566ecada \
 # --disable-static-patch: Avoid a number of tests that are only required when linking plumed
 #                         statically to an MD code.
 # --disable-mpi:          Do not search for MPI compiler (replaced when enabling mpi, see below)
+# --disable-python:       Python wrappers will be installed with a separate python port
 configure.args-append \
+                    --enable-asmjit \
                     --disable-doc \
                     --disable-libsearch \
                     --disable-static-patch \
-                    --disable-mpi
+                    --disable-mpi \
+                    --disable-python
+
+# install bash completions
+configure.args-append BASH_COMPLETION_DIR=${prefix}/share/bash-completion/completions
 
 # Hardcode path for libplumedKernel.dylib.
 # This allows to patch MD codes using the --runtime option but using as
@@ -55,6 +61,8 @@ configure.args-append \
 configure.cppflags-append "-D__PLUMED_DEFAULT_KERNEL=${prefix}/lib/libplumedKernel.dylib"
 
 compilers.choose    cc cxx
+compiler.cxx_standard  2011
+
 mpi.setup
 
 # To enable mpi, replace a configure flag
@@ -76,9 +84,9 @@ configure.cxxflags-replace -Os -O3
 # Library names are specified here to make sure that
 # only requested packages are linked.
 configure.ldflags-append \
-                    -lmatheval -lxdrfile -lz -lgsl
-depends_lib-append  port:gsl \
-                    port:libmatheval \
+                    -lxdrfile -lz -lgsl
+depends_lib-append  port:gawk \
+                    port:gsl \
                     port:xdrfile \
                     port:zlib
 
@@ -107,21 +115,14 @@ pre-configure {
 # plumed-devel subport
 # This subport installs the developer version
 subport plumed-devel {
-    github.setup        plumed plumed2 60c3d2b6b9f4c4ba5af4131f3c7e2644b40de1db
-    version             2.5-20181008
+    github.setup        plumed plumed2 6e28005abefb168b871ed5ae01a730cb4ed1741e
+    version             2.7-20200708
     description         ${description} (development version)
     long_description    ${long_description} (development version)
     conflicts plumed
-    checksums           rmd160  254b79514cc93cb50530704cf635b84032a06877 \
-                        sha256  8a60e9816171286db23c0f658ece889d8438ece7877be18ba8d8aca6aac32757 \
-                        size    66988569
-    configure.ldflags-delete -lmatheval
-    depends_lib-delete       port:libmatheval
-# plumed 2.5 supports python. However, I disable it here since it is
-# not correctly integrated with MacPorts yet
-    configure.args-append --disable-python
-# install bash completions
-    configure.args-append BASH_COMPLETION_DIR=${prefix}/share/bash-completion/completions
+    checksums           rmd160  5e3d5a8a642b7fd3ab3d2cd3ae893ef8877a2620 \
+                        sha256  186f39652e89307ab27f52d96f4596843b9c9317b9996b083c9e8600c8a07602 \
+                        size    99936155
 }
 
 # Allow running tests from MacPorts

@@ -2,9 +2,10 @@
 
 PortSystem          1.0
 PortGroup           cxx11 1.1
+PortGroup           compiler_blacklist_versions 1.0
 
 name                geos
-version             3.7.0
+version             3.8.1
 revision            0
 categories          science math gis
 platforms           darwin
@@ -24,11 +25,11 @@ master_sites        http://download.osgeo.org/geos/
 
 use_bzip2           yes
 
-checksums           rmd160  3e3ea84b5b7e81f7e0c483bdbe3d7ad9417e2da9 \
-                    sha256  4fbf41a792fd74293ab59e0a980e8654cd411a9d45416d66eaa12d53d1393fd7 \
-                    size    2028814
+checksums           rmd160  16b9b4dba1c772c561bace8e3e7c514f78fd4037 \
+                    sha256  4258af4308deb9dbb5047379026b4cd9838513627cb943a44e16c40e42ae17f7 \
+                    size    2505407
 
-compiler.blacklist  llvm-gcc-4.2 macports-llvm-gcc-4.2
+compiler.blacklist  llvm-gcc-4.2 macports-llvm-gcc-4.2 {clang < 600}
 
 use_parallel_build  yes
 
@@ -36,13 +37,11 @@ post-destroot {
     set docdir ${prefix}/share/doc/${name}
     xinstall -d ${destroot}${docdir}
     xinstall -m 644 -W ${worksrcpath} AUTHORS COPYING NEWS \
-        TODO ${destroot}${docdir}
+        ${destroot}${docdir}
 }
 
 test.run            yes
 test.cmd            make
 test.target         check
 
-livecheck.type      regex
-livecheck.url       ${homepage}
-livecheck.regex     {geos-(\d+(?:\.\d+)*)}
+livecheck.regex     {geos-(\d+(?:\.\d+)*)\.[tz]}

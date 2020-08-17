@@ -3,45 +3,34 @@
 PortSystem          1.0
 PortGroup           python 1.0
 
-set _name           requests-mock
-set _n              [string index ${_name} 0]
+name                py-requests-mock
+version             1.8.0
+revision            0
 
-name                py-${_name}
-version             1.5.2
 platforms           darwin
+supported_archs     noarch
 license             Apache-2
-
 maintainers         {petr @petrrr} openmaintainer
 
 description         Mock out responses from the requests package
-
-long_description    \
-    ${_name}provides a building block to stub out the HTTP requests portions \
-    of your testing code. 
-
+long_description    ${python.rootname} provides a building block to stub out the \
+                    HTTP requests portions of your testing code.
 
 homepage            https://requests-mock.readthedocs.io/
 
-distname            ${_name}-${version}
-master_sites        pypi:${_n}/${_name}/
+checksums           sha256  e68f46844e4cee9d447150343c9ae875f99fa8037c6dcf5f15bf1fe9ab43d226 \
+                    rmd160  60952e442286478f73da16567cd0108b29c45cb1 \
+                    size    59794
 
-checksums           rmd160  d94c35439b7804dc3379c10cb0bddeda9107c2ea \
-                    sha256  7a5fa99db5e3a2a961b6f20ed40ee6baeff73503cf0a553cc4d679409e6170fb \
-                    size    47581
-
-python.versions     27 36 37
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append \
+                        port:py${python.version}-pbr \
                         port:py${python.version}-setuptools
 
     depends_lib-append  port:py${python.version}-requests \
-                        port:py${python.version}-pbr \
                         port:py${python.version}-six
 
     livecheck.type      none
-} else {
-    livecheck.type  regex
-    livecheck.url   https://pypi.python.org/pypi/${_name}/json
-    livecheck.regex "\"${_name}-(\[.\\d\]+)\\${extract.suffix}\""
 }

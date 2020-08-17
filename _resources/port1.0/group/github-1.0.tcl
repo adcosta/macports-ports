@@ -4,7 +4,7 @@
 #
 # Documentation:
 # https://guide.macports.org/#reference.portgroup.github
-# 
+#
 # Documentation (sources):
 # https://github.com/macports/macports-guide/blob/master/guide/xml/portgroup-github.xml
 
@@ -20,10 +20,8 @@ default github.raw {https://raw.githubusercontent.com/${github.author}/${github.
 options github.master_sites
 default github.master_sites {${github.homepage}/tarball/${git.branch}}
 
-default master_sites {${github.master_sites}}
-
 options github.tarball_from
-default github.tarball_from tags
+default github.tarball_from tarball
 option_proc github.tarball_from handle_tarball_from
 proc handle_tarball_from {option action args} {
     global github.author github.project github.master_sites git.branch github.homepage
@@ -37,8 +35,14 @@ proc handle_tarball_from {option action args} {
             releases {
                 github.master_sites ${github.homepage}/releases/download/${git.branch}
             }
-            tags {
+            archive {
+                github.master_sites ${github.homepage}/archive/${git.branch}
+            }
+            tarball {
                 github.master_sites ${github.homepage}/tarball/${git.branch}
+            }
+            tags {
+                return -code error "the value \"tags\" is deprecated for github.tarball_from. Please use \"tarball\" instead."
             }
             default {
                 return -code error "invalid value \"${args}\" for github.tarball_from"
@@ -51,11 +55,7 @@ options github.livecheck.branch
 default github.livecheck.branch master
 
 options github.livecheck.regex
-if {[vercmp [macports_version] 2.5.3] <= 0} {
-    default github.livecheck.regex {{([^"]+)}}
-} else {
-    default github.livecheck.regex {(\[^"]+)}
-}
+default github.livecheck.regex {(\[^"]+)}
 
 proc github.setup {gh_author gh_project gh_version {gh_tag_prefix ""} {gh_tag_suffix ""}} {
     global extract.suffix github.author github.project github.version github.tag_prefix github.tag_suffix
@@ -72,9 +72,10 @@ proc github.setup {gh_author gh_project gh_version {gh_tag_prefix ""} {gh_tag_su
     }
 
     version                 ${github.version}
-    homepage                ${github.homepage}
+    default homepage        ${github.homepage}
     git.url                 ${github.homepage}.git
     git.branch              [join ${github.tag_prefix}]${github.version}[join ${github.tag_suffix}]
+    default master_sites    {${github.master_sites}}
     distname                ${github.project}-${github.version}
 
     post-extract {

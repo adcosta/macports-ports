@@ -2,11 +2,12 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
+PortGroup           meson 1.0
 
-github.setup        xkbcommon libxkbcommon 0.8.2 xkbcommon-
-checksums           rmd160  237ec97a935b44b0277d4d8bad699b73ece75557 \
-                    sha256  7ab8c4b3403d89d01898066b72cb6069bddeb5af94905a65368f671a026ed58c \
-                    size    644040
+github.setup        xkbcommon libxkbcommon 0.10.0 xkbcommon-
+checksums           rmd160  9c31510f78ca9b39d839b667ea7de01bc5d49981 \
+                    sha256  57c3630cdc38fb4734cd57fa349e92244f5ae3862813e533cedbd86721a0b6f2 \
+                    size    383788
 
 categories          devel
 platforms           darwin
@@ -15,7 +16,7 @@ license             MIT
 
 description         library to handle keyboard descriptions
 
-long_description    ${name} is a ${description}, including loading them from \
+long_description    ${name} is a {*}${description}, including loading them from \
                     disk, parsing them and handling their state. It's mainly \
                     meant for client toolkits, window systems, and other \
                     system applications. It is also used by some XCB \
@@ -25,20 +26,49 @@ homepage            https://xkbcommon.org
 master_sites        ${homepage}/download/
 use_xz              yes
 
-depends_build       port:bison \
+depends_build-append \
+                    port:bison \
                     port:pkgconfig \
                     port:xkeyboard-config \
                     port:xorg-util-macros
 
-configure.args      --disable-docs \
-                    --disable-silent-rules \
-                    --disable-x11 \
-                    --without-doxygen
+configure.args      -Ddefault_library=both \
+                    -Denable-docs=false \
+                    -Denable-wayland=false \
+                    -Denable-x11=false
 
-#subport ${name}-x11 {
-#    depends_lib     port:${name} \
-#                    port:xorg-libxcb
-#
-#    configure.args-replace \
-#                    --disable-x11 --enable-x11
-#}
+if {${subport} eq ${name}} {
+    revision        0
+}
+
+subport ${name}-x11 {
+    revision        0
+
+    PortGroup       legacysupport 1.0
+
+    # strnlen
+    legacysupport.newest_darwin_requires_legacy 10
+
+    depends_lib     port:${name} \
+                    port:xorg-libxcb
+
+    configure.args-replace \
+                    -Denable-x11=false -Denable-x11=true
+
+    post-destroot {
+        # Upstream wants packagers to package libxkbcommon-x11 separately
+        # from libxkbcommon (see PACKAGING) yet refuses to provide a way
+        # to do so, so we have to delete everything libxkbcommon already
+        # provides manually.
+        # https://github.com/xkbcommon/libxkbcommon/issues/75
+        fs-traverse item ${destroot} {
+            if {![file isdirectory ${item}] && ![string match *x11* [file tail ${item}]]} {
+                delete ${item}
+            }
+        }
+    }
+}
+
+if {${subport} ne ${name}} {
+    livecheck.type  none
+}

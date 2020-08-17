@@ -20,7 +20,7 @@ long_description \
 
 homepage            https://www.riverbankcomputing.com/software/sip/intro
 
-version             4.19.13
+version             4.19.24
 
 # bumped the epoch to revert from 4.19.10 to 4.19.8. The former caused
 # configuration errors in py*-qscitilla-qt5 and py*-pyqt4, and
@@ -36,6 +36,8 @@ epoch               1
 # removed or the order changed then the major number must be
 # incremented and the minor number set to 0.
 #
+# SIP 4.19.[19-24] provides SIP API 12.7
+# SIP 4.19.[14-18] provides SIP API 12.6
 # SIP 4.19.[12-13] provides SIP API 12.5
 # SIP 4.19.[9-11] do not work with MacPorts
 # -> see the "epoch" note above for more info
@@ -52,15 +54,15 @@ epoch               1
 # SIP 4.16.[1-7] provides SIP API 11.1.
 # SIP 4.15.5 provided SIP API 11.0.
 
-set branch          [join [lrange [split ${version} .] 0 1] .]
-set patch           [lindex [split ${version} .] 2]
-
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 python.default_version 27
 
 if {${name} ne ${subport}} {
 
-    master_sites        sourceforge:pyqt
+    master_sites        https://www.riverbankcomputing.com/static/Downloads/sip/${version}
+
+    set branch          [join [lrange [split ${version} .] 0 1] .]
+    set patch           [lindex [split ${version} .] 2]
 
     if {${patch} == 0} {
         distname        sip-${branch}
@@ -68,9 +70,10 @@ if {${name} ne ${subport}} {
         distname        sip-${version}
     }
 
-    checksums           rmd160 ac47c0e695f9f74aff1ca466718890305094a30c \
-                        sha256 e353a7056599bf5fbd5d3ff9842a6ab2ea3cf4e0304a0f925ec5862907c0d15e \
-                        size   1038815
+    checksums           rmd160 6c281e3ece414f5de4a05b107093ec3ffef24ab1 \
+                        sha256 edcd3790bb01938191eef0f6117de0bf56d1136626c0ddb678f3a558d62e41e5 \
+                        size   1055461
+    revision            0
 
     patchfiles          patch-siputils.py.diff \
                         patch-specs_macx-g++.diff \
@@ -78,6 +81,7 @@ if {${name} ne ${subport}} {
                         patch-add_ppc64.diff
 
     use_configure       yes
+
     pre-configure {
         # Ensure correct compilers are used
         reinplace "s|@CC@|${configure.cc}|" \
@@ -86,25 +90,15 @@ if {${name} ne ${subport}} {
             ${worksrcpath}/specs/macx-g++
     }
 
-    post-configure {
-        # fix sip bin name
-        reinplace "s|bin/sip|bin/sip-${python.branch}|g" \
-            ${worksrcpath}/sipconfig.py
-    }
-
     configure.cmd       ${python.bin} configure.py
-    configure.pre_args  -d ${python.bin} \
+    configure.pre_args  -b ${python.prefix}/bin \
+                        -d ${python.pkgd} \
                         -e ${python.include} \
-                        -v ${prefix}/share/sip \
-                        -p macx-g++ \
-                        --bindir=${prefix}/bin \
-                        --destdir=${python.pkgd} \
-                        --incdir=${python.include} \
-                        --sipdir=${prefix}/share/${subport}
+                        -v ${python.prefix}/share/sip \
+                        -p macx-g++
 
     # always add some arch flags, since the user might have overridden
     # the default arch build (e.g., ticket #44086).
-
     python.add_archflags    no
     if {[variant_isset universal]} {
 
@@ -127,33 +121,16 @@ if {${name} ne ${subport}} {
 
     }
 
-    if {[vercmp ${xcodeversion} 4.3] < 0} {
-        set sdk_dir ${developer_dir}/SDKs
-    } else {
-        set sdk_dir ${developer_dir}/Platforms/MacOSX.platform/Developer/SDKs
-    }
-
-    switch ${os.major} {
-        8   { configure.args-append   "--sdk=${sdk_dir}/MacOSX10.4u.sdk" }
-        9   { configure.args-append   "--sdk=${sdk_dir}/MacOSX10.5.sdk" }
-        10  { configure.args-append   "--sdk=${sdk_dir}/MacOSX10.6.sdk" }
-        11  { configure.args-append   "--sdk=${sdk_dir}/MacOSX10.7.sdk" }
-        12  { configure.args-append   "--sdk=${sdk_dir}/MacOSX10.8.sdk" }
-        13  { configure.args-append   "--sdk=${sdk_dir}/MacOSX10.9.sdk" }
-    }
+    configure.args-append --sdk=${configure.sdkroot}
 
     build.cmd           make
     build.target        all
 
-    test.run    yes
-    test.cmd    cd siplib && ${python.bin} -c 'import sip'
+    test.run            yes
+    test.cmd            cd siplib && ${python.bin} -c 'import sip'
 
     destroot.cmd        make
     destroot.destdir    DESTDIR=${destroot}
-
-    # Move ${prefix}/bin/sip to ${prefix}/bin/sip-${python.branch} for
-    # all Python versions.
-    python.move_binaries yes
 
     post-destroot {
         xinstall -m 755 -d ${destroot}${prefix}/share/doc
@@ -180,6 +157,6 @@ if {[string last devel ${subport}] != -1} {
 
     livecheck.type   regex
     livecheck.url    https://www.riverbankcomputing.com/software/sip/download
-    livecheck.regex  sip-(\\d+(\\.\\d+)+)${extract.suffix}
+    livecheck.regex  sip-(4(\\.\\d+)+)${extract.suffix}
 
 }

@@ -5,7 +5,7 @@ version	   2.1.5-10
 revision	10
 categories	devel graphics x11
 platforms	darwin
-maintainers	{css @cssdev}
+maintainers	nomaintainer
 
 description	SGI Open InventorTM graphics toolkit
 license		GPL-2
@@ -101,7 +101,7 @@ universal_variant	no
 use_configure	no
 build.env	DYLD_LIBRARY_PATH=${worksrcpath}/lib IVROOT=${destroot}
 
-destroot.env	${build.env}
+destroot.env	{*}${build.env}
 
 post-destroot {
 	      xinstall -m 755 -d ${destroot}${prefix}/share/${name}

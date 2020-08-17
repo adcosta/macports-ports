@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup compilers 1.0
 
 name                splash
-version             2.8.0
+version             2.9.1
 revision            1
 categories          science graphics
 platforms           darwin
@@ -19,10 +19,13 @@ license             GPL-2+
 
 worksrcdir          ${name}
 
-checksums           rmd160  1eef9c352ae507c4c8f233431a909bfc5a7fdc06 \
-                    sha256  de06b159846bd20717a55ec7cc9420e0fd86ab38dc66dc74b1f61b77b4d24fce
+checksums           rmd160  86e3585d601d5a65e2b0b81a14a3f212414eb12f \
+                    sha256  212bbe16c56d1a009acbd263689ef6a30052d5bb4878aad345d97927fbdd1996 \
+                    size    2186770
 
-default_variants    +giza
+if {![variant_isset pgplot]} {
+    default_variants    +giza
+}
 
 use_configure       no
 
@@ -54,7 +57,7 @@ pre-build {
 }
 
 variant hdf5 description {compiles data reads that depend on HDF5} {
-   build.args-append       gadgethdf5 amuse_hdf5 HDF5ROOT=${prefix}
+   build.args-append       gadgethdf5 amuse_hdf5 cactus_hdf5 HDF5ROOT=${prefix}
    depends_lib-append      port:hdf5
 }
 

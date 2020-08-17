@@ -27,11 +27,11 @@ patchfiles          patch-Makefile.in.diff
 
 ## configure ##
 configure.env       MYJAVAHOME=${javahome} \
-                    CFLAGS="-I${prefix}/include -I${javahome}/Headers" \
+                    "CFLAGS=-I${prefix}/include -I${javahome}/Headers" \
                     LDFLAGS=-L${prefix}/lib INCLUDEDIR=${javahome}/Headers
 
 ## build ##
-build.env           CFLAGS="-I${prefix}/include -I${javahome}/Headers" \
+build.env           "CFLAGS=-I${prefix}/include -I${javahome}/Headers" \
                     LDFLAGS=-L${prefix}/lib
 
 post-destroot {

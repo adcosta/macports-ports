@@ -1,8 +1,8 @@
 PortSystem 1.0
 name             epic4
-version          2.10.6
+version          2.10.8
 categories       irc
-maintainers      {toby @tobypeterson}
+maintainers      {toby @tobypeterson} openmaintainer
 description      The (E)nhanced (P)rogrammable (I)RC-II (C)lient
 homepage         http://www.epicsol.org/
 platforms        darwin freebsd
@@ -16,18 +16,16 @@ long_description \
     available.
 license          BSD
 
-master_sites     ftp://ftp.epicsol.org/pub/epic/EPIC4-PRODUCTION/
+master_sites     http://ftp.epicsol.org/pub/epic/EPIC4-PRODUCTION/ \
+                 ftp://ftp.epicsol.org/pub/epic/EPIC4-PRODUCTION/
 use_xz           yes
 
-checksums        rmd160 10508c22bffc63f38ac20ef26399836fcf63bf52 \
-                 sha256 eaa79efe6393525de9632cc796e6a6fb15b476baec71d270fdeb7e28186953c1
+checksums        rmd160 57a44e0b0367620dbb46118ac49bbd7a4cbf83c9 \
+                 sha256 d2488823d957213d26a5af38414ba383e4662a9ba3d0693fae9134dc768d0deb \
+                 size   586544
 
 configure.args   --mandir=${prefix}/share/man
 
 destroot.destdir IP=${destroot}
 
 depends_lib      path:lib/libssl.dylib:openssl port:ncurses
-
-livecheck.type   regex
-livecheck.url    ${master_sites}
-livecheck.regex  ${name}-(\[0-9\\.\]+)\\.tar

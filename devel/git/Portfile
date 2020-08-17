@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 name                git
-version             2.19.1
+version             2.28.0
 
 description         A fast version control system
 long_description    Git is a fast, scalable, distributed open source version \
@@ -13,7 +13,7 @@ maintainers         {ciserlohn @ci42} openmaintainer
 categories          devel
 license             GPL-2 LGPL-2.1+
 platforms           darwin
-homepage            http://git-scm.com/
+homepage            https://git-scm.com/
 master_sites        https://www.kernel.org/pub/software/scm/git/ \
                     https://cdn.kernel.org/pub/software/scm/git/
 distname            git-${version}
@@ -21,19 +21,19 @@ use_xz              yes
 distfiles           git-${version}${extract.suffix} \
                     git-manpages-${version}${extract.suffix}
 
-checksums           git-${version}${extract.suffix} \
-                    rmd160  f03b87ab8ad24e9c7ceb346f25da1ea6621f59e4 \
-                    sha256  345056aa9b8084280b1b9fe1374d232dec05a34e8849028a20bfdb56e920dbb5 \
-                    size    5227908 \
-                    git-manpages-${version}${extract.suffix} \
-                    rmd160  c8b980adb1ddefc064b9aa6075a1e6b524124d86 \
-                    sha256  27af909c7a43ffc8b1736af19a6a68d8a5b177963ec4ddd2b2f9f0ed53bcc6ee \
-                    size    431852
+checksums           git-${version}.tar.xz \
+                    rmd160  e67938072b14b8be06e562666a66a1a5d659fbb9 \
+                    sha256  dfa5d1a253aa451465478fe45c6a40ab8605b340fdb4c4e80b16d7f87708439d \
+                    size    6117608 \
+                    git-manpages-${version}.tar.xz \
+                    rmd160  acfd90d2696a852385f18010acfdfb785213c881 \
+                    sha256  665a7fa41f9a39248e48422dcf533e1a0133a4a6eddfc25ee55e28e42fc07cb7 \
+                    size    472524 \
 
 perl5.require_variant   yes
-perl5.conflict_variants no
-perl5.branches          5.26
-perl5.default_branch    5.26
+perl5.conflict_variants yes
+perl5.branches          5.26 5.28 5.30
+perl5.default_branch    5.28
 perl5.create_variants   ${perl5.branches}
 
 depends_lib-append  port:curl \
@@ -50,7 +50,7 @@ depends_run-append  port:p${perl5.major}-authen-sasl \
                     port:p${perl5.major}-cgi \
                     port:rsync
 
-patchfiles          patch-Makefile.diff git-subtree.1.diff patch-sha1dc-older-apple-gcc-versions.diff
+patchfiles          patch-Makefile.diff patch-git-subtree.1.diff patch-sha1dc-older-apple-gcc-versions.diff
 patch.pre_args      -p1
 
 extract.only        git-${version}${extract.suffix} \
@@ -137,19 +137,19 @@ post-destroot {
 
 }
 
-variant pcre {
+variant pcre description {Use pcre} {
     build.args-append       LIBPCREDIR=${prefix} USE_LIBPCRE2=1
     depends_lib-append      port:pcre2
 }
 
 variant doc description {Install HTML and plaintext documentation} {
     distfiles-append        git-htmldocs-${version}${extract.suffix}
-    checksums-append        git-htmldocs-${version}${extract.suffix} \
-                            rmd160  d956f14e3d5f3b1bca0fdeb71e7f1e0adb74b168 \
-                            sha256  7252eb32735ca60f86d0a2081891c8cc5937a2e03373c92e8eaf657029776482 \
-                            size    1222052
+    checksums-append        git-htmldocs-${version}.tar.xz \
+                            rmd160  7670eea059ee92fb11d0204710528b2d4614fd42 \
+                            sha256  24feed3b584e2121418de9bde9f2e23fdcf78e4f914279787f669d3dc375bfe6 \
+                            size    1347596
 
-    patchfiles-append       git-subtree.html.diff
+    patchfiles-append       patch-git-subtree.html.diff
 
     post-extract {
         file mkdir ${workpath}/htmldocs
@@ -219,11 +219,31 @@ variant credential_osxkeychain description {Install git credential-osxkeychain u
     }
 }
 
-platform darwin 8 {
-    build.args-append   NO_APPLE_COMMON_CRYPTO=1
+variant diff_highlight description {Install git diff-highlight utility from contrib} {
+
+    patchfiles-append   patch-contrib-diff-highlight-Makefile.diff
+
+    post-patch {
+        reinplace "s|%PREFIX%|${prefix}|" \
+        ${worksrcpath}/contrib/diff-highlight/Makefile
+    }
+
+    post-build {
+        system -W "${worksrcpath}/contrib/diff-highlight" "make [join ${build.args}]"
+    }
+
+    post-destroot {
+        xinstall -m 755 "${worksrcpath}/contrib/diff-highlight/diff-highlight" \
+            "${destroot}${prefix}/bin/"
+    }
 }
 
-default_variants    +doc +pcre +credential_osxkeychain
+platform darwin 8 {
+    build.args-append   NO_APPLE_COMMON_CRYPTO=1
+    build.args-append   CC_LD_DYNPATH=-R
+}
+
+default_variants    +doc +pcre +credential_osxkeychain +diff_highlight
 
 livecheck.type          regexm
 livecheck.regex         {<span class="version">.*?(\d+\.\d+\.\d+).*?</span>}

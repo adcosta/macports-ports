@@ -6,7 +6,7 @@ PortSystem          1.0
 PortGroup           muniversal 1.0
 
 name                yash
-version             2.47
+version             2.49
 categories          shells
 platforms           darwin
 license             GPL-2+
@@ -17,17 +17,21 @@ long_description    Yet another shell (yash) is a POSIX-compliant \
                     command line shell, featuring more strict POSIX \
                     compliance than those of other shells, as well as \
                     powerful command line editing.
-homepage            http://yash.osdn.jp
+homepage            https://yash.osdn.jp
 
+depends_build       port:asciidoc
 depends_lib         port:gettext port:ncurses
 
 # This number changes with each release.
-master_sites        osdn:${name}/69353
+master_sites        osdn:${name}/71638
 use_xz              yes
-checksums           rmd160  9b89714a687d1974bcb392eb7b08a571893223b1 \
-                    sha256  931f2e7451d8b1eca2a98caeef7eda0527d96376f9f2c9bec90bc5938e39992e
+checksums           rmd160  fb8eef3f84775e43f99b34d1085d0ace93e157a9 \
+                    sha256  66eaf11d6c749165a7503801691759ae151e4eae00785875e121db2e9c219c72 \
+                    size    740780
 
 patchfiles          respect-destdir.patch
+
+configure.env-append A2X=${prefix}/bin/a2x
 
 # Some older compilers (e.g., gcc-4.2) default to gnu89.
 configure.cflags-append -std=c99

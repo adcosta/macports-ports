@@ -48,7 +48,7 @@ configure.args  --enable-xft \
                 --x-includes=${prefix}/include \
                 --x-libraries=${prefix}/lib
 
-configure.env   YACC="${prefix}/bin/bison -y"
+configure.env   "YACC=${prefix}/bin/bison -y"
 
 post-destroot {
     set docdir ${prefix}/share/doc/${name}

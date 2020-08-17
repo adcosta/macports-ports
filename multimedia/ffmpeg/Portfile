@@ -6,11 +6,16 @@ PortGroup           muniversal 1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           active_variants 1.1
 
+# https://trac.macports.org/ticket/59246
+# https://trac.macports.org/ticket/59308
+PortGroup           xcode_workaround 1.0
+
 name                ffmpeg
 conflicts           ffmpeg-devel
+# Please increase the revision of mpv whenever ffmpeg's version is updated.
 epoch               1
-version             4.0.2
-revision            1
+version             4.3.1
+revision            0
 license             LGPL-2.1+
 categories          multimedia
 maintainers         {devans @dbevans} {jeremyhu @jeremyhu} openmaintainer
@@ -52,16 +57,14 @@ master_sites        ${homepage}releases/
 
 use_xz              yes
 
-checksums           rmd160  61a3049dee1e5ea958a21d4cc743fee200813d83 \
-                    sha256  a95c0cc9eb990e94031d2183f2e6e444cc61c99f6f182d1575c433d62afb2f97 \
-                    size    8662984
+checksums           rmd160  57b83bb12fe61eea9caa94557e57b24653837c51 \
+                    sha256  ad009240d46e307b4e03a213a0f49c11b650e445b1f8be0dda2a9212b34d2ffb \
+                    size    9379424
 
 depends_build       port:pkgconfig \
                     port:gmake \
+                    port:ld64 \
                     port:texinfo
-
-# libvpx 1.7.0 now provides a shared library
-# move dependency from depends_build to depends_lib
 
 depends_lib         port:lame \
                     port:libiconv \
@@ -93,6 +96,9 @@ patchfiles          patch-libavcodec-audiotoolboxenc.c.diff
 #
 minimum_xcodeversions {9 3.1}
 
+# requires a C11 compiler
+compiler.c_standard 2011
+
 if {[lsearch [get_canonical_archs] i386] != -1} {
     # clang-3.1 hits https://trac.macports.org/ticket/30137 (<rdar://problem/11542429>)
     # clang-139 hits https://trac.macports.org/ticket/38141
@@ -105,11 +111,6 @@ platform darwin powerpc {
     compiler.blacklist
     compiler.whitelist    macports-gcc-6
     universal_variant     no
-}
-
-# _Nullable not available with clang < 700.
-if {[vercmp ${xcodeversion} 7.0] < 0} {
-    patchfiles-append   patch-libavcodec-videotoolboxenc.c-drop-Nullable.diff
 }
 
 # The old ffmpeg port was GPL-2+ as base and had a no_gpl variant, so this keeps us consistent
@@ -178,11 +179,21 @@ platform darwin {
     }
 
     # AudioToolbox support requires CoreMedia Framework available on 10.7+
-    # libsdl2 requires minimum Xcode 10.7 SDK to build successfully
     if {${os.major} > 10} {
         configure.args-replace --disable-audiotoolbox --enable-audiotoolbox
+    }
+
+    if {${os.major} > 9} {
+        # libsdl2 requires minimum Xcode 10.7 SDK to build successfully
+        # but builds on Snow Leopard
         configure.args-replace --disable-sdl2 --enable-sdl2
         depends_lib-append     port:libsdl2
+
+        # Dav1d: 10.6+ No PowerPC or Apple Silicon (for now)
+        if {![regexp -all (arm64|ppc*) [get_canonical_archs]]} {
+            configure.args-append   --enable-libdav1d
+            depends_lib-append      port:dav1d
+        }
     }
 
     # VideoToolbox, a new hardware acceleration framework, is supported on 10.8+ and "here to stay".
@@ -201,7 +212,9 @@ platform darwin {
         patchfiles-append patch-configure-no-error-on-missing-prototypes.diff
     }
 
-    # kCVPixelFormatType_OneComponent8 used in avfoundation indev is only available on 10.8+
+    # avfoundation is only available on 10.7+
+    # as of ffmpeg 3.4.1 build fails on 10.7 as well
+    # libavdevice/avfoundation.m:207:14: error: expected method to read dictionary element not found on object of type 'NSDictionary *'
     if {${os.major} < 12} {
         configure.args-append --disable-indev=avfoundation
     }
@@ -254,7 +267,7 @@ if {[variant_isset universal]} {
     lappend merger_configure_args(x86_64) --enable-x86asm
 } else {
     configure.args-append --arch=${configure.build_arch}
-    configure.env-append  ASFLAGS='[get_canonical_archflags]'
+    configure.env-append  ASFLAGS=[get_canonical_archflags]
     if {${build_arch} eq "i386" || ${build_arch} eq "x86_64"} {
         depends_build-append port:nasm
         configure.args-append --enable-x86asm
@@ -305,14 +318,6 @@ platform darwin {
         configure.args-append   --enable-libx265
         depends_lib-append      port:x265
     }
-}
-
-variant high10 requires gpl2 description {Build using libx264 with 10-bit output} {}
-
-if {[variant_isset high10]} {
-    require_active_variants x264 high10
-} else {
-    require_active_variants x264 "" high10
 }
 
 variant jack description {Enable jack library and indev support} {

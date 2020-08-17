@@ -8,13 +8,13 @@ PortGroup                       xcodeversion 1.0
 name                            graphviz
 set my_name                     graphviz
 version                         2.40.1
-revision                        1
+revision                        2
 set thisbranch                  [strsed ${name} "g/^${my_name}//"]
 set otherbranch                 [expr {${thisbranch} eq {} ? {-devel} : {}}]
 categories                      graphics
-maintainers                     ryandesign
+maintainers                     {ryandesign @ryandesign}
 license                         EPL-1
-homepage                        http://www.graphviz.org/
+homepage                        https://www.graphviz.org/
 master_sites                    ${homepage}pub/graphviz/stable/SOURCES/
 platforms                       darwin
 use_parallel_build              yes
@@ -39,7 +39,7 @@ checksums                       rmd160  8fc103fc519e07e9db522ec2f748838571c71acf
 minimum_xcodeversions           {9 3.1.2}
 
 if {${name} eq ${subport}} {
-revision                        1
+revision                        2
 
 conflicts                       graphviz${otherbranch}
 
@@ -285,7 +285,7 @@ post-destroot {
 }
 
 livecheck.type                  regex
-livecheck.url                   ${homepage}Download_source.php
+livecheck.url                   https://www2.graphviz.org/Packages/stable/portable_source/
 livecheck.regex                 ${my_name}-(\[0-9\]+\\.\[0-9\]*\[02468\](\\.\[0-9\]+)*)\\.tar
 } else {
     livecheck.type              none
@@ -294,27 +294,24 @@ livecheck.regex                 ${my_name}-(\[0-9\]+\\.\[0-9\]*\[02468\](\\.\[0-
 subport graphviz-gui${thisbranch} {
     PortGroup                   xcode 1.0
     
-    revision                    0
-    
+    revision                    1
+
     conflicts                   graphviz-gui${otherbranch} graphviz-oldgui
     
     categories-append           aqua
     
-    description                 OS X Aqua GUI for viewing and exporting \
+    description                 macOS Aqua GUI for viewing and exporting \
                                 Graphviz graphs
     
     long_description            ${description}.
     
     depends_lib                 port:graphviz${thisbranch}
     
-    pre-fetch {
-        if {${os.platform} ne "darwin"} {
-            ui_error "${subport} requires OS X."
-            return -code error "incompatible operating system"
-        }
-        if {${os.major} < 9} {
-            ui_error "${subport} requires OS X 10.5 or greater. Try graphviz-oldgui instead."
-            return -code error "incompatible OS X version"
+    if {${os.major} < 9} {
+        known_fail              yes
+        pre-fetch {
+            ui_error "${subport} requires Mac OS X 10.5 or greater. Try graphviz-oldgui instead."
+            return -code error "incompatible Mac OS X version"
         }
     }
     
@@ -322,6 +319,15 @@ subport graphviz-gui${thisbranch} {
     
     patchfiles                  patch-project.pbxproj.diff
     
+    # this port does not build with the new xcode build system at present
+    if {[vercmp ${xcodeversion} 10.0] >= 0} {
+        # Xcode10 will not build against an IBDocument.SystemTarget of 10.5
+        patchfiles-append    patch-xib-target.diff
+
+        build.pre_args      -UseNewBuildSystem=NO
+        destroot.pre_args   -UseNewBuildSystem=NO
+    }
+
     xcode.configuration         Release
     
     build.dir                   ${worksrcpath}/macosx
@@ -334,8 +340,8 @@ subport gvedit${thisbranch} {
     PortGroup                   app 1.0
     PortGroup                   qt4 1.0
     
-    revision                    0
-    
+    revision                    1
+
     conflicts                   gvedit${otherbranch}
     
     description                 Qt-based GUI for Graphviz

@@ -1,14 +1,15 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           conflicts_build 1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           conflicts_build             1.0
 
 name                notmuch
-version             0.28
+version             0.30
 categories          mail
 platforms           darwin
 license             GPL-3+
-maintainers         nomaintainer
+maintainers         {seichter.de:macports @rseichter} openmaintainer
 description         The mail indexer
 long_description    \"Not much mail\" is what Notmuch thinks about your email \
                     collection, even if you receive 12000 messages per month or have on the \
@@ -16,34 +17,44 @@ long_description    \"Not much mail\" is what Notmuch thinks about your email \
                     Regardless, Notmuch will be able to quickly search all of it. It’s just \
                     plain not much mail.
 
-homepage            https://notmuchmail.org/
-master_sites        ${homepage}releases/
+homepage            https://notmuchmail.org
+master_sites        ${homepage}/releases/
+use_xz              yes
+checksums           rmd160  4da6cab55d63ada840ece2fdfc4a14581cb62986 \
+                    sha256  5e3baa6fe11d65c67e26ae488be11b320bae04e336acc9c64621f7e3449096fa \
+                    size    711904
 
-checksums           rmd160  9a413645c3f9cf7e16007d7937a7220492ef2672 \
-                    sha256  acca75cec91651ccd2a7e31f7004e2ae14eff4ae38e375b8a88414c464cd0a37 \
-                    size    921069
+depends_build       port:pkgconfig \
+                    port:python38 \
+                    port:py38-cffi \
+                    port:py38-sphinx \
+                    port:py38-sphinxcontrib-applehelp \
+                    port:py38-sphinxcontrib-devhelp \
+                    port:py38-sphinxcontrib-htmlhelp \
+                    port:py38-sphinxcontrib-jsmath \
+                    port:py38-sphinxcontrib-qthelp \
+                    port:py38-sphinxcontrib-serializinghtml
 
-depends_build       port:pkgconfig
-
-depends_lib         port:xapian-bindings \
-                    port:gmime \
+depends_lib         port:gmime3 \
+                    port:gpgme \
                     port:talloc \
+                    port:xapian-core \
                     port:zlib
-
-patchfiles          patch-bindings-python-notmuch-globals.py.diff
-
-post-patch {
-    reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/bindings/python/notmuch/globals.py
-}
 
 conflicts_build     ${name} xcbuild
 
-if {[variant_isset universal]} {
-    # llvm-gcc-4.2: -E, -S, -save-temps and -M options are not allowed with multiple -arch flags
-    compiler.blacklist  *llvm-gcc-4.2
-}
+configure.args      --with-docs \
+                    --without-emacs \
+                    --without-ruby
 
-configure.args      --without-emacs
+configure.python    ${prefix}/bin/python3.7
+
+# Add path to sphinx-build
+configure.env-append \
+                    PATH=${frameworks_dir}/Python.framework/Versions/3.7/bin:$env(PATH) \
+                    TMPDIR=/tmp
+build.env-append    {*}${configure.env}
+destroot.env-append {*}${configure.env}
 
 # disable silent rules
 build.args          V=1

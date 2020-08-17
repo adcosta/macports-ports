@@ -5,12 +5,13 @@ PortGroup                   active_variants 1.1
 PortGroup                   conflicts_build 1.0
 PortGroup                   compilers 1.0
 
-compilers.choose            fc f77 f90
 compilers.setup             require_fortran
+compilers.allow_arguments_mismatch \
+                            yes
 
 name                        ncarg
-version                     6.5.0
-revision                    2
+version                     6.6.2
+revision                    3
 epoch                       1
 set version_no_dot [join [split ${version} "."] ""]
 categories                  science
@@ -27,13 +28,13 @@ long_description \
     is a free interpreted language designed specifically    \
     for scientific data processing and visualization.
 
-homepage            http://www.ncl.ucar.edu/
+homepage            https://www.ncl.ucar.edu/
 
-distname            ncl_${name}-${version}
-master_sites        http://www.ncl.ucar.edu/Download/files/:g2clib \
-                    https://www.earthsystemgrid.org/dataset/ncl.${version_no_dot}.src/file/:ncl
+distname            ncl-${version}
+master_sites        https://www.ncl.ucar.edu/Download/files/:g2clib \
+                    https://github.com/NCAR/ncl/archive/:ncl
 
-set ncl_src             ${distname}${extract.suffix}
+set ncl_src             ${version}${extract.suffix}
 
 set g2clib_version      1.6.0
 set g2clib_src          g2clib-${g2clib_version}-patch${extract.suffix}
@@ -43,9 +44,9 @@ distfiles           ${ncl_src}:ncl \
                     ${g2clib_src}:g2clib
 
 checksums   ${ncl_src} \
-                    rmd160  fadb97195f43cc09a628b18dabf8d70b8d436705 \
-                    sha256  cf7b8a255a434d2c9d385f995e84d2024fa9e6c04f847c91ecbcb3e4070c94d2 \
-                    size    61652896 \
+                    rmd160  061d4230adfc9e601393a396aff06704ffa68c3c \
+                    sha256  cad4ee47fbb744269146e64298f9efa206bc03e7b86671e9729d8986bb4bc30e \
+                    size    60523044 \
             ${g2clib_src} \
                     rmd160  112d90fd297f772643d6223041f741d6e4101b49 \
                     sha256  ec79fb768ce9e45ca6c2c94fa4dfc99b30600d7f8f44d272cdb36ab542d59468 \
@@ -74,6 +75,7 @@ conflicts_build             ncarg
 universal_variant           no
 compilers.enforce_c         hdf5
 configure.cxx_stdlib        libstdc++
+use_parallel_build          no
 
 set usedap y
 
@@ -82,7 +84,8 @@ patchfiles                  patch-Configure.diff \
                             patch-ncarview-src-bin-ictrans-yMakefile.diff \
                             patch-ncarg2d-src-bin-ezmapdemo-yMakefile.diff \
                             patch-ncarg2d-src-bin-tdpackdemo-yMakefile.diff \
-                            patch-ngmath-src-bin-nnalg-yMakefile.diff
+                            patch-ngmath-src-bin-nnalg-yMakefile.diff \
+                            patch-ncarg2d-src-libncarg_gks-bwi-argb2ci.f.diff
 if {$build_arch eq "x86_64"} {
     patchfiles-append       patch-config-ymake.diff
 }
@@ -93,6 +96,17 @@ if {[variant_isset accelerate]} {
     patchfiles-append       patch-config-Project.diff
 }
 
+if {${os.platform} eq "darwin" && ${os.major} < 12} {
+    pre-fetch {
+        ui_error "${name} is not supported on Lion or older."
+        error "unsupported platform"
+    }
+}
+
+if {${configure.sdkroot} ne ""} {
+    configure.cflags-append     -isysroot ${configure.sdkroot}
+    configure.fflags-append     -isysroot ${configure.sdkroot}
+}
 pre-configure {
     if {[file exists ${prefix}/bin/h5pcc]} {
         configure.cc        ${prefix}/bin/h5pcc
@@ -111,36 +125,36 @@ pre-configure {
     file copy ${workpath}/${g2clib_worksrcdir}/libgrib2c.a ${worksrcpath}
 
     # edit configurations
-    reinplace "s|g\\\\+\\\\+|${configure.cc}|" ${worksrcpath}/ni/src/ncl/yMakefile
+    if {[regexp clang ${configure.compiler}]} {
+        reinplace "s| -lquadmath||" ${worksrcpath}/config/Darwin_Intel
+    }
+    reinplace "s|g\\\\+\\\\+$|${configure.cxx}|" ${worksrcpath}/config/Darwin_Intel
     foreach f {Darwin Darwin_Intel} {
         if {[regexp clang ${configure.compiler}]} {
             reinplace "s|-fopenmp||" ${worksrcpath}/config/${f}
-            reinplace "s| -lquadmath||" ${worksrcpath}/config/${f}
         }
-        set fvar [fortran_variant_name]
         if {[variant_isset g95]} {
-            reinplace "s|-lgfortran|-L${prefix}/lib/${fvar} -lf95|" ${worksrcpath}/config/${f}
+            reinplace "s|-lgfortran|${compilers.libfortran}|" ${worksrcpath}/config/${f}
         } else {
-            reinplace "s|-lgfortran|-L${prefix}/lib/${fvar} -lgfortran -lgomp|" ${worksrcpath}/config/${f}
+            reinplace "s|-lgfortran|${compilers.libfortran} ${prefix}/lib/${compilers.gcc_default}/libgomp.dylib|" ${worksrcpath}/config/${f}
         }
         reinplace "s| gfortran$| ${configure.fc}|" ${worksrcpath}/config/${f}
         reinplace "s|gcc$|${configure.cc}|" ${worksrcpath}/config/${f}
-        reinplace "s|g++$|${configure.cxx}|" ${worksrcpath}/config/${f}
         reinplace "/CcOptions/d" ${worksrcpath}/config/${f}
+        reinplace "/FcOptions/d" ${worksrcpath}/config/${f}
         reinplace "/ArchRecLibSearch/d" ${worksrcpath}/config/${f}
         reinplace "/ArchRecIncSearch/d" ${worksrcpath}/config/${f}
         reinplace "s|-lXext$|-lXext\\
 #define ArchRecLibSearch    ${configure.ldflags} \\
 #define ArchRecIncSearch    ${configure.cppflags} \\
-#define CcOptions -fPIC -D_DARWIN_C_SOURCE \\
-#define COptimizeFlag ${configure.cflags}\\
-#define FOptimizeFlag ${configure.fflags}\\
+#define CcOptions -fPIC -D_DARWIN_C_SOURCE ${configure.cflags}\\
+#define FcOptions -fPIC -fno-range-check -m64 -Wall ${configure.fflags}\\
 #define ManRoot ${destroot}${prefix}/share/man\\
 #define NetCDFlib -lnetcdf\\
 #define HDFEOS5lib -lhe5_hdfeos -lGctp|" ${worksrcpath}/config/${f}
 # A workaround for XQuartz 2.7.3 on Mountain Lion known as ncl.xq.fix
         if {${os.version}>=12} {
-            reinplace "s|-D__UNIXOS2__|-D__UNIXOS2__ -D__JIRA1530__|" ${worksrcpath}/config/${f}
+            reinplace "s|-D_XOPEN_SOURCE|-D_XOPEN_SOURCE -D__JIRA1530__|" ${worksrcpath}/config/${f}
         }
     }
     if {[variant_isset g95]} {

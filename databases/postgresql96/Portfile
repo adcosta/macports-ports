@@ -7,8 +7,8 @@ PortGroup muniversal 1.0
 
 #remember to update the -doc and -server as well
 name                postgresql96
-version             9.6.10
-revision            1
+version             9.6.18
+revision            0
 
 categories          databases
 platforms           darwin
@@ -26,9 +26,9 @@ master_sites        http://ftp3.de.postgresql.org/pub/Mirrors/ftp.postgresql.org
             postgresql:source/v${version}/
 distname            postgresql-${version}
 
-checksums           rmd160  1183d331a6e3ceef5e50f6ae55bce745593a842d \
-                    sha256  8615acc56646401f0ede97a767dfd27ce07a8ae9c952afdb57163b7234fe8426 \
-                    size    19991204
+checksums           rmd160  5b6216a193480c79a4d3a40aeedda91761bf3a2a \
+                    sha256  517ec282b785e6d22f360c30ba0c5e2a506fca5ca07dcc545427511d94c89999 \
+                    size    18836490
 
 use_bzip2           yes
 
@@ -42,7 +42,8 @@ depends_run         port:postgresql_select
 worksrcdir          postgresql-${version}
 
 set libdir          ${prefix}/lib/${name}
-configure.args      --sysconfdir=${prefix}/etc/${name} \
+configure.args      PG_SYSROOT=disabled \
+                    --sysconfdir=${prefix}/etc/${name} \
                     --bindir=${libdir}/bin \
                     --libdir=${libdir} \
                     --includedir=${prefix}/include/${name} \
@@ -126,9 +127,9 @@ variant python27 conflicts python3 description {add support for python 2.7} {
 }
 
 variant python3 conflicts python27 description {add support for python 3.x} {
-    depends_lib-append      port:python37
+    depends_lib-append      port:python38
     configure.args-append   --with-python
-    configure.python        ${prefix}/bin/python3.7
+    configure.python        ${prefix}/bin/python3.8
 }
 
 variant perl description {add Perl support} {

@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Compress-Raw-Lzma 2.096 ../../authors/id/P/PM/PMQS
+revision            0
+checksums           rmd160  b794d7c6ef996e16e635fc0456f3b589d4d5ff61 \
+                    sha256  f3afb267b1303b0f125976e9e4a70c6a4a205e35e7c99b408911f5e5c6578217 \
+                    size    116451
+
+platforms           darwin
+
+license             {Artistic-1 GPL}
+maintainers         {isi.edu:calvin @cardi} openmaintainer
+description         Perl low-level interface to allow reading and \
+                    writing of lzma, lzip and xz files/buffers.
+long_description    Compress::Raw::Lzma provides an interface to the \
+                    in-memory compression/uncompression functions from \
+                    the lzma compression library for the modules \
+                    IO::Compress::Lzma, IO::Uncompress::UnLzma, \
+                    IO::Compress::Xz and IO::Uncompress::UnXz
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:xz
+}

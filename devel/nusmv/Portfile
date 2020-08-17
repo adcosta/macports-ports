@@ -5,6 +5,7 @@ PortGroup           cmake 1.1
 
 name                nusmv
 version             2.6.0
+revision            1
 categories          devel math
 platforms           darwin
 maintainers         nomaintainer
@@ -13,7 +14,7 @@ conflicts           libcudd
 
 description         The NuSMV model checker
 
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            http://nusmv.fbk.eu
 master_sites        ${homepage}/distrib/:nusmv \

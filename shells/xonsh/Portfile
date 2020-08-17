@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        xonsh xonsh 0.8.2
-github.tarball_from tags
+github.setup        xonsh xonsh 0.9.19
+revision            0
 categories          shells
 platforms           darwin
 maintainers         {mps @Schamschula} openmaintainer
@@ -21,44 +21,28 @@ long_description    ${description} \
                     macOS, and Windows. Xonsh is meant for the daily use of \
                     experts and novices alike.
 
-checksums           rmd160  4df11c3e0fa256fd6ea449cfbe214ba77095965f \
-                    sha256  715b513e0b9de96edc1dbda5ca78341145fbfc7f10f0760322dbae56b1d8c57e \
-                    size    1961282
+checksums           rmd160  3f314943ca58a1c8012c93ca3ef2f4d994f1dea9 \
+                    sha256  09d6665e117a80b8f34f79b4e4b1d728cbdf4b019ce6acc51b3f02e21aa137e4 \
+                    size    2535482
 
-python.versions     34 35 36 37
+python.versions     36 37 38
 
 depends_lib-append  port:py${python.version}-prompt_toolkit \
                     port:py${python.version}-pygments \
                     port:py${python.version}-gnureadline
 
-subport             xonsh-devel {
-    # remove after 04/01/2019
-    replaced_by     xonsh
-    PortGroup       obsolete 1.0
-    version         0.5.0-2016-12-21
-    revision        1
-}
-
-variant python34 conflicts python35 python36 python37 description {Use Python 3.4} {
-    # remove after 11/01/2019
-    ui_error "Please do not install this variant since it has been replaced by the python37 variant."
-    return -code error
-}
-
-variant python35 conflicts python34 python36 python37 description {Use Python 3.5} {
-    # remove after 11/01/2019
-    ui_error "Please do not install this variant since it has been replaced by the python37 variant."
-    return -code error
-}
-
-variant python36 conflicts python34 python35 python37 description {Use Python 3.6} {
+variant python36 conflicts python37 python38 description {Use Python 3.6} {
     python.default_version 36
 }
 
-variant python37 conflicts python34 python35 python36 description {Use Python 3.7} {
+variant python37 conflicts python36 python38 description {Use Python 3.7} {
     python.default_version 37
 }
 
-if {![variant_isset python34] && ![variant_isset python35] && ![variant_isset python36]} {
-    default_variants +python37
+variant python38 conflicts python36 python37 description {Use Python 3.8} {
+    python.default_version 38
+}
+
+if {![variant_isset python36] && ![variant_isset python37]} {
+    default_variants +python38
 }

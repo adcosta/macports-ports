@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-wurlitzer
+version             2.0.1
+revision            0
+
+categories-append   devel
+platforms           darwin
+supported_archs     noarch
+license             MIT
+maintainers         {reneeotten @reneeotten} openmaintainer
+
+description         Capture C-level output in context managers
+long_description    ${description}
+
+homepage            https://github.com/minrk/wurlitzer
+
+checksums           rmd160  a3b2f87f0c9d9928486e015dc85fa902b10ad4ac \
+                    sha256  d08f0728a998441aac3d7a0f8cd6dfed2ba2525144878fb49599b719085b7543 \
+                    size    10638
+
+python.versions     27 35 36 37 38
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    if {${python.version} eq 27} {
+        depends_build-append \
+                    port:py${python.version}-selectors2
+    }
+
+    depends_test-append \
+                    port:py${python.version}-pytest \
+                    port:py${python.version}-mock
+
+    test.run        yes
+    test.cmd        py.test-${python.branch}
+    test.target     test.py
+
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} LICENSE README.md ${destroot}${docdir}
+    }
+
+    livecheck.type      none
+}

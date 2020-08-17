@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         HTTP-Message 6.18
+perl5.branches      5.26 5.28 5.30
+perl5.setup         HTTP-Message 6.25
 platforms           darwin
 maintainers         nomaintainer
 license             {Artistic-1 GPL}
@@ -16,15 +16,17 @@ long_description    The HTTP-Message distribution contains classes useful for re
                     the messages passed in HTTP style communication.  These are classes \
                     representing requests, responses and the headers contained within them.
 
-checksums           rmd160  2c6fdbcaffa37785e912f60cac96ffa31cbf9588 \
-                    sha256  d060d170d388b694c58c14f4d13ed908a2807f0e581146cef45726641d809112 \
-                    size    81363
+checksums           rmd160  dca5a0a166d340b3d4ccc98dd6783f033018c476 \
+                    sha256  21f46502e87d57f43b7a38f81916464b079f5d50fe529458391c0ad529e0075a \
+                    size    87876
 
 if {${perl5.major} != ""} {
     depends_build-append \
                     port:p${perl5.major}-try-tiny
 
     depends_lib-append \
+                    port:p${perl5.major}-clone \
+                    port:p${perl5.major}-encode \
                     port:p${perl5.major}-encode-locale \
                     port:p${perl5.major}-http-date \
                     port:p${perl5.major}-io-html \

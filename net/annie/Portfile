@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/iawia002/annie 0.8.2
+go.setup            github.com/iawia002/annie 0.10.3
 categories          net
 platforms           darwin
 license             MIT
@@ -11,9 +11,9 @@ maintainers         {l2dy @l2dy} openmaintainer
 description         fast, simple and clean video downloader
 long_description    Annie is a ${description} built with Go.
 
-checksums           rmd160  fa7e9aac153e775642948181b26e853294efd40f \
-                    sha256  50cef50f7d108db11b45e453885df2890ca116cbdccd49652a786d7b86147ec9 \
-                    size    1032826
+checksums           rmd160  79e8e586b12e3b28273e3d29d1acab8a24b4c967 \
+                    sha256  1de8bb310907b19cac68591ea85ec6ecae89b303000059feefd7139b7267b8cf \
+                    size    73335
 
 destroot {
     xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin

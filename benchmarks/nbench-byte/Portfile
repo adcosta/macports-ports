@@ -44,7 +44,7 @@ post-install {
 }
 
 if {${build_arch} ne ""} {
-    build.env-append CFLAGS="${configure.cc_archflags}"
+    build.env-append CFLAGS=${configure.cc_archflags}
 }
 
 livecheck.type  regex

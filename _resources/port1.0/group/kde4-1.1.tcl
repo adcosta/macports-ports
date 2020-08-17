@@ -43,7 +43,7 @@ set kde4.include_dirs   ${prefix}/include/${kde4.include_prefix}
 set kde4.cmake_module_dir \
                         ${prefix}/lib/cmake/${kde4.include_prefix}
 
-set kde4.mirror         http://mirrors.mit.edu/kde/stable/
+set kde4.mirror         https://download.kde.org/Attic/
 
 # augment the CMake module lookup path, if necessary depending on
 # where Qt4 is installed.
@@ -92,8 +92,6 @@ configure.args-append   -DDOCBOOKXSL_DIR=${prefix}/share/xsl/docbook-xsl-nons \
                         -DLIBXML2_XMLLINT_EXECUTABLE=${prefix}/bin/xmllint \
                         -DLIBXSLT_INCLUDE_DIR=${prefix}/include \
                         -DLIBXSLT_LIBRARIES=${prefix}/lib/libxslt.dylib \
-                        -DOPENAL_INCLUDE_DIR=/System/Library/Frameworks/OpenAL.framework/Headers \
-                        -DOPENAL_LIBRARY=/System/Library/Frameworks/OpenAL.framework \
                         -DPNG_INCLUDE_DIR=${prefix}/include \
                         -DPNG_PNG_INCLUDE_DIR=${prefix}/include \
                         -DPNG_LIBRARY=${prefix}/lib/libpng.dylib \

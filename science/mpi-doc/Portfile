@@ -2,18 +2,18 @@
 
 PortSystem          1.0
 
-universal_variant    no
+universal_variant   no
 
 # make sure to keep in sync with mpich
 name                mpi-doc
-version             3.2
+version             3.3.2
+revision            0
 
 license             BSD
 categories          science parallel net
 platforms           darwin
-maintainers         {sean @seanfarley} \
-                    openmaintainer
-homepage            http://www.mpich.org/
+maintainers         nomaintainer
+homepage            https://www.mpich.org/
 supported_archs     noarch
 
 description         Message Passing Interface (MPI) Library Man Pages
@@ -22,20 +22,43 @@ long_description    ${description}
 master_sites        ${homepage}static/tarballs/${version}/
 distname            mpich-${version}
 
-checksums           rmd160  d7180d5129fe313830504e1d59c3b37831554bee \
-                    sha256  0778679a6b693d7b7caff37ff9d2856dc2bfc51318bf8373859bfa74253da3dc
+checksums           rmd160  f8392f37058b488b1df90d43b69348662dc71454 \
+                    sha256  4bfaf8837a54771d3e4922c84071ef80ffebddbb6971a006038d91ee7ef959b9 \
+                    size    27311775
+
+dist_subdir         mpich
 
 use_configure       no
 
 build {}
 
 destroot {
-    delete ${destroot}/${prefix}/share/man/man1
-    delete ${destroot}/${prefix}/share/man/man3
-    move ${worksrcpath}/man/man1 ${destroot}/${prefix}/share/man/
-    move ${worksrcpath}/man/man3 ${destroot}/${prefix}/share/man/
+    delete ${destroot}${prefix}/share/man/man1
+    delete ${destroot}${prefix}/share/man/man3
+    move ${worksrcpath}/man/man1 ${destroot}${prefix}/share/man/
+    move ${worksrcpath}/man/man3 ${destroot}${prefix}/share/man/
 }
 
 livecheck.type      regex
 livecheck.regex     mpich-(\[0-9.p\]+)${extract.suffix}
 livecheck.url       ${homepage}downloads/index.php?s=downloads
+
+subport ${name}-devel {
+    # make sure to keep in sync with mpich-devel
+    version         3.4a2
+    revision        0
+
+    master_sites    ${homepage}static/tarballs/${version}/
+    distname        mpich-${version}
+
+    checksums       rmd160  73bc0fd6cb00ced9f15118decb8610758db8503e \
+                    sha256  ca9b9a6d4d858f3f94d2ea1ed0b851fccbc6f2976eb08dfc3379be8c6278aa12 \
+                    size    27708244
+
+    livecheck.regex     mpich-(\[0-9.a-z\]+)${extract.suffix}
+
+    conflicts-append    ${name}
+}
+if {${subport} eq ${name}} {
+    conflicts-append    ${name}-devel
+}

@@ -4,7 +4,10 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-axolotl
-version             0.1.39
+python.rootname     python-axolotl
+version             0.2.3
+revision            0
+
 platforms           darwin
 license             GPL-3
 maintainers         nomaintainer
@@ -13,22 +16,25 @@ description         Python implementation of libaxolotl
 long_description    ${description}
 
 homepage            https://github.com/tgalal/python-axolotl
-master_sites        pypi:p/python-axolotl
-distname            python-axolotl-${version}
 
-checksums           md5     136d37cf7aceb4b3e01fbb40ac592f3c \
-                    rmd160  ddd12e8c80eb39828ce6ca1404e5edcec5650ddf \
-                    sha256  9af9c937d0d05ebea414f1be79ecc7517cc3541a77101941e6a2a71bdd2b6e25
+checksums           rmd160  bd830ee43a670a2b5601d74a2d0097251136b9ac \
+                    sha256  fe0e8147423f8dc4ec1077ea18ca5a54091366d22faa903a772ee6ea88b88daf \
+                    size    38180
 
-python.versions     27 36
+python.versions     27 36 37
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools
-    depends_run-append      port:py${python.version}-crypto \
+
+    depends_run-append      port:py${python.version}-cryptography \
                             port:py${python.version}-axolotl-curve25519 \
                             port:py${python.version}-protobuf3
 
+    depends_test-append     port:py${python.version}-nose
+
+    test.run        yes
+    test.cmd        nosetests-${python.branch}
+    test.target     axolotl.tests
+
     livecheck.type  none
-} else {
-    livecheck.type  pypi
 }

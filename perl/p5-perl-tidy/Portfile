@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Perl-Tidy 20180220
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Perl-Tidy 20200619
 license             GPL-2+
 maintainers         nomaintainer
 description         Parses and beautifies perl source
@@ -16,8 +16,8 @@ long_description    Perltidy reads a perl script and writes an indented, \
 
 platforms           darwin
 
-checksums           rmd160  c17681a04a432dd8c0627ca8ac21da79f34ff310 \
-                    sha256  e9973ce28b7518108c1e68fa767c6566822480e739df275375a0dfcc9c2b3370 \
-                    size    464114
+checksums           rmd160  7f201a8bdea8ceb3f582b7fb1638b09e66bfd3ec \
+                    sha256  03b0e1b777c95920053d37942d6398a56b746d7c78090d522371138785c8a09e \
+                    size    647749
 
 supported_archs     noarch

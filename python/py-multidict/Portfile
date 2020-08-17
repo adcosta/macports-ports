@@ -4,12 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-multidict
-version             4.4.2
+version             4.7.6
 categories-append   devel
 platforms           darwin
 license             Apache-2
 
-python.versions     34 35 36 37
+python.versions     35 36 37 38
 
 maintainers         {ipglider.org:miguel @ipglider} openmaintainer
 
@@ -22,14 +22,12 @@ master_sites        pypi:m/multidict
 
 distname            multidict-${version}
 
-checksums           rmd160  ebcf37b418a14cd2f591b4885f7cd73e9688f2ac \
-                    sha256  3c11e92c3dfc321014e22fb442bc9eb70e01af30d6ce442026b0c35723448c66 \
-                    size    118428
+checksums           rmd160  417efd4837d7de6b63b2b90913420ad07cea1807 \
+                    sha256  fbb77a75e529021e7c4a8d4e823d88ef4d23674a202be4f5addffc72cbb91430 \
+                    size    50958
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools
 
     livecheck.type          none
-} else {
-    livecheck.type          pypi
 }

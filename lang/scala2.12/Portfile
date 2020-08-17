@@ -4,11 +4,11 @@ PortSystem 1.0
 PortGroup select 1.0
 
 name            scala2.12
-version         2.12.4
+version         2.12.12
 set branch      [join [lrange [split ${version} .] 0 1] .]
 categories      lang java
 license         BSD
-maintainers     openmaintainer {blair @blair}
+maintainers     nomaintainer
 description     The Scala Programming Language
 long_description \
                 Scala is a modern multi-paradigm programming language \
@@ -37,10 +37,11 @@ if {$subport == $name} {
 
     distname        scala-${version}
     extract.suffix  .tgz
-    checksums       md5    57a4c9a83712193a4f892224692657d9 \
-                    sha1   b5bb5555f8106e08b5344127179a11e51b632135 \
-                    rmd160 4b2ee8c3c35ffed14b0aef52789876019adee78d \
-                    sha256 9554a0ca31aa8701863e881281b1772370a87e993ce785bb24505f2431292a21
+    checksums       md5     112d439b6a490a70dabb6205a095535b \
+                    sha1    72f2d8ec5841e6f9a4d91646fe665ce8d183ea77 \
+                    rmd160  5aa107b750f50a42471a352f11ff8a00875af902 \
+                    sha256  3520cd1f3c9efff62baee75f32e52d1e5dc120be2ccf340649e470e48f527e2b \
+                    size    20833104
 
     destroot {
         set man1dir ${sharedir}/man/man1
@@ -74,10 +75,11 @@ subport ${name}-docs {
     distname        scala-docs-${version}
     use_xz          yes
     extract.suffix  .txz
-    checksums       md5    bc247d4f4823f3758c88fa770de4eede \
-                    sha1   514a5284425ec92159614376b1511e24dc895971 \
-                    rmd160 539b5d548ea30ee5a4c14c14437e363ad13529a1 \
-                    sha256 477892c8bb7df996166a767037cc16feb67ec9810273fd47bf43fa1eee0597a8
+    checksums       md5     f1b1f908c9f58e72db16437a73963a24 \
+                    sha1    ed272ccb9df6393cf45f43aba1ab7f4edcffcf6a \
+                    rmd160  460086a9d468af4815b7b38edbca4002f4cc948a \
+                    sha256  d3a1db3f296db7603a2455d1b39d9d83dc6d8187471f7a64309e733e88906a46 \
+                    size    55868636
 
     worksrcdir      scala-${version}
 

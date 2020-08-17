@@ -3,12 +3,18 @@
 PortSystem              1.0
 PortGroup               github 1.0
 
-github.setup            ejmr php-mode 1.19.1 v
+github.setup            emacs-php php-mode 1.23.0 v
+revision                0
+checksums               rmd160  88aac72d9c2bf24fa2fd5eaf2a73e16811abb27b \
+                        sha256  d5211c187acc7f4a044b89eeed560a0e7d53345c1d05a99a3993fabfdd404f8f \
+                        size    94451
+
 name                    php-mode.el
 categories              lang editors
 platforms               darwin
 license                 GPL-3+
 maintainers             {ryandesign @ryandesign} openmaintainer
+github.tarball_from     archive
 
 description             PHP mode for Emacs
 
@@ -17,10 +23,6 @@ long_description        An Emacs major mode for editing PHP code. \
                         Documentation browse and search functions\; \
                         Support for Imenu and SpeedBar\; \
                         Customization options
-
-checksums               rmd160  2ecf81bffd69438d4223872911ff7bb92ef9c0e6 \
-                        sha256  f2b2ecec9198a39cb0e56be1ccd56fc83c62e9b7559577943bf45bc947795437 \
-                        size    94891
 
 # We want emacs from MacPorts since this will install stuff in emacs' site-lisp and we want
 # it to go into ${prefix}'s site-lisp.

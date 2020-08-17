@@ -2,38 +2,27 @@
 
 PortSystem          1.0
 
-# See dports/_resources/port1.0/group/kde4-1.1.tcl for more info.
 PortGroup           kde4    1.1
+PortGroup           github 1.0
 
+github.setup KDE kmymoney f76ab0946991536660da4db29db46302d0226d19
 name                kmymoney4
-version             4.7.2
-revision            8
+version             4.8.4+20200617-[string range ${github.version} 0 7]
+revision            0
 
 categories          kde kde4 finance
-maintainers         {pixilla @pixilla} openmaintainer
+maintainers         {nicos @NicosPavlov} openmaintainer
 
 description         kmymoney version 4
 long_description    KMyMoney is the personal finance manager for KDE.
 platforms           darwin
 license             GPL-2+
 
-homepage            http://kmymoney2.sourceforge.net/index-home.html
-master_sites        http://download.kde.org/stable/kmymoney/${version}/src/
+homepage            https://kmymoney.org
 
-livecheck.type      regex
-livecheck.url       http://download.kde.org/stable/kmymoney
-livecheck.regex     "(4\\.\\d+?(\\.\\d+))/"
-
-distname            kmymoney-${version}
-use_xz              yes
-
-build.asroot        yes
-
-checksums           md5     523e6bde2fd71453aa2d38711ae47342 \
-                    sha1    f9854f59377343418b5bdd12a34887aa0a821ca6 \
-                    rmd160  8b1c62955c1821ff986bf4a888e82af6bcbfecd6
-
-conflicts           kmymoney4-devel
+checksums           rmd160  58fccf6a3058e00c7476c276a074286cc7f45c5a \
+                    sha256  d9d48fbc4c7f08edc25e54da0f0f9f62547214396d1e104d3eab978cabc5855b \
+                    size    13798810
 
 depends_lib-append  port:libofx \
                     port:aqbanking5 \
@@ -42,20 +31,12 @@ depends_lib-append  port:libofx \
                     port:kde4-runtime \
                     port:libalkimia
 
-patch.dir           ${workpath}/${distname}
-patch.pre_args      -p1
-patchfiles          patch-mainRaster.diff \
-                    patch-CMakeLists_QGPGME.txt.diff \
-                    patch-CMakeLists_kmymoneysettings.h.diff
+patchfiles patch-mainRaster.diff \
+           patch-CMakeLists_remove_APIDOC.txt.diff
+
 #
 # OK, let's try building with documentation and see whether we end up with meinproc crashing again:
 #
 #                    patch-CMakeLists.txt.diff \
 #                    patch-CMakeLists_remove_APIDOC.txt.diff \
 #                    patch_remove_manpage_and_APIDOC.diff \
-
-# This is needed for patch-CMakeLists_QGPGME.txt.diff:
-pre-configure {
-    reinplace "s|%PREFIX%|${prefix}|g" \
-    ${worksrcpath}/CMakeLists.txt
-}

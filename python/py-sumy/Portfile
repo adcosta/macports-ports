@@ -3,9 +3,10 @@
 PortSystem          1.0
 PortGroup           python 1.0
 
-set real_name       sumy
-name                py-${real_name}
-version             0.3.0
+name                py-sumy
+version             0.8.1
+revision            0
+
 categories-append   textproc
 platforms           darwin
 supported_archs     noarch
@@ -13,27 +14,33 @@ license             Apache-2
 maintainers         nomaintainer
 
 description         Module for automatic summarization of text documents and HTML pages
-
 long_description    ${description}
 
 homepage            https://github.com/miso-belica/sumy
-master_sites        pypi:s/${real_name}/
-distname            ${real_name}-${version}
-use_zip             yes
+master_sites        pypi:s/${python.rootname}/
+distname            ${python.rootname}-${version}
 
-checksums           rmd160  081d45a1d5aca397667aeabcc0e6d65d375fc345 \
-                    sha256  f0755f044118fe95a7c5e01dae973a2a894b1a5975b7bb7a7e73e63faad8ab9c
+checksums           rmd160  71d231b335116ab804ad17abd6b416e740b3be82 \
+                    sha256  899155ed9e50ac128167ac9e4f91ecd38493a32fdeca8213f93e9df135c9e0c7 \
+                    size    58268
 
-python.versions     27 34 35 36
+python.versions     27 35 36 37
 
 if {${name} ne ${subport}} {
-    depends_lib-append  port:py${python.version}-docopt \
-                        port:py${python.version}-breadability \
-                        port:py${python.version}-nltk
+    depends_lib-append \
+                    port:py${python.version}-breadability \
+                    port:py${python.version}-docopt \
+                    port:py${python.version}-nltk \
+                    port:py${python.version}-country \
+                    port:py${python.version}-requests \
+                    port:py${python.version}-setuptools
 
-    livecheck.type      none
-} else {
-    livecheck.type      regex
-    livecheck.url       https://pypi.python.org/pypi/${real_name}
-    livecheck.regex     "${real_name}-(\\d+(?:\\.\\d+)*(-p\\d+)?)${extract.suffix}"
+    post-destroot {
+        set docdir ${prefix}/share/doc/${subport}
+        xinstall -d ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} README.md \
+            CHANGELOG.md ${destroot}${docdir}
+    }
+
+    livecheck.type  none
 }

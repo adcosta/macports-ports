@@ -3,8 +3,14 @@
 PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           cmake 1.0
+PortGroup           cxx11 1.1
 
-github.setup        pothosware SoapySDR 0.7.0 soapy-sdr-
+github.setup        pothosware SoapySDR 0.7.2 soapy-sdr-
+checksums           rmd160 a3bdbec7878c62598191a38b1f998b1ad19f9718 \
+                    sha256 ad7c426cef05f17655594b0745083d238797084fce261d4a446aeaa920d351dd \
+                    size   124610
+revision            0
+
 platforms           darwin macosx
 categories          science
 license             Boost-1
@@ -15,6 +21,77 @@ long_description    SoapySDR is an open-source generalized C/C++ API and runtime
 
 homepage            https://github.com/pothosware/SoapySDR/wiki
 
-checksums           rmd160 ea002a683e28caa8868c010fbced35b7f288dc3f \
-                    sha256 21e9f56089905b6207bd55c02419945197e57c488c62adbabecade7080915314 \
-                    size   122971
+configure.args-append \
+    -DENABLE_PYTHON=OFF \
+    -DENABLE_PYTHON3=OFF
+
+# specify the Python dependencies; these are checked for at configure,
+# then used for building, but not at runtime.
+
+set pythons2_suffixes {27}
+set pythons3_suffixes {36 37}
+
+set pythons_ports {}
+foreach s ${pythons2_suffixes} {
+    lappend pythons_suffixes ${s}
+    lappend pythons2_ports python${s}
+}
+foreach s ${pythons3_suffixes} {
+    lappend pythons_suffixes ${s}
+    lappend pythons3_ports python${s}
+}
+
+proc python_dir {} {
+    global pythons_suffixes
+    foreach s ${pythons_suffixes} {
+        if {[variant_isset python${s}]} {
+            set p python[string index ${s} 0].[string index ${s} 1]
+            return [file normalize [exec ${p} -c "import sys; print(sys.prefix)"]/lib/${p}/site-packages]
+        }
+    }
+    error "Python support not enabled."
+}
+
+foreach s ${pythons2_suffixes} {
+    set p python${s}
+    set v [string index ${s} 0].[string index ${s} 1]
+    set i [lsearch -exact ${pythons2_ports} ${p}]
+    set c [lreplace ${pythons2_ports} ${i} ${i}]
+    variant ${p} description "Build SoapySDR using Python ${v}" conflicts {*}${c} "
+    # required Python
+    depends_lib-append \
+        port:${p}
+    depends_build-append \
+        port:swig-python
+    # specify the Python version to use
+    configure.args-delete \
+        -DENABLE_PYTHON=OFF
+    configure.args-append \
+        -DENABLE_PYTHON=ON \
+        -DPYTHON_EXECUTABLE=${frameworks_dir}/Python.framework/Versions/${v}/bin/python${v} \
+        -DPYTHON_CONFIG_EXECUTABLE=${frameworks_dir}/Python.framework/Versions/${v}/bin/python${v}-config \
+        -DPYTHON_INSTALL_DIR=${frameworks_dir}/Python.framework/Versions/${v}/lib/python${v}/site-packages
+    "
+}
+
+foreach s ${pythons3_suffixes} {
+    set p python${s}
+    set v [string index ${s} 0].[string index ${s} 1]
+    set i [lsearch -exact ${pythons3_ports} ${p}]
+    set c [lreplace ${pythons3_ports} ${i} ${i}]
+    variant ${p} description "Build SoapySDR using Python ${v}" conflicts {*}${c} "
+    # required Python
+    depends_lib-append \
+        port:${p}
+    depends_build-append \
+        port:swig-python
+    # specify the Python version to use
+    configure.args-delete \
+        -DENABLE_PYTHON3=OFF
+    configure.args-append \
+        -DENABLE_PYTHON3=ON \
+        -DPYTHON3_EXECUTABLE=${frameworks_dir}/Python.framework/Versions/${v}/bin/python${v} \
+        -DPYTHON3_CONFIG_EXECUTABLE=${frameworks_dir}/Python.framework/Versions/${v}/bin/python${v}-config \
+        -DPYTHON3_INSTALL_DIR=${frameworks_dir}/Python.framework/Versions/${v}/lib/python${v}/site-packages
+    "
+}

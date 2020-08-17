@@ -5,7 +5,7 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           github 1.0
 PortGroup           gobject_introspection 1.0
 
-github.setup        lwindolf liferea 1.12.5 v
+github.setup        lwindolf liferea 1.12.7 v
 # Note: do not remove the epoch line.
 epoch               20090731
 description         A feed aggregator for GTK+/GNOME.
@@ -19,9 +19,9 @@ license             GPL-2+
 platforms           darwin
 homepage            http://lzone.de/${name}/
 
-checksums           rmd160  a5feed10c3d7547e49985605f2e5b5609bd03c97 \
-                    sha256  3646b51a9fe6790f667238afc728f76ef6c70dee1ac3b500120a29033f9c2948 \
-                    size    1526193
+checksums           rmd160  e170eeb81ae91ab03b3a4b518a223dc2dc7bd08e \
+                    sha256  f97df39c5abab58d497f94670f495414017c08be8dae6ca1e182890999741ea7 \
+                    size    1524982
 
 depends_build       port:pkgconfig \
                     port:intltool \
@@ -59,3 +59,6 @@ post-activate {
     system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${prefix}/share/icons/hicolor"
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
 }
+
+# restrict livecheck to stable release versions only
+github.livecheck.regex  {(\d+\.\d*[02468](?:\.\d+)*)}

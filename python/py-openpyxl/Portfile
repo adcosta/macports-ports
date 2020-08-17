@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-openpyxl
-version             2.5.9
+version             3.0.4
 revision            0
 categories-append   textproc
 platforms           darwin
 license             mit
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -21,13 +21,10 @@ long_description    openpyxl is a pure python reader and writer of Excel \
                     OpenXML files. It is ported from the PHPExcel project.
 
 homepage            http://openpyxl.readthedocs.org
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  f19ae353dda451339fe60f4e14037bfdb23ad130 \
-                    sha256  022c0f3fa1e873cc0ba20651c54dd5e6276fc4ff150b4060723add4fc448645e \
-                    size    1899233
+checksums           rmd160  d901305aa778d78837db6d0ce1c212e1161f4088 \
+                    sha256  d88dd1480668019684c66cfff3e52a5de4ed41e9df5dd52e008cbf27af0dbf87 \
+                    size    173019
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -35,6 +32,15 @@ if {${name} ne ${subport}} {
 
     depends_lib-append  port:py${python.version}-jdcal \
                         port:py${python.version}-et_xmlfile
+
+    if {${python.version} eq 27} {
+        version             2.6.3
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  17973a368ff5fbb67222fdb0240fcbad38bccd82 \
+                            sha256  72d1ed243972cad0b3c236230083cac00d9c72804e64a2ae93d7901aec1a8f1c \
+                            size    173754
+    }
 
     livecheck.type      none
 }

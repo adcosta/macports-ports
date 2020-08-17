@@ -1,13 +1,14 @@
 PortSystem 1.0
 
 name		ntp
-version		4.2.8p12
-revision	1
+version		4.2.8p15
+revision	0
 categories	sysutils net
 maintainers	{geeklair.net:dluke @danielluke}
 description	NTP is a protocol designed to synchronize the clocks of computers over a network.
 #license	NTP (http://www.eecis.udel.edu/~mills/ntp/html/copyright.html), see http://opensource.org/licenses/NTP
 license		Permissive
+PortGroup	legacysupport 1.0
 
 long_description	NTP is an implementation of RFC-5905. It is widely \
 			used to synchronize a computer to Internet time \
@@ -15,19 +16,23 @@ long_description	NTP is an implementation of RFC-5905. It is widely \
 homepage	http://www.ntp.org/
 master_sites	https://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-[join [lrange [split ${version} .] 0 1] .]/
 
-checksums	md5	1522d66574bae14abb2622746dad2bdc \
-		rmd160	c74c6c297af318d0e162b10be71b042ae115d79c \
-		sha256	709b222b5013d77d26bfff532b5ea470a8039497ef29d09363931c036cb30454 \
-		size	7079642
+checksums	md5	e1e6b23d2fc75cced41801dbcd6c2561 \
+		rmd160	4653211d8c258a4a9edf1b2445a77223330176a2 \
+		sha256	f65840deab68614d5d7ceb2d0bb9304ff70dcdedd09abb79754a87536b849c19 \
+		size	7015970
 
 platforms	darwin
 
-configure.args	--with-ntpsnmpd=no --enable-ipv6 ac_cv_search_nlist=no
+configure.args  --with-ntpsnmpd=no \
+                --enable-ipv6 \
+                --enable-SHM \
+                --enable-GPSD \
+                --enable-NMEA \
+                --enable-ATOM \
+                ac_cv_search_nlist=no
 
-depends_lib	port:openssl port:libevent port:libedit
+depends_lib	path:lib/libssl.dylib:openssl port:libevent port:libedit
 depends_build	port:pkgconfig
-
-patchfiles	patch-libntp-work_fork.c.diff
 
 startupitem.create	yes
 startupitem.netchange	yes
@@ -47,6 +52,13 @@ platform darwin 18 {
 		reinplace "s|^RANLIB = ranlib|RANLIB = ranlib -c|" \
 			$worksrcpath/libntp/Makefile
 	}
+}
+
+platform darwin 19 {
+        post-configure {
+                reinplace "s|^RANLIB = ranlib|RANLIB = ranlib -c|" \
+                        $worksrcpath/libntp/Makefile
+        }
 }
 
 post-destroot	{

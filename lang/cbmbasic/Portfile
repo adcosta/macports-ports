@@ -33,10 +33,9 @@ patchfiles          patch-Makefile.diff
 use_configure       no
 
 variant universal {}
-
-build.env           CC="${configure.cc}" \
-                    CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
-                    LDFLAGS="${configure.ldflags} [get_canonical_archflags ld]"
+build.env           CC=${configure.cc} \
+                    "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]"
 
 destroot {
     xinstall -m 755 ${worksrcpath}/cbmbasic ${destroot}${prefix}/bin

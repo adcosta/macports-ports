@@ -2,12 +2,14 @@
 
 PortSystem 1.0
 PortGroup select 1.0
+PortGroup compilers 1.0
 PortGroup compiler_blacklist_versions 1.0
 PortGroup muniversal 1.0
 
 #remember to update the -doc and -server as well
 name                postgresql11
-version             11.0
+version             11.8
+revision            1
 
 categories          databases
 platforms           darwin
@@ -25,9 +27,9 @@ master_sites        http://ftp3.de.postgresql.org/pub/Mirrors/ftp.postgresql.org
             postgresql:source/v${version}/
 distname            postgresql-${version}
 
-checksums           rmd160  aead1341fd521795789586ebb2c84f2a70bc8f96 \
-                    sha256  bf9bba03d0c3902c188af12e454b35343c4a9bf9e377ec2fe50132efb44ef36b \
-                    size    21206820
+checksums           rmd160  fc279ef554a50b79341454f9c538278d3aa13f0e \
+                    sha256  eaf2f4329ccc349c89e950761b81daf8c99bb8966abcab5665ccd6ee95c77ae2 \
+                    size    19922770
 
 use_bzip2           yes
 
@@ -41,7 +43,8 @@ depends_run         port:postgresql_select
 worksrcdir          postgresql-${version}
 
 set libdir          ${prefix}/lib/${name}
-configure.args      --sysconfdir=${prefix}/etc/${name} \
+configure.args      PG_SYSROOT=disabled \
+                    --sysconfdir=${prefix}/etc/${name} \
                     --bindir=${libdir}/bin \
                     --libdir=${libdir} \
                     --includedir=${prefix}/include/${name} \
@@ -65,7 +68,9 @@ configure.ldflags-append    -headerpad_max_install_names
 configure.universal_args-delete --disable-dependency-tracking
 
 # building psql with clang from Xcode prior to 4.4 causes segfault on query; see #31717
-compiler.blacklist-append   {clang < 421}
+compiler.blacklist-append {clang < 421}
+compilers.choose          cc cxx
+compilers.setup           -gcc -fortran -clang33 -clang34 -clang37
 notes "To use the postgresql server, install the ${name}-server port"
 
 if {[variant_isset universal]} {
@@ -83,12 +88,12 @@ test.target         check
 # remember to change livecheck with first proper release
 livecheck.type      regex
 #livecheck.regex    (11\\.\[.0-9\]*\[a-z\]+\[0-9\])
-livecheck.regex    (11\[a-z\]+\[0-9\])
-#livecheck.regex    (11\\.\[.0-9\]+)
+#livecheck.regex    (11\[a-z\]+\[0-9\])
+livecheck.regex    (11\\.\[.0-9\]+)
 livecheck.url       ${homepage}/ftp/source/
 
 post-destroot {
-    system "cd ${destroot}${prefix}/bin && ln -sf ${libdir}/bin/psql psql10"
+    system "cd ${destroot}${prefix}/bin && ln -sf ${libdir}/bin/psql psql11"
 
     reinplace -E "s#^CFLAGS =#CFLAGS +=#g" \
         ${destroot}${prefix}/lib/${name}/pgxs/src/Makefile.global
@@ -127,9 +132,9 @@ variant python27 conflicts python3 description {add support for python 2.7} {
 }
 
 variant python3 conflicts python27 description {add support for python 3.x} {
-    depends_lib-append      port:python37
+    depends_lib-append      port:python38
     configure.args-append   --with-python
-    configure.python        ${prefix}/bin/python3.7
+    configure.python        ${prefix}/bin/python3.8
 }
 
 variant perl description {add Perl support} {
@@ -144,6 +149,16 @@ variant tcl description {add Tcl support} {
 }
 
 variant llvm description {add support for JIT compilation} {
-    depends_lib-append      port:llvm-6.0
+    set llvm_ver 9.0
+
+    foreach clang ${compilers.clang_variants} {
+        if { [variant_exists ${clang}] && [variant_isset ${clang}] } {
+            set llvm_ver [string index ${clang} end-1].[string index ${clang} end]
+        }
+    }
+
+    depends_lib-append      port:llvm-${llvm_ver}
     configure.args-append   --with-llvm
+    configure.env-append    LLVM_CONFIG=${prefix}/libexec/llvm-${llvm_ver}/bin/llvm-config \
+                            CLANG=${configure.cc}
 }

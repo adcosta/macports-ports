@@ -4,29 +4,30 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-structlog
-version             18.2.0
+version             20.1.0
+revision            0
+
 platforms           darwin
 license             MIT Apache-2
-maintainers         {yan12125 @yan12125} openmaintainer
+maintainers         nomaintainer
 
 description         Structured Logging for Python
 long_description    ${description}
 
-homepage            http://www.structlog.org/
-master_sites        pypi:s/structlog
-distname            structlog-${version}
+homepage            https://www.structlog.org/
 
-checksums           rmd160  fd2b0f3477948a134c1db996f011355eca647a0e \
-                    sha256  e361edb3b9aeaa85cd38a1bc9ddbb60cda8a991fc29de9db26832f6300e81eb4 \
-                    size    316679
+checksums           rmd160  30cdae480081f30c8f51aba859eec94758e7d2af \
+                    sha256  7a48375db6274ed1d0ae6123c486472aa1d0890b08d314d2b016f3aa7f35990b \
+                    size    332376
 
-python.versions     27 36 37
+python.versions     27 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append \
                         port:py${python.version}-setuptools
 
-    depends_run-append  port:py${python.version}-six
+    depends_run-append  port:py${python.version}-six \
+                        port:py${python.version}-colorama
 
     depends_test-append port:py${python.version}-pytest \
                         port:py${python.version}-freezegun \
@@ -35,12 +36,15 @@ if {${name} ne ${subport}} {
                         port:py${python.version}-greenlet \
                         port:py${python.version}-simplejson
 
+    if {${python.version} > 27} {
+        depends_test-append \
+                        port:py${python.version}-pytest-asyncio
+    }
+
     test.run            yes
     test.env            PYTHONPATH=${worksrcpath}/build/lib
     test.cmd            py.test-${python.branch}
     test.target
 
     livecheck.type      none
-} else {
-    livecheck.type      pypi
 }

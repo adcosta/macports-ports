@@ -2,9 +2,11 @@
 
 PortSystem 1.0
 
+PortGroup legacysupport 1.0
+legacysupport.newest_darwin_requires_legacy 10
+
 name            socat
-version         1.7.3.2
-revision        1
+version         1.7.3.4
 categories      sysutils net
 license         {GPL-2 OpenSSLException}
 maintainers     {g5pw @g5pw} openmaintainer
@@ -21,10 +23,16 @@ long_description        \
 homepage        http://www.dest-unreach.org/socat/
 master_sites    http://www.dest-unreach.org/socat/download/
 
-checksums       rmd160  765c88c8cfdcda48bec5093b812cabfce99f25b5 \
-                sha256  e3561f808739383eb10fada1e5d4f26883f0311b34fd0af7837d0c95ef379251
+checksums       rmd160  8bc7e92ae51e693ec5ed7529d1d242f564c696f8 \
+                sha256  972374ca86f65498e23e3259c2ee1b8f9dbeb04d12c2a78c0c9b5d1cb97dfdfc \
+                size    490552
 
 use_bzip2 yes
 
 depends_lib     port:readline \
                 path:lib/libssl.dylib:openssl
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"
+

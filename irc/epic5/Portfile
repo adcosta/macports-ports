@@ -1,8 +1,8 @@
 PortSystem 1.0
 name             epic5
-version          2.0.1
+version          2.1.2
 categories       irc
-maintainers      {toby @tobypeterson}
+maintainers      {toby @tobypeterson} openmaintainer
 description      (E)nhanced (P)rogrammable (I)RC-II (C)lient 5
 homepage         http://www.epicsol.org/
 platforms        darwin
@@ -16,11 +16,13 @@ long_description \
 	best ircII client we could make.
 license          BSD
 
-master_sites     ftp://ftp.epicsol.org/pub/epic/EPIC5-PRODUCTION/
+master_sites     http://ftp.epicsol.org/pub/epic/EPIC5-PRODUCTION/ \
+                 ftp://ftp.epicsol.org/pub/epic/EPIC5-PRODUCTION/
 use_xz           yes
 
-checksums        rmd160 218e1a894359e871a23a9b6dccfeb5b005c7e788 \
-                 sha256 55260fc832c76f7a4975bde2bd0d0805fd8012fc8908ac94ec8c6de24a1be7aa
+checksums        rmd160 acdb97910a3e2f5c36edbea2655b5e856a46434c \
+                 sha256 5e41cf00f924e79e3503dd456ecd9b1dd93ac447c2573d4fa7da03b8bd19dbad \
+                 size   853124
 
 patchfiles       patch-configure
 
@@ -36,7 +38,3 @@ configure.args   --mandir=${prefix}/share/man \
 destroot.destdir IP=${destroot}
 
 depends_lib      port:libarchive port:ncurses path:lib/libssl.dylib:openssl port:libiconv
-
-livecheck.type   regex
-livecheck.url    ${master_sites}
-livecheck.regex  ${name}-(\[0-9\\.\]+)\\.tar

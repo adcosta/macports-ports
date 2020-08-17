@@ -5,7 +5,7 @@ PortGroup           python 1.0
 
 name                github-backup
 set _n              [string index ${name} 0]
-version             0.20.0
+version             0.35.0
 platforms           darwin
 license             MIT
 maintainers         {gmail.com:davide.liessi @dliessi} openmaintainer
@@ -16,11 +16,11 @@ long_description    ${description}
 homepage            https://github.com/josegonzalez/python-github-backup
 master_sites        pypi:${_n}/${name}
 
-checksums           rmd160  1089dc2d67260cb41fb4639646f141c9caca5bd9 \
-                    sha256  d082fa39a956763a4f18aa4fd4def53a721215b3f202bd016cefa653bc6884e5 \
-                    size    16394
+checksums           rmd160  5378a66a88c2cb37337b784f2f6940a7083c4660 \
+                    sha256  b6484e8baaf4829f5b33c8c795d18e3172d45e5c854d0d5363d736ee0db37a68 \
+                    size    25024
 
-python.default_version  37
+python.default_version  38
 
 depends_build-append \
                     port:py${python.version}-setuptools

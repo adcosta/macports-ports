@@ -1,13 +1,13 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           github 1.0
+PortGroup           golang 1.0
 
-github.setup        google codesearch a45d81b686e85d01f2838439deaf72126ccd5a96
-version             20150717
+go.setup            github.com/google/codesearch 1.2.0 v
 # Epoch 1: Migration to github
-epoch               1
-revision            1
+# Epoch 2: Migration to releases
+epoch               2
+revision            0
 categories          devel
 maintainers         nomaintainer
 description         Indexed regular expression-based search
@@ -19,28 +19,18 @@ long_description \
 license             BSD
 
 checksums \
-    rmd160  f87db6cc7d131a25096c74434474ff924f34dca7 \
-    sha256  9db1fa9f7f984cd9a03e593d32855ed76da56ac3525284894a70becd1467a54c
+    rmd160  7f5e126205efc9a9225ba10144ef3cb06a8f698e \
+    sha256  e1632998d912b9f577f048fac44d73b41a5b1664bde1c97b48ac8e6918646fa8 \
+    size    34130
 
 platforms           darwin
 
-depends_lib         port:go
-
-worksrcdir          src/github.com/google/codesearch
-
-post-extract {
-    xinstall -d ${workpath}/src/github.com/google
-    move ${workpath}/${name}-${github.version} \
-        ${worksrcpath}
-}
-
-use_configure       no
 set progs           [list cgrep csearch cindex]
 
 build {
     foreach prog ${progs} {
         system -W ${worksrcpath} \
-          "GOPATH=${workpath} ${prefix}/bin/go build cmd/${prog}/${prog}.go"
+          "${build.env} ${build.cmd} cmd/${prog}/${prog}.go"
     }
 }
 

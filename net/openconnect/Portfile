@@ -3,7 +3,8 @@
 PortSystem          1.0
 
 name                openconnect
-version             7.08
+version             8.08
+revision            0
 categories          net
 platforms           darwin
 maintainers         nomaintainer
@@ -31,9 +32,10 @@ depends_lib         port:gettext \
 master_sites        ftp://ftp.infradead.org/pub/openconnect/
 
 # md5 is needed for http master_site below
-checksums           md5     ca2ca1f61b8515879b481dcf6ed4366b \
-                    rmd160  b5f8e916d081011d469f3b180b195113687cdd2b \
-                    sha256  1c44ec1f37a6a025d1ca726b9555649417f1d31a46f747922b84099ace628a03
+checksums           md5     790c2bcab813050acf2fcfc261a4346e \
+                    rmd160  e6937294d2dad4de055527bde788b5b99ae35cd2 \
+                    sha256  b74b30ebabbd4801056e46c0373e71f3d41c75b805fcc7ee8fc586fe559379e8 \
+                    size    2038269
 
 foreach {type checksum} ${checksums} {
     if {${type} == "md5"} {
@@ -85,5 +87,9 @@ post-destroot {
         ${docdir}
 }
 
-livecheck.url       ${homepage}download.html
-livecheck.regex     OpenConnect v(\[0-9.\]+)
+livecheck.url       ftp://ftp.infradead.org/pub/openconnect/
+livecheck.regex     ${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}
+
+test.run            yes
+test.cmd            make
+test.target         check

@@ -4,63 +4,60 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                sqlmap
-version             0.9
-set branch          [join [lrange [split ${version} .] 0 1] .]
-revision            1
-categories          security databases python
-maintainers         {pixilla @pixilla} openmaintainer
-platforms           darwin
-license             GPL-2
+version             1.4.8
+revision            0
 
-description         sqlmap is an open source penetration testing tool.
+categories          security databases python
+maintainers         nomaintainer
+platforms           darwin
+supported_archs     noarch
+license             GPL-2+
+
+description         Automatic SQL injection and database takeover tool
 long_description    sqlmap is an open source penetration testing tool that automates the \
                     process of detecting and exploiting SQL injection flaws and taking over \
                     of database servers. It comes with a powerful detection engine, many \
-                    niche features for the ultimate penetration tester and a broad range of \
-                    switches lasting from database fingerprinting, over data fetching from \
-                    the database, to accessing the underlying file system and executing \
-                    commands on the operating system via out-of-band connections.
+                    niche features for the ultimate penetration tester, and a broad range of \
+                    switches including database fingerprinting, over data fetching from the \
+                    database, accessing the underlying file system, and executing commands on \
+                    the operating system via out-of-band connections.
 
-homepage            http://sqlmap.sourceforge.net/
-master_sites        sourceforge
+homepage            http://sqlmap.org/
 
-checksums           rmd160  5a6a737157cda4ffe9c6fd326d9fa39f0a0bfe59 \
-                    sha256  9c76666d0555620329d949aca87571825adb8fcda9cd564e6410e1d2b6228c55
+checksums           rmd160  57b33a48e985a32d97033e5d2b9a469dcf664c04 \
+                    sha256  af789cc2d9b7cab2f71087967867b3587db9636b38bef1ffb39165a0675a6d87 \
+                    size    6780324
 
 worksrcdir          ${name}
-python.link_binaries no
 
 post-patch {
     fs-traverse f ${worksrcpath} {
         switch [file extension ${f}] {
-            .svn {
-                delete ${f}
-                continue
-            }
             .py {
                 reinplace "s|^#! */usr/bin/env python\$|#!${python.bin}|" ${f}
             }
         }
     }
 }
-build {
-    system "${python.bin} -m compileall ${worksrcpath}"
-    system "${python.bin} -O -m compileall ${worksrcpath}"
-}
-destroot {
-    delete ${destroot}${prefix}/share/doc/${name}
-    xinstall -d ${destroot}${python.pkgd}
-    copy ${worksrcpath} ${destroot}${python.pkgd}/
+
+variant python27 conflicts python37 python38 description {Build for Python 2.7} {
+    python.default_version 27
+    depends_build-append \
+                    port:py${python.version}-setuptools
 }
 
-variant python26 conflicts python27 description {Build for python26} {
-    python.default_version 26
+variant python37 conflicts python27 python38 description {Build for Python 3.7} {
+    python.default_version 37
+    depends_build-append \
+                    port:py${python.version}-setuptools
 }
-variant python27 conflicts python26 description {Build for python27} {
-    python.default_version 27
+
+variant python38 conflicts python27 python37 description {Build for Python 3.8} {
+    python.default_version 38
+    depends_build-append \
+                    port:py${python.version}-setuptools
 }
-if {    ![variant_isset python26]
-    &&  ![variant_isset python27]
-    } {
-    default_variants +python27
+
+if {![variant_isset python27] && ![variant_isset python37] && ![variant_isset python38]} {
+    default_variants +python38
 }

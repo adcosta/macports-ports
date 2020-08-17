@@ -4,10 +4,10 @@ PortSystem          1.0
 
 name                cpabe
 version             0.11
-revision            1
+revision            2
 categories          security
 platforms           darwin
-maintainers         googlemail.com:jgilab openmaintainer
+maintainers         nomaintainer
 license             GPL-2
 
 description         ciphertext-policy attribute-based encryption toolkit
@@ -39,4 +39,9 @@ depends_lib         port:pbc \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     path:lib/libssl.dylib:openssl
 
-configure.args      --with-pbc-include=${prefix}/include/pbc
+configure.args      --with-bswabe-include=${prefix}/include \
+                    --with-bswabe-lib=${prefix}/lib \
+                    --with-gmp-include=${prefix}/include \
+                    --with-gmp-lib=${prefix}/lib \
+                    --with-pbc-include=${prefix}/include/pbc \
+                    --with-pbc-lib=${prefix}/lib

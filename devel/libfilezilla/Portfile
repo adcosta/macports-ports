@@ -1,14 +1,18 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           cxx11 1.1
-PortGroup           compiler_blacklist_versions 1.0
+PortGroup           legacysupport 1.0
+
+# AT_SYMLINK_NOFOLLOW
+legacysupport.newest_darwin_requires_legacy 13
 
 name                libfilezilla
-version             0.15.0
+version             0.23.0
+revision            0
+
 categories          devel
 platforms           darwin
-maintainers         {yan12125 @yan12125} openmaintainer
+maintainers         {@lhaeger gmx.net:lothar.haeger} openmaintainer
 license             GPL-2+
 
 description         Shared component for Filezilla programs
@@ -20,19 +24,26 @@ long_description    Small and modern C++ library, offering some basic \
 homepage            https://lib.filezilla-project.org/
 master_sites        https://download.filezilla-project.org/libfilezilla/
 
-checksums           rmd160  93a628e609a7d557f920289d09f7de52e3e79c6d \
-                    sha256  9e68d35b23423d95e40126cadce6b07f1e82db3721227d577450f358d5482317 \
-                    size    404535
+checksums           rmd160  5d4856b77489bb6519444339209d5e340212755c \
+                    sha256  adeac127fbd1714b22c828cdd27fc6c92e09fd1abcc96684bf30535fb8226852 \
+                    size    560028
+
+configure.env-append \
+                    DX_PERL=/usr/bin/perl
 
 depends_build       port:pkgconfig \
                     port:cppunit \
-                    port:nettle \
                     bin:perl:perl5
+
+depends_lib         port:libiconv \
+                    port:nettle \
+                    port:gnutls
 
 use_bzip2           yes
 
+compiler.cxx_standard   2017
 # libfilezilla uses thread_local, which is not supported in Xcode < 8
-compiler.blacklist-append {clang < 800}
+compiler.thread_local_storage   yes
 
 test.run            yes
 test.dir            ${worksrcpath}/tests
@@ -43,28 +54,6 @@ pre-test {
     system -W ${test.dir} "${build.cmd} test"
 }
 
-variant doc description "Install API documents" {
-    depends_build-append    port:doxygen \
-                            path:bin/dot:graphviz \
-                            port:texlive-fonts-recommended \
-                            port:texlive-latex \
-                            port:texlive-latex-extra \
-                            port:texlive-latex-recommended
-
-    post-build {
-        system -W ${worksrcpath}/doc/ "${build.cmd} html pdf"
-    }
-
-    post-destroot {
-        set docdir ${destroot}${prefix}/share/doc/${name}
-
-        xinstall -m 755 -d ${docdir}/html
-        copy {*}[glob ${worksrcpath}/doc/doxygen-doc/html/*] ${docdir}/html
-        delete {*}[glob ${docdir}/html/*.md5]
-        xinstall -m 644 ${worksrcpath}/doc/doxygen-doc/libfilezilla.pdf ${docdir}
-    }
-}
-
 livecheck.type      regex
-livecheck.url       ${homepage}download.php
-livecheck.regex     /${name}-(\[0-9.\]+)
+livecheck.url       ${master_sites}
+livecheck.regex     ${name}-(\[0-9.\]+)\\.tar\\.bz2

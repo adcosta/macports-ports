@@ -5,6 +5,7 @@ PortGroup           wxWidgets 1.0
 
 name                codeblocks
 version             17.12
+revision            1
 platforms           darwin freebsd
 categories          devel aqua x11
 license             GPL-3+
@@ -45,6 +46,8 @@ depends_build-append \
                     port:autoconf \
                     port:automake \
                     port:libtool
+
+compiler.cxx_standard   2011
 
 # FileManager requires "gamin" to be installed when using wxGTK,
 # not sure whether it works with Carbon/Cocoa at all,

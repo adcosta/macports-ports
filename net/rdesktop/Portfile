@@ -1,13 +1,15 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-PortSystem 1.0
+PortSystem          1.0
+PortGroup           github 1.0
 
-name                rdesktop
-version             1.8.3
+github.setup        rdesktop rdesktop 1.9.0 v
+github.tarball_from releases
 revision            1
 categories          net
 license             GPL-3+
 maintainers         nomaintainer
+
 description         Windows Terminal Server Client
 long_description    \
     rdesktop is an RDP client to access Microsoft Terminal Server based services.\
@@ -21,36 +23,42 @@ long_description    \
 platforms           darwin freebsd
 
 homepage            https://www.rdesktop.org/
-master_sites        sourceforge
 
 universal_variant   no
 
-depends_build       port:pkgconfig
-depends_lib         port:xorg-libX11 \
-                    port:xorg-libXrandr \
-                    path:lib/libssl.dylib:openssl \
-                    port:libiconv \
+depends_build-append \
+                    port:pkgconfig
+depends_lib-append  port:gmp \
+                    port:gnutls \
                     port:libao \
-                    port:libsamplerate
+                    port:libiconv \
+                    port:libsamplerate \
+                    port:libtasn1 \
+                    port:nettle \
+                    port:xorg-libX11 \
+                    port:xorg-libXcursor \
+                    port:xorg-libXrandr
+
+use_autoreconf      yes
+autoreconf.args     -fv
 
 configure.args      --mandir=${prefix}/share/man \
-                    --with-sound=libao \
-                    --with-openssl=${prefix} \
                     --with-libiconv-prefix=${prefix} \
+                    --with-sound=libao \
                     --disable-credssp \
                     --disable-smartcard
 
 build.target        rdesktop
 
-checksums \
-    rmd160  c278b54be54f434d79e0f07a9cdc2cca62286103 \
-    sha256  88b20156b34eff5f1b453f7c724e0a3ff9370a599e69c01dc2bf0b5e650eece4
+checksums           rmd160  a403d660585dc4f8433ea885359e4452148a2c98 \
+                    sha256  473c2f312391379960efe41caad37852c59312bc8f100f9b5f26609ab5704288 \
+                    size    368980
 
 variant w2k_license_hack description {will announce the client as Windows 2000 machine} {
     patchfiles patch-licence.c
 }
 
-variant smartcard description {enables smartcard forwarding} {
-#    configure.args-append --enable-smartcard
-     error "--> Smartcard support is currently broken. <--"
+variant smartcard description {enables smartcard forwarding (possibly broken)} {
+    configure.args-replace  --disable-credssp   --enable-credssp
+    configure.args-replace  --disable-smartcard --enable-smartcard
 }

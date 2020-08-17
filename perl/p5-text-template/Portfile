@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Text-Template 1.53
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Text-Template 1.59
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Expand template text with embedded Perl
@@ -12,9 +12,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  3a8198330fedc3fbae16fcbb1fccee94562389ca \
-                    sha256  ae221cbba2b27967a12bda3f531547e897eb38ae0a92c084607fd5a6a8085bc4 \
-                    size    48863
+checksums           rmd160  922a574c70fbe0fa694ae9a67a09a4c0cd8507c1 \
+                    sha256  1dd2c788c05303ed9a970e1881109642151fa93e02c7a80d4c70608276bab1ee \
+                    size    50318
 
 if {${perl5.major} != ""} {
     depends_build-append \

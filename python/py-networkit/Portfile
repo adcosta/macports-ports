@@ -2,17 +2,15 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
-PortGroup           cxx11 1.1
-PortGroup           compilers 1.0
 
 name                py-networkit
-version             4.6
+version             7.0
 revision            0
 categories-append   devel
 platforms           darwin
 license             MIT
 
-python.versions     35 36 37
+python.versions     37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,24 +18,28 @@ description         NetworKit is a toolbox for high-performance network analysis
 long_description    ${description}
 
 homepage            https://networkit.iti.kit.edu/
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  089c0e41ef0ecbb31aa516f2b78d2b6d22eaead0 \
-                    sha256  1b27864ed3279812705a463ee251eec7bd2453080bd554c150ffbeecedc71d42 \
-                    size    1223734
+checksums           rmd160  432de3a8ff849835059ea2972cb6b7c5071845e0 \
+                    sha256  eea4b5e565d6990b674e1c7f4d598be9377d57b61d0d82883ecc39edabaf3631 \
+                    size    1905444
 
 if {${name} ne ${subport}} {
-    # Pick a compiler that supports openmp
-    compiler.whitelist macports-clang-6.0 macports-clang-5.0 macports-clang-4.0 macports-clang-3.9 macports-clang-3.7 macports-gcc-7 macports-gcc-6 macports-gcc-5 macports-gcc-4.8 macports-gcc-4.7 macports-gcc-4.6 macports-gcc-4.5 macports-gcc-4.4 macports-gcc-4.3
-    compiler.fallback macports-clang-6.0
+    compiler.cxx_standard 2017
+    compiler.openmp_version 2.5
+
+    patchfiles-append   patch-setup.py.diff
+
+    post-patch {
+        # force cython usage
+        file delete ${worksrcpath}/networkit/_NetworKit.cpp
+        reinplace "s|@@PREFIX@@|${prefix}|" ${worksrcpath}/setup.py
+        reinplace "s|@@CYTHON@@|cython-${python.branch}|" ${worksrcpath}/setup.py
+    }
 
     depends_build-append \
                         port:py${python.version}-setuptools \
                         port:py${python.version}-cython \
-                        port:py${python.version}-pip \
-                        port:scons
+                        port:cmake
 
     depends_lib-append  port:py${python.version}-scipy \
                         port:py${python.version}-matplotlib \
@@ -47,25 +49,12 @@ if {${name} ne ${subport}} {
                         port:py${python.version}-tabulate \
                         port:py${python.version}-seaborn \
                         port:py${python.version}-scikit-learn \
-                        port:py${python.version}-ipython
+                        port:py${python.version}-ipython \
+                        port:libomp
 
-    patchfiles-append   patch-setup_util.py.diff
+    build.env-append    "CXX=${configure.cxx}"
 
-    post-patch {
-        reinplace "s|installExternalPythonPackages|#installExternalPythonPackages|" ${worksrcpath}/setup.py
-    }
-
-    build.env-append    CC="${configure.cc}" \
-                        CXX="${configure.cxx}" \
-                        CFLAGS="${configure.cc_archflags}" \
-                        CXXFLAGS="${configure.cxx_archflags}" \
-                        CPPFLAGS="${configure.cppflags}"
-
-    destroot.env-append CC="${configure.cc}" \
-                        CXX="${configure.cxx}" \
-                        CFLAGS="${configure.cc_archflags}" \
-                        CXXFLAGS="${configure.cxx_archflags}" \
-                        CPPFLAGS="${configure.cppflags}"
+    destroot.env-append "CXX=${configure.cxx}"
 
     livecheck.type      none
 }

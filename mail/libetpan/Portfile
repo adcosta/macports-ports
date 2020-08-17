@@ -3,27 +3,28 @@
 PortSystem              1.0
 PortGroup               github 1.0
 
-github.setup            dinhviethoa libetpan 1.9.1
+github.setup            dinhviethoa libetpan 1.9.4
+revision                1
 categories              mail devel
 platforms               darwin
 license                 BSD
 maintainers             {pmetzger @pmetzger} openmaintainer
 
-description             mail purpose library
+description             mail access library
 
-long_description        libEtPan is a mail purpose library. It will be used for \
-                        low-level mail handling: network protocols \
-                        (IMAP/NNTP/POP3/SMTP over TCP/IP and SSL/TCP/IP, already \
-                        implemented), local storage (mbox/MH/maildir), \
-                        message/MIME parser
+long_description        libEtPan provides a portable, efficient framework \
+                        for different kinds of mail access:\
+                        IMAP, SMTP, POP and NNTP.\
+                        It provides an API for C language.
 
-checksums               rmd160  9275d20f77a0a4738cadf2c45a973c5eed90de98 \
-                        sha256  0ebea6f8d5ab78992f4933c5a35676592ded6584708166c60b9c1ef9f6ce543e \
-                        size    6190387
+checksums               rmd160  dabd72e915dfb49977db48d53d6ee82ac3a98d41 \
+                        sha256  c6425b47713de27abe334fe3f875f403c5d7eb14daf30d22378ab4cbbd487d2d \
+                        size    5000369
 
 depends_build-append    port:autoconf \
                         port:automake \
-                        port:libtool
+                        port:libtool \
+                        port:pkgconfig
 
 depends_lib-append      port:curl \
                         port:cyrus-sasl2 \
@@ -39,8 +40,3 @@ configure.args          --with-openssl=${prefix} \
                         --disable-debug \
                         --disable-dependency-tracking \
                         --disable-silent-rules
-
-post-build {
-    reinplace -E {s|-arch [a-z0-9_]+||g} \
-        ${worksrcpath}/libetpan-config
-}

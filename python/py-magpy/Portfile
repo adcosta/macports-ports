@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        geomagpy magpy 0.4.4 v
+github.setup        geomagpy magpy 0.4.7 v
 name                py-magpy
 platforms           darwin
 license             GPL-3
@@ -13,12 +13,12 @@ maintainers         {mojca @mojca} openmaintainer
 description         Geomagnetic analysis tools.
 long_description    ${description}
 
-checksums           rmd160  c985754d090dde4ab59233bae5c526cb975392fc \
-                    sha256  987de03a6b42b0dc605f2e89e0454a0e28d23c058e18975167f13275216b60f9 \
-                    size    8170439
+checksums           rmd160  2493f090aa46af18693b985f2b7b1ac8879603cd \
+                    sha256  0a3f789c7916393fa888855fcef51d476aa574fef9f9663b7a5f3e40ade7705a \
+                    size    8177303
 
 # python3 versions are currently broken
-python.versions     27 35 36 37
+python.versions     27
 
 # TODO:
 # - add a port py-autobahn

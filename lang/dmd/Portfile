@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           muniversal 1.0
 
-github.setup        dlang dmd 2.081.2 v
+github.setup        dlang dmd 2.088.0 v
 categories          lang
 platforms           darwin
 license             Boost-1
@@ -15,16 +15,16 @@ long_description \
     It pragmatically combines efficiency, control, \
     and modeling power, with safety and programmer productivity.
 homepage            http://dlang.org/
-checksums           rmd160  9df047d5b36592465305beea8deb540f2297573a \
-                    sha256  8be8348a1b3be276b8b6435c982a3b72f5c36a22739c31c57ae0e0067be38b63 \
-                    size    3120815
+checksums           rmd160  70a61cd9aa8d8a4b33ab55f6fb54498b1948623c \
+                    sha256  73a114c034077180799822aa809b404f760cf1233103b75f2e0b7d7e5e7b9032 \
+                    size    3309925
 post-patch {
     reinplace "s|/etc|${prefix}/etc/${name}|" ${worksrcpath}/docs/man/man5/${name}.conf.5
 }
 
 use_configure       no
 
-patchfiles          patch-posix.mak.diff
+patchfiles          patch-src-posix.mak.diff
 
 depends_build-append          port:dmd-bootstrap
 depends_skip_archcheck-append dmd-bootstrap

@@ -32,6 +32,7 @@ configure.universal_args-delete \
 
 default build.dir           {${build_dir}}
 default build.cmd           {${prefix}/bin/ninja}
+default build.post_args     {-v}
 default build.target        ""
 
 # remove DESTDIR= from arguments, but rather take it from environmental variable
@@ -42,7 +43,7 @@ namespace eval meson {
     proc get_post_args {} {
         global configure.dir build_dir muniversal.current_arch
         if {[info exists muniversal.current_arch]} {
-            return "${configure.dir} ${build_dir}-${muniversal.current_arch}"
+            return "${configure.dir} ${build_dir}-${muniversal.current_arch} --cross-file=${muniversal.current_arch}-darwin"
         } else {
             return "${configure.dir} ${build_dir}"
         }

@@ -12,8 +12,8 @@ set shorthash       8238e839
 set majorversion    .28
 set minorversion    .2
 set lastcommit      20180201
-set corerev         3
-set pluginsrev      1
+set corerev         9
+set pluginsrev      3
 set metarev         0
 github.setup        MythTV mythtv ${shorthash}
 checksums           rmd160  0f468b5e0502afe2672f2e41df5f40cbdb2d43d4 \
@@ -48,7 +48,7 @@ set pythonbranch    2.7
 set pythonver       python${pythonbranch}
 set pythonbin       ${prefix}/bin/${pythonver}
 set pymodver        py27
-perl5.branches      5.26
+perl5.branches      5.28
 # change to 1 to print reinplace warnings
 set maintainer_mode 0
 if {!$maintainer_mode} {
@@ -120,8 +120,6 @@ if {$subport eq "mythtv-core${majorversion}"} {
                         p${perl5.major}-dbd-mysql mariadb {mariadb10_0 mariadb10_1 mysql4 mysql5 mysql51 mysql55 mysql56 mysql57 percona}
     require_active_variants \
                         ${pymodver}-mysql mariadb55 {mysql4 mysql51 mysql55 mysql56 percona55}
-    require_active_variants \
-                        logrotate startupitem
     
     pre-fetch {
         if {${os.platform} eq "darwin" && ${os.major} < 13} {
@@ -155,7 +153,9 @@ if {$subport eq "mythtv-core${majorversion}"} {
     patchfiles-append   patch-mythwidgets_osx_focus.diff
     # https://code.mythtv.org/trac/ticket/13001
     patchfiles-append   patch_01_typlayer_qsp_ua_detection.diff
-    
+    # backport ffmpeg upstream patch for compatibility with x264 build 153+
+    patchfiles-append   patch-x264-build-153.diff
+
     post-patch {
         set sedPath ${worksrcpath}/mythtv/
         ui_info "Make Myth utils use MacPorts Perl"
@@ -181,7 +181,7 @@ if {$subport eq "mythtv-core${majorversion}"} {
         reinplace -locale C "s#\${BRANCH}#${mythbranch}#g" ${sedPath}version.sh
     
         ui_info "Make Myth scripts use MacPorts Python  <<<<"
-        # Hack to install Python bindings in ${prefix}/Library/Frameworks/Python.framework/Versions/2.7
+        # Hack to install Python bindings in ${frameworks_dir}/Python.framework/Versions/2.7
         reinplace -locale C "s|\$(ROOT_FLAGS) \$(PREFIX_FLAGS)|\$(ROOT_FLAGS) \--prefix=\"${frameworks_dir}/Python.framework/Versions/${pythonbranch}\"|" \
             ${sedPath}/bindings/python/Makefile
         reinplace -locale C "s|/usr/local|${prefix}|" ${worksrcpath}/mythtv/bindings/python/MythTV/static.py
@@ -639,6 +639,7 @@ if {$subport eq "mythtv-plugins${majorversion}"} {
 
 if {$subport eq "mythtv${majorversion}"} {
     version             0${majorversion}${minorversion}-Fixes-${lastcommit}
+    revision            1
     revision            ${metarev}
     description         installs complete MythTV system
     long_description    \

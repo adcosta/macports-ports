@@ -2,14 +2,13 @@
 
 PortSystem              1.0
 PortGroup               cmake 1.1
-PortGroup               cxx11 1.1
 PortGroup               perl5 1.0
 PortGroup               wxWidgets 1.0
 PortGroup               active_variants 1.1
 PortGroup               linear_algebra 1.0
 
 name                    hugin-app
-version                 2018.0.0
+version                 2019.2.0
 revision                1
 set branch              [join [lrange [split ${version} .] 0 1] .]
 categories              graphics
@@ -29,12 +28,14 @@ master_sites            sourceforge:project/hugin/hugin/hugin-${branch}
 distname                hugin-${version}
 use_bzip2               yes
 
-perl5.branches          5.26
+compiler.cxx_standard   2011
+
+perl5.branches          5.28
 wxWidgets.use           wxWidgets-3.0-cxx11
 
-checksums               rmd160  0302957e8ed250c277f9b78d9604609c9919e8b9 \
-                        sha256  d3af0d066ac50e3bb243a175a64ecda136d87178419457e8822e11bcf0e565cb \
-                        size    9838518
+checksums               rmd160  d16c364779a48451b3b222a0dd0efa46535e6ddc \
+                        sha256  8ba6bdfea246313f142f17f42e066c6888f51b72e4f8814b5e1c84ff56a95a3e \
+                        size    10335030
 
 linalg.setup            noveclibfort
 
@@ -53,8 +54,11 @@ post-patch {
 }
 
 # icon files are not installed
-patchfiles-append       patch-icns.diff
+#patchfiles-append       patch-icns.diff
 post-extract {
+    # icon files have strange permissions
+    system "chmod 0644 ${worksrcpath}/src/hugin1/hugin/*.icns"
+
     # icon files are not found
     ln -s ../hugin/Hugin.icns        ${worksrcpath}/src/hugin1/stitch_project
     ln -s ../hugin/PTBatcherGui.icns ${worksrcpath}/src/hugin1/ptbatcher
@@ -69,6 +73,10 @@ post-extract {
 configure.pre_args-replace        \
     -DCMAKE_FIND_FRAMEWORK=LAST   \
     -DCMAKE_FIND_FRAMEWORK=FIRST
+
+# see https://trac.macports.org/ticket/58484
+configure.args-append \
+    -DTIFF_INCLUDE_DIR=${prefix}/include
 
 depends_build-append    port:pkgconfig
 
@@ -110,7 +118,7 @@ pre-configure {
     configure.args-append ${cmake_linalglib}
 }
 
-set pythons_suffixes {27 36 37}
+set pythons_suffixes {36 37 38}
 
 set pythons_ports {}
 foreach s ${pythons_suffixes} {
@@ -145,7 +153,8 @@ foreach s ${pythons_suffixes} {
     }
 }
 if {!${any_python}} {
-    default_variants +python27
+    # keep in sync with python PG
+    default_variants +python38
 }
 
 pre-fetch {
@@ -162,4 +171,4 @@ pre-fetch {
 
 livecheck.type          regex
 livecheck.url           ${homepage}
-livecheck.regex         Hugin-(\[.0-9\]+) released
+livecheck.regex         Hugin\[ -\](\[.0-9\]+) released

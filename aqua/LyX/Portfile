@@ -1,11 +1,19 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
 PortGroup           cxx11 1.1
 
 name                LyX
 conflicts           LyX1
-version             2.3.1
+# On next update, consider fixing this:
+# The port 'LyX' uses the cxx11 PortGroup which is deprecated.
+# Please instead specify the required c++ standard directly using
+#     compiler.cxx_standard  2011
+# replacing 2011 with newer standards (e.g. 2014, 2017) as required.
+# For more details see https://trac.macports.org/wiki/CompilerSelection
+version             2.3.5.2
+revision            1
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          aqua
 license             GPL-2+
@@ -20,29 +28,31 @@ long_description    LyX is an advanced open source document processor \
 
 platforms           darwin
 
-depends_build-append    port:bison port:gawk port:cctools \
-                        port:aspell port:hunspell
+depends_build-append    port:bison port:gawk port:cctools
 depends_lib-append      port:enchant \
                         bin:latex:texlive \
                         port:ImageMagick \
                         port:boost \
                         port:hunspell \
-                        port:libmagic
+                        port:libmagic \
+                        port:aspell
 
 use_xz              yes
-distname            lyx-${version}-2
-worksrcdir          lyx-${version}
+distname            lyx-${version}
 
 master_sites        http://lyx.cybermirror.org/stable/${branch}.x/ \
                     http://sunsite.icm.edu.pl/pub/unix/editors/lyx/stable/${branch}.x/ \
                     ftp://ftp.ntua.gr/pub/X11/LyX/stable/${branch}.x/ \
                     ftp://ftp.lyx.org/pub/lyx/stable/${branch}.x/
 
-checksums           rmd160  0841f86219fe6921b501212b75524e814279b262 \
-                    sha256  f5c9450ba196ed9d49fbc573f65b10d1726d16a62453466957aba2a9f6d66f84 \
-                    size    15800168
+checksums           rmd160  5352f4cc354ebe47f45774e46fa9cb93163ae18f \
+                    sha256  ca2654ae7ae5d921980449757ec08b30c7920cb915eb3d902a959e2629808ddf \
+                    size    16139804
 
 configure.args      --disable-silent-rules
+
+compiler.blacklist-append { clang < 800 }
+patchfiles-append   patch-lyx-applescriptproxy-add-stringh.diff
 
 post-configure {
     reinplace \
@@ -55,24 +65,29 @@ if {![variant_isset qt4]} {
     default_variants +qt5
 }
 
-# boost currently pulls in python27; change default when boost does
-if {![variant_isset python36] && ![variant_isset python37]} {
-    default_variants-append +python27
+# Make the default match boost's default.
+if {![variant_isset python27] && ![variant_isset python36] && ![variant_isset python37]} {
+    default_variants-append +python38
 }
 
-variant python27 conflicts python36 python37 description {Use python27} {
+variant python27 conflicts python36 python37 python38 description {Use python27} {
     depends_build-append    port:python27
     configure.python        ${prefix}/bin/python2.7
 }
 
-variant python36 conflicts python27 python37 description {Use python36} {
+variant python36 conflicts python27 python37 python38 description {Use python36} {
     depends_build-append    port:python36
     configure.python        ${prefix}/bin/python3.6
 }
 
-variant python37 conflicts python27 python36 description {Use python37} {
+variant python37 conflicts python27 python36 python38 description {Use python37} {
     depends_build-append    port:python37
     configure.python        ${prefix}/bin/python3.7
+}
+
+variant python38 conflicts python27 python36 python37 description {Use python38} {
+    depends_build-append    port:python38
+    configure.python        ${prefix}/bin/python3.8
 }
 
 variant qt4 conflicts qt5 description {Use Qt4} {

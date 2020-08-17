@@ -29,7 +29,7 @@ depends_lib             port:gd2
 
 worksrcdir              ${name}-${version}
 
-configure.env	      	GDLIB_CFLAGS='${configure.cflags}' GDLIB_LIBS='-lgd'
+configure.env	      	GDLIB_CFLAGS=${configure.cflags} GDLIB_LIBS=-lgd
 use_configure           yes
 configure.args          --prefix=${prefix}
 

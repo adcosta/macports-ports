@@ -1,9 +1,12 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
+
 
 name                mod_gnutls
-version             0.8.4
+version             0.11.0
+revision            0
 categories          www security crypto
 license             Apache-2
 platforms           darwin
@@ -21,8 +24,29 @@ long_description    \
 homepage            https://mod.gnutls.org
 master_sites        ${homepage}/downloads/
 
-checksums           rmd160  d4c6e4eec5de32441236c73ef9714d5e5c8eb458 \
-                    sha256  f2dbd0d9a329568a166a1fc1eafc81ab955bdebd36b9546a9466f248c3adcdf7
+checksums           rmd160  7cf117bf2d4c13c324ea62b7671793d2a79d5490 \
+                    sha256  559658f56321f05c28760baf54b74e7f92974c6bc7131e3a30ab9812c4d40a3b \
+                    size    458966
+
+use_bzip2           yes
+
+variant python37 conflicts python38 description {Build using Python 3.7} {
+    configure.env   PYTHON=${prefix}/bin/python3.7
+    depends_lib-append \
+                    port:python37 \
+                    port:py37-yaml
+}
+
+variant python38 conflicts python37 description {Build using Python 3.8} {
+    configure.env   PYTHON=${prefix}/bin/python3.8
+    depends_lib-append \
+                    port:python38 \
+                    port:py38-yaml
+}
+
+if {![variant_isset python37] && ![variant_isset python38]} {
+    default_variants    +python38
+}
 
 depends_build       port:pkgconfig
 
@@ -30,35 +54,17 @@ depends_lib         port:apache2 \
                     port:gnutls
 
 use_autoreconf      yes
+patchfiles          patch-src-gnutls_sni.c.diff
 
-if {[variant_isset apache22]} {
-    # version 0.8.x requires apache 2.4.x
-    version         0.6
-    revision        2
-    checksums       rmd160  252d4b1ec3a18931ef51a5ded3e8426f415150f4 \
-                    sha256  5fb2c79fd64f55faabde50c6ba3ef7b959825c8a6130152d00ca18f6d99bc041
-
-    patchfiles      patch-src_Makefile.am.diff
-
-    set apxs        ${prefix}/apache22/bin/apxs
-    set httpd_conf  ${prefix}/apache22/conf/httpd.conf
-    set mdir        ${destroot}${prefix}/apache22/modules/
-} else {
-    use_bzip2       yes
-
-    set apxs        ${prefix}/bin/apxs
-    set httpd_conf  ${prefix}/etc/apache2/httpd.conf
-    set mdir        ${destroot}${prefix}/lib/apache2/modules/
-}
-
-variant apache22 description "use apache22 instead of apache2" {
-    depends_lib-replace port:apache2 port:apache22
-    destroot.violate_mtree  yes
-}
+set apxs            ${prefix}/bin/apxs
+set httpd_conf      ${prefix}/etc/apache2/httpd.conf
+set mdir            ${destroot}${prefix}/lib/apache2/modules/
 
 configure.args      --disable-silent-rules \
                     --with-apxs=${apxs} \
                     --disable-strict
+
+compiler.blacklist-append {clang < 800}
 
 pre-destroot {
     xinstall -m 755 -d ${mdir}

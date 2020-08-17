@@ -3,8 +3,7 @@
 PortSystem          1.0
 
 name                tnftpd
-version             20130325
-revision            1
+version             20200704
 categories          net
 license             BSD
 maintainers         {snc @nerdling} openmaintainer
@@ -18,8 +17,9 @@ homepage            ftp://ftp.netbsd.org/pub/NetBSD/misc/tnftp/
 platforms           darwin
 
 master_sites        ${homepage}
-checksums           rmd160  e5eea84e187fe52a1f839b3375140275202350f5 \
-                    sha256  331006f0bcee593af3f4faaaf1de8db825e2aa60449be1c961916b37d562e147
+checksums           rmd160  e19fb79affc0c8dbac193cc8f7f9f87de7827aea \
+                    sha256  92de915e1b4b7e4bd403daac5d89ce67fa73e49e8dda18e230fa86ee98e26ab7 \
+                    size    529105
 
 use_autoconf        yes
 

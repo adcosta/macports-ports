@@ -1,39 +1,36 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-PortSystem          1.0
-PortGroup           github 1.0
-PortGroup           cmake  1.1
-PortGroup           cxx11  1.1
+PortSystem              1.0
+PortGroup               github 1.0
+PortGroup               cmake  1.1
 
-github.setup        pybind pybind11 2.2.4 v
-categories          devel
-platforms           darwin
-maintainers         {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
-license             BSD
+github.setup            pybind pybind11 2.5.0 v
+revision                0
+categories              devel
+platforms               darwin
+maintainers             {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+license                 BSD
 
-description         Extension modules for pybind11, which provides seamless operability between C++11 and Python
+description             Extension modules for pybind11, which provides seamless operability between C++11 and Python
 
-long_description    Extension modules for pybind11, which is a lightweight header-only library that \
-                    exposes  C++ types in Python and vice versa, mainly \
-                    to create Python bindings of existing C++ code.
+long_description        Extension modules for pybind11, which is a lightweight header-only library that \
+                        exposes  C++ types in Python and vice versa, mainly \
+                        to create Python bindings of existing C++ code.
 
-installs_libs       no
-supported_archs     noarch
+installs_libs           no
+supported_archs         noarch
 
-checksums           rmd160  6356e0d00cd71697ab96a7703216f1e21d5fca42 \
-                    sha256  10fc095729d5ba1e497f5e7b45740b3561b58cd83716267b41237787ad2e19e3 \
-                    size    548446
+compiler.cxx_standard   2017
 
-# see https://github.com/pybind/pybind11/commit/d04a9b1d9e6a0aa3601972f1291d181377759d14
-patchfiles-append   patch-deadlock.diff
+checksums               rmd160  86cc5293903052ebee56a251330fa8a6ee473221 \
+                        sha256  0499ab4261c301a00b7ac38af6b1cfb175b8214565dbe4745f57af8560ea55ce \
+                        size    573814
 
-set python_branch   3.7
-set python_version  [string map {. ""} ${python_branch}]
+set python_branch       3.8
+set python_version      [string map {. ""} ${python_branch}]
 
-configure.args-append \
-    -DPYBIND11_PYTHON_VERSION=${python_branch}
+configure.args-append   -DPYBIND11_PYTHON_VERSION=${python_branch} \
+                        -DPYBIND11_TEST=NO
 
-depends_build-append \
-    port:python${python_version} \
-    port:py${python_version}-setuptools \
-    port:py${python_version}-pytest
+depends_build-append    port:python${python_version} \
+                        port:py${python_version}-setuptools

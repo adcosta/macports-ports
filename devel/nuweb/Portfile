@@ -10,7 +10,7 @@ maintainers         nomaintainer
 license             BSD
 
 description         a literate programming system compatible with any language
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            http://nuweb.sourceforge.net/
 master_sites        sourceforge:project/${name}/
@@ -24,7 +24,7 @@ use_configure       no
 
 build.target        nuweb
 build.env-append    CC=${configure.cc} \
-                    CFLAGS='${configure.cflags} [get_canonical_archflags cc] -std=gnu89 -Wno-return-type'
+                    "CFLAGS=${configure.cflags} [get_canonical_archflags cc] -std=gnu89 -Wno-return-type"
 
 destroot {
     xinstall -m 0755 ${build.dir}/nuweb ${destroot}${prefix}/bin

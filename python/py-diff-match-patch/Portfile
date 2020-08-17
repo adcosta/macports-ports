@@ -4,30 +4,40 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-diff-match-patch
-version             20121119
+version             20200713
+revision            0
+
 platforms           darwin
 license             Apache-2
-maintainers         nomaintainer
+maintainers         {reneeotten @reneeotten} openmaintainer
 
 description         The Diff Match and Patch libraries offer robust algorithms to perform \
                     the operations required for synchronizing plain text.
 long_description    ${description}
 
 homepage            https://github.com/google/diff-match-patch
-master_sites        pypi:d/diff-match-patch
-distname            diff-match-patch-${version}
 
-checksums           rmd160  0279fd90a2ec4db1cd797db47862084e216083ed \
-                    sha256  9dba5611fbf27893347349fd51cc1911cb403682a7163373adacc565d11e2e4c \
-                    size    54113
+checksums           rmd160  05ae62db1d30937fb750e1c2c96e2de21ccee25e \
+                    sha256  da6f5a01aa586df23dfc89f3827e1cafbb5420be9d87769eeb079ddfd9477a18 \
+                    size    60711
 
-python.versions     27 36
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append \
                         port:py${python.version}-setuptools
 
+    test.run        yes
+    test.dir        ${build.dir}/diff_match_patch/tests
+    test.cmd        ${python.bin} diff_match_patch_test.py
+    test.target
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
+
+    post-destroot {
+        xinstall -m 0755 -d ${destroot}${prefix}/share/doc/${subport}
+        xinstall -m 0644 -W ${worksrcpath} LICENSE CONTRIBUTING.md \
+            CODE_OF_CONDUCT.md README.md ${destroot}${prefix}/share/doc/${subport}
+    }
+
     livecheck.type      none
-} else {
-    livecheck.type      pypi
 }

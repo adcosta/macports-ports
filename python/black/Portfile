@@ -1,0 +1,53 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                black
+version             19.10b0
+platforms           darwin
+supported_archs     noarch
+license             MIT
+maintainers         {danchr @danchr} openmaintainer
+
+description         The uncompromising code formatter for Python.
+long_description \
+    By using Black, you agree to cede control over minutiae of \
+    hand-formatting your Python source code. In return, Black gives \
+    you speed, determinism, and freedom from pycodestyle nagging about \
+    formatting. You will save time and mental energy for more \
+    important matters. \
+    \
+    Black makes code review faster by producing the smallest diffs \
+    possible. Blackened code looks the same regardless of the project \
+    you’re reading. Formatting becomes transparent after a while and \
+    you can focus on the content instead.
+
+homepage            https://${name}.readthedocs.io/
+master_sites        pypi:[string index ${name} 0]/${name}
+distname            ${name}-${version}
+
+checksums           rmd160  5475694f3ba9879f6b911a681e2f5729c79493fd \
+                    sha256  c2edb73a08e9e0e6f65a0e6af18b059b8b1cdd5bef997d7a0b181df93dc81539 \
+                    size    1019740
+
+python.versions     38
+
+depends_build-append \
+    port:py${python.version}-setuptools \
+    port:py${python.version}-setuptools_scm
+
+depends_lib-append \
+    port:py${python.version}-appdirs \
+    port:py${python.version}-attrs \
+    port:py${python.version}-click \
+    port:py${python.version}-pathspec \
+    port:py${python.version}-regex \
+    port:py${python.version}-toml \
+    port:py${python.version}-typed-ast
+
+test {
+    system -W ${worksrcpath} "black"
+}
+
+livecheck.type  pypi

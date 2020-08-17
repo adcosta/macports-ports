@@ -54,7 +54,7 @@ if {[variant_isset universal]} {
 } else {
     set archflags ${configure.cxx_archflags}
 }
-configure.env-append CPU_FLAGS="${archflags}"
+configure.env-append CPU_FLAGS=${archflags}
 configure.cxx ${configure.cxx} {*}${archflags}
 configure.args-append --with-cxx="${configure.cxx}"
 

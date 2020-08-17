@@ -3,7 +3,12 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        skvadrik re2c 1.1.1
+github.setup        skvadrik re2c 2.0.1
+revision            0
+checksums           rmd160  8ca2d2a18e0e3330e30f7a8f1aed051e4bb7973f \
+                    sha256  aef8b50bb75905b2d55a7236380c0efdc756fa077fe16d808aaacbb10fb53531 \
+                    size    1284460
+
 categories          devel
 platforms           darwin
 license             public-domain
@@ -19,12 +24,17 @@ long_description    re2c is a tool for generating C-based recognizers from \
 
 homepage            http://re2c.org/
 github.tarball_from releases
+use_xz              yes
 
-checksums           rmd160  dafab7c2320266aa34eed66aa33f5e76074c010b \
-                    sha256  856597337ea00b24ce91f549f79e6eece1b92ba5f8b63292cad66c14ac7451cf \
-                    size    5907416
+depends_build       port:bison
 
 configure.args      --disable-silent-rules
+
+# If future versions exhibit compile errors like
+# "error: no match for 'operator!='" (gcc-4.2) or
+# "error: invalid operands to binary expression" (clang-3.4)
+# with regard to ".rend()" it can possibly be fixed. See
+# https://github.com/skvadrik/re2c/issues/198 for discussion and fix.
 
 test.run            yes
 test.target         check

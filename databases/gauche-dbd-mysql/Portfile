@@ -2,13 +2,13 @@ PortSystem 1.0
 
 name                gauche-dbd-mysql
 version             0.2.1
-revision        2
+revision        3
 categories          databases
 license             GPL-2+
 platforms           darwin
 maintainers         nomaintainer
 description         Gauche database driver for MySQL
-long_description    ${description}
+long_description    {*}${description}
 homepage            http://www.kahua.org/cgi-bin/kahua.fcgi/kahua-web/show/dev/DBI
 master_sites        http://www.kahua.org/download/dbi/
 distname            Gauche-dbd-mysql-${version}

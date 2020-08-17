@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-requests
-version             2.20.0
+version             2.24.0
 revision            0
 categories-append   devel
 platforms           darwin
 license             Apache-2
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -25,14 +25,11 @@ long_description    Most existing Python modules for dealing HTTP \
                     this one's different. This one's going to be \
                     awesome. And simple. Really simple.
 
-homepage            http://python-requests.org/
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+homepage            https://requests.readthedocs.io/
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  c1aa0e3e8daaaa9cd6ad717470b84d10d88fba2e \
-                    sha256  99dcfdaaeb17caf6e526f32b6a7b780461512ab3f1d992187801694cba42770c \
-                    size    111179
+checksums           rmd160  48f76a63e9f1e11ed97d0f51807692bd8b5a714e \
+                    sha256  b3559a131db72c33ee969480840fff4bb6dd111de7dd27c8ee1f820f4f00231b \
+                    size    115071
 
 if {${name} ne ${subport}} {
     depends_build-append \

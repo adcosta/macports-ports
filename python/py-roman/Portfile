@@ -4,7 +4,8 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-roman
-version             3.0
+version             3.2
+revision            0
 categories-append   textproc
 license             PSF-2.1.1
 platforms           darwin
@@ -18,11 +19,11 @@ homepage            https://pypi.python.org/pypi/${python.rootname}/
 master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}/
 distname            ${python.rootname}-${version}
 
-checksums           rmd160  39d72b580e07e5c49bdf3a7db9efe987f3ff8d60 \
-                    sha256  1cb1cfc9386ec39bd5dd3190c2c89c1b253140bccda16807aab3627cbb3f275d \
-                    size    5184
+checksums           rmd160  2e67286345ec1021dd28fac57d18c7fb119180a0 \
+                    sha256  b1aa46b531f896b9d3aa05ede8208d785626be16b02c0df57c971fcb9940ae63 \
+                    size    7156
 
-python.versions     26 27 33 34 35 36 37
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
     depends_build-append \

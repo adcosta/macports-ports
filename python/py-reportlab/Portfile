@@ -4,13 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-reportlab
-version             3.5.9
+version             3.5.46
 revision            0
 categories-append   textproc
 platforms           darwin
 license             BSD
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,14 +20,10 @@ long_description    The ReportLab Toolkit is a library for programatically \
                     creating documents in PDF format.
 
 homepage            http://www.reportlab.com/software/opensource/rl-toolkit/
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname} \
-                    http://www.reportlab.com/ftp/
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  386728da9fee497126dbfc1183d94488471e2d09 \
-                    sha256  f92f81314807cd860f29fe07a1a4100b03910ae6bbfca20a07e02c3b460f4f20 \
-                    size    2837351
+checksums           rmd160  0baa0cdf0565743eb4f7c42dac65128c9b74e00a \
+                    sha256  56d71b78e7e4bb31a93e1dff13c22d19b7fb3890b021a39b6c3661b095bd7de8 \
+                    size    2890007
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools

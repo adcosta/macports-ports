@@ -3,12 +3,12 @@
 PortSystem      1.0
 PortGroup       python 1.0
 PortGroup       github 1.0
-PortGroup       cxx11 1.1
 
 name            py-protobuf3
-version         3.6.1
+version         3.12.4
+revision        0
 categories-append   devel
-maintainers     nomaintainer
+maintainers     {toby @tobypeterson} openmaintainer
 license         BSD
 description     Encode data in an efficient yet extensible format.
 
@@ -36,26 +36,31 @@ master_sites    https://github.com/google/protobuf/releases/download/v${version}
 distfiles       protobuf-python-${version}.tar.gz
 worksrcdir      protobuf-${version}
 
-checksums       sha256  40f009cb0c190816a52fc21d45c26558ee7d63c3bd511b326bd85739b2fd99a6 \
-                rmd160  ee9f8344a688f636cee409227b36a5161fa88c44 \
-                size    4748789
+checksums       sha256  ddafee267ec4cfa4b0afc74effd5644a96690036ecd2e310056d317f52e605f4 \
+                rmd160  b59725c7e0be8fda9fa5414a9b82632ce829f06e \
+                size    4967098
 
 platforms       darwin
 
-python.versions 27 35 36 37
+compiler.cxx_standard  \
+                2011
+
+python.versions 27 35 36 37 38
 
 if {${name} ne ${subport}} {
-    depends_build   port:py${python.version}-setuptools \
-                    port:py${python.version}-absl
+    conflicts       py${python.version}-protobuf
 
-    depends_lib     port:protobuf3-cpp
+    depends_build   port:py${python.version}-setuptools
+
+    depends_lib     port:protobuf3-cpp \
+                    port:py${python.version}-six
 
     worksrcdir      ${worksrcdir}/python
     
     # tricks to force the right -stdlib setting
     # and to put a needed CXX flag on the 10.6 build
     # see https://trac.macports.org/ticket/56482
-    patchfiles-append patch-py-protobuf3-settings.diff py37.diff
+    patchfiles-append patch-py-protobuf3-settings.diff
 
     post-patch {
         set extraargs ""
@@ -79,4 +84,8 @@ if {${name} ne ${subport}} {
     test.run        yes
     test.cmd        "${python.bin} setup.py"
     test.target     test --cpp_implementation
+
+    livecheck.type  none
 }
+
+github.livecheck.regex  {([0-9.]+)}

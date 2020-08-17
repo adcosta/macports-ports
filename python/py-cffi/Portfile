@@ -4,13 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-cffi
-version             1.11.5
-revision            0
+version             1.14.1
 categories-append   devel
 platforms           darwin
 license             MIT
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,14 +19,11 @@ long_description    Foreign Function Interface for Python calling C code. \
                     The aim of this project is to provide a convenient and \
                     reliable way of calling C code from Python.
 
-homepage            http://cffi.readthedocs.org/
-master_sites        pypi:10/f7/3b302ff34045f25065091d40e074479d6893882faef135c96f181a57ed06 \
-                    pypi:[string index ${python.rootname} 0]/${python.rootname}
+homepage            https://cffi.readthedocs.org/
 
-distname            cffi-${version}
-
-checksums           rmd160  d2dc3bae37502af50f756b2705d388777e7a541d \
-                    sha256  e90f17980e6ab0f3c2f3730e56d1fe9bcba1891eeea58966e89d352492cc74f4
+checksums           rmd160  dd19a93d6dbd70bbe026483a61313bdb5dae52df \
+                    sha256  b2a2b0d276a136146e012154baefaea2758ef1f56ae9f4e01c612b0831e0bd2f \
+                    size    468070
 
 if {${name} ne ${subport}} {
     patchfiles-append   patch-setup.py.diff

@@ -1,0 +1,74 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           golang 1.0
+
+go.setup            github.com/restic/restic 0.9.6 v
+categories          sysutils
+
+license             BSD
+maintainers         nomaintainer
+
+description         Fast, secure, efficient backup program.
+long_description    Restic is a program that does backups right. Its design goals are: Easy, Fast, Verifiable, Secure, Efficient and Free.
+
+homepage            https://restic.net/
+
+checksums           rmd160  24d2329c034e69d2a0eef477ef78bc9875a7a8af \
+                    sha256  2f46c381b4f2964068e256f85f11cacdda75601cf0ef5069e08b3ed91c2f7c9c \
+                    size    27009000
+
+set pyver           3.7
+
+variant             docs description {Build the documentation} {
+    set pyver_nodot [string map {. {}} ${pyver}]
+
+    depends_build-append \
+                    port:python${pyver_nodot} \
+                    port:py${pyver_nodot}-sphinx \
+                    port:py${pyver_nodot}-sphinx_rtd_theme
+}
+
+variant             debug description {Enable debug options} {
+    build.post_args-append \
+                    -tags debug
+}
+
+build.cmd           ${go.bin} run
+build.target        build.go
+
+post-build {
+    if {[variant_isset docs]} {
+        reinplace -W ${worksrcpath}/doc "s|sphinx-build|sphinx-build-${pyver}|g" Makefile
+        system -W ${worksrcpath}/doc "make html"
+    }
+}
+
+test.run            yes
+
+test {
+    set repository_path ${workpath}/repo
+    set restore_path    ${workpath}/restore
+    set file_name       build.go
+
+    system -W ${worksrcpath} \
+        "RESTIC_PASSWORD=\"foo\" ./restic -r ${repository_path} init"
+    system -W ${worksrcpath} \
+        "RESTIC_PASSWORD=\"foo\" ./restic -r ${repository_path} backup ${file_name} --no-cache"
+    system -W ${worksrcpath} \
+        "RESTIC_PASSWORD=\"foo\" ./restic -r ${repository_path} restore latest -t ${restore_path} --no-cache"
+    system -W ${worksrcpath} \
+        "diff -q ${file_name} ${restore_path}/${file_name}"
+}
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+
+    set docdir ${prefix}/share/doc/${name}
+    xinstall -m 755 -d ${destroot}${docdir}
+    xinstall -m 644 -W ${worksrcpath} LICENSE README.rst ${destroot}${docdir}
+
+    if {[variant_isset docs]} {
+        file copy ${worksrcpath}/doc/_build/html ${destroot}${docdir}
+    }
+}

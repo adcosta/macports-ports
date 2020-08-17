@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           muniversal 1.0
 
-github.setup        dlang druntime 2.081.2 v
+github.setup        dlang druntime 2.088.0 v
 categories          lang
 platforms           darwin
 license             Boost-1
@@ -17,9 +17,9 @@ long_description \
     startup/shutdown, etc.
 homepage            http://dlang.org/
 
-checksums           rmd160  57cfb6b3f23ed5a46792c80a6276040120b30f6e \
-                    sha256  ba9d5b93ee75053f5e9fd59fa0cc055433756fa528b153a8a0de9458da3a4000 \
-                    size    1591470
+checksums           rmd160  9160745938e63b1ac9ca2cfa0bfe7cad7d649c0e \
+                    sha256  2cbb5b78a8fb218b1bc687e2338c35626d199752ab2fba0ad17f65eba65f1bff \
+                    size    1735461
 
 depends_lib         port:dmd
 

@@ -2,10 +2,14 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
-PortGroup           cxx11 1.1
 PortGroup           cmake  1.0
 
-github.setup        Pulse-Eight libcec 4.0.2 libcec-
+github.setup        Pulse-Eight libcec 4.0.5 libcec-
+checksums           md5     bae566a43f2263f0833af871ef27a951 \
+                    sha1    45f5e6b64d64bb6cf4ac86f16ea259f0d265aea5 \
+                    rmd160  51f76c9b3e80f1f51c624866b79b2281533ae52f \
+                    sha256  59e844612ad5ce10079beef537ab8f35e6ae8ba4e62c9f26c8407ba97b2949a0 \
+                    size    365284
 
 categories          multimedia
 license             {GPL-2+ OpenSSLException}
@@ -15,11 +19,7 @@ long_description    libCEC, in combination with the right hardware, permits cont
                     other devices with the TV remote control via existing HDMI cabling
 platforms           darwin
 homepage            http://libcec.pulse-eight.com/
-
-checksums           md5     a1a314b9451a381107d9921ab0ba429b \
-                    sha1    def30d8c40537f5accdb2ad3e68823099af94645 \
-                    rmd160  5aabb1c647244b070064f9dc3f16b7b64e997ca5 \
-                    sha256  6a67dac0345e125011cc708070fbe6c018d68de94a9726ead34c0c2ab94e943e
+compiler.cxx_standard  2011
 
 depends_build-append \
                     port:pkgconfig \
@@ -27,7 +27,7 @@ depends_build-append \
 
 depends_lib         port:ncurses \
                     port:p8-platform \
-                    port:python34 \
+                    port:python38 \
                     port:xorg-libX11 \
                     port:xorg-libXrandr
 

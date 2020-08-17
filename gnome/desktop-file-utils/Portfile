@@ -3,7 +3,7 @@
 PortSystem      1.0
 
 name            desktop-file-utils
-version         0.23
+version         0.26
 maintainers     nomaintainer
 categories      gnome
 license         GPL-2+
@@ -19,16 +19,19 @@ master_sites    https://www.freedesktop.org/software/desktop-file-utils/releases
 
 use_xz          yes
 
-checksums       rmd160  308058ff58db3a8a4ac28bf4b0d57df2dfede7bf \
-                sha256  6c094031bdec46c9f621708f919084e1cb5294e2c5b1e4c883b3e70cb8903385
+checksums       rmd160  a68b5994a7d099e2dffa279ea20c31cc7e39266e \
+                sha256  b26dbde79ea72c8c84fb7f9d870ffd857381d049a86d25e0038c4cef4c747309 \
+                size    83132
 
-depends_build   port:pkgconfig
-depends_lib     path:lib/pkgconfig/glib-2.0.pc:glib2 \
-                port:popt
+depends_build   port:pkgconfig \
+                port:autoconf \
+                port:automake
 
-# emacs could probably be turned back on in a variant, depending on emacs
-# from MacPorts, as for some this may otherwise fail (ticket #15922)
-configure.env-append        EMACS="no"
+depends_lib     path:lib/pkgconfig/glib-2.0.pc:glib2
+
+configure.cmd   ./autogen.sh
+
+configure.args  --disable-silent-rules
 
 post-activate {
     system "update-desktop-database -q ${prefix}/share/applications; true"

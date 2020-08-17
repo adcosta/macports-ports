@@ -37,7 +37,7 @@ use_configure           no
 
 variant universal {}
 
-build.env               CFLAGS="${configure.cflags} [get_canonical_archflags]" \
+build.env               "CFLAGS=${configure.cflags} [get_canonical_archflags]" \
                         CC=${configure.cc} \
                         PREFIX=${prefix} \
                         JOY=NO

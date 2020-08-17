@@ -24,10 +24,10 @@ dist_subdir             llvm
 categories              lang
 platforms               darwin
 license                 NCSA
-maintainers             {jeremyhu @jeremyhu} {larryv @larryv}
+maintainers             {jeremyhu @jeremyhu} {larryv @larryv} {kencu @kencu}
 
 if {${subport} eq "llvm-${llvm_version}"} {
-    homepage            http://llvm.org/
+    homepage            https://llvm.org/
     description         llvm is a next generation compiler infrastructure
     long_description    The LLVM Core libraries provide a modern source- and \
                         target-independent optimizer, along with code \
@@ -39,16 +39,9 @@ if {${subport} eq "llvm-${llvm_version}"} {
     depends_lib         port:libedit port:libffi port:ncurses port:zlib
     depends_run         bin:perl:perl5 port:llvm_select
 
-    # 3.2.6's install_name_tool doesn't support load commands we might see with newer clang+ld64
-    # 4.3 is just a guess here and should be updated if there are additional reports with other Xcode versions
-    if {[vercmp $xcodeversion 4.3] < 0 && [string match "*macports*" ${configure.compiler}]} {
-        depends_build-append port:cctools
-        depends_skip_archcheck-append cctools
-    }
-
 version                 ${llvm_version}.2
 epoch                   1
-master_sites            http://llvm.org/releases/${version}
+master_sites            https://releases.llvm.org/${version}
 use_xz                  yes
 extract.suffix          .tar.xz
 distfiles               llvm-${version}.src${extract.suffix}
@@ -95,12 +88,21 @@ select.file         ${filespath}/mp-${subport}
 # Xcode 4.6.x's clang (425.0.28) works, assuming 425.0.24 from 4.6.0 works too
 compiler.blacklist *gcc* {clang < 425.0.24}
 
-# blacklist current and future versions if they're not available in order to
-# help break potential dependency cycles.
-foreach ver {3.5 3.6 3.7 3.8 3.9 4.0 5.0 6.0 devel} {
-    if {![file exists ${prefix}/bin/clang-mp-${ver}]} {
-        compiler.blacklist-append macports-clang-${ver}
-    }
+# Override the normal compiler fallback list entirely since we have
+# such specific requirements.
+compiler.fallback   clang
+
+# 3.4 is already needed to bootstrap libcxx, so is a good last resort
+# when the system clang is too old.
+if {${os.platform} eq "darwin" && ${os.major} < 16} {
+    compiler.fallback-append macports-clang-3.4
+}
+
+# 3.2.6's install_name_tool doesn't support load commands we might see with newer clang+ld64
+# 4.3 is just a guess here and should be updated if there are additional reports with other Xcode versions
+if {[vercmp $xcodeversion 4.3] < 0 && [string match "*macports*" ${configure.compiler}]} {
+    depends_build-append port:cctools
+    depends_skip_archcheck-append cctools
 }
 
 platform darwin {
@@ -121,12 +123,21 @@ platform darwin {
 }
 
 variant universal {
+    if {[vercmp [macports_version] 2.5.99] >= 0} {
+    build.env-append \
+        UNIVERSAL=1 \
+        UNIVERSAL_ARCH=[get_canonical_archs]
+    destroot.env-append \
+        UNIVERSAL=1 \
+        UNIVERSAL_ARCH=[get_canonical_archs]
+    } else {
     build.env-append \
         UNIVERSAL=1 \
         UNIVERSAL_ARCH="[get_canonical_archs]"
     destroot.env-append \
         UNIVERSAL=1 \
         UNIVERSAL_ARCH="[get_canonical_archs]"
+    }
 
     post-extract {
         # workaround a bug in Apple's shipped gcc driver-driver, patched in

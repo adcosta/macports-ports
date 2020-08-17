@@ -2,12 +2,19 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        ronaldoussoren pyobjc 6.2.2 v
+revision            0
+
+checksums           rmd160  5a85416920c27c9f4d902a312746281bee7062f2 \
+                    sha256  c0c41546cb4f9accd914b78663cc09184a13f3dfecfba067f371f4eb351843e8 \
+                    size    13013298
 
 name                py-pyobjc
-version             3.0.4
 categories-append   devel
 license             MIT
-maintainers         nomaintainer
+maintainers         openmaintainer {danchr @danchr}
 platforms           darwin
 description         bidirectional bridge between python and Objective C
 long_description    The PyObjC project aims to provide a bridge between \
@@ -17,52 +24,68 @@ long_description    The PyObjC project aims to provide a bridge between \
                     power provided by various Objective-C based toolkits \
                     and the Objective-C programmer transparent access to \
                     Python based functionality.
+homepage            https://pyobjc.readthedocs.io
 
-homepage            https://pythonhosted.org/pyobjc/
-master_sites        pypi:p/pyobjc-core/
-distname            pyobjc-core-${version}
-
-checksums           rmd160  12ee6d8132c59420c768dafdb2ee73f17ea97cc1 \
-                    sha256  a4708886ff7844ff7537c60d14e903014a90b3e3cdbad5e717acfcbe150768b7
-
-python.versions 27 34 35 36 37
+python.versions     36 37 38
 
 if {${name} ne ${subport}} {
-    depends_lib     port:py${python.version}-setuptools \
-                    port:py${python.version}-py2app
+    depends_lib-append \
+                    port:libffi \
+                    port:py${python.version}-setuptools
+    depends_build   port:py${python.version}-sphinx
 
-    set readme_name README.txt
+    # the patches below suppresses cleaning on incremental builds, as
+    # MacPorts handles that itself, and disables a sphinx extension
+    # not in MacPorts
+    patchfiles-append \
+                    patch-docs-conf.py.diff \
+                    patch-install.py.diff
 
-    # Note: see upstream ticket https://bitbucket.org/ronaldoussoren/pyobjc/issue/100/cannot-find-interface-declaration-for
-    platform darwin 11 {
-        patchfiles-append \
-                    patch-Modules-${version}.diff
+    post-patch {
+        reinplace "s|use-system-libffi = 0|\\
+use-system-libffi = 1\\
+deployment-target = ${macosx_deployment_target}\\
+|" ${worksrcpath}/pyobjc-core/setup.cfg
+
+        reinplace \
+            "s/sphinx-build /sphinx-build-${python.branch} /g" \
+            ${worksrcpath}/docs/Makefile
     }
-    platform darwin 12 {
-        patchfiles-append \
-                    patch-Modules-${version}.diff
+
+    if {${configure.sdkroot} eq ""} {
+        set sdkroot "/"
+    } else {
+        set sdkroot ${configure.sdkroot}
     }
+
+    build.env-append    SDKROOT=${sdkroot}
+    destroot.env-append SDKROOT=${sdkroot}
 
     platform darwin 8 {
         depends_lib
         pre-fetch {
-            return -code error "PyObjC 2 requires Mac OS X 10.5 or later"
+            ui_error "${subport} @${version} requires Mac OS X 10.5 or later"
+            return -code error "incompatible Mac OS X version"
         }
     }
 
+    # the pyobjc build system is vaguely horrible, so do everything in
+    # the destroot target
+    build {
+        system -W ${worksrcpath}/docs "make html"
+    }
+
+    # don't pass --no-user-cfg, as the build system subclasses the
+    # install command from distutils, not setuptools -- in fact, doing
+    # so breaks the build...
+    destroot.cmd "${python.bin} install.py"
+
     post-destroot {
-        xinstall -m 644 -W ${worksrcpath} HISTORIC.txt Install.txt \
-            License.txt NEWS.txt $readme_name \
+        xinstall -m 644 -W ${worksrcpath}/pyobjc-core HISTORIC.txt Install.txt \
+            License.txt README.txt \
             ${destroot}${prefix}/share/doc/${subport}
-        copy ${worksrcpath}/Doc ${destroot}${prefix}/share/doc/${subport}/html
-        delete ${destroot}${prefix}/share/doc/${subport}/examples
-        copy ${worksrcpath}/Examples \
-            ${destroot}${prefix}/share/doc/${subport}/examples
+        copy ${worksrcpath}/docs/_build/html ${destroot}${prefix}/share/doc/${subport}/html
     }
 
     livecheck.type  none
-} else {
-    livecheck.type  regex
-    livecheck.url   https://pypi.python.org/pypi/pyobjc-core/
-    livecheck.regex {pyobjc-core ([0-9.]+)}
 }

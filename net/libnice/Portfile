@@ -4,21 +4,20 @@ PortSystem          1.0
 PortGroup           gobject_introspection 1.0
 
 name                libnice
-version             0.1.14
+version             0.1.17
 license             MPL-1.1 LGPL-2.1
-description         Libnice is an implementation of the IETF's draft Interactice \
-                    Connectivity Establishment standard (ICE).
-long_description    Libnice is an implementation of the IETF's draft Interactice \
-                    Connectivity Establishment standard (ICE). It provides a GLib-based \
-                    library, libnice and GStreamer elements.
+description         Libnice is an implementation of IETF's Interactive Connectivity Establishment (ICE) standard (RFC 5245).
+long_description    ${description} \
+                    It provides a GLib-based library, libnice, as well as GStreamer elements.
 maintainers         {devans @dbevans} openmaintainer
 categories          net comms
 platforms           darwin
-homepage            https://nice.freedesktop.org/wiki/
-master_sites        https://nice.freedesktop.org/releases/
+homepage            https://libnice.freedesktop.org/
+master_sites        https://libnice.freedesktop.org/releases/
 
-checksums           rmd160  e1e0bd020518852fbd78c2bd32dccb11592ed585 \
-                    sha256  be120ba95d4490436f0da077ffa8f767bf727b82decf2bf499e39becc027809c
+checksums           rmd160  d8b68706aa5182d072da1e2cd0554692a48997f6 \
+                    sha256  1952a0dec58b5c9ccc3f25193df4e2d1244cb382cac611b71e25afcd7b069526 \
+                    size    1083398
 
 depends_build       port:pkgconfig
 
@@ -31,13 +30,18 @@ gobject_introspection yes
 configure.args      --enable-gupnp \
                     --with-gstreamer=yes \
                     --with-gstreamer-0.10=no \
-                    --enable-compile-warnings=minimum
+                    --enable-compile-warnings=minimum \
+                    --disable-silent-rules
 
 variant gst010 description {Enable support for deprecated gstreamer-0.10} {
     depends_lib-append      port:gstreamer010-gst-plugins-base
     configure.args-replace  --with-gstreamer-0.10=no --with-gstreamer-0.10=yes
 }
 
+test.run            yes
+test.dir            ${worksrcpath}/tests
+test.target         check
+
 livecheck.type      regex
-livecheck.url       [lindex ${master_sites} 0]
+livecheck.url       ${homepage}
 livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"

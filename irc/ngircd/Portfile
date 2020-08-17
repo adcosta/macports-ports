@@ -3,7 +3,9 @@
 PortSystem          1.0
 
 name                ngircd
-version             24
+version             26
+revision            0
+
 categories          irc
 platforms           darwin
 license             GPL-2+
@@ -18,10 +20,12 @@ homepage            http://ngircd.barton.de/
 master_sites        http://arthur.barton.de/pub/ngircd/
 use_xz              yes
 
-checksums           rmd160  d76712a3057bb607a7886f55ed9e8f6e5aad9fa8 \
-                    sha256  173fa0ea10788a8ba08ef2f7e64ea8951d7c88862e744128c8b87bae424b1008
+checksums           rmd160  666eb04b8e3889473957b8ab3cb508416adc54af \
+                    sha256  56dcc6483058699fcdd8e54f5010eecee09824b93bad7ed5f18818e550d855c6 \
+                    size    371716
 
-depends_lib         port:libident \
+depends_lib         port:libiconv \
+                    port:libident \
                     port:tcp_wrappers \
                     port:zlib
 
@@ -31,6 +35,7 @@ patchfiles          patch-contrib-MacOSX-Makefile.in.diff \
 configure.args      --enable-ipv6 \
                     --enable-sniffer \
                     --with-tcp-wrappers \
+                    --with-iconv \
                     --with-ident
 
 # It's easier to create our own startup item than to patch and install

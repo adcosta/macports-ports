@@ -3,7 +3,8 @@
 PortSystem          1.0
 
 name                mod_qos
-version             11.58
+version             11.66
+revision            0
 categories          www
 license             Apache-2
 maintainers         nomaintainer
@@ -14,15 +15,15 @@ platforms           darwin
 homepage            http://mod-qos.sourceforge.net/index.html
 master_sites        sourceforge:project/mod-qos/
 
-checksums           rmd160  6e1c84e08f10893759daa87ed5c9e6c5ff1f8376 \
-                    sha256  3a5d11aeda647720e7ad45d11170daf7ecaea7b85de1cae63f67b4a0e4ef32e3 \
-                    size    972540
+checksums           rmd160  1e8c75f16c0e1369e619251a1aed89b2642d5f19 \
+                    sha256  4ad65fc568d4a92ddb6fc2230587a36749a035267dc8b9ebb145faaae5b5eaa4 \
+                    size    1247819
 
 depends_build       port:autoconf \
                     port:automake
 
 depends_lib         port:apache2 \
-                    port:db46 \
+                    port:db48 \
                     port:libpng \
                     path:lib/libssl.dylib:openssl \
                     port:pcre
@@ -30,23 +31,13 @@ depends_lib         port:apache2 \
 patchfiles          patch-tools-Makefile.in.diff
 
 configure.dir       ${worksrcpath}/tools
-configure.env       LDFLAGS=-L${prefix}/lib/db46
+configure.env       LDFLAGS=-L${prefix}/lib/db48
 build.dir           ${configure.dir}
 
 pre-configure { copy ${filespath}/aclocal.m4 ${worksrcpath}/tools }
 
-if {[variant_isset apache22]} {
-    set apxs        ${prefix}/apache22/bin/apxs
-    set mdir        ${destroot}${prefix}/apache22/modules/
-} else {
-    set apxs        ${prefix}/bin/apxs
-    set mdir        ${destroot}${prefix}/lib/apache2/modules/
-}
-
-variant apache22 description "use apache22 instead of apache2" {
-    depends_lib-replace port:apache2 port:apache22
-    destroot.violate_mtree  yes
-}
+set apxs            ${prefix}/bin/apxs
+set mdir            ${destroot}${prefix}/lib/apache2/modules/
 
 post-build {
    system -W ${worksrcpath}/apache2 "${apxs} -c mod_qos.c -lcrypto -lpcre"

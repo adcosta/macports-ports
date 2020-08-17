@@ -3,20 +3,26 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        jgaeddert liquid-dsp b37fa27373212b5fd5663f1bec47939079e21312
-version             20181015
-checksums           rmd160 b6eddfe4a25654ff974219092e57d2476890c1d7 \
-                    sha256 097414137c7d4e28b9273b3a469da561c7a2983ce5b377a9361bd0d845dd8b63 \
-                    size   1086525
+github.setup        jgaeddert liquid-dsp 00e92db1db13e4c894e3c6ea108b23195d58f20d
+version             20200321-[string range ${github.version} 0 7]
+checksums           rmd160  917cdd961db9adcc42ef6498e4af0d74650a690c \
+                    sha256  2eb6ee1e9999a8226917051a599f58d3a5209ed72bb88bf8717d67b7ccc16040 \
+                    size    1132893
+revision            0
 
-maintainers         {michaelld @michaelld} openmaintainer
+# Disable livecheck as using github commit
+livecheck.type      none
 
-description         liquid-dsp is an open-source signal processing library for software-defined radios written in C.
-long_description    ${description} Its purpose is to provide a set of extensible DSP modules that do no rely on external dependencies or cumbersome frameworks.
+maintainers         {michaelld @michaelld} {ra1nb0w @ra1nb0w} openmaintainer
+
+description         liquid-dsp is an open-source signal processing library for software-defined \
+                    radios written in C.
+long_description    ${description} Its purpose is to provide a set of extensible DSP modules \
+                    that do no rely on external dependencies or cumbersome frameworks.
 
 categories          science comms
 homepage            http://www.liquidsdr.org/
-license             GPL-3
+license             MIT
 platforms           darwin macosx
 
 depends_build-append \
@@ -25,7 +31,9 @@ depends_build-append \
                     port:grep \
                     port:gsed
 
-depends_lib-append	port:fftw-3-single
+depends_lib-append  \
+                    port:fftw-3-single \
+                    port:libfec
 
 # fix the install_name of the library
 
@@ -38,11 +46,10 @@ pre-configure {
 }
 
 # make sure MP programs are used
-
 configure.env-append \
     SED=${prefix}/bin/gsed \
     GREP=${prefix}/bin/ggrep \
-    EGREP="${prefix}/bin/ggrep -E"
+    "EGREP=${prefix}/bin/ggrep -E"
 
 # remove top-level include path, such that internal headers are used
 # instead of any already-installed ones.

@@ -3,13 +3,13 @@
 PortSystem        1.0
 PortGroup         perl5 1.0
 PortGroup         cmake 1.1
-PortGroup         cxx11 1.1
 
 name              gnucash
 conflicts         gnucash gnucash-devel
 conflicts-delete  ${subport}
-version           3.3
-perl5.branches    5.26
+version           4.1
+revision          1
+perl5.branches    5.28
 categories        gnome x11
 license           GPL-2+
 maintainers       {dports @drkp} openmaintainer
@@ -35,16 +35,16 @@ use_bzip2         yes
 
 distname          ${name}-${version}
 worksrcdir        ${name}-${version}
-checksums           rmd160  0ad1a6b4cd5b53b7487e238c15cc1c29f53545df \
-                    sha256  8396ed8d2a88ac358ecf458c253cf38f55a13aaba7958e4fde3dd85c222e393f \
-                    size    13440713
 
+checksums         rmd160  16d8109500ed38944663aa02fb0cdf9f792c75d9 \
+                  sha256  a40fc37122e1466c8085ad2be914f0687a111065f15c5d952faede78802225aa \
+                  size    13994973
+
+patchfiles-append patch-python-include-dirs-typo-fix.diff
+#patchfiles-append patch-gnucash-remove-test-failing-to-build.diff
 post-patch {
-    # gnc-fq-dump needs to be patched to use MacPorts perl.
-    # (autoconf takes care of the other perl scripts.)
-    reinplace "s|^#!/usr/bin/perl|#!${perl5.bin}|" ${worksrcpath}/libgnucash/quotes/gnc-fq-dump
-
     reinplace "s|set(HAVE_OSX_KEYCHAIN 1)||" ${worksrcpath}/CMakeLists.txt
+    reinplace "s|-Werror||" ${worksrcpath}/CMakeLists.txt
     
     # Drop in a patched version of glibconfig.h via
     # https://git.gnome.org/browse/gtk-osx/plain/patches/glib-gint64-long-long.patch
@@ -57,6 +57,8 @@ post-patch {
 
 configure.env-append PKG_CONFIG_GLIB_2_0_LIBDIR=${workpath}
 
+compiler.cxx_standard       2011
+
 configure.cppflags-delete   -I${prefix}/include
 configure.cppflags-append   -isystem${prefix}/include
 configure.cppflags-append -I${worksrcpath}
@@ -66,7 +68,9 @@ depends_build-append     port:pkgconfig \
                          port:autoconf \
                          port:automake \
                          port:libtool \
-                         port:gtest
+                         port:gtest \
+                         port:swig-guile \
+                         port:swig-python
          
 depends_lib       port:guile \
                   port:perl${perl5.major} \
@@ -77,30 +81,22 @@ depends_lib       port:guile \
                   path:${prefix}/libpkgconfig/webkitgtk-3.0.pc:webkit-gtk3 \
                   port:libdbi \
                   port:libdbi-drivers \
-                  port:aqbanking5-gtk3 \
+                  port:aqbanking6-gtk3 \
                   port:libofx \
                   port:python36 \
                   port:icu \
-                  port:libxml2
+                  port:libxml2 \
 
 depends_run       port:gnucash-docs
-# yelp currently requires X11 to build so disable dependency if building
-# with +quartz
-#
-# TODO: add +x11 +quartz variants to distinguish one build from the other
-# since they have different binary dependencies.  Otherwise, rev-upgrade
-# errors may occur
-if {![variant_isset quartz]} {
-    depends_run-append port:yelp
-}
 
 # aqbanking is not universal
 universal_variant no
 
 configure.args    -DENABLE_BINRELOC=OFF \
                   -DCMAKE_INSTALL_SYSCONFDIR=${prefix}/etc \
-                  -DWITH_PYTHON=ON
-configure.perl    ${perl5.bin}
+                  -DWITH_PYTHON=ON \
+                  -DPERL_EXECUTABLE:FILEPATH=${perl5.bin} \
+                  -DPOD2MAN_EXECUTABLE:FILEPATH=${prefix}/bin/pod2man-${perl5.major}
 
 # force use of the requested python 3.6
 configure.args-append -DPYTHON_EXECUTABLE:FILEPATH=${prefix}/bin/python3.6
@@ -113,7 +109,7 @@ post-destroot {
 }
 
 post-activate {
-    system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"
+    system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${prefix}/share/icons/hicolor"
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
 }
 

@@ -1,6 +1,8 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           clang_dependency 1.0
+PortGroup           muniversal 1.0
 
 name                libunistring
 version             0.9.10
@@ -30,3 +32,9 @@ depends_build       bin:perl:perl5 \
                     port:texinfo
 
 depends_lib         port:libiconv
+
+patch.pre_args      -p1
+#patchfiles          configure-implicit.patch
+
+use_autoreconf      yes
+autoreconf.args     -fvi

@@ -2,7 +2,6 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
-PortGroup           cxx11 1.1
 
 name                libcaca
 categories          graphics
@@ -21,7 +20,7 @@ dist_subdir         libcaca
 if {${name} eq ${subport}} {
 
     github.setup    cacalabs libcaca 0.99.beta19 v
-    revision        6
+    revision        7
     checksums       \
         rmd160 8623dbfe2584d6e5c633aa140f30139a13a59128 \
         sha256 128b467c4ed03264c187405172a4e83049342cc8cc2f655f53a2d0ee9d3772f4 \
@@ -36,12 +35,12 @@ provides the release version.
 
 subport libcaca-devel {
 
-    github.setup    cacalabs libcaca f1267fbd3cd3635a628c30e523fe1217f0f8a3b3
-    version         20180522
-    checksums       \
-        rmd160 0cae565a81d919c6d0a6d628a52fa679eb9cce2d \
-        sha256 df7daff5970b41a3a7c02b77ca7fdeaeab072a846ae72c91ca5353c2dbc6e64e \
-        size   875248
+    github.setup cacalabs libcaca 813baea7a7bc28986e474541dd1080898fac14d7
+    version      20190101
+    checksums    rmd160 eb287b2d6aacb1e6025a1cfb7eac252194672932 \
+                 sha256 05f4a58ec98245502c3d42d5a1ff201086a95ae24e12f638d103daab9e98f932 \
+                 size   729339
+    revision     1
 
     conflicts       libcaca
     long_description ${long_description} ${subport} \
@@ -54,11 +53,13 @@ homepage            http://caca.zoy.org/wiki/libcaca
 depends_build       port:pkgconfig
 depends_lib         port:ncurses port:zlib
 
-# Teach glibtool about -stdlib=libc++
-use_autoreconf      yes
-autoreconf.args     -fvi
+use_autoconf         yes
+# these dependencies are removed by use_autoconf, so add them after
+depends_build-append port:libtool port:autoconf port:automake
+autoconf.cmd         ./bootstrap
 
 # require C++11 for CppUnit API
+compiler.cxx_standard   2011
 configure.cxxflags-append -std=gnu++11
 
 configure.args      \
@@ -93,6 +94,7 @@ variant	x11 {
         port:imlib2 \
         port:freeglut \
         port:libGLU \
+        port:ftgl \
         port:mesa \
         port:xorg-libX11
 }

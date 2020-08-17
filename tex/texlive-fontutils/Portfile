@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           texlive 1.0
 
 name                texlive-fontutils
-version             47198
+version             54269
 revision            0
 
 categories          tex
@@ -13,15 +13,18 @@ license             Copyleft Permissive
 description         TeX Live: Graphics and font utilities
 long_description    Programs for conversion between font formats, testing fonts, virtual fonts, .gf and .pk manipulation, mft, fontinst, etc. Manipulating OpenType, TrueType, Type 1,and for manipulation of PostScript and other image formats.
 
-checksums           texlive-fontutils-47198-run.tar.xz \
-                    rmd160  609195da77826c736848d245fd73a7701f38a641 \
-                    sha256  439237e14abfaf44fc9aae788366b062cd4b055c87d8630d4ee7b89a71b896f9 \
-                    texlive-fontutils-47198-doc.tar.xz \
-                    rmd160  51f06b7e8a01326f31dd28282ea815a731d6b325 \
-                    sha256  e151f829b768b3153d65455ebf86576da1aa95c84fcfed03eef172eb1a47bef4 \
-                    texlive-fontutils-47198-src.tar.xz \
-                    rmd160  7915d5cbf5d6b5b9478fa4bf3703980635d673a3 \
-                    sha256  f019a6b19799f547bace44938b5aa2a4c894b89c8083dec79122ffd43b06bc3c
+checksums           texlive-fontutils-54269-run.tar.xz \
+                    rmd160  d07cd8708fa93402ea3770c24fc46a4451d0635b \
+                    sha256  9ffd29d58acb4e7d7111cd1b9b027a13355bcde74a216a379aca4aa780fd83cb \
+                    size    2632796 \
+                    texlive-fontutils-54269-doc.tar.xz \
+                    rmd160  070fac6e6e1a77af5bd4898eed405702b5c79bbd \
+                    sha256  f6575bab11b80cc5e6af11e8bf62d48ca28bd778cbb845860a7f5c24af700fcc \
+                    size    1740856 \
+                    texlive-fontutils-54269-src.tar.xz \
+                    rmd160  441928aa81074419f0575a2d01817d37f6b15345 \
+                    sha256  4deff7423d530ccb68d58dd23821855dfe1044c9b65e5802351c9ffbbeea0d1e \
+                    size    663864
 
 depends_lib         port:texlive-basic
 

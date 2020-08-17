@@ -9,15 +9,15 @@ platforms           darwin
 maintainers         {ryandesign @ryandesign}
 license             PHP-3.01
 
-php.branches        5.3 5.4 5.5 5.6 7.0 7.1 7.2
+php.branches        5.3 5.4 5.5 5.6 7.0 7.1 7.2 7.3 7.4
 php.pecl            yes
 
 if {[vercmp ${php.branch} 7] >= 0} {
-    version         5.1.12
+    version         5.1.18
     revision        0
-    checksums       rmd160  2850879c2f101b272fda8102f41ad8aa42c97f4c \
-                    sha256  4126f771cdcd8cc32e2ad024bae5b25611b28e6077fdbff8efe28ce55306797a \
-                    size    105890
+    checksums       rmd160  818a6a439bf052c2d344ade9d42d38620c1031ff \
+                    sha256  d46debe7acad6073b663ba1710c5cac671a60bf666966cf199bf6d07499bde2b \
+                    size    94668
 } else {
     version         4.0.11
     revision        0

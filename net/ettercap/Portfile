@@ -4,7 +4,8 @@ PortSystem          1.0
 PortGroup           cmake 1.0
 PortGroup           github 1.0
 
-github.setup        Ettercap ettercap 0.8.2 v
+github.setup        Ettercap ettercap 0.8.3.1 v
+revision            0
 categories          net security
 platforms           darwin freebsd
 maintainers         nomaintainer
@@ -22,15 +23,17 @@ long_description \
 
 homepage            https://ettercap.github.io/ettercap/
 
-checksums           rmd160  0300c1b65f0074e62da516bb414f98903e9dc235 \
-                    sha256  7bf56fd89e751ef95d33c5515142908b4d5e18e3238be187ba271358dad4ac27
+checksums           rmd160  0a89d0c61b17e560f2cb5163eaf58b027745fc86 \
+                    sha256  3276d6bab42c019fa35f2309000ca6005189065eac18a9ac20eae694e6708c1d \
+                    size    6678670
 
 depends_build-append \
                     port:pkgconfig
 
 depends_lib         path:lib/libssl.dylib:openssl \
-                    port:libpcap \
+                    port:libgeoip \
                     port:libnet11 \
+                    port:libpcap \
                     port:ncurses \
                     port:pcre \
                     port:zlib
@@ -101,10 +104,11 @@ post-activate {
     }
 }
 
-variant gtk description {Enable GTK2 support} {
-    depends_lib-append      port:gtk2
+variant gtk description {Enable GTK3 support} {
+    depends_lib-append      port:gtk3
 
     configure.args-replace  -DENABLE_GTK=OFF -DENABLE_GTK=ON
+    configure.args-append   -DGTK3_GLIBCONFIG_INCLUDE_DIR=${prefix}/lib/glib-2.0/include
 }
 
 variant plugins description {Enable plugins} {

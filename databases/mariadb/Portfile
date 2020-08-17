@@ -4,15 +4,17 @@ PortSystem          1.0
 
 name                mariadb
 set name_mysql      ${name}
-version             5.5.57
+version             5.5.68
 set version_branch  [join [lrange [split ${version} .] 0 1] .]
-# Please set revision_client and revision_server to 0 if you bump version.
+# Please set revision_client and revision_server to 0 if you bump
+# version; these can be changed independently for the 2 subports, but
+# can be changed at the same time if that's what's required.
 set revision_client 0
 set revision_server 0
 categories          databases
 platforms           darwin
 license             GPL-2
-maintainers         {pixilla @pixilla} openmaintainer
+maintainers         {michaelld @michaelld} openmaintainer
 homepage            https://mariadb.org/
 
 if {$subport eq $name} {
@@ -20,7 +22,6 @@ if {$subport eq $name} {
     PortGroup           cmake 1.0
     PortGroup           select 1.0
 
-    revision            ${revision_client}
     license             GPL-2
     description         Multithreaded SQL database server
     long_description    Mariadb is a fork of the MySQL server, a multi-threaded SQL database.
@@ -46,8 +47,10 @@ if {$subport eq $name} {
     patchfiles          patch-cmake-install_layout.cmake.diff \
                         patch-CMakeLists.txt.diff
 
-    checksums           rmd160  332179a8f94eb6d467021b2095d1c004cb7dc5b0 \
-                        sha256  5dbde98d7e4a5a1721b6cbed7898b2549a88866247951cf586057975c6cea641
+    checksums           rmd160 c1df56d5c9ae118693e721aefb18fb19277bf5c0 \
+                        sha256 23ff96db2215d3d2eb8697488719153c83ac4d131f504ae397f43c14c6d91ba3 \
+                        size   45969389
+    revision            ${revision_client}
 
     depends_lib-append  port:zlib port:tcp_wrappers port:ncurses
     depends_run-append  port:mysql_select
@@ -71,6 +74,12 @@ if {$subport eq $name} {
         reinplace "s|@PREFIX@|${prefix}|g" \
             ${cmake.build_dir}/macports/macports-default.cnf \
             ${cmake.build_dir}/macports/my.cnf
+    }
+
+    # don't force a possibly older libtool; use the one in the PATH
+    post-patch {
+        reinplace "s|/usr/bin/libtool|libtool|g" \
+            ${worksrcpath}/cmake/libutils.cmake
     }
 
     configure.args-delete \
@@ -135,30 +144,11 @@ if {$subport eq $name} {
         }
     }
 
-    pre-activate {
-        # The macports-default.cnf is installed by ${name_mysql}.
-        # Early versions of ${name_mysql}-server installed macports-default.cnf so for a
-        # reasonable period we need to deactivate older versions of the ${name_mysql}-server.
-        if { [file exists ${prefix}/etc/${name_mysql}/macports-default.cnf]
-            && ![catch {set vers [lindex [registry_active ${name_mysql}-server] 0]}]
-            && [vercmp [lindex $vers 1] 5.5.24] < 0 } {
-
-            registry_deactivate_composite ${name_mysql}-server "" [list ports_nodepcheck 1]
-        }
-    }
-
     post-activate {
         if {![file exists ${prefix}/etc/${name_mysql}/my.cnf]} {
             copy ${prefix}/share/${name_mysql}/support-files/macports/my.cnf \
                 ${prefix}/etc/${name_mysql}/
         }
-    }
-
-    variant openssl description {Enable OpenSSL support} {
-
-        depends_lib-append      path:lib/libssl.dylib:openssl
-        configure.args-delete   -DWITH_SSL:STRING=no
-        configure.args-append   -DWITH_SSL:STRING=system
     }
 
     variant system_readline description {Use system readline instead of bundled readline} {
@@ -201,7 +191,7 @@ subport ${name_mysql}-server {
     revision            ${revision_server}
     license             BSD
     description         Run ${name_mysql} as server
-    long_description    ${description}
+    long_description    {*}${description}
 
     supported_archs     noarch
     distfiles

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           active_variants 1.1
 
 name                shibboleth
-version             3.0.2
+version             3.1.0
 categories          security www shibboleth
 license             Apache
 maintainers         {snc @nerdling} {scantor @scantor}
@@ -31,8 +31,9 @@ master_sites        http://shibboleth.net/downloads/service-provider/${version}/
 distname            ${name}-sp-${version}
 use_bzip2           yes
 worksrcdir          ${name}-sp-${version}
-checksums           rmd160  60f83306e0c503377092a3e078eb998ad044251d \
-                    sha256  7aab399aeaf39145c60e1713dbc29a65f618e9eca84505f5ed03cee63e3f31a3
+checksums           rmd160  6cd57e048c15daa8e4ca3261eb73387afb436920 \
+                    sha256  40dfedbb0f8e604ed4b6d606143de7980b4f8c13fc4682375ace94f8ac194654 \
+                    size    809498
 
 require_active_variants curl ssl
 

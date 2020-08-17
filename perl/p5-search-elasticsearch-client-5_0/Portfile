@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Search-Elasticsearch-Client-5_0 6.00
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Search-Elasticsearch-Client-5_0 6.81
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Thin client with full support for Elasticsearch 5.x APIs
@@ -12,8 +12,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  5cf3681dae7e6ec1cbbde6fed09fec9bd13c2db6 \
-                    sha256  92a0d95ddcf5e8e37d53a82c37949c7f808dbf841c722da3072c515abb7303d0
+checksums           rmd160  8012dd16a0950757b705c7ef21d7d7086537573d \
+                    sha256  f65be2e7ef2039b9d45df87e7ab6d1024131bd58fbb5ec702c0eb419bbefd67a \
+                    size    51335
 
 if {${perl5.major} != ""} {
     depends_build-append \
@@ -31,6 +32,9 @@ if {${perl5.major} != ""} {
                     port:p${perl5.major}-namespace-clean \
                     port:p${perl5.major}-search-elasticsearch \
                     port:p${perl5.major}-try-tiny
+
+    test.env-append \
+                    CLIENT_VER=5_0
 
     supported_archs noarch
 }

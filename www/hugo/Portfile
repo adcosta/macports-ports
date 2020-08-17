@@ -3,20 +3,18 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/gohugoio/hugo 0.50 v
+go.setup            github.com/gohugoio/hugo 0.74.3 v
 revision            0
+checksums           rmd160  2ce798e1817c2ccb4335648396bb0800a57fd5a9 \
+                    sha256  fae6e51c30a041385eb3c6472620c51933baf1298e35702f1c2713e8ef319980 \
+                    size    35123825
+
 categories          www
 platforms           darwin
 license             Apache-2
 maintainers         {isi.edu:calvin @cardi} openmaintainer
 description         A Fast and Flexible Static Site Generator built with love in GoLang
 long_description    ${description}
-
-checksums           rmd160  8c20b821e3014f7b46d638c145387105d9affe26 \
-                    sha256  925bd698cd6d484af25bce78f8883f9b8c5d927945842432c076adf34ac0c12e \
-                    size    19944354
-
-depends_build-append port:git
 
 build.env-append    GO111MODULE=on
 
@@ -43,4 +41,8 @@ variant bash_completion {
         xinstall -d ${destroot}${prefix}/share/bash-completion/completions/
         xinstall -m 644 ${worksrcpath}/hugo.sh ${destroot}${prefix}/share/bash-completion/completions/${name}
     }
+}
+
+variant extended description {Builds Hugo Extended with Sass/SCSS support} {
+    build.args-append --tags extended
 }

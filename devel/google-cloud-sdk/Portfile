@@ -4,25 +4,36 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                google-cloud-sdk
-version             220.0.0
+version             305.0.0
 categories          devel python
 license             Apache-2
-maintainers         nomaintainer
+maintainers         {breun.nl:nils @breun} openmaintainer
 description         Command-line interface for Google Cloud Platform products and services
-long_description    ${description}
+long_description    Google Cloud SDK is a set of tools for Google Cloud Platform. \
+                    It contains gcloud, gsutil, and bq command-line tools, which you can \
+                    use to access Compute Engine, Cloud Storage, BigQuery, and other \
+                    products and services from the command-line. You can run these tools \
+                    interactively or in your automated scripts.
 
 platforms           darwin
 supported_archs     i386 x86_64
 
+if { ${configure.build_arch} eq "i386" } {
+    distname        ${name}-${version}-darwin-x86
+    checksums       rmd160  b08bb89681130c82f712502e1d603cca9a393658 \
+                    sha256  ede4491fc7ec59d491a40623f1e39be3d1d48f36ebb9fd5a8085acbe63a6a9ab \
+                    size    78163014
+} elseif { ${configure.build_arch} eq "x86_64" } {
+    distname        ${name}-${version}-darwin-x86_64
+    checksums       rmd160  4fbe4c136067aa5902214143aec210dfd1732aca \
+                    sha256  b86dbe3c0f8b0510c1fe2719818efd8e46396b8be9083e1cedae12e787f3aeea \
+                    size    79179626
+}
+
 homepage            https://cloud.google.com/sdk/
 master_sites        https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/
 
-distname            ${name}-${version}-${os.platform}-${configure.build_arch}
 worksrcdir          ${name}
-
-checksums           rmd160  43f50035b51eb2654a0d5bf50448dba32b8a2de4 \
-                    sha256  c645244380d0ce2c552d8320836ae69026442acd96a73afbc48f7f3ad5c67897 \
-                    size    17427658
 
 python.default_version 27
 
@@ -37,8 +48,13 @@ destroot {
     system -W ${worksrcpath} "CLOUDSDK_CONFIG=${worksrcpath}/.config ./install.sh --usage-reporting false --command-completion false --path-update false --quiet"
     set libexecdir ${destroot}${prefix}/libexec/${name}
     xinstall -d ${libexecdir}
-    copy ${worksrcpath}/bin ${worksrcpath}/lib ${worksrcpath}/platform ${libexecdir}
-    foreach f {gcloud bq gsutil} {
+    copy \
+        ${worksrcpath}/.install \
+        ${worksrcpath}/bin \
+        ${worksrcpath}/lib \
+        ${worksrcpath}/platform \
+        ${libexecdir}
+    foreach f { anthoscli bq docker-credential-gcloud gcloud gsutil } {
         ln -s ../libexec/${name}/bin/${f} ${destroot}${prefix}/bin/${f}
     }
     ln -s ../libexec/${name}/bin/git-credential-gcloud.sh ${destroot}${prefix}/bin/git-credential-gcloud
@@ -49,10 +65,22 @@ destroot {
         xinstall -d ${destroot}${completions_path}
         xinstall -m 644 ${worksrcpath}/completion.bash.inc ${destroot}${completions_path}/google-cloud-sdk
     }
+
+    if {[variant_isset zsh_completion]} {
+        set gcloud_libexec ${destroot}${prefix}/libexec/google-cloud-sdk
+        xinstall -m 644 ${worksrcpath}/completion.zsh.inc ${gcloud_libexec}
+    }
 }
 
 variant bash_completion {
     depends_run-append path:etc/bash_completion:bash-completion
 }
 
-livecheck.url       https://cloud.google.com/sdk/docs/quickstart-mac-os-x
+variant zsh_completion {
+    notes "
+        google-cloud-sdk zsh completions aren't loaded automatically.
+        You must source them manually in your .zshrc:
+            source '${prefix}/libexec/google-cloud-sdk/completion.zsh.inc'"
+}
+
+livecheck.url       https://cloud.google.com/sdk/docs/quickstart-macos

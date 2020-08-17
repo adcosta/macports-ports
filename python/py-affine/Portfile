@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-affine
-version             2.2.1
+version             2.3.0
 revision            0
 categories-append   devel math gis
 platforms           darwin
 license             BSD
 supported_archs     noarch
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -23,9 +23,9 @@ master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
 distname            ${python.rootname}-${version}
 
-checksums           rmd160  a084970437b734351e0aa80f24a3fd5b273182d0 \
-                    sha256  306e56e8e2cbe80e90400fe0469cfc09c583a9efc7796c3fa87bcb572ddb7548 \
-                    size    14073
+checksums           rmd160  4f0db2ce33314597a2952383a2e80956482b4a8e \
+                    sha256  2e045def1aa29e613c42e801a7e10e0b9bacfed1a7c6af0cadf8843530a15102 \
+                    size    13946
 
 if {${name} ne ${subport}} {
     depends_build-append \

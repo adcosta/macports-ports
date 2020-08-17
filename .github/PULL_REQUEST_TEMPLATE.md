@@ -1,6 +1,6 @@
 #### Description
 
-<!-- Note: it is best make pull requests from a branch rather than from master -->
+<!-- Note: it is best to make pull requests from a branch rather than from master -->
 
 ###### Type(s)
 <!-- update (title contains ": U(u)pdate to"), submission (new Portfile) and CVE Identifiers are auto-detected, replace [ ] with [x] to select -->
@@ -11,7 +11,7 @@
 
 ###### Tested on
 <!-- Generate version information with this command in shell:
-    echo "macOS $(sw_vers -productVersion) $(sw_vers -buildVersion)"; echo "Xcode $(xcodebuild -version | awk '{print $NF}' | tr '\n' ' ')"
+    echo "macOS $(sw_vers -productVersion) $(sw_vers -buildVersion)"; echo "Xcode $(xcodebuild -version | awk -v ORS=' ' '{print $NF}')"
 -->
 macOS 10.x
 Xcode 8.x

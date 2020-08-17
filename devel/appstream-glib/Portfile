@@ -6,8 +6,9 @@ PortGroup           meson 1.0
 PortGroup           github 1.0
 PortGroup           muniversal 1.0
 
-github.setup        hughsie appstream-glib 0_7_14 appstream_glib_
+github.setup        hughsie appstream-glib 0_7_17 appstream_glib_
 version             [string map {_ .} ${version}]
+revision            1
 license             LGPL-2+
 categories          devel
 maintainers         {devans @dbevans} openmaintainer
@@ -17,11 +18,11 @@ homepage            https://people.freedesktop.org/~hughsient/appdata/
 description         This library provides objects and helper methods to help \
                     reading and writing AppStream metadata.
 
-long_description    ${description}
+long_description    {*}${description}
 
-checksums           rmd160  40b1eaad37286a6a7c1ca75c660e8340a1d60feb \
-                    sha256  d582015388b2e5a2a91d9772f3fb8968331a8ebd8eddce0805551a9d238cb7d6 \
-                    size    2401783
+checksums           rmd160  dcd0d02d231b8a5a121ef6a5222a98b2679170b4 \
+                    sha256  fe8b5bb293330e7095da49a20c565eb443d990f6db5934266d3996c42e81e1ba \
+                    size    2404724
 
 depends_build-append  \
                     port:pkgconfig \
@@ -43,8 +44,7 @@ depends_lib-append \
                     port:freetype \
                     port:json-glib
 
-patchfiles          use-system-uuid.patch \
-                    dont-use-version-script.patch
+patchfiles          use-system-uuid.patch
 
 post-patch {
     reinplace "s|__SDK_PATH__|${configure.sdkroot}|g" ${worksrcpath}/meson.build
@@ -56,12 +56,12 @@ compiler.blacklist-append  *gcc-3.* *gcc-4.* {clang < 300}
 # gobject-introspection uses g-ir-scanner, which uses $CC from env
 if {[variant_isset universal]} {
     foreach arch ${configure.universal_archs} {
-        lappend merger_build_env(${arch})  CC='${configure.cc} -arch ${arch}'
-        lappend merger_destroot_env(${arch})  CC='${configure.cc} -arch ${arch}'
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
     }
 } else {
-    build.env-append       CC="${configure.cc} ${configure.cc_archflags}"
-    destroot.env-append    CC="${configure.cc} ${configure.cc_archflags}"
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
 }
 
 configure.args      -Drpm=false

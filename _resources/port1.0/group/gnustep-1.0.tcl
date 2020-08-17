@@ -66,7 +66,7 @@ array set gnustep.post_flags {}
 
 post-patch {
     foreach {src_subdir post_libs} [array get gnustep.post_flags] {
-        set fl [ open ${worksrcpath}/$src_subdir/GNUmakefile.preamble a ]
+        set fl [open ${worksrcpath}/$src_subdir/GNUmakefile.preamble a]
         puts $fl "\nSHARED_LD_POSTFLAGS += $post_libs"
         close $fl
     }
@@ -194,7 +194,7 @@ variant with_docs {
     depends_build-append    bin:latex2html:latex2html \
                             bin:texi2pdf:texinfo \
                             bin:texi2html:texi2html \
-                            bin:pdftex:teTeX \
+                            bin:pdftex:texlive-basic \
                             port:gnustep-base
 
     post-destroot {

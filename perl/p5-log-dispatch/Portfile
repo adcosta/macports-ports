@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26
-perl5.setup         Log-Dispatch 2.68
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Log-Dispatch 2.70
 platforms           darwin
 maintainers         {di.uminho.pt:jpo @jpoliv} openmaintainer
 license             Artistic-2
@@ -14,9 +14,9 @@ description         Dispatches messages to one or more outputs
 
 long_description    ${description}
 
-checksums           rmd160  471e1b94c48c11f95b73f56984ed2bd0917948a1 \
-                    sha256  d07a3039997a6df2fa02849ed5a6a0560c154018bf988c5cc202069be11aadaf \
-                    size    70439
+checksums           rmd160  1df4295366d10a44d165a5565a0c746ea079f56e \
+                    sha256  a3d91cc52467d3a3c6683103f3df4472d71e405a45f553289448713ac4293f21 \
+                    size    70808
 
 if {${perl5.major} != ""} {
     depends_build-append \

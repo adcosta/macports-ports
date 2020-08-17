@@ -31,7 +31,7 @@ worksrcdir          ${name}-${version}
 use_configure no
 
 build.target
-build.env           CC=${configure.cc} CFLAGS="${configure.cc_archflags}"
+build.env           CC=${configure.cc} CFLAGS=${configure.cc_archflags}
 
 destroot.args       LIBPATH=${prefix}/lib INCPATH=${prefix}/include \
                     USER=`id -u` GROUP=`id -g` NODOCS=1

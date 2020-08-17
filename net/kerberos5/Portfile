@@ -4,7 +4,13 @@ PortSystem                  1.0
 PortGroup                   compiler_blacklist_versions 1.0
 
 name                        kerberos5
-version                     1.16.1
+version                     1.18.2
+revision                    0
+
+checksums                   rmd160  5943e2bb26477a6251a9b2fa5f5fecd1ffe276c3 \
+                            sha256  c6e4c9ec1a98141c3f5d66ddf1a135549050c9fab4e9a4620ee9b22085873ae0 \
+                            size    8713927
+
 set branch                  [join [lrange [split ${version} .] 0 1] .]
 conflicts                   fbopenssl
 categories                  net security
@@ -26,11 +32,8 @@ homepage                    http://web.mit.edu/kerberos/
 master_sites                ${homepage}dist/krb5/${branch}/
 distname                    krb5-${version}
 
-checksums                   rmd160  26a423032841a67974d377ad65d7361b51aa7058 \
-                            sha256  214ffe394e3ad0c730564074ec44f1da119159d94281bbec541dc29168d21117 \
-                            size    9477480
-
-depends_build               port:python27
+depends_build               port:pkgconfig \
+                            port:python38
 
 depends_lib                 port:gettext \
                             port:libcomerr \
@@ -44,9 +47,10 @@ patchfiles                  patch-util__verto__Makefile.in-use-nonzero-compat-ve
                             patch-config__shlib.conf-do-not-pass-dylib-file-ldflags.diff \
                             patch-lib_rpc_Makefile.in-explicitly-link-krb5support.diff \
                             libressl.patch \
+                            constructor_check.patch \
                             no-Werror.patch
 
-# AI_NUMERICSERV not available for OS X < 10.6
+# AI_NUMERICSERV not available for Leopard and earlier (OS X < 10.6)
 if {${os.major} < 10} {
     patchfiles-append       patch-src-lib-apputils-net-server.c.diff
 }
@@ -56,7 +60,7 @@ use_autoreconf              yes
 # remove ${prefix}/lib from configure.ldflags to allow linking against its own libs first
 # adding ${worksrcpath}/lib is not necessary and pollutes krb5-config --libs and pkg-config files
 configure.ldflags-delete    -L${prefix}/lib
-configure.python            ${prefix}/bin/python2.7
+configure.python            ${prefix}/bin/python3.8
 configure.args              --mandir=${prefix}/share/man \
                             --with-system-et \
                             --without-system-db \

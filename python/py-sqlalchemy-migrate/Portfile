@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-sqlalchemy-migrate
-version             0.11.0
+version             0.13.0
 revision            0
 categories-append   devel databases
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 35 36
+python.versions     27 35 36 37 38
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -26,12 +26,10 @@ long_description    Inspired by Ruby on Rails' migrations, SQLAlchemy \
                     command line as well as from inside python code.
 
 homepage            http://www.openstack.org/
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  33a28ea2e73a3b48d155715033d61c5569349053 \
-                    sha256  e68af5e3e0561f629d4eb23d9d0ea77d2649747f2eff37fd29aece74615ca251
+checksums           rmd160  2bdb42599cb9a2e4dc73317948f958df498eb9e2 \
+                    sha256  0bc02e292a040ade5e35a01d3ea744119e1309cdddb704fdb99bac13236614f8 \
+                    size    131424
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-setuptools \

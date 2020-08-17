@@ -68,7 +68,7 @@ use_configure       no
 variant universal {}
 
 build.cmd           ./RedistMaker
-build.env           CXX="${configure.cxx} [get_canonical_archflags cxx]"
+build.env           "CXX=${configure.cxx} [get_canonical_archflags cxx]"
 build.target
 
 pre-destroot {

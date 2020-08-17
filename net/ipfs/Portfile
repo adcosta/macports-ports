@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           golang 1.0
+
+go.setup            github.com/ipfs/go-ipfs 0.4.23 v
+name                ipfs
+categories          net
+checksums           rmd160  5b841e08bd155f8075051c99a0830522a0424101 \
+                    sha256  1bae94aebc9e94841d316d51d6d3c01ba4d2efce85d02ef04ccc81339661db2b \
+                    size    759149
+
+maintainers         {ogsite.net:sirn @sirn} openmaintainer
+platforms           darwin
+license             MIT
+homepage            https://ipfs.io
+
+description         Global, versioned, peer-to-peer filesystem
+long_description    IPFS is a global, versioned, peer-to-peer filesystem. \
+                    It combines good ideas from Git, BitTorrent, Kademlia, \
+                    SFS, and the Web. It is like a single bittorrent swarm, \
+                    exchanging git objects. IPFS provides an interface as \
+                    simple as the HTTP web, but with permanence built in.
+
+depends_build       port:go
+
+build.cmd           make
+build.target        build
+
+destroot {
+    xinstall -m 0755 ${worksrcpath}/cmd/ipfs/ipfs ${destroot}${prefix}/bin
+    xinstall -d ${destroot}${prefix}/share/examples/${name}
+    xinstall -W ${worksrcpath}/misc/launchd io.ipfs.ipfs-daemon.plist ${destroot}${prefix}/share/examples/${name}/ipfs.plist
+    reinplace "s|{{IPFS_BIN}}|${prefix}/bin/ipfs|g" ${destroot}${prefix}/share/examples/${name}/ipfs.plist
+    reinplace "s|{{IPFS_PATH}}|/Users/USERNAME/.ipfs|g" ${destroot}${prefix}/share/examples/${name}/ipfs.plist
+}
+
+notes-append \
+    "IPFS provides an example launchd plist. To use it:" \
+    "1. Copy ${prefix}/share/examples/${name}/ipfs.plist to ~/Library/LaunchAgents" \
+    "2. Edit ipfs.plist by replacing USERNAME with your actual username" \
+    "3. Log out and in again, or run: launchctl load ~/Library/LaunchAgents/ipfs.plist"
+
+github.livecheck.regex  {([0-9.-]+)}

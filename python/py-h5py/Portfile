@@ -5,7 +5,7 @@ PortGroup               github 1.0
 PortGroup               python 1.0
 PortGroup               mpi 1.0
 
-github.setup            h5py h5py 2.8.0
+github.setup            h5py h5py 2.10.0
 name                    py-h5py
 # h5py needs to be re-built after hdf5 upgrades
 revision                1
@@ -26,36 +26,18 @@ long_description  \
     datatypes and data structures and their HDF5 equivalents vastly \
     simplifies the process of reading and writing data from Python.
 
-homepage                http://www.h5py.org
+homepage                https://www.h5py.org
 
-# Dropping -devel versions; mature & stable
-# Can be removed after 6/13/2019
-# Support for -devel
-set DEV_VERSION     0
-
-subport                 py27-h5py-devel {set DEV_VERSION 27}
-subport                 py34-h5py-devel {set DEV_VERSION 34}
-subport                 py35-h5py-devel {set DEV_VERSION 35}
-subport                 py36-h5py-devel {set DEV_VERSION 36}
-
-python.versions         27 34 35 36 37
-python.default_version  27
+python.versions         27 35 36 37 38
+python.default_version  37
 
 checksums \
-    rmd160  d2989e082842e6c14d9a34bb4e92ec862bd7585b \
-    sha256  4d494a2b03e190029f265c60a84baf48cbe3e1d161bf75c84d16de1e06f52be9
-
-if {${DEV_VERSION}} {
-    # Dropping -devel versions; mature & stable
-    # Can be removed after 6/13/2019
-    PortGroup   obsolete 1.0
-    replaced_by py${python.version}-h5py
-} elseif {${name} ne ${subport}} {
-    conflicts               py${python.version}-h5py-devel
-}
+    rmd160  43834284330c96de74b9998c440185ce79bafd91 \
+    sha256  f1a2ed05943845480a4bb9b5907600ffa24bb9c199f3b520f2b811b847e7178d \
+    size    314470
 
 # Only check against releases.
-livecheck.regex             "archive/(\[0-9.\]+)\.tar\.gz"
+github.livecheck.regex      {([0-9.]+)}
 
 
 if {${name} ne ${subport}} {

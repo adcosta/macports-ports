@@ -1,10 +1,10 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           gobject_introspection 1.0
+PortGroup           meson 1.0
 
 name                gsettings-desktop-schemas
-version             3.28.0
+version             3.36.1
 license             LGPL-2.1
 set branch          [join [lrange [split ${version} .] 0 1] .]
 
@@ -21,34 +21,34 @@ master_sites        gnome:sources/${name}/${branch}/
 
 use_xz              yes
 
-checksums           rmd160  2bc6f7ca7e04071a30805acc7c6db2ce6e644f9e \
-                    sha256  4cb4cd7790b77e5542ec75275237613ad22f3a1f2f41903a298cf6cc996a9167 \
-                    size    648296
+checksums           rmd160  28d8b08c7e2123e0131ddc7b1325d5da18ec9427 \
+                    sha256  004bdbe43cf8290f2de7d8537e14d8957610ca479a4fa368e34dbd03f03ec9d9 \
+                    size    679788
 
 supported_archs     noarch
 
-depends_build       port:pkgconfig \
-                    port:gsed \
-                    port:intltool \
-                    port:gnome-common \
-                    port:autoconf \
-                    port:automake \
-                    port:libtool
+depends_build-append \
+                    port:pkgconfig \
+                    port:python38
 
-depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2
+depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:gobject-introspection
 
-gobject_introspection yes
-
-# reconfigure using upstream autogen.sh for intltool 0.51 compatibility
-
+# make sure post-install.py uses python3.8 not generic python3
 post-patch {
-    xinstall -m 755 ${filespath}/autogen.sh ${worksrcpath}
+    reinplace "s|#!.*|#!${prefix}/bin/python3.8|" ${worksrcpath}/build-aux/meson/post-install.py
 }
 
-configure.cmd       ./autogen.sh
-
-configure.args      --disable-silent-rules \
-                    --disable-schemas-compile
+# gobject-introspection uses g-ir-scanner, which uses $CC from env
+if {[variant_isset universal]} {
+    foreach arch ${configure.universal_archs} {
+        lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+        lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
+    }
+} else {
+    build.env-append       "CC=${configure.cc} ${configure.cc_archflags}"
+    destroot.env-append    "CC=${configure.cc} ${configure.cc_archflags}"
+}
 
 post-activate {
     system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"

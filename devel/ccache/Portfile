@@ -1,12 +1,13 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           github 1.0
 
-name                ccache
-version             3.5
-checksums           rmd160  4ff3240045cf5c30f66ebfe8e481be01867f086d \
-                    sha256  bdd44b72ae4506a2e2deef9fefb15c606a474bbca7658cd2be26105155eec012 \
-                    size    334668
+github.setup        ccache ccache 3.7.11 v
+revision            0
+checksums           rmd160  3be62b02f6728dad1388221d9f4c5b7289fdaa6c \
+                    sha256  8d450208099a4d202bd7df87caaec81baee20ce9dd62da91e9ea7b95a9072f68 \
+                    size    354160
 
 categories          devel
 platforms           darwin freebsd
@@ -22,14 +23,17 @@ long_description \
     compilation can be satisfied from cache.  This often results in a 5 to 10 \
     times speedup in common compilations.
 
-homepage            https://ccache.samba.org/
-master_sites        https://www.samba.org/ftp/ccache/
+homepage            https://ccache.dev
+github.tarball_from releases
 use_xz              yes
+
+post-patch {
+    # gcc 4.x and clang < 500 do not understand -Wpedantic
+    reinplace "s|-Wpedantic||g" ${worksrcpath}/configure
+}
 
 depends_lib         port:zlib
 
-conflicts           ccache-devel
-
-livecheck.type      regex
-livecheck.url       [lindex ${master_sites} 0]
-livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}
+# Disable silent rules
+build.args          V=1
+destroot.args       {*}${build.args}

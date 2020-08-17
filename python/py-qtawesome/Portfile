@@ -4,42 +4,50 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        spyder-ide qtawesome 0.5.2 v
+github.setup        spyder-ide qtawesome 0.7.2 v
+revision            0
 name                py-qtawesome
 
-license             MIT
 platforms           darwin
 supported_archs     noarch
-maintainers         {gmail.com:ottenr.work @reneeotten} openmaintainer
+license             MIT
+maintainers         {reneeotten @reneeotten} openmaintainer
 
 description         Iconic Fonts in PyQt and PySide applications.
 long_description    QtAwesome enables iconic fonts such as Font Awesome and \
                     Elusive Icons in PyQt and PySide applications.
 
-checksums           rmd160  a4d4b328f5b666a25ca14094113ba54010bd72d2 \
-                    sha256  35d25a25a432454a9e2b00372c358218dc634ee327177bfd7c156739c23bf47b \
-                    size    652286
+checksums           rmd160  6f6967735e2b1b46ecd761cfeef37c40d471cd37 \
+                    sha256  7237b5b8f89d6f6fbb19dc8f1a400a37978a04b5f35b4690311dd6f3e47dd3e7 \
+                    size    1214916
 
-python.versions     27 34 35 36 37
+python.versions     27 35 36 37 38
 
 if {${name} ne ${subport}} {
-    livecheck.type  none
-
-    depends_build-append    port:py${python.version}-setuptools
-    depends_lib-append      port:py${python.version}-qtpy \
-                            port:py${python.version}-six
-
-    pre-test {
+    post-patch {
         reinplace "s|python|${python.bin}|g" ${worksrcpath}/qtawesome/tests/test_qtawesome.py
     }
-    depends_test-append     port:py${python.version}-pytest
-    test.run                yes
-    test.cmd                py.test-${python.branch}
+
+    depends_lib-append \
+                    port:py${python.version}-qtpy \
+                    port:py${python.version}-setuptools \
+                    port:py${python.version}-six
+
+    depends_test-append \
+                    port:py${python.version}-pytest \
+                    port:py${python.version}-pytest-qt
+
+    test.run        yes
+    test.cmd        py.test-${python.branch}
     test.target
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
 
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}
         xinstall -d ${destroot}${docdir}
-        xinstall -m 0644 -W ${worksrcpath} LICENSE ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} LICENSE.txt CHANGELOG.md \
+           README.md  ${destroot}${docdir}
     }
+
+    livecheck.type  none
 }

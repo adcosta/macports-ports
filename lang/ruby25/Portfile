@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           select 1.0
 
 name                ruby25
-version             2.5.3
+version             2.5.8
 revision            0
 
 categories          lang ruby
@@ -26,10 +26,10 @@ use_bzip2           yes
 distname            ruby-${version}
 dist_subdir         ruby25
 
-checksums           md5 49aea0bf56d25351ccaf938c642400df \
-                    rmd160 c711c721143ece0f412676e573f09c13f1218b6a \
-                    sha1 d47ede7dab79de25fcc274dfcad0f92f389a4313 \
-                    sha256 228a787ba68a7b20ac6e1d5af3d176d36e8ed600eb754d6325da341c3088ed76
+checksums           md5 9ec96e7a590ef801ede294b6184c9c0f \
+                    rmd160 11690f8fde73998592a42801252de4b356e2258e \
+                    sha1 823b6b009a6e44fef27d2dacb069067fe355d5d8 \
+                    sha256 41fc93731ad3f3aa597d657f77ed68fa86b5e93c04dfbf7e542a8780702233f0
 
 use_parallel_build  no
 
@@ -61,6 +61,13 @@ configure.args      --enable-shared \
                     --with-opt-dir="${prefix}" \
                     --program-suffix=2.5 \
                     --with-rubylibprefix="${prefix}/lib/ruby2.5"
+
+# https://github.com/ruby/ruby/commit/1961c786aab243b3eb60e7238224e87975d88056
+# * configure.ac (LIBPATHENV): use DYLD_FALLBACK_LIBRARY_PATH instead of
+# DYLD_LIBRARY_PATH on macOS, to honor runtime paths embedded in the
+# binaries.  https://bugs.ruby-lang.org/issues/14992
+configure.args-append \
+                    LIBPATHENV=DYLD_FALLBACK_LIBRARY_PATH
 
 platform darwin {
     if {${os.major} < 10} {
@@ -120,5 +127,4 @@ variant relative description "Enable relative loading of libraries to allow for 
 
 livecheck.type  regex
 livecheck.url   https://cache.ruby-lang.org/pub/ruby/2.5/
-livecheck.regex ruby-(2.5.\\d+)${extract.suffix}
-
+livecheck.regex ruby-(2\\.5\\.\\d+)[quotemeta ${extract.suffix}]

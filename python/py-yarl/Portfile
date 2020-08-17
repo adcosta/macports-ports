@@ -4,13 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-yarl
-version             1.2.6
-revision            1
+version             1.5.1
 categories-append   devel
 platforms           darwin
 license             Apache-2
 
-python.versions     35 36 37
+python.versions     35 36 37 38
 
 maintainers         {ipglider.org:miguel @ipglider} openmaintainer
 
@@ -22,14 +21,15 @@ master_sites        pypi:y/yarl
 
 distname            yarl-${version}
 
-checksums           rmd160  b0f0a7cdf55a7188de0a962d8393f895c234b517 \
-                    sha256  c8cbc21bbfa1dd7d5386d48cc814fe3d35b80f60299cdde9279046f399c3b0d8 \
-                    size    159816
+checksums           rmd160  65d3145b28e02c7aa06f371d7d20cbdb6ccfc492 \
+                    sha256  c22c75b5f394f3d47105045ea551e08a3e804dc7e01b37800ca35b58f856c3d6 \
+                    size    173005
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools
     depends_lib-append      port:py${python.version}-idna \
                             port:py${python.version}-multidict
+    livecheck.type          none
 } else {
     livecheck.type          pypi
 }

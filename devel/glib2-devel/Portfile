@@ -8,10 +8,11 @@ PortGroup                   compiler_blacklist_versions 1.0
 name                        glib2-devel
 conflicts                   glib2
 set my_name                 glib
-version                     2.58.1
-checksums                   rmd160  7951a41129225b9d38d7df72069f73560a9e86a0 \
-                            sha256  97d6a9d926b6aa3dfaadad3077cfb43eec74432ab455dff14250c769d526d7d6 \
-                            size    4906444
+version                     2.58.3
+revision                    0
+checksums                   rmd160  3fafbb1e6288ff1e8146ecd0a14547ba779406e5 \
+                            sha256  8f43c31767e88a25da72b52a40f3301fefc49a665b56dc10ee7cc9565cbe7481 \
+                            size    4863648
 
 set branch                  [join [lrange [split ${version} .] 0 1] .]
 categories                  devel
@@ -40,7 +41,6 @@ patchfiles                  libintl.patch \
                             patch-get-launchd-dbus-session-address.diff \
                             patch-gmodule-gmodule-dl.c.diff \
                             patch-configure-switch-for-gappinfo-impl.diff \
-                            POSIX-spawn.patch \
                             universal.patch
 
 depends_build               port:autoconf \
@@ -89,10 +89,9 @@ configure.python            /usr/bin/python
 configure.env-append        PERL_PATH=${configure.perl}
 
 post-patch {
-    reinplace -W ${worksrcpath} "s|@PREFIX@|${prefix}|g" gio/gdbusprivate.c gio/xdgmime/xdgmime.c glib/gi18n-lib.h glib/gi18n.h
+    reinplace -W ${worksrcpath} "s|@PREFIX@|${prefix}|g" gio/gdbusprivate.c gio/xdgmime/xdgmime.c glib/gi18n-lib.h glib/gi18n.h gio/gdbusaddress.c
     reinplace "s|data_dirs = \"/usr|data_dirs = \"${prefix}/share:/usr|g" ${worksrcpath}/glib/gutils.c
     reinplace "s|path = \"/bin|path = \"${prefix}/bin:/bin|g" ${worksrcpath}/glib/gutils.c ${worksrcpath}/glib/gspawn.c
-    reinplace "s|#! */usr/bin/env python|#!${configure.python}|g" ${worksrcpath}/glib/gtester-report
 }
 
 post-configure {

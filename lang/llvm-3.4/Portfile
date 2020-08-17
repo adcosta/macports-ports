@@ -10,17 +10,26 @@ set llvm_version        3.4
 set llvm_version_no_dot 34
 name                    llvm-${llvm_version}
 revision                12
-subport                 clang-${llvm_version} { revision 12 }
+subport                 clang-${llvm_version} { revision 13 }
 set suffix              mp-${llvm_version}
 set sub_prefix          ${prefix}/libexec/llvm-${llvm_version}
+# prefix for deps using libstdc++ on a libc++ system
+set bootstrap_prefix    ${prefix}/libexec/libcxx-bootstrap
 dist_subdir             llvm
 categories              lang
 platforms               darwin
 license                 NCSA
-maintainers             {jeremyhu @jeremyhu} {larryv @larryv}
+maintainers             {jeremyhu @jeremyhu} {larryv @larryv} {kencu @kencu}
+
+# work around a bug in base -- REMOVE ME when base is fixed
+#see https://trac.macports.org/ticket/59677
+#see https://trac.macports.org/ticket/58779
+if { !${use_xcode} && ![file exists ${configure.developer_dir}/SDKs] } {
+    use_xcode yes
+}
 
 if {${subport} eq "llvm-${llvm_version}"} {
-    homepage            http://llvm.org/
+    homepage            https://llvm.org/
     description         llvm is a next generation compiler infrastructure
     long_description    The LLVM Core libraries provide a modern source- and \
                         target-independent optimizer, along with code \
@@ -32,7 +41,7 @@ if {${subport} eq "llvm-${llvm_version}"} {
     depends_lib         port:libffi port:ncurses port:zlib
     depends_run         bin:perl:perl5 port:llvm_select
 } elseif {${subport} eq "clang-${llvm_version}"} {
-    homepage            http://clang.llvm.org/
+    homepage            https://clang.llvm.org/
     description         C, C++, Objective C and Objective C++ compiler
     long_description    Clang is an "LLVM native" C/C++/Objective-C compiler, \
                         which aims to deliver amazingly fast compiles (e.g. \
@@ -55,7 +64,33 @@ if {${subport} eq "llvm-${llvm_version}"} {
     # after #46040 is resolved.
     depends_lib-append  port:libffi port:ncurses port:zlib
 
-    default_variants    +analyzer
+    # Avoid requiring a bootstrap version of perl5 on 10.6.
+    if {${os.major} >= 11} {
+        default_variants    +analyzer
+    }
+
+    # port:libxml2 depends on port:icu which now needs a C++11 compiler
+    # this is problematic for bootstrapping, and clang in fact does not require libxml2
+    # (although c-index-test will optionally use it if it is installed)
+    # remove the dependency, and force any installed version of libxml2 to
+    # be ignored during configuration for consistent building
+    if {${os.major} < 13} {
+        depends_lib-delete     port:libxml2
+        configure.env-append   ac_cv_lib_xml2_xmlReadFile=no
+    }
+}
+
+if {${os.platform} eq "darwin" && ${os.major} < 12 && ${cxx_stdlib} eq "libc++"} {
+    if {${os.major} < 11} {
+        configure.cxx_stdlib    libstdc++
+        # Have to also use bootstrap versions of deps that use libstdc++ in
+        # order to be able to build libc++.
+        depends_lib-replace port:python27 port:python27-bootstrap \
+                            port:ncurses port:ncurses-bootstrap
+    }
+    configure.cppflags-prepend  -I${bootstrap_prefix}/include
+    configure.ldflags-prepend   -L${bootstrap_prefix}/lib
+    configure.env-append    PATH=${bootstrap_prefix}/bin:$::env(PATH)
 }
 
 #fetch.type              svn
@@ -73,7 +108,7 @@ if {${subport} eq "llvm-${llvm_version}"} {
 
 version                 ${llvm_version}.2
 epoch                   1
-master_sites            http://llvm.org/releases/${version} http://llvm.org/releases/${llvm_version}
+master_sites            https://releases.llvm.org/${version} https://releases.llvm.org/${llvm_version}
 extract.suffix          .tar.gz
 distfiles               llvm-${version}.src${extract.suffix}
 worksrcdir              llvm-${version}.src
@@ -173,7 +208,11 @@ if {${subport} eq "llvm-${llvm_version}"} {
     select.group        clang
     select.file         ${filespath}/mp-${subport}
 
-    configure.args-append --with-python=${prefix}/bin/python2.7
+    if {${os.platform} eq "darwin" && ${os.major} < 11 && ${cxx_stdlib} eq "libc++"} {
+        configure.args-append --with-python=${bootstrap_prefix}/bin/python2.7
+    } else {
+        configure.args-append --with-python=${prefix}/bin/python2.7
+    }
 }
 
 # g++-4.0 fails to build some of the newer C++ for ppc. Intel looks ok, but I prefer using gcc-4.2 for consistency
@@ -181,13 +220,25 @@ if {${subport} eq "llvm-${llvm_version}"} {
 # Xcode 4.3's clang (318.x) fails per https://trac.macports.org/ticket/44161
 compiler.blacklist gcc-4.0 {gcc-4.2 <= 5577} {clang < 421}
 
+# avoid dependency cycles
+compiler.blacklist-append   macports-clang-*
+
 variant universal {
+    if {[vercmp [macports_version] 2.5.99] >= 0} {
+    build.env-append \
+        UNIVERSAL=1 \
+        UNIVERSAL_ARCH=[get_canonical_archs]
+    destroot.env-append \
+        UNIVERSAL=1 \
+        UNIVERSAL_ARCH=[get_canonical_archs]
+    } else {
     build.env-append \
         UNIVERSAL=1 \
         UNIVERSAL_ARCH="[get_canonical_archs]"
     destroot.env-append \
         UNIVERSAL=1 \
         UNIVERSAL_ARCH="[get_canonical_archs]"
+    }
 
     post-extract {
         # workaround a bug in Apple's shipped gcc driver-driver, patched in
@@ -203,14 +254,6 @@ variant universal {
 variant assertions description "Enable assertions for error detection (has performance impacts, especially on JIT)" {
     configure.args-delete --disable-assertions
     configure.args-append --enable-assertions
-}
-
-# blacklist current and future versions if they're not available in order to
-# help break potential dependency cycles.
-foreach ver {3.4 3.7 3.8 3.9 4.0 5.0 6.0 devel} {
-    if {![file exists ${prefix}/bin/clang-mp-${ver}]} {
-        compiler.blacklist-append macports-clang-${ver}
-    }
 }
 
 platform darwin {

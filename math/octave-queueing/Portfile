@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           octave 1.0
 
-octave.setup        queueing 1.2.5
-revision            2
+octave.setup        queueing 1.2.7
+revision            0
 platforms           darwin
 license             GPL-2+
 maintainers         {mps @Schamschula} openmaintainer
@@ -19,7 +19,8 @@ long_description    ${description}This package can be used to compute steady-sta
                     absorption, time-averaged sojourn times and so forth. Discrete- and \
                     continuous-time Markov chains are supported.
 
-checksums           rmd160 affeb0405c88cec719bd63e719e403d52171add5 \
-                    sha256 8f6f7efd55dd6b5948184967bb6e1d7c5516ff52992e2e0888d27ab1ccd450b1
+checksums           rmd160  757f5580a0434ef5d2f6b20e3ce4559a0769ea13 \
+                    sha256  cd54eb148a9dfc1268c040645727bd1bbafc8932cb2d6e5c6bf5e110cf111cfa \
+                    size    941592
 
 supported_archs     noarch

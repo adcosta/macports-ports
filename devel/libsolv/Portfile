@@ -4,11 +4,11 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           cmake 1.0
 
-github.setup        openSUSE libsolv 0.7.1
+github.setup        openSUSE libsolv 0.7.7
 
-checksums           rmd160  4efe3b751fe4e7a00b011e0e46616a85e9dfb8d1 \
-                    sha256  6fe5b57b8893ed9020784ebacc2193cc8caef5d9f64070b6643c52d5ae724ba6 \
-                    size    652875
+checksums           rmd160  d8d7f680d20f2c42400593bfe8ee8b85ae537fd3 \
+                    sha256  f34f8373bab6509318872bb804ff758c06beaa61bdfeac832172b7f48f65f273 \
+                    size    707557
 
 maintainers         {cal @neverpanic} {ijackson @JacksonIsaac} openmaintainer
 categories          devel math
@@ -16,7 +16,7 @@ platforms           darwin
 
 license             BSD
 description         Library for solving packages and reading repositories
-long_description    ${description}
+long_description    {*}${description}
 
 cmake.out_of_source yes
 configure.args-append \

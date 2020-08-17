@@ -5,33 +5,33 @@ PortGroup           muniversal 1.0
 PortGroup           github 1.0
 PortGroup           compiler_blacklist_versions 1.0
 
-github.setup        01org tbb 2019_U1
-revision            1
+github.setup        intel tbb 2020.3 v
+revision            0
+
 categories          devel
 platforms           darwin
 maintainers         nomaintainer
 license             Apache-2
 
-description         Intel Threading Building Blocks offers a rich and complete approach to parallelism in C++
+description         Intel Threading Building Blocks offers a rich and complete approach \
+                    to parallelism in C++
 
-long_description    ${description} \
+long_description    {*}${description} \
                     It represents a higher-level, task-based parallelism that abstracts \
                     platform details and threading mechanisms for scalability and performance
 
 homepage            https://www.threadingbuildingblocks.org/
 
-checksums           rmd160  b7518ab5e5c31c02f7a46a515c339e5dbb1f1283 \
-                    sha256  24410aeda0d146a462b3ab6b7d8395c16dc74f01ed83f5f2867f14fab9621fa7 \
-                    size    2512669
+checksums           rmd160  64fd69e42540ef8968d9a3e36cb23816ca9de647 \
+                    sha256  131d249f3132f643738d71e37162e4ac73f96bdb5064ccd35f03967fdf9b477e \
+                    size    2640358
 
-github.livecheck.regex {(\d+(?:\_U)+(?:\d+)*)}
+github.livecheck.regex  {([0-9.]+)}
 
 use_configure       no
 
 # Force a compatible compiler
-compiler.blacklist-append *gcc* {clang < 602} macports-clang-3.3 macports-clang-3.4 \
-                          macports-clang-3.7
-compiler.whitelist clang macports-clang-3.9
+compiler.blacklist-append *gcc* {clang < 602} {macports-clang-3.[0-7]}
 
 set tbb_arch(i386)      ia32
 set tbb_arch(ppc)       ppc32
@@ -61,6 +61,7 @@ post-patch {
 
 build.target        tbb tbbmalloc tbbproxy
 build.args-append   compiler=${tbb_compiler} \
+                    stdlib=${configure.cxx_stdlib} \
                     tbb_build_prefix=${tbb_build_prefix} \
                     use_proxy=1
 

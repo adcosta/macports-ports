@@ -1,37 +1,53 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           cmake 1.0
+PortGroup           cmake 1.1
 PortGroup           github 1.0
+PortGroup           legacysupport 1.0
+PortGroup           compiler_blacklist_versions 1.0
 
-github.setup        Exiv2 exiv2 0.26 v
+github.setup        Exiv2 exiv2 0.27.3 v
 revision            1
+checksums           rmd160  b232bd2a9a357b5d0c5fcf85582e3b3ed04ac523 \
+                    sha256  6398bc743c32b85b2cb2a604273b8c90aa4eb0fd7c1700bf66cbb2712b4f00c1 \
+                    size    26185201
+
 categories          graphics
 platforms           darwin
 license             GPL-2+
-maintainers         nomaintainer
+maintainers         {ryandesign @ryandesign} openmaintainer
 
 description         EXIF and IPTC metadata manipulation library and tools
 long_description    Exiv2 comprises of a C++ library and a command line utility \
                     which allows you to manipulate EXIF and IPTC image metadata.
 
-homepage            http://www.exiv2.org/
+homepage            https://www.exiv2.org
+github.tarball_from archive
 
-checksums           rmd160  bcbcc36bf24af0828bb136bb7f0f62d6fe913de5 \
-                    sha256  a3aace5ab6a3ef189be44885c1350abda0ae27365a455e834cc63547d6ffb75d \
-                    size    28364056
-
-cmake.out_of_source yes
+depends_build-append \
+                    port:gmake
 
 depends_lib-append  port:expat \
                     port:gettext \
                     port:libiconv \
                     port:zlib
 
-patchfiles          patch-config-CMakeChecks.txt.diff \
-                    patch-src-actions.cpp.diff \
-                    patch-src-CMakeLists.txt.diff
+compiler.cxx_standard 2011
+# error: use of undeclared identifier '__builtin_sadd_overflow'
+compiler.blacklist-append \
+                    { clang < 426 } \
+                    macports-clang-3.3
 
-livecheck.type      regex
-livecheck.url       ${homepage}/download.html
-livecheck.regex     "${name}-(\\d+(?:\\.\\d+)*)-trunk${extract.suffix}"
+# Remove this once upstream has their detection of the availability of
+# -fstack-protector-stong fixed.
+# https://github.com/Exiv2/exiv2/issues/1243
+compiler.blacklist-append {clang < 700}
+
+patchfiles-append   patch-remove-no-format-overflow.diff
+
+configure.args-append \
+                    -DIconv_INCLUDE_DIR=${prefix}/include \
+                    -DIconv_LIBRARY=${prefix}/lib/libiconv.dylib \
+                    -DZLIB_ROOT=${prefix}
+
+github.livecheck.regex  {(\d+(?:\.\d+)+)}

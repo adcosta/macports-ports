@@ -1,13 +1,21 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
 PortGroup           github 1.0
 
+# strnlen, getline
+# https://github.com/aircrack-ng/aircrack-ng/issues/1682
+# clock_gettime
+PortGroup           legacysupport 1.0
+legacysupport.newest_darwin_requires_legacy 15
+
 epoch               1
-github.setup        aircrack-ng aircrack-ng 1.4
-checksums           rmd160  29353d7ec9052916ee3429e18ea04f01ab535f75 \
-                    sha256  96092a8af7af27cdc1923cd5167dfca4a17e9f5fd866973b7b6eb6d3b479e13b \
-                    size    7138756
+github.setup        aircrack-ng aircrack-ng 1.6
+revision            0
+checksums           rmd160  895537d6c14f9ce5efa9913d2933a1bfe19604da \
+                    sha256  4f0bfd486efc6ea7229f7fbc54340ff8b2094a0d73e9f617e0a39f878999a247 \
+                    size    7933308
 
 categories          security
 license             GPL-2+ BSD OpenSSL
@@ -32,15 +40,25 @@ depends_build       port:autoconf \
                     port:automake \
                     port:gmake \
                     port:libtool \
-                    port:pkgconfig \
-                    port:python36
+                    port:pkgconfig
 
-depends_lib         port:libpcap \
+depends_lib         port:hwloc \
+                    port:libpcap \
                     path:lib/libssl.dylib:openssl \
                     port:pcre \
                     port:sqlite3
 
 patchfiles-append   aircrack_ng_mac.m4.patch
+patchfiles-append   dprintf.patch
+
+patchfiles-append   VERSION.patch
+post-patch {
+    move ${worksrcpath}/VERSION ${worksrcpath}/VERSION.txt
+}
+
+# cpuid, cpuid_count, get_cpuid_max
+# https://github.com/aircrack-ng/aircrack-ng/issues/1717
+compiler.blacklist-append {clang < 503}
 
 # No configure script in tarball.
 configure.cmd       ./autogen.sh
@@ -55,8 +73,6 @@ configure.args      --disable-silent-rules \
                     --without-ext-scripts \
                     --without-gcrypt \
                     --without-xcode
-configure.python    ${prefix}/bin/python3.6
-configure.env       PYTHON_CONFIG=${configure.python}-config
 
 build.cmd           ${prefix}/bin/gmake
 

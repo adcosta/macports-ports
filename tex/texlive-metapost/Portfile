@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           texlive 1.0
 
 name                texlive-metapost
-version             47198
+version             54512
 revision            0
 
 categories          tex
@@ -13,22 +13,25 @@ license             Copyleft Permissive
 description         TeX Live: MetaPost and Metafont packages
 long_description    MetaPost and Metafont packages
 
-checksums           texlive-metapost-47198-run.tar.xz \
-                    rmd160  329ca3dc2c7c9b1e40a98f8d8ad2b255d9803d2b \
-                    sha256  16cdd6e8e50a7aa21832214b6c9adeffe4da70985730b51c6a52c1f2991be60e \
-                    texlive-metapost-47198-doc.tar.xz \
-                    rmd160  ed10e9997e1a8580abaef9a8fad12f7394079bdb \
-                    sha256  a0c7932f2868c5dd7af688ea8a9c5975be3729a7e7c472f405087aa2063bf646 \
-                    texlive-metapost-47198-src.tar.xz \
-                    rmd160  cce70eeb2dcdadc626cc12607d6b9cd906323851 \
-                    sha256  8c4af5c4c4beeb8a5425e40e057bcdb71f326645db585f1ecd0bc68ef33668e9
+checksums           texlive-metapost-54512-run.tar.xz \
+                    rmd160  def995527e7b2626e57ef6cb8072bbfeb0def28e \
+                    sha256  ad0c3e43ac458bff22ccd80511253accb9b4bc4bc0e912ece641a0af2b8e839a \
+                    size    35791764 \
+                    texlive-metapost-54512-doc.tar.xz \
+                    rmd160  3a25e4f252fc34b652518c32b70a658652aa2b16 \
+                    sha256  998ecab1825c31f04ebb22b2c9581f13b104a460eac357d40450725bade16f05 \
+                    size    35080756 \
+                    texlive-metapost-54512-src.tar.xz \
+                    rmd160  a86ef78d10d54038115ddd665bf2d529fb3bfa17 \
+                    sha256  7825cc42402770d541d5f197288da41ade0d84a84f61908289f93aa3e519c4e4 \
+                    size    326880
 
 depends_lib         port:texlive-basic
 
 texlive.maps      \
     {Map troff-updmap.map}
 
-texlive.binaries    dvitomp mfplain mpost
+texlive.binaries    dvitomp mfplain mpost r-mpost
 
 
 texlive.texmfport
