@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.26 5.28 5.30
-perl5.setup         Data-Dumper 2.173
+perl5.setup         Data-Dumper 2.181
 maintainers         nomaintainer
 license             {Artistic-1 GPL}
 platforms           darwin
@@ -19,6 +19,6 @@ long_description    Given a list of scalars or reference variables, writes \
                     can be \"eval\"ed to get back an identical copy of the \
                     original reference structure.
 
-checksums           rmd160  3b94eaabf6e95d5b0e706f06b729d916c7e293ef \
-                    sha256  697608b39330988e519131be667ff47168aaaaf99f06bd2095d5b46ad05d76fa \
-                    size    110256
+checksums           rmd160  b418d9f0650e28a43eaa2f2bfa89268b710ba918 \
+                    sha256  c840fbaa520dc076d0a040cddb71184c41584d8f4a0c4f7b295a8d32ebd0c473 \
+                    size    168365

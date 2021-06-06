@@ -3,11 +3,11 @@
 PortSystem              1.0
 PortGroup               github 1.0
 
-github.setup            samtools htslib 1.10.2
+github.setup            samtools htslib 1.12
 revision                0
-checksums               rmd160  3fa4b5a393f8718259aba0d065b7558c6db0bced \
-                        sha256  e3b543de2f71723830a1e0472cf5489ec27d0fbeb46b1103e14a11b7177d1939 \
-                        size    1306320
+checksums               rmd160  3d93d91db8c382f42b8ad0843609cabd3b502b46 \
+                        sha256  2280141b46e953ba4ae01b98335a84f8e6ccbdb6d5cdbab7f70ee4f7e3b6f4ca \
+                        size    4094458
 
 categories              science
 platforms               darwin
@@ -22,7 +22,7 @@ long_description        HTSlib is an implementation of a unified C library for \
                         and BCF, used for high-throughput sequencing data. It \
                         is the core library used by SAMtools and BCFtools.
 
-homepage                http://www.htslib.org/
+homepage                https://www.htslib.org
 github.tarball_from     releases
 use_bzip2               yes
 

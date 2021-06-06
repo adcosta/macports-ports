@@ -2,6 +2,10 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
+PortGroup           legacysupport 1.0
+
+# clock_gettime
+legacysupport.newest_darwin_requires_legacy 15
 
 name                hamlib
 categories          science
@@ -19,16 +23,12 @@ homepage            https://hamlib.github.io
 
 subport hamlib-devel {}
 if {[string first "-devel" $subport] > 0} {
-    PortGroup       legacysupport 1.0
 
-    # clock_gettime
-    legacysupport.newest_darwin_requires_legacy 15
-
-    github.setup    Hamlib Hamlib 59358564c77b6048ec435b7362a7326252661b79
-    version         20200811-[string range ${github.version} 0 7]
-    checksums       rmd160  fd477cbe964880feb23f14c826deaec48091aef3 \
-                    sha256  f349f3a755507109fa21870c98f5ace67b4dd3d163ca3c2238f45f8686b861b7 \
-                    size    1481195
+    github.setup    Hamlib Hamlib ff9a745c7a716791d58932ed6b82036823094ab7
+    version         20210604-[string range ${github.version} 0 7]
+    checksums       rmd160  f39079319d30caf4c478cdb006ee4d63bd8603a9 \
+                    sha256  02a37432c50a6a52fc5401c1b9b8fd75b0d80094575f55c0f9b5e503a587a51d \
+                    size    1685083
     revision        0
 
     name            hamlib-devel
@@ -47,15 +47,14 @@ if {[string first "-devel" $subport] > 0} {
 
 } else {
 
-    github.setup    Hamlib Hamlib 3.3
+    github.setup    Hamlib Hamlib 4.2
     github.tarball_from releases
-    checksums       rmd160  e9a09b5878101b44802adf2a82cb697e3560c918 \
-                    sha256  c90b53949c767f049733b442cd6e0a48648b55d99d4df5ef3f852d985f45e880 \
-                    size    2192119
+    checksums       rmd160  46091e5027f753356c3519d992c72d568f05a95e \
+                    sha256  e200b22f307e9a0c826187c2b08fe81c7d0283cf07056e6db3463d1481580fd5 \
+                    size    2311775
     revision        0
 
     conflicts       hamlib-devel
-
 }
 
 depends_build-append \
@@ -65,3 +64,67 @@ depends_lib-append \
     port:libtool \
     port:libusb-compat \
     port:libxml2
+
+set python_versions { 2.7 3.6 3.7 3.8 3.9 }
+# python binding is not enabled by default
+set default_python_variant ""
+
+# Define the available variants
+foreach py_ver ${python_versions} {
+    set py_ver_no_dot [join [split ${py_ver} "."] ""]
+    set variant_line {variant python${py_ver_no_dot} description "Build with python ${py_ver} support"}
+    foreach py_over ${python_versions} {
+        if { ${py_ver} == ${py_over} } { continue }
+        set py_over_no_dot [join [split ${py_over} "."] ""]
+        append variant_line " conflicts python${py_over_no_dot}"
+    }
+    append variant_line { { } }
+    eval $variant_line
+    if {[variant_isset python${py_ver_no_dot}]} {
+        if {${default_python_variant} != "+python${py_ver_no_dot}"} {
+            set default_python_variant ""
+        }
+    }
+}
+
+# set default python variant if not selected
+if {${default_python_variant} != ""} {
+    default_variants-append "${default_python_variant}"
+}
+
+# If a python variant is enabled, activate it
+set active_python_version ""
+set active_python_version_no_dot ""
+foreach py_ver ${python_versions} {
+    set py_ver_no_dot [join [split ${py_ver} "."] ""]
+    if {[variant_isset python${py_ver_no_dot}]} {
+        set active_python_version        ${py_ver}
+        set active_python_version_no_dot ${py_ver_no_dot}
+
+        depends_build-append \
+            port:swig-python
+
+        depends_lib-append \
+            port:python${active_python_version_no_dot}
+
+        configure.args-append \
+            --with-python-binding
+
+        # specify the Python version to use
+        set python_framework_dir ${frameworks_dir}/Python.framework/Versions/${active_python_version}
+        configure.args-append \
+            PYTHON=${python_framework_dir}/bin/python${active_python_version} \
+            PYTHON_EXECUTABLE=${python_framework_dir}/bin/python${active_python_version} \
+            PYTHON_INCLUDE_DIR=${python_framework_dir}/Headers \
+            PYTHON_LIBRARY=${python_framework_dir}/Python \
+            PYTHON_VERSION=${py_ver}
+
+        # install the binding in the right directory
+        set python_site_dir ${python_framework_dir}/lib/python${active_python_version}/site-packages
+        destroot.args-append \
+            pythondir=${python_site_dir} \
+            pyexecdir=${python_site_dir} \
+            pkgpythondir=${python_site_dir}/${name} \
+            pkgpyexecdir=${python_site_dir}/${name}
+    }
+}

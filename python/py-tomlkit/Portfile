@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-tomlkit
-version             0.5.8
+version             0.7.2
 revision            0
 categories-append   devel
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     37 38
+python.versions     36 37 38 39
 
 maintainers         {gmail.com:davidgilman1 @dgilman} openmaintainer
 
@@ -20,15 +20,18 @@ long_description    ${description}
 
 homepage            https://github.com/sdispater/tomlkit
 
-checksums           rmd160  594810a362d5ba3bca3d1154ea11fcf923f12574 \
-                    sha256  32c10cc16ded7e4101c79f269910658cc2a0be5913f1252121c3cd603051c269 \
-                    size    66567
-
+checksums           rmd160  c0d4a0e17bd71255d1e5bc7590c5ed0be88ff2fe \
+                    sha256  d7a454f319a7e9bd2e249f239168729327e4dd2d27b17dc68be264ad1ce36754 \
+                    size    159643
 
 if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
     post-destroot {
         # https://github.com/sdispater/tomlkit/issues/69
         delete      ${destroot}${python.pkgd}/tests
     }
+
     livecheck.type  none
 }

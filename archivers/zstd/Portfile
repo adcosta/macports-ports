@@ -4,11 +4,11 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           clang_dependency 1.0
 
-github.setup        facebook zstd 1.4.5 v
+github.setup        facebook zstd 1.5.0 v
 
-checksums           rmd160  13093409daadf3cc3a46fa1c6944b81b95637955 \
-                    sha256  98e91c7c6bf162bf90e4e70fdbc41a8188b9fa8de5ad840c401198014406ce9e \
-                    size    1973695
+checksums           rmd160  0edbe1beaf89e9b565daa75cf96e3a8428064af3 \
+                    sha256  5194fbfa781fcf45b98c5e849651aa7b3b0a008c6b72d4a0db760f3002291e94 \
+                    size    1851389
 
 categories          archivers devel
 platforms           darwin
@@ -41,9 +41,10 @@ use_configure       no
 
 variant universal {}
 
-# https://github.com/facebook/zstd/issues/2169
-# https://trac.macports.org/ticket/60542
-use_parallel_build  no
+platform darwin 8 {
+    depends_build-append port:gmake
+    build.cmd    gmake
+}
 
 build.target        allmost
 build.post_args     V=1
@@ -59,3 +60,4 @@ test.run            yes
 test.env-append     {*}${build.env}
 
 destroot.env-append {*}${build.env}
+

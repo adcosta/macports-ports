@@ -3,9 +3,10 @@
 PortSystem      1.0
 
 name            launch4j
-version         3.12
+version         3.14
+revision        0
 categories      java
-maintainers     nomaintainer
+maintainers     {amake @amake} openmaintainer
 license         GPL-2
 description     Cross-platform Java executable wrapper
 long_description \
@@ -24,11 +25,18 @@ platforms       darwin
 master_sites    sourceforge
 distname        launch4j-${version}-macosx-x86
 extract.suffix  .tgz
-checksums       md5     089cbecf8f6aa022258044f3090b5cdf \
-                sha1    62f4732c0c1bb9a68c1dd129c1d696525ae38dcb \
-                rmd160  abd6e1b13ed016d5e4be4d4744824007ec1841ec \
-                sha256  754e557036ff4a469b4a24443c809113f85b9a0689a5ffdcf35a8a6e986c458f \
-                size    7287503
+checksums       md5     f6f4b09892fe89641afd8d0832b61341 \
+                sha1    07be1b37c4fc68abc0430878a2e563dc3a52913b \
+                rmd160  0e8f52cf0dab2f5c29ea3f4e46b89a6dc794fde6 \
+                sha256  caed147c560551bcf46d1a894083808e58de62941b268ef58ca803ed09736675 \
+                size    7968945
+
+# A binary copy of windres (from GNU bintools) is included; it links to
+# /opt/local/lib/libgcc/libggc_s.1.dylib for some reason. Upstream only has the
+# binary, not source, so we can't rebuild it. Instead we relink to our own
+# library in case the prefix is not the default.
+depends_lib-append \
+                path:share/doc/libgcc/README:libgcc
 
 use_configure   no
 build           {}
@@ -37,6 +45,10 @@ worksrcdir      launch4j
 
 post-extract {
     reinplace "s|^LAUNCH4J=.*|LAUNCH4J=${prefix}/share/launch4j/launch4j.jar|" ${worksrcpath}/launch4j
+    system -W ${worksrcpath} "install_name_tool -change \
+           /opt/local/lib/libgcc/libgcc_s.1.dylib \
+           ${prefix}/lib/libgcc/libgcc_s.1.dylib \
+           bin/windres"
 }
 
 destroot {
@@ -44,19 +56,17 @@ destroot {
     set l4jdir ${sharedir}/launch4j
     set l4jdoc ${sharedir}/doc/launch4j
 
-    xinstall -d -m 755 ${l4jdoc}
+    xinstall -d -m 0755 ${l4jdoc}
     file rename ${worksrcpath}/web ${l4jdoc}
     file rename ${worksrcpath}/demo ${l4jdoc}
     file rename ${worksrcpath}/LICENSE.txt ${l4jdoc}
     file rename ${worksrcpath}/w32api/MinGW.LICENSE.txt ${l4jdoc}
-    file delete ${worksrcpath}/w32api_jni/MinGW.LICENSE.txt
-    foreach doc {ant JGoodies.Forms JGoodies.Looks Nuvola.Icon.Theme XStream commons foxtrot} {
+    foreach doc {Nuvola.Icon.Theme XStream commons foxtrot flatlaf} {
         file rename ${worksrcpath}/lib/${doc}.LICENSE.txt ${l4jdoc}
     }
     file rename ${worksrcpath}/bin/COPYING ${l4jdoc}/bin.COPYING
     file rename ${worksrcpath}/head/LICENSE.txt ${l4jdoc}/head.LICENSE.txt
     file rename ${worksrcpath}/head_jni_BETA/LICENSE.txt ${l4jdoc}/head_jni_BETA.LICENSE.txt
-    file rename ${worksrcpath}/sign4j/README.txt ${l4jdoc}/sign4j.README.txt
 
     file delete -force ${worksrcpath}/head_src
     file delete -force ${worksrcpath}/src
@@ -65,10 +75,9 @@ destroot {
     file delete ${worksrcpath}/launch4j.jfpr
     file delete ${worksrcpath}/.classpath
     file delete ${worksrcpath}/.project
-    file delete ${worksrcpath}/.gitignore
     file delete -force ${worksrcpath}/.settings
 
-    xinstall -d -m 755 ${sharedir}
+    xinstall -d -m 0755 ${sharedir}
     file copy ${worksrcpath} ${sharedir}
     ln -s ../share/launch4j/launch4j ${destroot}${prefix}/bin/launch4j
 }

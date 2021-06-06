@@ -4,10 +4,11 @@ PortSystem          1.0
 
 name                clojure
 epoch               20110929
-version             1.10.0.411
+version             1.10.3.855
+revision            0
 license             EPL-1
 categories          lang java
-maintainers         nomaintainer
+maintainers         {gmail.com:jtrtik @jtrtik} openmaintainer
 description         The Clojure programming language
 long_description    Clojure is a dynamic programming language for the JVM. \
                     It is interactive, yet compiled, with a robust \
@@ -20,9 +21,9 @@ supported_archs     noarch
 master_sites        https://download.clojure.org/install/
 distname            clojure-tools-${version}
 worksrcdir          clojure-tools
-checksums           rmd160  59821f4c153046dd4c42474f690f4bc4e2536b67 \
-                    sha256  f0836d56a32f8c76e20d75d442e04ef5c29b023e69d284baaf0ff298b8b17001 \
-                    size    19732792
+checksums           rmd160  97c2d4589fa1f3c6d792cb3a29ff3bff5f0e1bbd \
+                    sha256  cb63ee38146ae646654e93d5f0dc245a1b2940a94dc708e5fa4fc3af08b19384 \
+                    size    13356020
 use_configure       no
 build               {}
 
@@ -36,9 +37,10 @@ destroot {
     xinstall -m 644 -W ${worksrcpath} deps.edn example-deps.edn ${destroot}${clojure_lib_dir}
 
     xinstall -d ${destroot}${clojure_libexec_dir}
-    xinstall -m 0644 -W ${worksrcpath} ${distname}.jar ${destroot}${clojure_libexec_dir}
+    xinstall -m 0644 -W ${worksrcpath} ${distname}.jar exec.jar ${destroot}${clojure_libexec_dir}
 
     reinplace "s|PREFIX|${clojure_lib_dir}|g" ${worksrcpath}/clojure
+    reinplace "s|BINDIR|${bin_dir}|g" ${worksrcpath}/clj
     xinstall -d ${destroot}${bin_dir}
     xinstall -m 0755 -W ${worksrcpath} clojure clj ${destroot}${bin_dir}
 

@@ -6,8 +6,8 @@ PortGroup           meson 1.0
 
 name                spice-gtk
 version             0.38
-revision            1
-maintainers         {danchr @danchr} openmaintainer
+revision            2
+maintainers         nomaintainer
 categories          gnome devel
 license             LGPL-2.1+
 platforms           darwin
@@ -44,7 +44,7 @@ depends_lib \
     port:json-glib \
     path:lib/pkgconfig/pixman-1.pc:libpixman \
     port:lz4 \
-    port:jpeg \
+    path:include/turbojpeg.h:libjpeg-turbo \
     port:gstreamer1 port:gstreamer1-gst-plugins-base \
     port:libepoxy \
     port:libusb \
@@ -64,9 +64,7 @@ variant x11 {
     require_active_variants gtk3 x11 quartz
 }
 
-if {![variant_isset quartz]} {
-    require_active_variants gtk3 x11 quartz
-} elseif {[active_variants gtk3 quartz x11]} {
+if {![catch {set result [active_variants gtk3 quartz x11]}] && $result} {
     default_variants +quartz
 } else {
     default_variants +x11

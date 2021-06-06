@@ -29,8 +29,8 @@ if {${configure.cxx_stdlib} eq "libstdc++"} {
 
     proc cxx11.add_dependencies {} {
         global os.major os.platform
-        depends_lib-delete path:lib/libgcc/libgcc_s.1.dylib:libgcc
-        depends_lib-append path:lib/libgcc/libgcc_s.1.dylib:libgcc
+        depends_lib-delete path:share/doc/libgcc/README:libgcc
+        depends_lib-append path:share/doc/libgcc/README:libgcc
         if {${os.platform} eq "darwin" && ${os.major} < 13} {
             # prior to OS X Mavericks, libstdc++ was the default C++ runtime, so
             #    assume MacPorts libstdc++ must be ABI compatible with system libstdc++
@@ -46,7 +46,7 @@ if {${configure.cxx_stdlib} eq "libstdc++"} {
     # do not force all Portfiles to switch from depends_lib to depends_lib-append
     port::register_callback cxx11.add_dependencies
 
-    if {(${os.platform} eq "darwin" && ${os.major} < 10) || ${build_arch} eq "ppc" || ${build_arch} eq "ppc64"} {
+    if {(${os.platform} eq "darwin" && ${os.major} < 10) || ${configure.build_arch} eq "ppc" || ${configure.build_arch} eq "ppc64"} {
         # ports will build with gcc6, gcc4ABI-compatible
         pre-configure {
             ui_msg "C++11 ports are compiling with GCC. EXPERIMENTAL."
@@ -58,7 +58,7 @@ if {${configure.cxx_stdlib} eq "libstdc++"} {
     }
 
     # see https://trac.macports.org/ticket/54766
-    depends_lib-append path:lib/libgcc/libgcc_s.1.dylib:libgcc
+    depends_lib-append path:share/doc/libgcc/README:libgcc
 
     compiler.blacklist-append  \
         macports-gcc-4.3 macports-gcc-4.4 macports-gcc-4.5 macports-gcc \

@@ -13,15 +13,14 @@ homepage                http://qwt.sourceforge.net
 
 master_sites            sourceforge:qwt
 use_bzip2               yes
-use_parallel_build      no
 
 platforms               darwin
 
-version                 6.1.4
+version                 6.1.6
 distname                qwt-${version}
-checksums               rmd160  a78f245b430b3e97443245d336031be59e2b0e17 \
-                        sha256  1529215329e51fc562e0009505a838f427919a18b362afff441f035b2d9b5bd9 \
-                        size    4227315
+checksums               rmd160  d85320b3fbe2df75d0c8eee993d101fa18ba300e \
+                        sha256  99460d31c115ee4117b0175d885f47c2c590d784206f09815dc058fbe5ede1f6 \
+                        size    4306402
 
 description             Qt Widgets for Technical Applications
 
@@ -30,6 +29,8 @@ long_description        The Qwt library contains GUI Components and utility clas
                         Beside a framework for 2D plots it provides \
                         scales, sliders, dials, compasses, thermometers, wheels and knobs \
                         to control or display values, arrays, or ranges of type double.
+
+patchfiles-append       patch-disable-silent-rules.diff
 
 #install in the correct locations
 patchfiles-append       patch-qwtconfig.pri.diff

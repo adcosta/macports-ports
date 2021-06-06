@@ -9,44 +9,45 @@ namespace eval portfetch::mirror_sites { }
 # to their SSL certificate as Subject Alternative Names so we can't use
 # https with them yet.
 global os.platform os.major
-set stackpath   [expr {${os.platform} eq "darwin" && ${os.major} < 10 ? "http" : "https"}]
+set fastly      [expr {${os.platform} eq "darwin" && ${os.major} < 13 ? "http" : "https"}]
 # cert doesn't have macports.org SANs; admin notified
 #set aarnet.au   [expr {${os.platform} eq "darwin" && ${os.major} < 13 ? "http" : "https"}]
 set aarnet.au   http
+set atl.us      http
 set cph.dk      [expr {${os.platform} eq "darwin" && ${os.major} < 13 ? "http" : "https"}]
 set cjj.kr      http
 # cert doesn't have macports.org SANs; admin notified
 #set fco.it      [expr {${os.platform} eq "darwin" && ${os.major} < 13 ? "http" : "https"}]
 set fco.it      http
+set fra.de      [expr {${os.platform} eq "darwin" && ${os.major} < 13 ? "http" : "https"}]
 set jnb.za      [expr {${os.platform} eq "darwin" && ${os.major} < 10 ? "" : "https"}]
 set jog.id      http
 set kmq.jp      [expr {${os.platform} eq "darwin" && ${os.major} < 10 ? "http" : "https"}]
-set lil.fr      [expr {${os.platform} eq "darwin" && ${os.major} < 13 ? "http" : "https"}]
 set mse.uk      [expr {${os.platform} eq "darwin" && ${os.major} < 13 ? "http" : "https"}]
 # server is (temporarily?) offline
 set nou.nc      ""
-# cert doesn't have macports.org SANs; admin notified
-#set nue.de      [expr {${os.platform} eq "darwin" && ${os.major} < 11 ? "http" : "https"}]
-set nue.de      http
+set nue.de      [expr {${os.platform} eq "darwin" && ${os.major} < 10 ? "http" : "https"}]
 set pek.cn      [expr {${os.platform} eq "darwin" && ${os.major} < 10 ? "http" : "https"}]
 # cert doesn't have macports.org SANs; admin notified
 #set ykf.ca      [expr {${os.platform} eq "darwin" && ${os.major} < 10 ? "http" : "https"}]
 set ykf.ca      http
 set ywg.ca      [expr {${os.platform} eq "darwin" && ${os.major} < 10 ? "http" : "https"}]
 
+# Keep the primary packages server first in the list
 set portfetch::mirror_sites::sites(macports_archives) [lsearch -all -glob -inline -not "
-    ${stackpath}://packages.macports.org/:nosubdir
+    ${fastly}://packages.macports.org/:nosubdir
+    ${nue.de}://nue.de.packages.macports.org/:nosubdir
+    ${atl.us}://atl.us.packages.macports.org/:nosubdir
     ${cph.dk}://cph.dk.packages.macports.org/:nosubdir
     ${fco.it}://fco.it.packages.macports.org/:nosubdir
+    ${fra.de}://fra.de.packages.macports.org/:nosubdir
     ${jnb.za}://jnb.za.packages.macports.org/packages/:nosubdir
     ${jog.id}://jog.id.packages.macports.org/macports/packages/:nosubdir
     ${kmq.jp}://kmq.jp.packages.macports.org/:nosubdir
-    ${lil.fr}://lil.fr.packages.macports.org/:nosubdir
     ${mse.uk}://mse.uk.packages.macports.org/:nosubdir
     ${nou.nc}://nou.nc.packages.macports.org/pub/macports/packages.macports.org/:nosubdir
-    ${nue.de}://nue.de.packages.macports.org/:nosubdir
     ${pek.cn}://pek.cn.packages.macports.org/macports/packages/:nosubdir
-    ${ywg.ca}://ywg.ca.packages.macports.org/mirror/macports/packages/:mirror
+    ${ywg.ca}://ywg.ca.packages.macports.org/mirror/macports/packages/:nosubdir
 " {:*}]
 
 set portfetch::mirror_sites::archive_type(macports_archives) tbz2

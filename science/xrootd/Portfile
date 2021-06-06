@@ -6,24 +6,23 @@ PortGroup           compiler_blacklist_versions  1.0
 PortGroup           github                       1.0
 PortGroup           legacysupport                1.0
 
-# Attention - Do not update to 5.x.y until root6 supports this major version
-github.setup        xrootd xrootd 4.12.3 v
+github.setup        xrootd xrootd 5.2.0 v
 revision            0
 
 categories          science
 maintainers         {jonesc @cjones051073} openmaintainer
 
 description         Generic suite for fast, low-latency and scalable data access.
-long_description    ${description}
+long_description    {*}${description}
 
 license             LGPL-3+
 platforms           darwin
 
 homepage            http://xrootd.org/
 
-checksums           rmd160  dcd61b2e7e8c9ab5a5e02613af2cb2a72aca2cc1 \
-                    sha256  2fc295d9fde801f21458fd35128ce673f6549b35f91e52003e7a4c55d7b5b774 \
-                    size    2607052
+checksums           rmd160  88cf0c338867c2e8996e89533e09cefb6f43d750 \
+                    sha256  dca65636340a2c83cf12143d8d64e3e6f040e0ddbe1f02df2fe3174719947cd1 \
+                    size    2834458
 
 depends_build-append port:cctools \
                      port:pkgconfig
@@ -32,10 +31,11 @@ depends_lib-append  port:curl \
                     port:libxml2 \
                     port:json-c \
                     port:swig \
+                    port:tinyxml \
                     path:lib/libuuid.dylib:ossp-uuid \
-                    port:zlib 
+                    port:zlib
 
-default_variants    +ssl +readline +kerberos 
+default_variants    +ssl +readline +kerberos
 
 cmake.out_of_source yes
 

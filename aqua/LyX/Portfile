@@ -2,17 +2,10 @@
 
 PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
-PortGroup           cxx11 1.1
 
 name                LyX
 conflicts           LyX1
-# On next update, consider fixing this:
-# The port 'LyX' uses the cxx11 PortGroup which is deprecated.
-# Please instead specify the required c++ standard directly using
-#     compiler.cxx_standard  2011
-# replacing 2011 with newer standards (e.g. 2014, 2017) as required.
-# For more details see https://trac.macports.org/wiki/CompilerSelection
-version             2.3.5.2
+version             2.3.6.1
 revision            1
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          aqua
@@ -45,14 +38,16 @@ master_sites        http://lyx.cybermirror.org/stable/${branch}.x/ \
                     ftp://ftp.ntua.gr/pub/X11/LyX/stable/${branch}.x/ \
                     ftp://ftp.lyx.org/pub/lyx/stable/${branch}.x/
 
-checksums           rmd160  5352f4cc354ebe47f45774e46fa9cb93163ae18f \
-                    sha256  ca2654ae7ae5d921980449757ec08b30c7920cb915eb3d902a959e2629808ddf \
-                    size    16139804
+checksums           rmd160  42ef899a4cff27dee4bac65f8018de65c1cdde44 \
+                    sha256  c6bed2633419898e01a7cc350310d7d934bf591cab7259fc2581aa4c00eafa78 \
+                    size    16242608
 
 configure.args      --disable-silent-rules
 
+compiler.cxx_standard 2011
 compiler.blacklist-append { clang < 800 }
 patchfiles-append   patch-lyx-applescriptproxy-add-stringh.diff
+patchfiles-append   patch-lyx-linkbackserver-older-nsalert.diff
 
 post-configure {
     reinplace \
@@ -66,28 +61,33 @@ if {![variant_isset qt4]} {
 }
 
 # Make the default match boost's default.
-if {![variant_isset python27] && ![variant_isset python36] && ![variant_isset python37]} {
-    default_variants-append +python38
+if {![variant_isset python27] && ![variant_isset python36] && ![variant_isset python37] && ![variant_isset python38]} {
+    default_variants-append +python39
 }
 
-variant python27 conflicts python36 python37 python38 description {Use python27} {
+variant python27 conflicts python36 python37 python38 python39 description {Use python27} {
     depends_build-append    port:python27
     configure.python        ${prefix}/bin/python2.7
 }
 
-variant python36 conflicts python27 python37 python38 description {Use python36} {
+variant python36 conflicts python27 python37 python38 python39 description {Use python36} {
     depends_build-append    port:python36
     configure.python        ${prefix}/bin/python3.6
 }
 
-variant python37 conflicts python27 python36 python38 description {Use python37} {
+variant python37 conflicts python27 python36 python38 python39 description {Use python37} {
     depends_build-append    port:python37
     configure.python        ${prefix}/bin/python3.7
 }
 
-variant python38 conflicts python27 python36 python37 description {Use python38} {
+variant python38 conflicts python27 python36 python37 python39 description {Use python38} {
     depends_build-append    port:python38
     configure.python        ${prefix}/bin/python3.8
+}
+
+variant python39 conflicts python27 python36 python37 python38 description {Use python39} {
+    depends_build-append    port:python39
+    configure.python        ${prefix}/bin/python3.9
 }
 
 variant qt4 conflicts qt5 description {Use Qt4} {

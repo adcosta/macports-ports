@@ -7,13 +7,52 @@ name                    helm
 categories              sysutils
 platforms               darwin
 license                 Apache-2
-maintainers             {ogsite.net:sirn @sirn} @pedrohdz {lbschenkel @lbschenkel} \
+maintainers             {ogsite.net:sirn @sirn} @pedrohdz \
+                        {lbschenkel @lbschenkel} \
+                        {gmail.com:herby.gillot @herbygillot} \
                         openmaintainer
 
 subport helm_select {}
 
 # *NOTE* Remember to update `latestVersion` on a version upgrade.
-set latestVersion       helm-3.2
+set latestVersion       helm-3.6
+
+subport helm-3.6 {
+    set baseVersion     3.6
+    set patchNumber     0
+    revision            0
+    checksums           rmd160  e2beb2946c636db0d3d59fe146bde2b742f43b1d \
+                        sha256  7f6bcf15e5c828504dddbe733813a6d73e41abf28d649e7b9d698c4a77d412dd \
+                        size    15592802
+}
+
+subport helm-3.5 {
+    set baseVersion     3.5
+    set patchNumber     4
+    revision            0
+    checksums           rmd160  bc390477253c4bc8f3fe71e62f50e883430b2792 \
+                        sha256  072c40c743d30efdb8231ca03bab55caee7935e52175e42271a0c3bc37ec0b7b \
+                        size    13052607
+}
+
+subport helm-3.4 {
+    set baseVersion     3.4
+    set patchNumber     2
+    revision            0
+    checksums           rmd160  761552971c5a60307ce66c3caae40102c626f952 \
+                        sha256  c33b7ee72b0006f23b33f5032b531dd609fff7b08a4324f9ba07722a4f3fec9a \
+                        size    13987793
+}
+
+subport helm-3.3 {
+    set baseVersion     3.3
+    set patchNumber     4
+    revision            0
+    checksums           rmd160  7ff3dfb382044aa3f4c4f7b11ac61dd1dcbda73f \
+                        sha256  9fffc847c61da0e06319788d3998ea173eb86c1cc5600ac3ada8d0d40c911793 \
+                        size    13384835
+}
+
 subport helm-3.2 {
     set baseVersion     3.2
     set patchNumber     4
@@ -41,13 +80,22 @@ subport helm-3.0 {
                         size    12716418
 }
 
+subport helm-2.17 {
+    set baseVersion     2.17
+    set patchNumber     0
+    revision            0
+    checksums           rmd160  aabf1de19972e37ac39854677987274612328b34 \
+                        sha256  104dcda352985306d04d5d23aaf5252d00a85c083f3667fd013991d82f57ae83 \
+                        size    26358642
+}
+
 subport helm-2.16 {
     set baseVersion     2.16
-    set patchNumber     9
+    set patchNumber     12
     revision            0
-    checksums           rmd160  27f8eba9e8c459139840593bd56022b8de2a1e02 \
-                        sha256  09c7ad16c3b9ecd73d26149814a1f13c0aac8be78cee402887aa06e95d68ff61 \
-                        size    26349249
+    checksums           rmd160  b15d6040bb5ee8e64f274304ea28b4598ace5eb8 \
+                        sha256  cd36888b5c89e0fb7f9f336e1e286773ad15e9a8fa16e3b8ef34b10347341cf4 \
+                        size    26363838
 }
 
 subport helm-2.15 {

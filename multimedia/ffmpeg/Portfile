@@ -6,6 +6,9 @@ PortGroup           muniversal 1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           active_variants 1.1
 
+# For 'TARGET_OS_OSX', 'TARGET_CPU_ARM64' macros
+PortGroup           legacysupport 1.1
+
 # https://trac.macports.org/ticket/59246
 # https://trac.macports.org/ticket/59308
 PortGroup           xcode_workaround 1.0
@@ -14,8 +17,8 @@ name                ffmpeg
 conflicts           ffmpeg-devel
 # Please increase the revision of mpv whenever ffmpeg's version is updated.
 epoch               1
-version             4.3.1
-revision            0
+version             4.4
+revision            1
 license             LGPL-2.1+
 categories          multimedia
 maintainers         {devans @dbevans} {jeremyhu @jeremyhu} openmaintainer
@@ -57,9 +60,9 @@ master_sites        ${homepage}releases/
 
 use_xz              yes
 
-checksums           rmd160  57b83bb12fe61eea9caa94557e57b24653837c51 \
-                    sha256  ad009240d46e307b4e03a213a0f49c11b650e445b1f8be0dda2a9212b34d2ffb \
-                    size    9379424
+checksums           rmd160  0169ae4eb185de3a851a9926bc0b3289512c4be0 \
+                    sha256  06b10a183ce5371f915c6bb15b7b1fffbe046e8275099c96affc29e17645d909 \
+                    size    9557868
 
 depends_build       port:pkgconfig \
                     port:gmake \
@@ -90,7 +93,6 @@ depends_lib         port:lame \
 
 patchfiles          patch-libavcodec-audiotoolboxenc.c.diff
 
-#
 # enable auto configure of asm optimizations
 # requires Xcode 3.1 or better on Leopard
 #
@@ -105,13 +107,9 @@ if {[lsearch [get_canonical_archs] i386] != -1} {
     compiler.blacklist-append {clang < 422.1.7}
 }
 
-platform darwin powerpc {
-    # https://trac.macports.org/ticket/55124
-    # requires newer compiler than gcc4.2 to build
-    compiler.blacklist
-    compiler.whitelist    macports-gcc-6
-    universal_variant     no
-}
+# warning: unknown warning option '-Werror=partial-availability'; did you mean '-Werror=availability'? [-Wunknown-warning-option]
+# warning: unknown warning option '-Wno-bool-operation'; did you mean '-Wno-bool-conversion'? [-Wunknown-warning-option]
+compiler.blacklist-append {clang < 800}
 
 # The old ffmpeg port was GPL-2+ as base and had a no_gpl variant, so this keeps us consistent
 # Also, -gpl2 causes other ports to fail to build due to the missing libpostproc (#35473)
@@ -244,6 +242,14 @@ platform powerpc {
     if {[catch {sysctl hw.vectorunit} result] || $result == 0} {
         configure.args-append --disable-altivec
     }
+
+    # might be needed for any gcc build...
+    #Undefined symbols:
+    #  "___atomic_fetch_sub_8", referenced from:
+    #      _fifo_thread_dispatch_message.part.4 in fifo.o
+    configure.ldflags-append -latomic
+
+
 }
 
 platform darwin 8 {
@@ -254,7 +260,10 @@ platform darwin 8 {
 
 configure.universal_args-delete --disable-dependency-tracking
 
-if {[variant_isset universal]} {
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
+if {${universal_possible} && [variant_isset universal]} {
     foreach arch ${configure.universal_archs} {
         set merger_host($arch) ""
         lappend merger_configure_args($arch) --arch=${arch}
@@ -365,66 +374,44 @@ variant nonfree description {enable nonfree code, libraries and binaries will no
 
 if {[variant_isset nonfree]} {
 notes "
-*******
-******* This build of ${name} includes nonfree code as follows:
-*******
-*******     libfdk-aac
-*******
-******* The following libraries and binaries may not be redistributed:
-*******
-*******     ffmpeg
-*******     libavcodec
-*******     libavdevice
-*******     libavfilter
-*******     libavformat
-*******     libavutil
-*******
-******* To remove this restriction remove the variant +nonfree
-*******
+This build of ${name} includes nonfree code as follows:
+  libfdk-aac
+The following libraries and binaries may not be redistributed:
+  ffmpeg
+  libavcodec
+  libavdevice
+  libavfilter
+  libavformat
+  libavutil
+To remove this restriction remove the variant +nonfree
 "
 } elseif {[variant_isset gpl3]} {
 notes "
-*******
-******* This build of ${name} includes GPLed code and
-******* is therefore licensed under GPL v3 or later.
-*******
-******* The following modules are GPLed:
-*******
-*******      postproc
-*******      libsambaclient
-*******      libx264
-*******      libx265
-*******      libxvid
-*******
-******* To include all nonfree, GPLed and LGPL code use variant +nonfree.
-******* To remove nonfree and GPLed code leaving only LGPL code remove the
-******* +gpl2 and +gpl3 variants.
-*******
+This build of ${name} includes GPLed code and is therefore licensed under GPL v3 or later.
+The following modules are GPLed:
+  postproc
+  libsambaclient
+  libx264
+  libx265
+  libxvid
+To include all nonfree, GPLed and LGPL code use variant +nonfree.
+To remove nonfree and GPLed code leaving only LGPL code remove the +gpl2 and +gpl3 variants.
 "
 } elseif {[variant_isset gpl2]} {
 notes "
-*******
-******* This build of ${name} includes GPLed code and
-******* is therefore licensed under GPL v2 or later.
-*******
-******* The following modules are GPLed:
-*******
-*******      postproc
-*******      libx264
-*******      libx265
-*******      libxvid
-*******
-******* To include all nonfree, GPLed and LGPL code use variant +nonfree.
-******* To remove nonfree and GPLed code leaving only LGPL code remove the
-******* +gpl2 variant.
-*******
+This build of ${name} includes GPLed code and is therefore licensed under GPL v2 or later.
+The following modules are GPLed:
+  postproc
+  libx264
+  libx265
+  libxvid
+To include all nonfree, GPLed and LGPL code use variant +nonfree.
+To remove nonfree and GPLed code leaving only LGPL code remove the +gpl2 variant.
 "
 } else {
 notes "
-*******
-******* This build of ${name} includes no GPLed or nonfree
-******* code and is therefore licensed under LGPL v2.1 or later.
-*******
+This build of ${name} includes no GPLed or nonfree code\
+and is therefore licensed under LGPL v2.1 or later.
 "
 }
 

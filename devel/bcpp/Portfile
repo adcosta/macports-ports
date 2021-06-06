@@ -1,7 +1,7 @@
 PortSystem 1.0
 
 name             bcpp
-version          20180401
+version          20210108
 categories       devel
 license          MIT
 maintainers      {toby @tobypeterson} openmaintainer
@@ -15,6 +15,7 @@ platforms        darwin
 master_sites     ftp://ftp.invisible-island.net/pub/bcpp/ \
                  https://invisible-mirror.net/archives/bcpp/
 extract.suffix   .tgz
-checksums        rmd160  27372d73b85e08c7d5063c9ab5ce374deab407bb \
-                 sha256  3fee78476833a8d6c647f0b9f6ad85209cdb104a538349bc24538c7f7aede81f
+checksums        rmd160  0f52c8a88f9f032e9996766dd07e8e81a9f4ef10 \
+                 sha256  567ca0e803bfd57c41686f3b1a7df4ee4cec3c2d57ad4f8e5cda247fc5735269 \
+                 size    150080
 configure.args   --mandir=${prefix}/share/man

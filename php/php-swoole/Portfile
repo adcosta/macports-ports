@@ -10,15 +10,21 @@ platforms               darwin
 maintainers             {ryandesign @ryandesign} openmaintainer
 license                 Apache-2
 
-php.branches            5.3 5.4 5.5 5.6 7.0 7.1 7.2 7.3 7.4
+php.branches            5.3 5.4 5.5 5.6 7.0 7.1 7.2 7.3 7.4 8.0
 php.pecl                yes
 
-if {[vercmp ${php.branch} 7.1] >= 0} {
-    version             4.5.2
+if {[vercmp ${php.branch} 7.2] >= 0} {
+    version             4.6.5
     revision            0
-    checksums           rmd160  97225fe98347df229cc0df23c9576994a1941a4b \
-                        sha256  de79d98cebd06554283f2bb196dad63efb14c5a7312e5bcc000bd722bc9b14fe \
-                        size    1496045
+    checksums           rmd160  51923508ba0c6bfdc9fb1073af6fb33158d67aea \
+                        sha256  1fb0c02220a06b08185f74adf50653d3f2dc2c4aacef01c5c8a5ef2169e117a7 \
+                        size    1642233
+} elseif {[vercmp ${php.branch} 7.1] >= 0} {
+    version             4.5.11
+    revision            0
+    checksums           rmd160  787880685a821869f19c1b6f4645857b75a048fe \
+                        sha256  2d85752ee2b0944399c2901bb22832f196ba3f7ba4262c239d12ed494e2460dd \
+                        size    1554142
 } elseif {[vercmp ${php.branch} 7.0] >= 0} {
     version             4.3.6
     revision            0
@@ -47,28 +53,35 @@ long_description        ${name} is ${description}.
 if {${name} ne ${subport}} {
     # Not sure what version
     if {[vercmp ${version} 4.0.0] >= 0} {
+        PortGroup       legacysupport 1.1
         # strndup
-        PortGroup       legacysupport 1.0
         legacysupport.newest_darwin_requires_legacy \
                         10
-    }
 
-    if {[vercmp ${version} 4.0.4] >= 0} {
-        compiler.cxx_standard 2011
-    }
+        if {[vercmp ${version} 4.0.4] >= 0} {
+            compiler.cxx_standard 2011
 
-    if {[vercmp ${version} 4.5.0] >= 0} {
-        compiler.thread_local_storage yes
-        # Work around thread local compiler selection bug. Remove after
-        # https://github.com/macports/macports-base/pull/161 is released.
-        PortGroup       compiler_blacklist_versions 1.0
-        compiler.blacklist-append {clang < 800}
+            if {[vercmp ${version} 4.5.0] >= 0} {
+                compiler.thread_local_storage yes
+
+                # https://github.com/swoole/swoole-src/issues/3896
+                # CLOCK_REALTIME
+                legacysupport.newest_darwin_requires_legacy \
+                        15
+            }
+
+            if {[vercmp ${version} 4.6.2] < 0} {
+                patchfiles-append \
+                        arm64.patch
+            }
+        }
     }
 
     depends_lib-append  port:hiredis \
                         port:nghttp2 \
                         path:lib/libssl.dylib:openssl \
                         port:zlib
+
 
     compiler.blacklist-append \
                         *gcc-4.0 *gcc-4.2

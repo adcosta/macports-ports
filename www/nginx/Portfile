@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                nginx
-version             1.19.2
+version             1.21.0
 revision            0
 categories          www mail
 platforms           darwin
@@ -22,8 +22,8 @@ long_description    \
 
 homepage            https://nginx.org/
 master_sites        https://nginx.org/download:nginx \
-                    http://www.grid.net.ru/nginx/download/:upload_module \
-                    googlecode:mod-zip:zip_module \
+                    https://github.com/vkholodkov/nginx-upload-module/archive/:upload_module \
+                    https://github.com/evanmiller/mod_zip/archive/:zip_module \
                     https://people.freebsd.org/~osa/:redis_module \
                     https://github.com/masterzen/nginx-upload-progress-module/archive/:uploadprogress_module \
                     https://github.com/arut/nginx-dav-ext-module/archive/:davext_module \
@@ -38,9 +38,9 @@ master_sites        https://nginx.org/download:nginx \
 
 distfiles           ${name}-${version}${extract.suffix}:nginx
 checksums           ${name}-${version}${extract.suffix} \
-                    rmd160  c7a3a50a71f2a4922ebf2fbbda38d4e0c826c165 \
-                    sha256  7c1f7bb13e79433ee930c597d272a64bc6e30c356a48524f38fd34fa88d62473 \
-                    size    1048727
+                    rmd160  d7b3d650e95f0f891facb86faea576d8383161ee \
+                    sha256  fe192a4bac2bd3a769e8695cb9fe14a00e57eaceb919095347a83b5b2afc0771 \
+                    size    1063682
 
 depends_lib         port:pcre \
                     port:zlib
@@ -104,6 +104,12 @@ post-destroot {
     }
 
     file rename ${destroot}${prefix}/html ${destroot}${nginx_share}
+
+    # Install the manpage
+    set man_path "${destroot}${prefix}/share/man/man8"
+    xinstall -d -m 0755 ${man_path}
+    xinstall    -m 0644 ${worksrcpath}/man/${name}.8 ${man_path}
+    reinplace -q "s|/var/run/mynginx.pid|${nginx_pidfile}/|g" ${man_path}/${name}.8
 }
 
 post-activate {
@@ -252,34 +258,18 @@ variant stream description {Enable ngx_stream_core_module for generic TCP proxyi
 }
 
 variant upload description {Enable Valery Kholodkov's upload module (http://grid.net.ru/nginx/upload.en.html)} {
-    set upload_filename     nginx_upload_module
-    set upload_version      2.2.0
-    set upload_distname     ${upload_filename}-${upload_version}
+    set upload_filename     nginx-upload-module
+    set upload_version      2.3.0
+    set upload_distname     ${upload_version}
     distfiles-append        ${upload_distname}.tar.gz:upload_module
     checksums-append        ${upload_distname}.tar.gz \
-                            rmd160  5734af837be3fe8ec444a7e5e7f6707118594098 \
-                            sha256  b1c26abe0427180602e257627b4ed21848c93cc20cefc33af084983767d65805
+                            rmd160  5443cf56908be57a95647146926110cdcf0a0bde \
+                            sha256  c86e318addb9c88d70fdbd58ff1f6ef6f404a93070f6db8017a1f880c97946c4 \
+                            size    40139
 
-    configure.args-append   --add-module=${workpath}/${upload_distname}
-
-    # v2.2.0 release references members of ngx_http_request_body_t that were renamed in later nginx versions.
-    # Patch nginx_upload_module.c with fixed version from https://github.com/TimothyKlim/nginx-upload-module.
-    patchfiles-append       patch-nginx_upload_module.tmp-ngx_http_upload_module.c.diff
-
+    configure.args-append   --add-module=${workpath}/${upload_filename}-${upload_distname}
 
     nginx_set_portfile_var  nginx_upload_mod_dirname    "${upload_distname}"
-
-    pre-fetch {
-        ui_error "The +upload variant is currently broken, because the upload module is not compatible with nginx 1.9.0."
-        error "incompatible variant selection"
-    }
-    # patch routine balks on file names with "../", but rel-paths in patchfiles start from $worksrcpath
-    pre-patch {
-        ln -s   "${workpath}/${nginx_upload_mod_dirname}" "${worksrcpath}/nginx_upload_module.tmp"
-    }
-    post-patch {
-        file delete   "${worksrcpath}/nginx_upload_module.tmp"
-    }
 }
 
 variant upload_progress description {Enable Brice Figureau's upload progress module (https://github.com/masterzen/nginx-upload-progress-module)} {
@@ -303,14 +293,14 @@ variant xslt description {Post-process pages with XSLT} {
 
 variant zip description {Enable Ngx zip download module (https://github.com/evanmiller/mod_zip)} {
 
-    set zip_distname        mod_zip-1.1.6
-    distfiles-append        ${zip_distname}.tar.gz:zip_module
-    checksums-append        ${zip_distname}.tar.gz \
-                            rmd160  17a465d87b8e1ba71bdd6ad40e20d21cc7dcd434 \
-                            sha256  d30546b4be8308c721df0240ebc38c474c6b577381a110321eded6dbed5104b1 \
-                            size    21991
+    set zip_version         1.2.0
+    distfiles-append        ${zip_version}.tar.gz:zip_module
+    checksums-append        ${zip_version}.tar.gz \
+                            rmd160  41f9570894de3e8adcd72956ac26378f23ae2275 \
+                            sha256  9b6294c651166a0c06b4aa723d3bc54feebc5cd495dcb3bdfd362c4b2c84bf62 \
+                            size    27046
 
-    configure.args-append   --add-module=${workpath}/${zip_distname}
+    configure.args-append   --add-module=${workpath}/mod_zip-${zip_version}
     patchfiles-append       patch-src-http-ngx_http_upstream.c.diff \
                             patch-src-http-ngx_http_upstream.h.diff
 }
@@ -353,40 +343,41 @@ variant rtmp description {Enable Ngx RTMP module (https://github.com/arut/nginx-
 
 variant http_push description {Enable Ngx HTTP Push module (https://github.com/slact/nchan)} {
     set http_push_filename  nchan
-    set http_push_version   1.2.7
+    set http_push_version   1.2.8
     set http_push_distname  ${http_push_filename}-${http_push_version}
     distfiles-append        v${http_push_version}.tar.gz:http_push_module
     checksums-append        v${http_push_version}.tar.gz \
-                            rmd160  13dcd7dba0c88f1d6c74e008f1e8c3d96b8b4e42 \
-                            sha256  8bb5d1749af759bb5e9cc5476a9c4b44d51bee6096bb89ab5ff53e85367b490b \
-                            size    673406
+                            rmd160  d59a130768a63280b86f760af0cedf7066fdd2f9 \
+                            sha256  de42e8d4fef6aef9e4c7303a7480adfe9545992470a7f6be008de7a4bb64cc98 \
+                            size    681604
 
      configure.args-append   --add-module=${workpath}/${http_push_distname}
 }
 
 variant devel_kit description {Enable ngx_devel_kit module (https://github.com/simpl/ngx_devel_kit)} {
     set devel_kit_filename  ngx_devel_kit
-    set devel_kit_version   0.3.0
+    set devel_kit_version   0.3.1
     set devel_kit_distname  ${devel_kit_filename}-${devel_kit_version}
     distfiles-append        v${devel_kit_version}.tar.gz:devel_kit_module
     checksums-append        v${devel_kit_version}.tar.gz \
-                            rmd160  beb2736eb06e8e26f60643623553789346f653da \
-                            sha256  88e05a99a8a7419066f5ae75966fb1efc409bad4522d14986da074554ae61619 \
-                            size      66455
+                            rmd160  5c52a463544294096611aa9dec1c76e937a1aa23 \
+                            sha256  0e971105e210d272a497567fa2e2c256f4e39b845a5ba80d373e26ba1abfbd85 \
+                            size    66542
 
     configure.args-append     --add-module=${workpath}/${devel_kit_distname}
 }
 
 variant lua requires devel_kit description {Enable Lua module (https://github.com/openresty/lua-nginx-module)} {
-    depends_lib-append      port:luajit
+    depends_lib-append      path:lib/libluajit-5.1.2.dylib:luajit
     set ngx_lua_filename    lua-nginx-module
-    set ngx_lua_version     0.10.13
+    # Note: keep at version 0.10.15
+    set ngx_lua_version     0.10.15
     set ngx_lua_distname    ${ngx_lua_filename}-${ngx_lua_version}
     distfiles-append        v${ngx_lua_version}.tar.gz:lua_module
     checksums-append        v${ngx_lua_version}.tar.gz \
-                            rmd160  ec6278fb7936abfdead2df5e20a90092a1024098 \
-                            sha256  ecea8c3d7f69dd48c6132498ddefb5d83ba9f387fa3d4da14e2abeacdfc8a3ee \
-                            size    624102
+                            rmd160  1e3801a632eee54458c53a05293cf301653240ec \
+                            sha256  7d5f3439c8df56046d0564b5857fd8a30296ab1bd6df0f048aed7afb56a0a4c2 \
+                            size    655110
 
     configure.cflags        -I${prefix}/include/luajit-2.1/ ${configure.cflags}
     configure.env           LUAJIT_INC=${prefix}/include/luajit-2.1/
@@ -411,13 +402,13 @@ variant headers_more description {Enable headers-more module (https://github.com
 
 variant jwt description {Add JWT (Javascript Web Token) support to server using TeslaGov's ngx-http-auth-jwt-module (https://github.com/TeslaGov/ngx-http-auth-jwt-module)} {
     set jwt_filename        ngx-http-auth-jwt-module
-    set jwt_version         0.0.2
+    set jwt_version         1.0.0
     set jwt_distname        ${jwt_filename}-${jwt_version}
-    distfiles-append        v${jwt_version}.tar.gz:jwt_module
-    checksums-append        v${jwt_version}.tar.gz \
-                            rmd160  7c87e95adcf654f2684e5ce1c932ce56b32b403c \
-                            sha256  2ff4f6ee29cfb708ce215f2f110aa360ba5823ad0355033d7ec2ec39610d5087 \
-                            size    13681
+    distfiles-append        ${jwt_version}.tar.gz:jwt_module
+    checksums-append        ${jwt_version}.tar.gz \
+                            rmd160  b9ccb4f971eb864ad018e5ecff718150687dab71 \
+                            sha256  9043bf1b46ecf71b03f6b9292b774bc283181d674ad4c2b61b6d74c838798dac \
+                            size    13804
 
     configure.args-append   --add-dynamic-module=${workpath}/${jwt_distname}
     depends_lib-append      port:libjwt
@@ -425,26 +416,26 @@ variant jwt description {Add JWT (Javascript Web Token) support to server using 
 
 variant fancyindex description {Add fancy index support; file listings, like the built-in autoindex module does, but with a touch of style} {
     set fancyindex_filename        ngx-fancyindex
-    set fancyindex_version         0.4.3
+    set fancyindex_version         0.5.1
     set fancyindex_distname        ${fancyindex_filename}-${fancyindex_version}
     distfiles-append        v${fancyindex_version}.tar.gz:fancyindex_module
     checksums-append        v${fancyindex_version}.tar.gz \
-                            rmd160  fa7be114c57883e38869a16091ea64573db208aa \
-                            sha256  81698fb0c1ec9f906ce308c055d5d248085caf390f4b92516c1ec93f87c886d4 \
-                            size    25274
+                            rmd160  3c8dacc7748e5de3ed37da7dbe18cf1df9e92421 \
+                            sha256  238bd5521d6c9b55780e6871339a7ea79508b9a6758ad2fa4451f2dfe26d94c9 \
+                            size    28277
 
     configure.args-append   --add-module=${workpath}/${fancyindex_distname}
 }
 
 variant vod description {Add MP4 repackeging for HLS, DASH, HDS, HSS using nginx-vod-module} {
     set vod_filename        nginx-vod-module
-    set vod_version         1.25
+    set vod_version         1.28
     set vod_distname        ${vod_filename}-${vod_version}
     distfiles-append        ${vod_version}.tar.gz:vod_module
     checksums-append        ${vod_version}.tar.gz \
-                            rmd160  537609ef9bfffaa9ce77c4ebabd90fb8af72a9ed \
-                            sha256  42fd3b7f5bd4e13a7e27fcbd830153e285544c8cce37bfaea87cfce549f636d7 \
-                            size    446830
+                            rmd160  6bbe8cf212ca19cdce1c1a6b9b80c94826cdae6e \
+                            sha256  ec9449ed400d9719cac741ed8321db92266ccb81ec91099400936559542e66f2 \
+                            size    465594
 
     configure.args-append   --add-module=${workpath}/${vod_distname}
 }

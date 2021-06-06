@@ -1,15 +1,17 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem      1.0
-PortGroup       compiler_blacklist_versions 1.0
 PortGroup       mpi 1.0
-PortGroup       cxx11 1.1
 PortGroup       active_variants 1.1
-
-name            boost169
+PortGroup       compiler_blacklist_versions 1.0
 
 version         1.69.0
-revision        2
+revision        3
+
+set branch      [join [lrange [split ${version} .] 0 1] .]
+set tag         [string map {. {}} ${branch}]
+
+name            boost${tag}
 
 checksums       rmd160  308544f184f04e4f192ac6a1118f6db787558ee6 \
                 sha256  8f32d4617390d1c2d16f26a27ab60d97807b35440d45891fa340fc2648b04406 \
@@ -18,7 +20,7 @@ checksums       rmd160  308544f184f04e4f192ac6a1118f6db787558ee6 \
 license         Boost-1
 categories      devel
 platforms       darwin
-maintainers     {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
+maintainers     {mcalhoun @MarcusCalhoun-Lopez} {@mascguy} openmaintainer
 
 description     Collection of portable C++ source libraries
 
@@ -28,26 +30,27 @@ long_description \
     which work well with the C++ Standard Library.
 
 homepage        http://www.boost.org
-master_sites    https://dl.bintray.com/boostorg/release/${version}/source/
+master_sites    https://boostorg.jfrog.io/artifactory/main/release/${version}/source/
 set distver     [join [split ${version} .] _]
 distname        boost_${distver}
 use_bzip2       yes
 
-dist_subdir     boost
-
-depends_lib     port:zlib \
+depends_lib     port:bzip2 \
                 port:expat \
-                port:bzip2 \
+                port:icu \
                 port:libiconv \
-                port:icu
+                port:zlib
 
 post-extract {
     fs-traverse dir ${workpath} {
-        if [file isdirectory ${dir}] {
+        if {[file isdirectory ${dir}]} {
             file attributes ${dir} -permissions a+rx
         }
     }
 }
+
+# Install prefix for this port
+set bprefix ${prefix}/libexec/boost/${branch}
 
 # patch-apple-clang-no-libcxx.diff fixes a clang configuration error
 # that occurs on OS X 10.7 and 10.8 due to the assumption that if
@@ -93,13 +96,11 @@ proc write_jam s {
     close ${config}
 }
 
-# clang++ produces broken boost libraries (https://trac.macports.org/ticket/31525)
-# If Apple's clang is used on 32-bit systems, it seems to silently ignore the '-march=i386' flag.
-# (https://trac.macports.org/ticket/38157)
-compiler.blacklist {clang < 421} *llvm-gcc-4.2 *gcc-4.0 gcc-3.3
-
 compilers.choose   cc cxx
 mpi.setup          -gcc
+
+# clang: error: unknown argument: '-fcoalesce-templates'
+compiler.blacklist-append {clang > 1100}
 
 # NOTE: although technically Boost does not require C++11 compliance
 # for building, doing so allows for building on more OSs than without.
@@ -107,6 +108,7 @@ mpi.setup          -gcc
 # require ports depending on Boost to also require C++11 compliance,
 # and requiring it does make such building easier for those ports.
 configure.cxxflags-append -std=gnu++11
+compiler.cxx_standard   2011
 
 # It turns out that ccache and distcc can produce boost libraries that, although they
 # compile without warning, have all sorts of runtime errors especially with pointer corruption.
@@ -133,7 +135,7 @@ configure.universal_args
 
 post-configure {
 
-    reinplace -E "s|-install_name \"|&${prefix}/libexec/${name}/lib/|" \
+    reinplace -E "s|-install_name \"|&${bprefix}/lib/|" \
         ${worksrcpath}/tools/build/src/tools/darwin.jam
 
     set compileflags ""
@@ -176,12 +178,14 @@ destroot.cmd    ${worksrcpath}/b2
 destroot.post_args
 
 pre-destroot {
-    destroot.args {*}${build.args} --prefix=${destroot}${prefix}/libexec/${name}
+    destroot.args {*}${build.args} --prefix=${destroot}${bprefix}
     system "find ${worksrcpath} -type f -name '*.gch' -exec rm {} \\;"
 }
 
-post-destroot {
-    set docdir ${prefix}/share/doc/${name}
+proc boost_docs_install {} {
+    global bprefix destroot worksrcpath name
+
+    set docdir ${bprefix}/share/doc/${name}
     xinstall -d ${destroot}${docdir}
     set l [expr [string length ${worksrcpath}] + 1]
     fs-traverse f [glob -directory ${worksrcpath} *] {
@@ -195,6 +199,12 @@ post-destroot {
         } elseif {[lsearch -exact {css htm html png svg} [string range [file extension ${f}] 1 end]] != -1} {
             xinstall -m 644 ${f} ${dest}
         }
+    }
+}
+
+post-destroot {
+    if {[variant_isset docs]} {
+        boost_docs_install
     }
 }
 
@@ -269,70 +279,76 @@ variant no_single description {Disable building single-threaded libraries} {
     build.args-append   threading=multi
 }
 
-    patchfiles-append patch-disable-numpy-extension.diff
+patchfiles-append patch-disable-numpy-extension.diff
 
-    variant regex_match_extra description \
-        "Enable access to extended capture information of submatches in Boost.Regex" {
-        notes-append "
-        You enabled the +regex_match_extra variant\; see the following page for an\
-        exhaustive list of the consequences of this feature:
+variant regex_match_extra description \
+    "Enable access to extended capture information of submatches in Boost.Regex" {
+    notes-append "
+    You enabled the +regex_match_extra variant\; see the following page for an\
+    exhaustive list of the consequences of this feature:
 
     http://www.boost.org/doc/libs/${distver}/libs/regex/doc/html/boost_regex/ref/sub_match.html
 "
 
-        post-patch {
-            reinplace {/#define BOOST_REGEX_MATCH_EXTRA/s:^// ::} \
-                ${worksrcpath}/boost/regex/user.hpp
-        }
+    post-patch {
+        reinplace {/#define BOOST_REGEX_MATCH_EXTRA/s:^// ::} \
+            ${worksrcpath}/boost/regex/user.hpp
+    }
+}
+
+variant docs description {Enable building documentation} {
+    # No configure changes, etc; we simply check 'variant_isset' elsewhere
+}
+
+post-destroot {
+    delete file {*}[glob ${destroot}${bprefix}/include/boost/python/numpy*]
+}
+
+if {[mpi_variant_isset]} {
+
+    # see https://trac.macports.org/ticket/49748
+    # see http://www.openradar.me/25313838
+    configure.ldflags-append -Lstage/lib
+
+    # There is a conflict with debug support.
+    # The issue has been reported to both the MacPorts team and the boost team, as per:
+    # <http://trac.macports.org/ticket/23667> and <https://svn.boost.org/trac/boost/ticket/4461>
+    if {[variant_isset debug]} {
+        return -code error "+debug variant conflicts with mpi"
     }
 
-    post-destroot {
-        delete file {*}[glob ${destroot}${prefix}/libexec/${name}/include/boost/python/numpy*]
+    configure.args-delete   --without-libraries=mpi
+
+    post-configure {
+        write_jam "using mpi : ${mpi.cxx} : : ${mpi.exec} ;"
     }
 
-    if {[mpi_variant_isset]} {
+    if {![catch python_dir]} {
 
-        # see https://trac.macports.org/ticket/49748
-        # see http://www.openradar.me/25313838
-        configure.ldflags-append -Lstage/lib
+        patchfiles-append patch-libs-mpi-build-Jamfile.v2.diff
 
-        # There is a conflict with debug support.
-        # The issue has been reported to both the MacPorts team and the boost team, as per:
-        # <http://trac.macports.org/ticket/23667> and <https://svn.boost.org/trac/boost/ticket/4461>
-        if {[variant_isset debug]} {
-            return -code error "+debug variant conflicts with mpi"
-        }
+        post-destroot {
+            set site_packages [python_dir]
+            xinstall -d ${destroot}${site_packages}/boost
+            xinstall -m 644 ${worksrcpath}/libs/mpi/build/__init__.py \
+                ${destroot}${site_packages}/boost
 
-        configure.args-delete   --without-libraries=mpi
-
-        post-configure {
-            write_jam "using mpi : ${mpi.cxx} : : ${mpi.exec} ;"
-        }
-
-        if {![catch python_dir]} {
-
-            patchfiles-append patch-libs-mpi-build-Jamfile.v2.diff
-
-            post-destroot {
-                set site_packages [python_dir]
-                xinstall -d ${destroot}${site_packages}/boost
-                xinstall -m 644 ${worksrcpath}/libs/mpi/build/__init__.py \
-                    ${destroot}${site_packages}/boost
-
-                set f ${destroot}${prefix}/libexec/${name}/lib/mpi.so
-                if {[info exists ${f}]} {
-                    set l ${site_packages}/boost/mpi.so
-                    move ${f} ${destroot}${l}
-                    system "install_name_tool -id ${l} ${destroot}${l}"
-                }
+            set f ${destroot}${bprefix}/lib/mpi.so
+            if {[info exists ${f}]} {
+                set l ${site_packages}/boost/mpi.so
+                move ${f} ${destroot}${l}
+                system "install_name_tool -id ${l} ${destroot}${l}"
             }
-
         }
     }
+}
 
 livecheck.type  none
 
-if {![variant_isset universal]} {
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
+if {!${universal_possible} || ![variant_isset universal]} {
     # Honour 'build_arch', if not universal as per #28327
     if {[lsearch ${build_arch} ppc*] != -1} {
         build.args-append   architecture=power
@@ -358,8 +374,8 @@ if {![variant_isset universal]} {
 variant universal {
     build.args-append   pch=off
 
-    if {[lsearch ${universal_archs} ppc*] != -1} {
-        if {[lsearch ${universal_archs} *86*] != -1} {
+    if {[lsearch ${configure.universal_archs} ppc*] != -1} {
+        if {[lsearch ${configure.universal_archs} *86*] != -1} {
             build.args-append   architecture=combined
         } else {
             build.args-append   architecture=power
@@ -372,10 +388,10 @@ variant universal {
         build.args-append   architecture=x86
     }
 
-    if {[lsearch ${universal_archs} *64] != -1} {
-        if {[lsearch ${universal_archs} i386] != -1 || [lsearch ${universal_archs} ppc] != -1} {
+    if {[lsearch ${configure.universal_archs} *64] != -1} {
+        if {[lsearch ${configure.universal_archs} i386] != -1 || [lsearch ${configure.universal_archs} ppc] != -1} {
             build.args-append   address-model=32_64
-            if {[lsearch ${universal_archs} ppc64] == -1} {
+            if {[lsearch ${configure.universal_archs} ppc64] == -1} {
                 post-patch {
                     reinplace "/local support-ppc64 =/s/= 1/= /" ${worksrcpath}/tools/build/src/tools/darwin.jam
                 }

@@ -7,12 +7,12 @@ PortGroup           legacysupport 1.1
 # strndup
 legacysupport.newest_darwin_requires_legacy 10
 
-github.setup        aqbanking gwenhywfar 5.4.0
+github.setup        aqbanking gwenhywfar 5.6.0
 name                gwenhywfar5
 
-checksums           rmd160  e6a5588dec8af2f96c08bfd2fec76a9d78ded152 \
-                    sha256  67333c14646ad59a723060d5f01cd3d56ef5207213a6f74a66c2fcac4b190210 \
-                    size    1650704
+checksums           rmd160  d9bdd2d424b8e204a06e81b3f534f9461cfc4ee4 \
+                    sha256  5307d16e3fbfb873b8a87eb7e1e220862da9e948cc07a7a1a0fa01e86f9748d3 \
+                    size    1663488
 
 categories          devel net finance
 maintainers         {dports @drkp} openmaintainer

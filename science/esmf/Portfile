@@ -13,16 +13,16 @@ mpi.setup
 mpi.enforce_variant netcdf-fortran
 
 github.setup        esmf-org esmf 8_0_1 ESMF_
-revision            1
+revision            2
 categories          science devel
 platforms           darwin
-license             UoI-NCSA
+license             NCSA
 maintainers         {takeshi @tenomoto}
 description         software for building and coupling weather, climate, and related models
 long_description    The ESMF defines an architecture for composing complex, coupled \
                     modeling systems and includes data structures \
                     and utilities for developing individual models.
-homepage            https://www.earthsystemcog.org/projects/esmf/
+homepage            https://earthsystemmodeling.org
 github.tarball_from archive
 
 checksums           rmd160  59ded8c9e5db842fe7812c58ae19df98cb4bd9dd \
@@ -37,6 +37,7 @@ depends_lib         port:netcdf \
                     port:xercesc3
 
 if {${os.platform} eq "darwin" && ${os.major} < 12} {
+    known_fail      yes
     pre-fetch {
         ui_error "${name} is not supported on Lion or older."
         error "unsupported platform"
@@ -71,7 +72,6 @@ if {[variant_isset gcc47] || [variant_isset gcc48] || [variant_isset gcc49] || [
 
 build.target        lib
 pre-build {
-    if {[vercmp [macports_version] 2.5.99] >= 0} {
     build.env       ESMF_DIR=${worksrcpath} \
                     ESMF_F90=${configure.f90} \
                     ESMF_F90COMPILEOPTS=${configure.f90flags} \
@@ -84,20 +84,6 @@ pre-build {
                     ESMF_XERCES_INCLUDE=${prefix}/include \
                     ESMF_XERCESF_LIBPATH=${prefix}/lib \
                     ESMF_XERCES_LIBS=-lxerces-c
-    } else {
-    build.env       ESMF_DIR=${worksrcpath} \
-                    ESMF_F90=${configure.f90} \
-                    ESMF_F90COMPILEOPTS="${configure.f90flags}" \
-                    ESMF_CXX=${configure.cxx} \
-                    ESMF_CXXCOMPILEOPTS="${configure.cxxflags}" \
-                    ESMF_NETCDF=split \
-                    ESMF_NETCDF_INCLUDE=${prefix}/include \
-                    ESMF_NETCDF_LIBPATH=${prefix}/lib \
-                    ESMF_XERCES=standard \
-                    ESMF_XERCES_INCLUDE=${prefix}/include \
-                    ESMF_XERCESF_LIBPATH=${prefix}/lib \
-                    ESMF_XERCES_LIBS=-lxerces-c
-    }
     if {[variant_isset accelerate]} {
         build.env-append    ESMF_LAPACK=system \
                             ESMF_LAPACK_LIBS=-lvecLibFort
@@ -123,7 +109,6 @@ pre-build {
     }
 }
 pre-destroot {
-    if {[vercmp [macports_version] 2.5.99] >= 0} {
     destroot.env    ESMF_DIR=${worksrcpath} \
                     ESMF_F90=${configure.f90} \
                     ESMF_F90COMPILEOPTS=${configure.f90flags} \
@@ -144,28 +129,6 @@ pre-destroot {
                     ESMF_INSTALL_LIBDIR=${destroot}${prefix}/lib \
                     ESMF_INSTALL_BINDIR=${destroot}${prefix}/bin \
                     ESMF_INSTALL_DOCDIR=${destroot}${prefix}/share/doc/${name}
-    } else {
-    destroot.env    ESMF_DIR=${worksrcpath} \
-                    ESMF_F90=${configure.f90} \
-                    ESMF_F90COMPILEOPTS="${configure.f90flags}" \
-                    ESMF_F90LINKOPTS="-L${worksrcpath}/lib ${configure.ldflags}" \
-                    ESMF_CXX=${configure.cxx} \
-                    ESMF_CXXCOMPILEOPTS="${configure.cxxflags}" \
-                    ESMF_CXXLINKOPTS="-L${worksrcpath}/lib ${configure.ldflags}" \
-                    ESMF_NETCDF=split \
-                    ESMF_NETCDF_INCLUDE=${prefix}/include \
-                    ESMF_NETCDF_LIBPATH=${prefix}/lib \
-                    ESMF_XERCES=standard \
-                    ESMF_XERCES_INCLUDE=${prefix}/include \
-                    ESMF_XERCESF_LIBPATH=${prefix}/lib \
-                    ESMF_XERCES_LIBS=-lxerces-c \
-                    ESMF_INSTALL_PREFIX=${destroot}${prefix} \
-                    ESMF_INSTALL_HEADERDIR=${destroot}${prefix}/include/${name} \
-                    ESMF_INSTALL_MODDIR=${destroot}${prefix}/include/${name} \
-                    ESMF_INSTALL_LIBDIR=${destroot}${prefix}/lib \
-                    ESMF_INSTALL_BINDIR=${destroot}${prefix}/bin \
-                    ESMF_INSTALL_DOCDIR=${destroot}${prefix}/share/doc/${name}
-    }
     if {[variant_isset accelerate]} {
         destroot.env-append ESMF_LAPACK=system \
                             ESMF_LAPACK_LIBS=-lvecLibFort
@@ -222,7 +185,7 @@ post-destroot {
             install_name_tool -change \${old} ${prefix}/lib/libesmf.dylib ${l}
         "
     }
-    foreach b {Info InfoC Regrid RegridWeightGen Script2Unstruct WebServController} {
+    foreach b {Info InfoC Regrid RegridWeightGen Scrip2Unstruct WebServController} {
         if {[file exists ${destroot}${prefix}/bin/ESMF_${b}]} {
             system -W ${destroot}${prefix}/bin "
                 old=`otool -L ESMF_${b} | grep libesmf | cut -d ' ' -f 1`

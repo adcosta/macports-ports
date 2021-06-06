@@ -6,13 +6,14 @@ PortGroup           github                      1.0
 PortGroup           compiler_blacklist_versions 1.0
 
 name                py-thinc
-version             7.4.1
+# Don't upgrade past py-spaCy's highest supported version.
+version             8.0.3
 revision            0
 github.setup        explosion thinc ${version} v
 
-checksums           rmd160  20cadff2dc9a99418d23e4b65982d4754ee0125b \
-                    sha256  3efdf76e825638604bd4f29449c0f85f39d11c2a8ec5f8f58e613d02460edb81 \
-                    size    251696
+checksums           rmd160  7cd4e5e3c1de3b182d90b06ee981ebd0ef1561ff \
+                    sha256  2bec592f7af923a81a83709cdf319c8d778fe1e8a3da77c97f23c2cfd3079a87 \
+                    size    1326637
 
 platforms           darwin
 supported_archs     x86_64
@@ -28,8 +29,7 @@ long_description    ${description}
 github.livecheck.regex {([0-9.]+)}
 
 # Support python versions
-python.versions     36 37 38
-python.default_version 38
+python.versions     36 37 38 39
 
 # Compiler selection
 compiler.cxx_standard 2011
@@ -60,7 +60,9 @@ if {${name} ne ${subport}} {
     post-extract {
         # Set cython version
         set PythonVersionWithDot [join [split ${python.version} ""] "."]
-        reinplace "s|\'cython\'|\'cython-${PythonVersionWithDot}\'|g" ${worksrcpath}/bin/cythonize.py
+        foreach f [ exec find ${worksrcpath}/ -name "*.py"] {
+            reinplace -q "s|\'cython\'|\'cython-${PythonVersionWithDot}\'|g" ${f}
+        }
     }
 
     livecheck.type none 

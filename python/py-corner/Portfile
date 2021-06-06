@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-corner
-version             2.0.1
-revision            1
+version             2.2.1
+revision            0
 
 categories-append   science
 platforms           darwin
@@ -14,21 +14,19 @@ license             BSD
 maintainers         {danfm.ca:dan @dfm} openmaintainer
 
 description         Make some beautiful corner plots of samples
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://github.com/dfm/corner.py
-master_sites        pypi:c/corner
-distname            corner-${version}
 
-checksums           rmd160  6faff30d80a740db370d09363ac2de10300c198e \
-                    sha256  102e22797ee75d1432b6dc66aa2850f61388996ece66fd6600508742d2a7b88f \
-                    size    10534
+checksums           rmd160  9520c8c23087c6fbbefd00ac7407b0e952640700 \
+                    sha256  d39f1d9ad31093bb2aa06d80b23573e51ad7130af4c4af0931fca745a64751e5 \
+                    size    16565
 
-python.versions     27 36 37 38
+python.versions     27 36 37 38 39
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                    port:py${python.version}-setuptools
+                    port:py${python.version}-setuptools_scm
 
     depends_lib-append \
                     port:py${python.version}-numpy \

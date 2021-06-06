@@ -8,7 +8,7 @@ name                gcc45
 # Whenever this port is bumped for version/revision, please revbump dragonegg-3.4-gcc-4.5
 epoch               1
 version             4.5.4
-revision            16
+revision            17
 subport             libgcc45 { revision 16 }
 platforms           darwin
 categories          lang
@@ -246,7 +246,7 @@ if {${subport} == "libgcc45"} {
 
         foreach dylib ${dylibs} {
             move ${destroot}${prefix}/lib/libgcc/${dylib} ${destroot}${prefix}/lib/libgcc.merged
-            if {[variant_isset universal]} {
+            if {[variant_exists universal] && [variant_isset universal]} {
                 foreach archdir [glob ${destroot}${prefix}/lib/libgcc/*/] {
                     set archdir_nodestroot [string map "${destroot}/ /" ${archdir}]
                     if {[file exists ${archdir}/${dylib}]} {
@@ -306,7 +306,7 @@ post-destroot {
             ln -s ${prefix}/lib/libgcc/${dylib} ${destroot}${prefix}/lib/${name}/${dylib}
         }
 
-        if {[variant_isset universal]} {
+        if {[variant_exists universal] && [variant_isset universal]} {
             foreach archdir [glob ${destroot}${prefix}/lib/${name}/*/] {
                 if {[file exists ${archdir}/${dylib}]} {
                     delete ${archdir}/${dylib}

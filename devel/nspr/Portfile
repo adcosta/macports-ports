@@ -4,7 +4,7 @@ PortSystem  1.0
 PortGroup           muniversal 1.0
 
 name                nspr
-version             4.27
+version             4.31
 revision            0
 categories          devel
 maintainers         nomaintainer
@@ -18,9 +18,9 @@ homepage            http://www.mozilla.org/projects/nspr
 master_sites        http://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v${version}/src/ \
                     ftp://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v${version}/src/
 
-checksums           rmd160  4046798bebe26ed522f66d448e8af1f12b750c7d \
-                    sha256  6d495192b6ab00a3c28db053492cf794329f7c0351a5728db198111a1816e89b \
-                    size    1080036
+checksums           rmd160  0e3f74690de98a45d2efc8f6172488667c1c99e8 \
+                    sha256  5729da87d5fbf1584b72840751e0c6f329b5d541850cacd1b61652c95015abc8 \
+                    size    1078163
 
 worksrcdir          ${worksrcdir}/nspr
 
@@ -36,10 +36,14 @@ configure.args \
     --enable-optimize='${configure.optflags}' \
     --libdir=${prefix}/lib/nspr
 
-if {![variant_isset universal] && ${configure.build_arch} in "ppc64 x86_64"} {
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
+if {(!${universal_possible} || ![variant_isset universal]) && ${configure.build_arch} in [list arm64 ppc64 x86_64]} {
     configure.args-append --enable-64bit
 }
 
+set merger_configure_args(arm64)  "--enable-64bit"
 set merger_configure_args(ppc64)  "--enable-64bit"
 set merger_configure_args(x86_64) "--enable-64bit"
 

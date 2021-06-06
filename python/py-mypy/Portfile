@@ -5,7 +5,7 @@ PortGroup python 1.0
 PortGroup select 1.0
 
 name                py-mypy
-version             0.782
+version             0.812
 revision            0
 license             MIT
 platforms           darwin
@@ -19,14 +19,12 @@ long_description    Add type annotations to your Python programs, and use mypy t
                     generics and union types.
 
 homepage            http://www.mypy-lang.org
-master_sites        pypi:m/mypy
-distname            mypy-${version}
 
-checksums           rmd160  7babb8fee68c8dcb3c25537baeb1f1568b6fd7c8 \
-                    sha256  eff7d4a85e9eea55afa34888dfeaccde99e7520b51f867ac28a48492c0b1130c \
-                    size    2529814
+checksums           rmd160  846742c711725c39a0befce8c42ce267330bb3f8 \
+                    sha256  cd07039aa5df222037005b08fbbfd69b3ab0b0bd7a07d7906de75ae52c4e3119 \
+                    size    2645818
 
-python.versions     37 38
+python.versions     37 38 39
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools

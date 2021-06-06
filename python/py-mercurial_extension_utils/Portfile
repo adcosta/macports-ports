@@ -2,25 +2,26 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
-PortGroup           bitbucket 1.0
 
-bitbucket.setup     Mekk mercurial-extension_utils 1.5.0
 name                py-mercurial_extension_utils
+version             1.5.1
+revision            1
 
 categories-append   devel
 platforms           darwin
 supported_archs     noarch
 license             BSD
-maintainers         nomaintainer
+maintainers         {danchr @danchr} openmaintainer
+homepage            https://foss.heptapod.net/mercurial/mercurial-extension_utils
 
 description         Utility methods for Mercurial extensions
 long_description    ${description}
 
-checksums           rmd160  8a9fba94512dda03f85325d4799ffe594f16191e \
-                    sha256  61b9d674f09d087a9fdc87db552e58bc147a144eb298718efe9415b76dbe1a24 \
-                    size    24608
+checksums           rmd160  38a43b5256ea790c25d79fad2a5f68004ce63ec4 \
+                    sha256  e14d5f2868b7e156b08f553fef79d9aca4212dcb909ecc005e511745ec160995 \
+                    size    27271
 
-python.versions     27 37 38
+python.versions     27 37 38 39
 
 if {${name} ne ${subport}} {
     depends_build-append \

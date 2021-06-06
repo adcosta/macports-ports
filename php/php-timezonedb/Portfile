@@ -9,7 +9,7 @@ platforms           darwin
 maintainers         {ryandesign @ryandesign} openmaintainer
 license             PHP-3.01
 
-php.branches        5.3 5.4 5.5 5.6 7.0 7.1 7.2 7.3 7.4
+php.branches        5.3 5.4 5.5 5.6 7.0 7.1 7.2 7.3 7.4 8.0
 php.pecl            yes
 
 description         A PECL Timezone Database.
@@ -18,11 +18,11 @@ long_description    Timezone Database to be used with PHP's date and time \
                     functions.
 
 if {[vercmp ${php.branch} 5.2] >= 0} {
-    version         2020.1
+    version         2021.1
     revision        0
-    checksums       rmd160  a32a56acf47bfb49ee23547393a21e52f8ea3bd0 \
-                    sha256  190b84566d991eebc0756a45b6eefd0f0b4884160b8fbae86d66bc16f7bb4753 \
-                    size    413993
+    checksums       rmd160  a9f33ee172b1a7384767901f464f8d0b48689e67 \
+                    sha256  9fd473fc76e01a2ffcd087283d20e4ec14067b29a8336ac4acf9c564abbeaa55 \
+                    size    415891
 }
 
 configure.args-append --enable-timezonedb

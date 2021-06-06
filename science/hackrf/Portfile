@@ -1,7 +1,7 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           cmake 1.0
+PortGroup           cmake 1.1
 PortGroup           github 1.0
 
 name                hackrf
@@ -20,23 +20,28 @@ subport hackrf-devel {}
 if {${subport} eq ${name}} {
 
     # release
-    github.setup        mossmann hackrf 2018.01.1 v
-    checksums           rmd160 97e9e7ca94f91ba898dd9a20a56aa3843688be64 \
-                        sha256 e7ee6e09c1e0d2498cfdc974047cbe42177d3d6688a106be283d67d36051a155
-    revision            0
+    github.setup    mossmann hackrf 2021.03.1 v
+    checksums       rmd160  e37aacc7333f5e2ef23c36c86b70c6bbb04283eb \
+                    sha256  26baf06e4cf86e623c37f1d76e47c71ddefc57c24c113d27ab617b812d680432 \
+                    size    13066731
+    revision        0
 
     # bump the epoch because I moved the version from 20170219 to 2017.02.1
-    epoch               1
+    epoch           1
+
+    conflicts       hackrf-devel
 
 } else {
 
     # devel
-    github.setup mossmann hackrf 43e6f99fe8543094d18ff3a6550ed2066c398862
-    version   20200211-[string range ${github.version} 0 7]
-    checksums rmd160 b8a0b3d66152da15590544895225844ce64267f4 \
-              sha256 683d9449824a099678db0d44c425e1be640e4c7abddd5b42bf5c1df6f407c3d2 \
-              size   15139244
-    revision  0
+    github.setup    mossmann hackrf 5f1536cc3631f79e6beafbd8d7bb6cf86dcf555f
+    version         20210330-[string range ${github.version} 0 7]
+    checksums       rmd160  0491b8fb47cd2d5f7db03fe564ed19674e4d950b \
+                    sha256  2ae669edd37509c1741de404f251f2fecb4d949ec2fd45aa6744661fe1303dde \
+                    size    13066837
+    revision        0
+
+    conflicts       hackrf
 
 }
 
@@ -49,16 +54,22 @@ depends_lib-append   path:lib/libusb-1.0.dylib:libusb \
 
 patchfiles-append   patch-no-gnu90.diff
 
-# do VPATH (out of source tree) build
-
-cmake.out_of_source yes
-
 # set last configure argument to the reletive path
 # to the top-level cmake source
 
 configure.post_args ../${worksrcdir}/host
 
-# remove top-level library path, such that internal libraries are used
-# instead of any already-installed ones.
+# remove top-level library and includes paths, such that internal
+# libraries and headers are used instead of any already-installed ones.
 
 configure.ldflags-delete -L${prefix}/lib
+configure.cppflags-delete -I${prefix}/include
+
+# HackRF cmake doesn't understand build type "MacPorts";
+# use release unless +debug is set
+
+if {[variant_isset debug]} {
+    cmake.build_type Debug
+} else {
+    cmake.build_type Release
+}

@@ -4,8 +4,6 @@ PortSystem          1.0
 PortGroup           cmake 1.0
 
 name                wireshark3
-version             3.2.6
-revision            0
 categories          net
 license             {GPL-2 GPL-3}
 maintainers         {darkart.com:opendarwin.org @ghosthound}
@@ -18,6 +16,40 @@ long_description    A network analyzer that lets you capture and \
                     Packet data can be read from a file, or live from a local \
                     network interface.
 
+# Include patch for CLOCK_REALTIME build errors, on macOS releases prior to 10.12.
+# While a fix has been included in upstream 3.4.2, that release also requires
+# QT59... and is a no-go for these older macOS releases.
+#
+# So for now, we're stuck with 3.4.1, for users running macOS 10.11 and earlier.
+#
+# MacPorts issue, with all of the juicy details:
+#   https://trac.macports.org/ticket/61511
+# GitHub issue:
+#   https://gitlab.com/wireshark/wireshark/-/issues/17101
+# Upstream fix committed:
+#   https://gitlab.com/wireshark/wireshark/-/merge_requests/1404
+
+if {${os.major} >= 16} {
+    version         3.4.6
+    revision        0
+
+    checksums       sha256  12a678208f8cb009e6b9d96026e41a6ef03c7ad086b9e1029f42053b249b4628 \
+                    rmd160  a2e4ab6cdd044495a5e91da23fa1a3d45a17ff39 \
+                    sha1    20596183210daeb0070ae43716529caf81c6187a \
+                    size    32304604
+} else {
+    version         3.4.1
+    revision        3
+
+    checksums       sha256  f8165211f5b4a4f6708df73ef9be51df917927f2da78348b32d3a6eb5fc458a3 \
+                    rmd160  1b5e1fee340c149b70dbe8e8cf935518b06656e8 \
+                    sha1    3c9a24b8954d712a189f997131e283fbd0b606bc \
+                    size    32470004
+
+    patchfiles-append \
+                    patch-wireshark3-3.4.1-fix-clock_realtime.diff
+}
+
 master_sites        https://www.wireshark.org/download/src/ \
                     https://www.wireshark.org/download/src/all-versions/
 
@@ -26,11 +58,6 @@ use_xz              yes
 distfiles           wireshark-${version}${extract.suffix}
 
 worksrcdir          wireshark-${version}
-
-checksums           sha256  ebb1eebe39bcecee02195dc328dd25f6862fc9e9dea4c2e29eae50537d5eb4f2 \
-                    rmd160  09dcd3a088aa339e18871b053c9c8d8414b25a6a \
-                    sha1    e8f3e6cb9072670c8bdbbff7e5fe3ccd5203d35e \
-                    size    31635628
 
 conflicts           wireshark-devel wireshark wireshark2 wireshark22 wireshark24 wireshark30
 
@@ -41,6 +68,7 @@ depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     path:lib/libssl.dylib:openssl \
                     port:libgcrypt \
                     port:libpcap \
+                    port:libssh \
                     port:lz4
 
 configure.args-append \
@@ -123,24 +151,24 @@ variant geoip description {Build with GeoIP support} {
     depends_lib-append      port:libgeoip
 }
 
-variant chmodbpf description {Enable Wireshark to acces macOS capture devices} {
+variant chmodbpf description {Enable Wireshark to access macOS capture devices} {
     depends_run             port:wireshark-chmodbpf
 }
 
-variant python35 conflicts python36 python37 python38 description {Use python35 during build} {
-    depends_build-append    port:python35
-}
-
-variant python36 conflicts python35 python37 python38 description {Use python36 during build} {
+variant python36 conflicts python37 python38 python39 description {Use python36 during build} {
     depends_build-append    port:python36
 }
 
-variant python37 conflicts python35 python36 python38 description {Use python37 during build} {
+variant python37 conflicts python36 python38 python39 description {Use python37 during build} {
     depends_build-append    port:python37
 }
 
-variant python38 conflicts python35 python36 python37 description {Use python38 during build} {
+variant python38 conflicts python36 python37 python39 description {Use python38 during build} {
     depends_build-append    port:python38
+}
+
+variant python39 conflicts python36 python37 python38 description {Use python39 during build} {
+    depends_build-append    port:python39
 }
 
 default_variants +zlib +libsmi +gnutls +geoip +kerberos5 +chmodbpf
@@ -155,9 +183,9 @@ if {![variant_isset adns] && ![variant_isset cares]} {
 
 ## if no python3* variant is specified, add +python38
 ## XYZZY: it would be better to detect which python3* is already installed and use that...
-if {![variant_isset python35] && ![variant_isset python36] && \
-    ![variant_isset python37] && ![variant_isset python38] } {
-    default_variants-append +python38
+if {![variant_isset python36] && ![variant_isset python37] && \
+    ![variant_isset python38] && ![variant_isset python39] } {
+    default_variants-append +python39
 }
 
 post-destroot {

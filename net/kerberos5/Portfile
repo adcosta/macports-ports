@@ -4,12 +4,11 @@ PortSystem                  1.0
 PortGroup                   compiler_blacklist_versions 1.0
 
 name                        kerberos5
-version                     1.18.2
+version                     1.19.1
 revision                    0
-
-checksums                   rmd160  5943e2bb26477a6251a9b2fa5f5fecd1ffe276c3 \
-                            sha256  c6e4c9ec1a98141c3f5d66ddf1a135549050c9fab4e9a4620ee9b22085873ae0 \
-                            size    8713927
+checksums                   rmd160  e4e826c6c8d08bb6179358fb2cdac5c55c1e057c \
+                            sha256  fa16f87eb7e3ec3586143c800d7eaff98b5e0dcdf0772af7d98612e49dbeb20b \
+                            size    8738142
 
 set branch                  [join [lrange [split ${version} .] 0 1] .]
 conflicts                   fbopenssl
@@ -38,6 +37,7 @@ depends_build               port:pkgconfig \
 depends_lib                 port:gettext \
                             port:libcomerr \
                             port:libedit \
+                            port:lmdb \
                             port:ncurses \
                             path:lib/libssl.dylib:openssl
 
@@ -47,7 +47,6 @@ patchfiles                  patch-util__verto__Makefile.in-use-nonzero-compat-ve
                             patch-config__shlib.conf-do-not-pass-dylib-file-ldflags.diff \
                             patch-lib_rpc_Makefile.in-explicitly-link-krb5support.diff \
                             libressl.patch \
-                            constructor_check.patch \
                             no-Werror.patch
 
 # AI_NUMERICSERV not available for Leopard and earlier (OS X < 10.6)

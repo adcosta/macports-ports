@@ -5,7 +5,7 @@ PortGroup           mpi 1.0
 PortGroup           linear_algebra 1.0
 
 name                abinit
-version             9.0.4
+version             9.2.2
 revision            0
 categories          science
 platforms           darwin
@@ -32,9 +32,9 @@ long_description    ABINIT is a package whose main program allows one to find th
 homepage            https://www.abinit.org
 master_sites        ${homepage}/sites/default/files/packages
 
-checksums           rmd160  7b475c4f2784794abf1f7ea2cdf902d849a0a394 \
-                    sha256  aa6202feaea060ea5c39500a06f735e472874f768bf9a301059f4bbf04886e52 \
-                    size    87453615
+checksums           rmd160  675cf2df645175b0b054bde9ab030b038d526f9c \
+                    sha256  4999d48ed20655af7ee4015dc79fe5363db494eb330e71aeacb11870135fa95d \
+                    size    96751216
 
 compilers.choose    cc cxx fc
 compilers.allow_arguments_mismatch yes
@@ -85,11 +85,12 @@ destroot.target   install-exec install-data-local
 universal_variant   no
 
 test.run            yes
-test.cmd            tests/runtests.py
+test.cmd            tests/runtests.py -j ${build.jobs}
+
 # args -t0 for no timeout since it cannot be found anyway; or: set depends_test-append port:timeout
 test.target         libxc built-in fast tutorespfn tutorial unitary
 #test.target         built-in fast tutorespfn tutorial unitary v1 v2 v3 v4 v5 v6 v67mbpt v7
-depends_test-append port:py-pandas
+depends_test-append port:py27-pandas
 
 pre-test {
     if {[mpi_variant_isset]} {
@@ -106,10 +107,12 @@ pre-configure {
     configure.args-append  FCCPP="${configure.cc} -E -ansi"
     if {[mpi_variant_isset]} {
         configure.args-append  --with-mpi --enable-mpi-io="yes" --enable-mpi-inplace
-        if {[mpi_variant_name] eq "mpich" || [mpi_variant_name] eq "mpich-devel"} {
-            # with OpenMPI, causes compilation error in m_profiling_abi.F90 related to MPI_COMM_WORLD
-            configure.args-append --with-mpi-level=3
-        }
+
+        # causes compilation error in m_profiling_abi.F90 related to MPI_COMM_WORLD
+        # This looks like a possible mistake in not including the mpi module
+        # configure.args-append --with-mpi-level=3
+    } else {
+        configure.args-append  --without-mpi
     }
 }
 
@@ -130,16 +133,10 @@ variant fftw3 description {Build with support for (threaded) fftw-3 FFT library}
     configure.args-append    FFTW3_LIBS="-L${prefix} -lfftw3 -lfftw3f -lfftw3_threads"
 }
 
-#variant threads description {Build with support for OpenMP threads} {
-#    configure.args-append   --enable-openmp
-#    configure.fcflags-append -fopenmp
-#}
-# Threads disabled due to this error:
-#m_getghc.F90:1622:0:
-# 1622 |    if ( present(kg_fft_k) ) then
-#      |
-#Error: 'kg_fft_k' not specified in enclosing 'parallel'
-
+variant threads description {Build with support for OpenMP threads} {
+    configure.args-append   --enable-openmp
+    configure.fcflags-append -fopenmp
+}
 
 # add support for gsl, yaml?
 

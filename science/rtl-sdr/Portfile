@@ -6,11 +6,11 @@ PortGroup           github 1.0
 
 name                rtl-sdr
 
-github.setup        osmocom rtl-sdr d794155ba65796a76cd0a436f9709f4601509320
-version             20200318-[string range ${github.version} 0 7]
-checksums           rmd160 9fe747da6b6929992382648f8cc83a76507e8abc \
-                    sha256 6b4e764921c13ffa100ea0892434d01e324fed4ec2fc9d374557ef278372117c \
-                    size   133994
+github.setup        osmocom rtl-sdr 0847e93e0869feab50fd27c7afeb85d78ca04631
+version             20201031-[string range ${github.version} 0 7]
+checksums           rmd160  521a31bb59bfbef83d750401c7fb64f819bc1496 \
+                    sha256  c63cf6e9e0e1a2e0ceea4b8c6bc6868bf82aa2778dbe883ef60bc23bec64c5e2 \
+                    size    134131
 revision            0
 
 categories          science comms
@@ -24,10 +24,11 @@ homepage            http://sdr.osmocom.org/trac/wiki/rtl-sdr
 depends_build-append port:pkgconfig port:doxygen
 depends_lib-append   path:lib/libusb-1.0.dylib:libusb
 
-# remove top-level library path, such that internal libraries are used
-# instead of any already-installed ones.
+# remove top-level library and includes paths, such that internal
+# libraries and headers are used instead of any already-installed ones.
 
 configure.ldflags-delete -L${prefix}/lib
+configure.cppflags-delete -I${prefix}/include
 
 # patch to allow us to override git describe
 
@@ -37,3 +38,12 @@ patch.pre_args -p1
 # set the string to use in place of git describe since that won't work
 
 configure.args-append -DRTL_SDR_GIT_INFO="${version}-MacPorts"
+
+# rtl-sdr cmake doesn't understand build type "MacPorts";
+# use release unless +debug is set
+
+if {[variant_isset debug]} {
+    cmake.build_type Debug
+} else {
+    cmake.build_type Release
+}

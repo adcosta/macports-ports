@@ -10,9 +10,9 @@ set llvm_version_no_dot 10
 set clang_executable_version 10
 set lldb_executable_version 10
 name                    llvm-${llvm_version}
-revision                0
-subport                 clang-${llvm_version} { revision 0 }
-subport                 lldb-${llvm_version} { revision 0 }
+revision                1
+subport                 clang-${llvm_version} { revision 5 }
+subport                 lldb-${llvm_version} { revision 1 }
 set suffix              mp-${llvm_version}
 set sub_prefix          ${prefix}/libexec/llvm-${llvm_version}
 dist_subdir             llvm
@@ -143,6 +143,7 @@ if {${subport} eq "clang-${llvm_version}"} {
         1007-Fix-float.h-to-work-on-Snow-Leopard-and-earlier.patch \
         2001-xray-Define-O_CLOEXEC-for-older-SDKs-that-don-t-have.patch \
         2002-Work-around-no-libdispatch-on-10.6.patch \
+        2003-patch-compiler-rt-support-arm64.diff \
         3001-Fix-missing-long-long-math-prototypes-when-using-the.patch \
         3002-implement-atomic-using-mutex-lock_guard-for-64b-ops-.patch \
         openmp-locations.patch \
@@ -153,9 +154,16 @@ if {${subport} eq "clang-${llvm_version}"} {
         5001-patch-libcxx-src-new-posix-memalign-leopard.diff \
         5002-patch-toolchains-darwin-add-back-pre-10.6-link-libs.diff
 
+    # Understand deployment target of 11.x on Big Sur
+    # https://trac.macports.org/ticket/61525
+    patchfiles-append clang-driver-support-11.x-target.diff
+
     # fix incorrect disabling of bad_optional/variant/any_access on 10.13
     # https://github.com/macports/macports-base/pull/179
     patchfiles-append patch-libcxx-includes-config-optional-1013.diff
+
+    # https://reviews.llvm.org/D89001
+    patchfiles-append patch-clang-fix-include-next-sysroot-cpp-headers.diff
 
 }
 
@@ -169,7 +177,8 @@ if {${subport} eq "lldb-${llvm_version}"} {
         1005-Fixup-libstdc-header-search-paths-for-older-versions.patch \
         1006-Fix-build-issues-pre-Lion-due-to-missing-a-strnlen-d.patch \
         1007-Fix-float.h-to-work-on-Snow-Leopard-and-earlier.patch \
-        openmp-locations.patch
+        openmp-locations.patch \
+        clang-driver-support-11.x-target.diff
 }
 
 configure.post_args         ../${worksrcdir}
@@ -254,6 +263,14 @@ if {[string match macports-clang-* ${configure.compiler}]} {
     depends_skip_archcheck-append cctools
 }
 
+if {${os.major} <= 14} {
+    # compiler-rt does a broad search for an SDK it likes, but this
+    # search fails on older systems that don't have a MacOSX.sdk
+    # TODO: apply this always to all systems?
+    if {${configure.sdkroot} eq ""} {set configure.sdkroot "/"}
+    configure.args-append -DDARWIN_osx_SYSROOT="${configure.sdkroot}"
+}
+
 # Set CMAKE_LIBTOOL if we're using MacPorts-provided cctools
 if {[lsearch -exact $PortInfo(depends_build) port:cctools] != -1} {
     configure.args-append \
@@ -276,7 +293,7 @@ platform darwin {
 
     configure.cxx_stdlib libc++
     depends_lib-append port:libcxx
-    supported_archs i386 x86_64
+    supported_archs i386 x86_64 arm64
 
     pre-fetch {
         if {${os.major} < 11} {
@@ -348,18 +365,16 @@ platform darwin {
     }
 }
 
-pre-fetch {
-    if {${subport} eq "lldb-${llvm_version}"} {
-        if {${os.platform} eq "darwin" && ${os.major} < 15} {
-            depends_build
-            depends_lib
-            depends_run
-            archive_sites
-            known_fail yes
-            pre-fetch {
-                ui_error "${subport} is not supported on this os version at present."
-                return -code error {unsupported platform}
-            }
+if {${subport} eq "lldb-${llvm_version}"} {
+    if {${os.platform} eq "darwin" && ${os.major} < 15} {
+        depends_build
+        depends_lib
+        depends_run
+        archive_sites
+        known_fail yes
+        pre-fetch {
+            ui_error "${subport} is not supported on this os version at present."
+            return -code error {unsupported platform}
         }
     }
 }
@@ -505,8 +520,10 @@ if {${subport} eq "llvm-${llvm_version}"} {
 
             # pythonfullpath is set above, depending on presence of system python2.7
             reinplace "s|/usr/bin/env python|${pythonfullpath}|g" \
-                ${worksrcpath}/tools/clang/tools/scan-build/bin/set-xcode-analyzer \
-                ${worksrcpath}/tools/clang/tools/scan-view/bin/scan-view
+                 ${worksrcpath}/tools/clang/tools/scan-view/bin/scan-view
+
+            reinplace "s|/usr/bin/python|${pythonfullpath}|g" \
+                ${worksrcpath}/tools/clang/tools/scan-build/bin/set-xcode-analyzer
         }
     }
 
@@ -574,7 +591,10 @@ if {${subport} eq "llvm-${llvm_version}"} {
                 ${worksrcpath}/tools/clang/lib/Driver/ToolChains/Darwin.cpp
         }
     }
-    default_variants-append +libstdcxx
+    # at present, only the non-arm archs can use this variant
+    if {${build_arch} in "x86_64 i386 ppc64 ppc"} {
+        default_variants-append +libstdcxx
+    }
 
     post-patch {
         reinplace "s|@@PREFIX@@|${prefix}|" \

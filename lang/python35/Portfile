@@ -2,12 +2,16 @@
 
 PortSystem 1.0
 PortGroup select 1.0
+PortGroup deprecated 1.0
 
 name                python35
 
 epoch               20170810
-# Remember to keep py35-tkinter, py35-htmldocs, and py35-gdbm's versions sync'd with this
-version             3.5.9
+# Remember to keep py35-tkinter and py35-gdbm's versions sync'd with this
+version             3.5.10
+revision            1
+
+deprecated.eol_version  yes
 
 set major           [lindex [split $version .] 0]
 set branch          [join [lrange [split ${version} .] 0 1] .]
@@ -25,9 +29,9 @@ master_sites        ${homepage}ftp/python/${version}/
 
 distname            Python-${version}
 use_xz              yes
-checksums           md5 ef7f82485e83c7f8f8bcb920a9c2457b \
-                    rmd160 7ca1bacda445d33c6533c6fce7eb625757a3f8ad \
-                    sha256 c24a37c63a67f53bdd09c5f287b5cff8e8b98f857bf348c577d454d3f74db049
+checksums           md5 75c9c268703654aa6f6f2ae67303dde4 \
+                    rmd160 5ec7da2d568f963a81b78433bf72ed1ad9e87292 \
+                    sha256 0f0fa8685c1dc1f1dacb0b4e7779796b90aef99dc1fa4967a71b9da7b57d4a28
 
 patchfiles          patch-setup.py.diff \
                     patch-Lib-cgi.py.diff \
@@ -39,7 +43,9 @@ patchfiles          patch-setup.py.diff \
                     Modules_posixmodule.c.diff \
                     uuid-64bit.patch \
                     patch-_osx_support.py.diff \
-                    darwin20.diff
+                    darwin20.diff \
+                    implicit.patch \
+                    sysconfig.py.diff
 
 depends_build       port:pkgconfig
 depends_lib         port:bzip2 \
@@ -54,6 +60,18 @@ depends_lib         port:bzip2 \
                     port:zlib
 depends_run         port:python_select \
                     port:python3_select
+
+platform darwin arm {
+    known_fail  yes
+    if {$build_arch ne "x86_64"} {
+        pre-fetch {
+            error "${name} cannot be built for Apple Silicon"
+        }
+        depends_build
+        depends_lib
+        depends_run
+    }
+}
 
 # blacklist llvm-gcc-4.2 compiler known to produce bad code
 compiler.blacklist  *llvm-gcc-4.2
@@ -112,17 +130,18 @@ platform darwin {
     }
     post-build {
         set buildlibdir [lindex [glob -directory ${worksrcpath}/build lib.*-*-*-${branch}] 0]
+        # preserve mtime of sysconfig data file to avoid rebuilding things after changing it
+        set oldmtime [file mtime ${buildlibdir}/_sysconfigdata.py]
+
         # Without this, LINKFORSHARED is set to
         # ... $(PYTHONFRAMEWORKDIR)/Versions/$(VERSION)/$(PYTHONFRAMEWORK)
         # (this becomes Python.framework/Versions/3.5/Python) which doesn't
         # work for dependents that incorrectly use this variable to find out
         # how to link against python (see ticket #15099); instead we mirror
         # the behavior of `python-config --ldflags` here.
-        system -W ${buildlibdir} "awk -F : \
-            \"/'LINKFORSHARED'/ {printf \\\"%s: '-L${framewdir}/lib/python${branch}/${confdir}\
-            -lpython${branch}m -ldl -framework CoreFoundation',\\n\\\", \\\$1; getline; next} {print}\"\
-            _sysconfigdata.py > _sysconfigdata.py.new"
-        file rename -force ${buildlibdir}/_sysconfigdata.py.new \
+        set lfs_pattern {^([[:space:]]*'LINKFORSHARED':).*}
+        set lfs_replacement "\\1 '-L${framewdir}/lib/python${branch}/${confdir} -lpython${branch}m -ldl -framework CoreFoundation',"
+        reinplace -E s|${lfs_pattern}|${lfs_replacement}| \
             ${buildlibdir}/_sysconfigdata.py
 
         # remove -arch flags from the config
@@ -132,6 +151,8 @@ platform darwin {
         # also remove gettext overlinking
         reinplace "s|-lintl||" \
            ${buildlibdir}/_sysconfigdata.py
+
+        file mtime ${buildlibdir}/_sysconfigdata.py $oldmtime
     }
     post-destroot {
         foreach dir { Headers Resources Python Versions/Current } {

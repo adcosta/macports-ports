@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pytest-cov
-version             2.10.0
+version             2.12.1
 revision            0
 
 categories-append   devel
@@ -18,15 +18,16 @@ long_description    ${description}
 
 homepage            https://github.com/pytest-dev/pytest-cov
 
-checksums           rmd160  43fa1989f657e91feb0bcf4333add0ef6f635b6b \
-                    sha256  1a629dc9f48e53512fcbfda6b07de490c374b0c83c55ff7a1720b3fccff0ac87 \
-                    size    54570
+checksums           rmd160  bb56cc50c1244d00934b584f0b7b3a9270619c4d \
+                    sha256  261ceeb8c227b726249b376b8526b600f38667ee314f910353fa318caa01f4d7 \
+                    size    60395
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                    port:py${python.version}-setuptools
+                    port:py${python.version}-setuptools \
+                    port:py${python.version}-toml
 
     depends_lib-append \
                     port:py${python.version}-coverage \

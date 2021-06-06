@@ -4,11 +4,13 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           gpg_verify 1.0
 PortGroup           compilers 1.0
+PortGroup           compiler_blacklist_versions 1.0
 
 compilers.choose    fc f77 f90
 compilers.setup     require_fortran -g95
+compiler.blacklist-append {clang < 900}
 
-github.setup        JuliaLang julia 1.5.0 v
+github.setup        JuliaLang julia 1.6.1 v
 revision            0
 categories-append   lang math science
 maintainers         {ieee.org:s.t.smith @essandess} openmaintainer
@@ -26,9 +28,9 @@ github.tarball_from releases
 distfiles           ${name}-${version}-full${extract.suffix}
 
 checksums           ${name}-${version}-full${extract.suffix} \
-                    rmd160  e622a26f953ec9bb6e36a76395d077e52c0c5db5 \
-                    sha256  4a6ffadc8dd04ca0b7fdef6ae203d0af38185e57b78f7c0b972c4707354a6d1b \
-                    size    138127737 \
+                    rmd160  9bb9283baea1b8c83d2508bbd7200fd553232845 \
+                    sha256  71d8e40611361370654e8934c407b2dec04944cf3917c5ecb6482d6b85ed767f \
+                    size    153647467
 
 extract.only        ${distfiles}
 
@@ -49,6 +51,8 @@ if {[option gpg_verify.use_gpg_verification]} {
             ${distpath}/${name}-${version}-full${extract.suffix}
     }
 }
+
+depends_run-append  port:p7zip
 
 # julia build is `make && make install`
 # see https://github.com/JuliaLang/julia/blob/master/Makefile
@@ -86,7 +90,6 @@ post-destroot {
     move ${dpw}/julia-${version}/include/julia ${destroot}${prefix}/include
     move ${dpw}/julia-${version}/lib/julia ${destroot}${prefix}/lib
     move ${dpw}/julia-${version}/lib/libjulia.${short_version}.dylib ${destroot}${prefix}/lib
-    move ${dpw}/julia-${version}/lib/libjulia.${short_version}.dylib.dSYM ${destroot}${prefix}/lib
     move ${dpw}/julia-${version}/lib/libjulia.dylib ${destroot}${prefix}/lib
     move ${dpw}/julia-${version}/lib/libjulia.${major_version}.dylib ${destroot}${prefix}/lib
     move ${dpw}/julia-${version}/share/julia ${destroot}${prefix}/share

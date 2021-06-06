@@ -16,7 +16,7 @@ long_description \
 
 homepage        https://docs.python.org/library/tkinter.html
 
-python.versions 26 27 32 33 34 35 36 37 38
+python.versions 26 27 32 33 34 35 36 37 38 39
 
 set extract_files "Modules/_tkinter.c Modules/tkappinit.c"
 set module_name Tkinter
@@ -80,50 +80,63 @@ subport py34-tkinter {
 subport py35-tkinter {
     maintainers {jmr @jmroot} openmaintainer
     epoch       20170810
-    version     3.5.9
+    version     3.5.10
     revision    0
     homepage    https://docs.python.org/release/${version}/library/tkinter.html
     use_xz      yes
-    checksums   md5 ef7f82485e83c7f8f8bcb920a9c2457b \
-                rmd160 7ca1bacda445d33c6533c6fce7eb625757a3f8ad \
-                sha256 c24a37c63a67f53bdd09c5f287b5cff8e8b98f857bf348c577d454d3f74db049
+    checksums   md5 75c9c268703654aa6f6f2ae67303dde4 \
+                rmd160 5ec7da2d568f963a81b78433bf72ed1ad9e87292 \
+                sha256 0f0fa8685c1dc1f1dacb0b4e7779796b90aef99dc1fa4967a71b9da7b57d4a28
     append extract_files " Modules/tkinter.h Modules/clinic/_tkinter.c.h"
     set module_name tkinter
 }
 subport py36-tkinter {
     maintainers {jmr @jmroot}
     epoch       20170717
-    version     3.6.11
+    version     3.6.13
     revision    0
     homepage    https://docs.python.org/release/${version}/library/tkinter.html
     use_xz      yes
-    checksums   md5 8f91c770b546a4938efbdb3064796c6c \
-                rmd160 d1577bbfb4fb6b9c47389383e2b5ff9abb7db9e3 \
-                sha256 741ebdcbc4e3937a5ff23517dd455ebf7d543ea9fef6f5cf6f46e575d6c4fda4
+    checksums   md5 1c04330ffff21cd777dc38e2310fc452 \
+                rmd160 129f0f49c2db86c17f768f320484f116bd61cf2c \
+                sha256 a47a43a53abb42286a2c11965343ff56711b9e64e8d11bf2c6701a4fb8ce1a0f
     append extract_files " Modules/tkinter.h Modules/clinic/_tkinter.c.h"
     set module_name tkinter
 }
 subport py37-tkinter {
     maintainers {jmr @jmroot}
-    version     3.7.8
+    version     3.7.10
     revision    0
     homepage    https://docs.python.org/release/${version}/library/tkinter.html
     use_xz      yes
-    checksums   md5 a224ef2249a18824f48fba9812f4006f \
-                rmd160 67af3c8cbdfbadd49bbbb56690b3da90799dc687 \
-                sha256 43a543404b363f0037f89df8478f19db2dbc0d6f3ffee310bc2997fa71854a63
+    checksums   md5 9e34914bc804ab2e7d955b49c5e1e391 \
+                rmd160 ae83786be55bf99889d9fe25826e7b4333dd8a52 \
+                sha256 f8d82e7572c86ec9d55c8627aae5040124fd2203af400c383c821b980306ee6b
     append extract_files " Modules/tkinter.h Modules/clinic/_tkinter.c.h"
     set module_name tkinter
 }
 subport py38-tkinter {
     maintainers nomaintainer
-    version     3.8.5
+    version     3.8.10
     revision    0
     homepage    https://docs.python.org/release/${version}/library/tkinter.html
     use_xz      yes
-    checksums   rmd160  e39eafd2303fa8dc59c16ad5d987c7bc035236a8 \
-                sa256  e3003ed57db17e617acb382b0cade29a248c6026b1bd8aad1f976e9af66a83b0 \
-                size    18019640
+    checksums   md5 d9eee4b20155553830a2025e4dcaa7b3 \
+                rmd160 eaffc74bd79021ef7a6309f494ca387860e8af9c \
+                sha256 6af24a66093dd840bcccf371d4044a3027e655cf24591ce26e48022bc79219d9 \
+                size   18433456
+    append extract_files " Modules/tkinter.h Modules/clinic/_tkinter.c.h"
+    set module_name tkinter
+}
+subport py39-tkinter {
+    maintainers {jmr @jmroot}
+    version     3.9.5
+    revision    0
+    homepage    https://docs.python.org/release/${version}/library/tkinter.html
+    use_xz      yes
+    checksums   md5 71f7ada6bec9cdbf4538adc326120cfd \
+                rmd160 3c7bf2d7bcea98a8a749ef19ce7da429a7ca2c08 \
+                sha256 0c5a140665436ec3dbfbb79e2dfb6d192655f26ef4a29aeffcb6d1820d716d83
     append extract_files " Modules/tkinter.h Modules/clinic/_tkinter.c.h"
     set module_name tkinter
 }

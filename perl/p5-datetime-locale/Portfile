@@ -5,7 +5,7 @@ PortGroup           perl5 1.0
 
 epoch               1
 perl5.branches      5.26 5.28 5.30
-perl5.setup         DateTime-Locale 1.26
+perl5.setup         DateTime-Locale 1.31
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Localization support for DateTime
@@ -18,19 +18,20 @@ long_description    DateTime::Locale is primarily a factory for the \
 
 platforms           darwin
 
-checksums           rmd160  2e23ac651352b8af75090c733d3a2d8c6571db3c \
-                    sha256  1e43152a7ca4585a335958da0dd5e430b95a820f6de6456df26e7ec2a6649792 \
-                    size    1389665
+checksums           rmd160  132856f09526f2d28e06aa40de9e44a8ea1e2aba \
+                    sha256  c7224c7e51dce4dd9ba80d8857cd4c3b72137653da34d3ba3c3a3c20cbf438b8 \
+                    size    1459863
 
 if {${perl5.major} != ""} {
     depends_build-append \
                     port:p${perl5.major}-cpan-meta-check \
                     port:p${perl5.major}-file-sharedir-install \
                     port:p${perl5.major}-ipc-system-simple \
-                    port:p${perl5.major}-test-fatal \
+                    port:p${perl5.major}-path-tiny \
+                    port:p${perl5.major}-test2-plugin-nowarnings \
+                    port:p${perl5.major}-test2-suite \
                     port:p${perl5.major}-test-file-sharedir \
-                    port:p${perl5.major}-test-requires \
-                    port:p${perl5.major}-test-warnings
+                    port:p${perl5.major}-test-simple
 
     depends_lib-append \
                     port:p${perl5.major}-file-sharedir \

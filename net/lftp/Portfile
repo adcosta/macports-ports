@@ -5,7 +5,7 @@ PortGroup           muniversal 1.0
 
 name                lftp
 version             4.9.2
-revision            0
+revision            3
 categories          net
 platforms           darwin
 maintainers         {mps @Schamschula} openmaintainer
@@ -31,11 +31,13 @@ checksums           rmd160  48ec8b568af0023ab41baaf2f4363a0400667c77 \
                     size    1654960
 
 depends_build       port:autoconf \
-                    port:automake
+                    port:automake \
+                    port:bison
 
 depends_lib         port:expat \
                     port:gettext \
                     port:libiconv \
+                    port:libidn2 \
                     port:ncurses \
                     path:lib/libssl.dylib:openssl \
                     port:pkgconfig \
@@ -43,8 +45,11 @@ depends_lib         port:expat \
                     port:zlib
 
 # look for ncurses first, fix 4.7.x build issues
-patchfiles          patch-configure.diff \
+patchfiles          patch-m4-needtrio.m4.diff \
                     patch-src.diff
+
+# see https://trac.macports.org/ticket/61005
+patchfiles-append   patch-src-lftp.ssl.cc.diff
 
 use_autoconf        yes
 use_automake        yes

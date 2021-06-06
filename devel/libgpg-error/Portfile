@@ -2,10 +2,19 @@
 
 PortSystem      1.0
 PortGroup       conflicts_build 1.0
-PortGroup       muniversal 1.0
+
+# we will only use the muniversal PG on < 10.14
+set using_muniversal_PG false
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+
+	set using_muniversal_PG true
+	PortGroup muniversal 1.0
+
+	merger_must_run_binaries yes
+}
 
 name            libgpg-error
-version         1.38
+version         1.42
 revision        0
 categories      devel
 platforms       darwin
@@ -23,9 +32,9 @@ master_sites    gnupg
 
 use_bzip2       yes
 
-checksums       rmd160  6aa64ea95db505b3985a0e265910aab6e3621604 \
-                sha256  d8988275aa69d7149f931c10442e9e34c0242674249e171592b430ff7b3afd02 \
-                size    957637
+checksums       rmd160  65cc1bf594ed23dcad6ac58e04cd3e70fbf161f5 \
+                sha256  fc07e70f6c615f8c4f590a8e37a9b8dd2e2ca1e9408f8e60459c67452b925e23 \
+                size    973996
 
 depends_lib     port:libiconv \
                 port:gettext
@@ -38,9 +47,11 @@ platform darwin 8 {
     configure.cppflags-append -D__DARWIN_UNIX03
 }
 
-if {[variant_isset universal]} {
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
+if {${universal_possible} && [variant_isset universal] && ${using_muniversal_PG}} {
     # muniversal's *.h merger does not handle \-continued lines properly
-    merger_must_run_binaries    yes
     patchfiles-append           patch-gen-posix-lock-obj_c.diff
     configure.cppflags-append   -DNO_LINE_CONT
 }

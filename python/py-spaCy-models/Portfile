@@ -4,7 +4,7 @@ PortSystem                         1.0
 PortGroup           python         1.0
 
 name                py-spaCy-models
-version             2.2.4
+version             2.3.2
 revision            0
 
 platforms           darwin
@@ -12,28 +12,31 @@ supported_archs     noarch
 
 license             MIT
 
-maintainers         {jonesc @cjones051073} openmaintainer
+maintainers         nomaintainer
 
 description         Models for the spaCy Natural Language Processing (NLP) library
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://spacy.io/models
 
-# Support python versions
-python.versions     36 37 38
+python.versions     37 38 39
 
-patchfiles
 distfiles
 build {}
 
 if {${name} ne ${subport}} {
 
+    depends_build-append \
+                    port:py${python.version}-packaging \
+                    port:py${python.version}-typer \
+                    port:py${python.version}-jinja2
+
     depends_lib-append \
-        port:py${python.version}-spaCy
+                    port:py${python.version}-spaCy
     
-    destroot.cmd "${python.bin} -m spacy download en"
-    destroot.args " "
-    destroot.pre_args " "
+    destroot.cmd    ${python.bin}
+    destroot.pre_args
+    destroot.args   -m spacy download en
 
 }
 

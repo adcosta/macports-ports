@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                mackup
-version             0.8.23
+version             0.8.32
 
 categories-prepend  sysutils
 license             GPL-3
@@ -20,13 +20,12 @@ long_description    Mackup backs ups your application settings in a safe \
                     command.
 
 homepage            https://github.com/lra/mackup
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
-checksums           rmd160  fab8f379f158988c21bc761a57848cda46a9b149 \
-                    sha256  4f3886cc5e0bf645c4dded8e3fb0d26076d4c7908dd1f6586f6dabac08e0b6bd \
-                    size    44262
+checksums           rmd160  f60cf5a5bb1813010901d6fb8219b24e8a2e4185 \
+                    sha256  154c5d78951e20da2ed0ed226b0684d2bc7f5553dd7b465f217fd6caad6e7fef \
+                    size    54542
 
-python.default_version 36
+python.default_version 38
 
 depends_lib-append \
     port:py${python.version}-docopt \

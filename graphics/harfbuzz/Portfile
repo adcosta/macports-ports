@@ -4,10 +4,10 @@ PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           github 1.0
 
-github.setup        harfbuzz harfbuzz 2.7.0
-checksums           rmd160  32d29e63b5af3c53674b6e66792e39a3152e13fb \
-                    sha256  4dba05de1fd44705f54c40d801e0e3d4833555d004cb611cc18675173feae75b \
-                    size    16278518
+github.setup        harfbuzz harfbuzz 2.8.1
+checksums           rmd160  238099214d2a2d684f8b302536e18357241268c6 \
+                    sha256  4124f663ec4bf4e294d9cf230668370b4249a48ff34deaf0f06e8fc82d891300 \
+                    size    10480492
 
 categories          graphics
 platforms           darwin
@@ -16,18 +16,13 @@ license             MIT
 
 description         OpenType text shaping engine
 
-long_description    HarfBuzz is an ${description}.
+long_description    HarfBuzz is an {*}${description}.
 
 homepage            https://harfbuzz.github.io
-github.tarball_from archive
+github.tarball_from releases
+use_xz              yes
 
-depends_build       port:autoconf \
-                    port:automake \
-                    port:gtk-doc \
-                    port:libtool \
-                    port:pkgconfig
-
-patchfiles-append   autogen.sh.patch
+depends_build       port:pkgconfig
 
 # https://github.com/harfbuzz/harfbuzz/issues/1642
 compiler.cxx_standard \
@@ -36,10 +31,8 @@ compiler.cxx_standard \
 # https://github.com/harfbuzz/harfbuzz/issues/1651#issuecomment-484051395
 compiler.blacklist-append {clang < 700}
 
-# Upstream no longer provides release tarballs so we have to generate
-# configure and other files ourselves. Upstream recommends switching to
-# meson but I'm not ready to tackle that yet.
-configure.cmd       ./autogen.sh
+# Upstream recommends switching to meson but I'm not ready to tackle
+# that yet.
 
 configure.args      --disable-silent-rules \
                     ac_cv_prog_AWK=/usr/bin/awk
@@ -100,7 +93,7 @@ if {${name} eq ${subport}} {
 }
 
 subport harfbuzz-icu {
-    revision        1
+    revision        0
     
     description     HarfBuzz ICU support library
     

@@ -4,7 +4,7 @@ PortSystem          1.0
 
 name                screen
 version             4.8.0
-revision            0
+revision            1
 homepage            https://www.gnu.org/software/screen/
 description         Screen manager with VT100/ANSI terminal emulation
 long_description    \
@@ -42,13 +42,18 @@ checksums           ${distname}${extract.suffix} \
                     size    4883
 
 patchfiles          patch-apple.diff \
-                    patch-config.h.in.diff
+                    patch-acconfig.h.diff \
+                    patch-configure_no_implicit_defs.diff \
+                    patch-xcode-12-implicit-function-fixes.diff
 depends_lib         port:ncurses
 
 extract.only        ${distname}${extract.suffix}
 post-extract {
     file copy ${distpath}/18 ${workpath}
 }
+
+use_autoconf    yes
+
 configure.args      --mandir=${prefix}/share/man \
                     --infodir=${prefix}/share/info \
                     --enable-telnet \

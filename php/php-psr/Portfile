@@ -8,15 +8,15 @@ platforms               darwin
 maintainers             {ryandesign @ryandesign} openmaintainer
 license                 BSD
 
-php.branches            7.2 7.3 7.4
+php.branches            7.2 7.3 7.4 8.0
 php.pecl                yes
 
 if {[vercmp ${php.branch} 7.0] >= 0} {
-    version             1.0.0
+    version             1.1.0
     revision            0
-    checksums           rmd160  610d47a5f78dc046a5586416ac8812fd98da92cf \
-                        sha256  e7ac18683bb9d76ae022b886bf49693a027ea03b332039cf930938dfdac7d3ae \
-                        size    27096
+    checksums           rmd160  7aff462c8209f0c2d4557461c11b645e97b8b6a6 \
+                        sha256  4feb8eeea4237894bcab1ea064cefc3421c909778d39c977184c16e725cfbfb2 \
+                        size    28038
 }
 
 description             interfaces to PHP Standards Recommendations

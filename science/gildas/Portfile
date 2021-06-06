@@ -2,10 +2,10 @@
 
 PortSystem          1.0
 PortGroup           compilers 1.0
-PortGroup           active_variants 1.1 
+PortGroup           active_variants 1.1
 
 name                gildas
-version             202008a
+version             202106b
 set my_version      [string tolower [clock format [clock scan 2000-[string range ${version} 4 5]-10] -format %b]][string range ${version} 2 3][string range ${version} 6 end]
 categories          science
 platforms           darwin
@@ -24,15 +24,15 @@ long_description    GILDAS is a collection of state-of-the-art softwares \
                     few parts in C/C++ (mainly keyboard interaction, \
                     plotting, widgets).
 
-homepage            http://www.iram.fr/IRAMFR/GILDAS/gildas.html
-master_sites        http://www.iram.fr/~gildas/dist/ \
-                    http://www.iram.fr/~gildas/dist/archive/gildas/
+homepage            https://www.iram.fr/IRAMFR/GILDAS/gildas.html
+master_sites        https://www.iram.fr/~gildas/dist/ \
+                    https://www.iram.fr/~gildas/dist/archive/gildas/
 distname            ${name}-src-${my_version}
 use_xz              yes
 
-checksums           rmd160  81d5086a45978dbae2122ec3994075b1363c59d5 \
-                    sha256  5ec2fb22b2859780e51306ed7241291a3a0c91f9d2d7d9ba5b279e611a4b10db \
-                    size    43007496
+checksums           rmd160  d6efd20a6b6989326e9faaf00e7cc568e07f4102 \
+                    sha256  ff8b5f443762af40310c8b92ab4a685ec768456b1bda8cc4207bd0f70ff0523d \
+                    size    42959856
 
 patch.pre_args      -p1
 patchfiles          patch-admin-Makefile.def.diff \
@@ -62,7 +62,7 @@ require_active_variants gtk2 x11 quartz
 compilers.enforce_some_fortran cfitsio
 
 compilers.choose    fc
-compilers.setup     -g95 -gcc44 -gcc45 -gcc46 require_fortran
+compilers.setup     -gcc46 require_fortran
 configure.python    ${prefix}/bin/python3.8
 
 configure {

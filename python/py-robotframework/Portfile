@@ -6,7 +6,7 @@ PortGroup           python 1.0
 name                py-robotframework
 set internal_name   robotframework
 
-version             3.2.1
+version             4.0.1
 license             Apache-2
 
 categories-append   devel
@@ -16,21 +16,21 @@ long_description    ATDD framework with plugins
 
 homepage            http://robotframework.org/
 
-checksums           rmd160  f24c30b8771942d9538df814214774a8a975f970 \
-                    sha256  d693e6d06b17f48669e2a8c4cb6c1f0d56e5f1a74835d18b8ea2118da7bf2d79 \
-                    size    652093
 
 use_zip             yes
 
 platforms           darwin
-python.versions         27 36 37 38
-python.default_version  38
+python.versions         27 36 37 38 39
+python.default_version  39
 
 universal_variant   yes
 
-master_sites        pypi:r/robotframework
+master_sites        pypi:r/${internal_name}
 distname            ${internal_name}-${version}
 
+checksums           rmd160  d3291def009a47c5dd8cefbc028557e7522e90bd \
+                    sha256  9fa609ceb78f67b1476edce8a7011b16bf3ab41c0fb8c211de6c99955eaf9fde \
+                    size    690832
 
 if {${name} ne ${subport}} {
     depends_build-append \

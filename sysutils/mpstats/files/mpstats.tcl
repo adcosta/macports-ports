@@ -104,7 +104,7 @@ proc getgccinfo {} {
 
 # extraction of CommandLineTools version
 proc getcltinfo {} {
-    if {[file exists /usr/lib/libxcselect.dylib]} {
+    if {[file exists /usr/lib/libxcselect.dylib] || ${macports::os_major} >= 20} {
         set pkgname "CLTools_Executables"
     } else {
         # Mountain Lion (10.8) and below. Note that we prefer Xcode over CLT for <= 10.8
@@ -384,7 +384,13 @@ proc action_stats {subcommands} {
 
     # Build dictionary of os information
     dict set os macports_version [macports::version]
-    dict set os osx_version ${macports::macosx_version}
+    # TODO Remove this if and just use macosx_version after 2.7.0 has been
+    # released, since that will change the meaning of macosx_version.
+    if {[vercmp ${macports::macosx_version} 11] >= 0} {
+        dict set os osx_version [lindex [split ${macports::macosx_version} .] 0]
+    } else {
+        dict set os osx_version [join [lrange [split ${macports::macosx_version} .] 0 1] .]
+    }
     dict set os os_arch ${macports::os_arch}
     dict set os os_platform ${macports::os_platform}
     dict set os build_arch ${macports::build_arch}

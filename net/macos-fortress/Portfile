@@ -3,13 +3,14 @@
 PortSystem          1.0
 
 name                macos-fortress
-version             2020.06.18
+version             2021.02.28
 revision            0
 
 categories          net security
 platforms           darwin
 license             MIT
 maintainers         {ieee.org:s.t.smith @essandess} openmaintainer
+homepage            https://github.com/essandess/macOS-Fortress
 
 if {${subport} ne "${name}-easylistpac"} {
     master_sites
@@ -23,9 +24,12 @@ build               {}
 # perl5 and python3 major versions
 set perl5_major_version \
                     5.28
-set python3_version 3.7
-set python3_version_nickname \
-    [join [lrange [split ${python3_version} .] 0 1] {}]
+
+# Use ${python.default_version}
+# name consistency with ${prefix}/var/macports/sources/rsync.macports.org/macports/release/tarballs/ports/_resources/port1.0/group/python-1.0.tcl
+set python_default_version 39
+set python_version  ${python_default_version}
+set python_branch   [string index ${python_version} 0].[string range ${python_version} 1 end]
 
 set pf_conf         ${prefix}/etc/${name}/pf.conf
 set pf_conf_prefix  "\${prefix}/etc/${name}/pf.conf"
@@ -37,10 +41,10 @@ set proxy_pac_directory \
                     /Library/WebServer/Documents
 
 variant initialize_always \
-    description {Always initialize all configuration files. Intended\
-        for development and troubleshooting only. Working deployments\
-        must disable this variant to prevent configuration files\
-        being overwritten at the next upgrade. Existing configuration\
+    description {Always initialize all configuration files. Intended \
+        for development and troubleshooting only. Working deployments \
+        must disable this variant to prevent configuration files \
+        being overwritten at the next upgrade. Existing configuration \
         files are not overwritten by default.} {
     ui_warn \
         "
@@ -162,16 +166,26 @@ sudo apachectl start
 \t${proxy_hostname}:3128
 \thttp://${proxy_hostname}/proxy.pac"
 
+pre-fetch {
+    # The way that startupitems values are quoted was changed in 2.6.3.
+    # This port now relies on those changes. See:
+    # https://github.com/macports/macports-base/pull/191
+    if {[vercmp [macports_version] 2.6.3] < 0} {
+        ui_error "${name} @${version} requires MacPorts 2.6.3 or later"
+        return -code error "incompatible MacPorts version"
+    }
+}
+
 if {${name} eq ${subport}} {
     description     Firewall, Blackhole, and Privatizing Proxy for Trackers, Attackers, Malware, Adware, and Spammers
-    long_description    \
-        Kernel-level, OS-level, and client-level security for macOS. Built\
-        to block attacks using open source databases, and block ads,\
-        malicious scripts, and conceal information used for web tracking.\
-        Uses PF, squid, privoxy, dshield, emergingthreats,\
-        hosts file, and a proxy autoconfiguration (PAC) file.
-
-    homepage        https://github.com/essandess/macOS-Fortress
+    long_description \
+                    Kernel-level, OS-level, and client-level security \
+                    for macOS. Built to block attacks using open \
+                    source databases, and block ads, malicious \
+                    scripts, and conceal information used for web \
+                    tracking.  Uses PF, squid, privoxy, dshield, \
+                    emergingthreats, hosts file, and a proxy \
+                    autoconfiguration (PAC) file.
 
     depends_lib-append \
                     port:${name}-pf \
@@ -254,10 +268,10 @@ ${notes_proxy}"
 }
 
 subport ${name}-pf {
-    description     PF Firewall with dhield, emergingthreats, and \
-        adaptive bruteforce blocks
+    description     PF Firewall with dshield, emergingthreats, and \
+                    adaptive bruteforce blocks
     long_description \
-                    ${description}
+                    {*}${description}
 
     depends_lib-append \
                     port:${name}-dshield \
@@ -287,30 +301,32 @@ subport ${name}-pf {
     startupitems \
         name        ${subport} \
         init        "PF_CONF=\"\${PF_CONF:-${pf_conf_prefix}}\"" \
-        start       "for tt in {1..4}; do \\
-\t\tif \[\[ `/sbin/ifconfig | \${prefix}/bin/pcregrep -M -o '^\[^\\t:\]+:(\[^\\n\]|\\n\\t)*status: active' | egrep -o -m 1 '^\[^\\t:\]+'` = '' \]\]; then \\
-\t\t\tsleep 45; \\
-\t\telse \\
-\t\t\t/sbin/pfctl -Fall \\
-\t\t\t&& /sbin/pfctl -ef \${PF_CONF}; \\
-\t\t\tbreak; \\
-\t\tfi; \\
-\tdone" \
-        stop        "/sbin/pfctl -d" \
+        start {
+                    "for tt in {1..4}; do \\"
+                    "\tif \[\[ `/sbin/ifconfig | \${prefix}/bin/pcregrep -M -o '^\[^\\t:\]+:(\[^\\n\]|\\n\\t)*status: active' | egrep -o -m 1 '^\[^\\t:\]+'` = '' \]\]; then \\"
+                    "\t\tsleep 45; \\"
+                    "\telse \\"
+                    "\t\t/sbin/pfctl -Fall \\"
+                    "\t\t&& /sbin/pfctl -ef \${PF_CONF}; \\"
+                    "\t\tbreak; \\"
+                    "\tfi; \\"
+                    "done"
+        } \
+        stop        { "/sbin/pfctl -d" } \
         pidfile     none \
         name        ${subport}.brutexpire \
         executable  /sbin/pfctl \
         pidfile     none \
         name        ${subport}.subports \
-        start \
-                    "\${prefix}/bin/port load ${name}-dshield
-\t\${prefix}/bin/port load ${name}-emergingthreats" \
-        stop \
-                    "\${prefix}/bin/port unload ${name}-dshield
-\t\${prefix}/bin/port unload ${name}-emergingthreats" \
-        restart \
-                    "\${prefix}/bin/port reload ${name}-dshield
-\t\${prefix}/bin/port reload ${name}-emergingthreats" \
+        start [list \
+                    "\${prefix}/bin/port -p load ${name}-dshield ${name}-emergingthreats" \
+        ] \
+        stop [list \
+                    "\${prefix}/bin/port -p unload ${name}-dshield unload ${name}-emergingthreats" \
+        ] \
+        restart [list \
+                    "\${prefix}/bin/port -p reload ${name}-dshield ${name}-emergingthreats" \
+        ] \
         pidfile     none
 
     post-activate {
@@ -384,9 +400,9 @@ interface :                ${interface}
 
 subport ${name}-dshield {
     description     DShield is a community-based collaborative firewall \
-        log correlation system.
+                    log correlation system.
     long_description \
-                    ${description}
+                    {*}${description}
 
     depends_run-append \
                     port:gnupg2 \
@@ -454,7 +470,7 @@ sudo launchctl kickstart -k system/org.macports.${subport}"
 subport ${name}-emergingthreats {
     description     Emerging Threats rule server.
     long_description \
-                    ${description}
+                    {*}${description}
 
     depends_run-append \
                     port:wget
@@ -505,6 +521,8 @@ sudo launchctl kickstart -k system/org.macports.${subport}"
 
 subport ${name}-proxy {
     description     Blackhole and Privatizing Proxy.
+    long_description \
+                    {*}${description}
 
     depends_lib-append \
                     port:${name}-easylistpac \
@@ -554,21 +572,15 @@ subport ${name}-proxy {
                     yes
     startupitems \
         name        ${subport} \
-        start       "\${prefix}/bin/port load ${name}-hosts
-\t\${prefix}/bin/port load squid4
-\t\${prefix}/bin/port load privoxy
-\t\${prefix}/bin/port load adblock2privoxy
-\t\${prefix}/bin/port load ${name}-easylistpac" \
-        stop        "\${prefix}/bin/port unload ${name}-hosts
-\t\${prefix}/bin/port unload squid4
-\t\${prefix}/bin/port unload privoxy
-\t\${prefix}/bin/port unload adblock2privoxy
-\t\${prefix}/bin/port unload ${name}-easylistpac" \
-        restart     "\${prefix}/bin/port reload ${name}-hosts
-\t\${prefix}/bin/port reload squid4
-\t\${prefix}/bin/port reload privoxy
-\t\${prefix}/bin/port reload adblock2privoxy
-\t\${prefix}/bin/port reload ${name}-easylistpac" \
+        start [list \
+                    "\${prefix}/bin/port -p load ${name}-hosts squid4 privoxy adblock2privoxy ${name}-easylistpac" \
+        ] \
+        stop [list \
+                    "\${prefix}/bin/port -p unload ${name}-hosts squid4 privoxy adblock2privoxy ${name}-easylistpac" \
+        ] \
+        restart [list \
+                    "\${prefix}/bin/port -p reload ${name}-hosts squid4 privoxy adblock2privoxy ${name}-easylistpac" \
+        ] \
         pidfile     none \
         name        ${subport}.squid-rotate \
         executable  ${prefix}/sbin/squid \
@@ -621,33 +633,35 @@ subport ${name}-proxy {
 subport ${name}-easylistpac {
     PortGroup       github 1.0
 
-    github.setup    essandess easylist-pac-privoxy 429e49f
-    version         2020.06.18
+    github.setup    essandess easylist-pac-privoxy a357cd2e94b9d6b272816a151e35e94149636eef
+    version         2020.12.13
     revision        0
 
     description     EasyList Tracker and Adblocks to Proxy Auto Configuration (PAC) File
     long_description \
-        Converts EasyList tracker and ad blocking rules to efficient\
-        network-level blocks in a proxy.pac file for automatic proxy\
-        network configurations and Privoxy proxy servers. Easily\
-        incorporates multiple blocking rulesets into both PAC and\
-        Privoxy formats, including easyprivacy.txt, easylist.txt,\
-        fanboy-annoyance.txt, fanboy-social.txt,\
-        antiadblockfilters.txt, malwaredomains_full.txt, and the\
-        anti-spamware list adblock-list.txt.
+                    Converts EasyList tracker and ad blocking rules to \
+                    efficient network-level blocks in a proxy.pac file \
+                    for automatic proxy network configurations and \
+                    Privoxy proxy servers. Easily incorporates \
+                    multiple blocking rulesets into both PAC and \
+                    Privoxy formats, including easyprivacy.txt, \
+                    easylist.txt, fanboy-annoyance.txt, \
+                    fanboy-social.txt, antiadblockfilters.txt, \
+                    malwaredomains_full.txt, and the anti-spamware \
+                    list adblock-list.txt.
 
     homepage        https://github.com/essandess/easylist-pac-privoxy
 
-    checksums       rmd160  9e03160b116e082bc247d4c700738bb6840933f8 \
-                    sha256  8ba9d856bbb383e755b04ed5f9d185e3b055f5ce781be47a5a2a97b8f471085f \
-                    size    82898
+    checksums       rmd160  92ce0639836baa6656f428930f651d10147b7ee3 \
+                    sha256  288b66426814c338857dcda483b044e6659c3dfde1779bdc6e5a7969a07faff2 \
+                    size    82943
 
     depends_lib-append \
                     port:adblock2privoxy \
-                    port:python${python3_version_nickname} \
-                    port:py${python3_version_nickname}-matplotlib \
-                    port:py${python3_version_nickname}-numpy \
-                    port:py${python3_version_nickname}-scikit-learn
+                    port:python${python_version} \
+                    port:py${python_version}-matplotlib \
+                    port:py${python_version}-numpy \
+                    port:py${python_version}-scikit-learn
 
     destroot {
         xinstall -d ${destroot}${prefix}/etc/${name}
@@ -656,7 +670,7 @@ subport ${name}-easylistpac {
         xinstall -m 0644 proxy.pac \
             ${destroot}${prefix}/etc/${name}/proxy.pac.macports
         reinplace -E \
-            "1s|env\[\[:space:\]\]+python3|env ${prefix}/bin/python${python3_version}|" \
+            "1s|env\[\[:space:\]\]+python3|env ${prefix}/bin/python${python_branch}|" \
             ${destroot}${prefix}/bin/easylist_pac.py
     }
 
@@ -740,9 +754,10 @@ sudo launchctl kickstart -k system/org.macports.${subport}"
 subport ${name}-hosts {
     description     A community managed and maintained hosts file.
     long_description \
-        ${subport} is a community managed and maintained hosts file that\
-        allows an additional layer of protection against access to ad,\
-        tracking, and malicious websites.
+                    ${subport} is a community managed and maintained \
+                    hosts file that allows an additional layer of \
+                    protection against access to ad, tracking, and \
+                    malicious websites.
 
     depends_run-append \
                     port:gnupg2 \
@@ -886,24 +901,6 @@ function hosts_block_wget_and_add () {
 
     sudo port load ${subport}
     sudo launchctl kickstart -k system/org.macports.${subport}"
-}
-
-subport ${name}-hphosts {
-    # This port can be removed on September 8, 2020.
-    PortGroup       obsolete 1.0
-
-    description     A community managed and maintained hosts file.
-    long_description \
-        hpHosts is no longer maintained.  It was is a community managed\
-        and maintained hosts file that allows an additional layer of\
-        protection against access to ad, tracking, and malicious websites.
-
-    livecheck.type  none
-
-    pre-configure {
-        ui_error "Please do not install this port because it has been replaced by '${name}-hosts'."
-        return -code error
-    }
 }
 
 if { [variant_isset "initialize_always"] } {

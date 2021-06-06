@@ -4,13 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pymongo
-version             3.11.0
+version             3.11.4
 revision            0
 categories-append   databases
 platforms           darwin
 license             Apache
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -21,9 +21,9 @@ long_description \
 
 homepage            https://www.mongodb.org/
 
-checksums           rmd160  082941d5009e89387506c8457e6ef9a2fc26cc71 \
-                    sha256  076a7f2f7c251635cf6116ac8e45eefac77758ee5a77ab7bd2f63999e957613b \
-                    size    771691
+checksums           rmd160  3f3081e578734021f23a5da735cb55abaa4abde5 \
+                    sha256  539d4cb1b16b57026999c53e5aab857fe706e70ae5310cc8c232479923f932e6 \
+                    size    783122
 
 if {${name} ne ${subport}} {
     conflicts               py${python.version}-bson

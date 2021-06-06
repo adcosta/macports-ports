@@ -1,16 +1,17 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           cmake 1.0
+PortGroup           cmake 1.1
 PortGroup           github 1.0
-PortGroup           cxx11 1.1
 PortGroup           legacysupport 1.0
 
 # Only enable legacy support on OSX10.6 or older
 legacysupport.newest_darwin_requires_legacy 10
 
-github.setup        Nuand bladeRF 45521019c540392287eb6e03d52b8073b2fd0743
-version             20191220-[string range ${github.version} 0 7]
+compiler.cxx_standard 2011
+
+github.setup        Nuand bladeRF ded573bc9ab4201e69d8e785c3fd1d4f46f045eb
+version             20210505-[string range ${github.version} 0 7]
 revision            0
 
 # no-OS is a submodule, but because we're not cloning into a GIT
@@ -40,13 +41,13 @@ master_sites        ${github.homepage}/tarball/${git.branch}:tagone \
                     https://github.com/${no_OS_github_author}/${no_OS_github_project}/tarball/${no_OS_commit}:tagtwo
 
 checksums           ${bladeRF_distfile} \
-                    rmd160 f1a61d0fd04b71e4c67a73e9f8feda598e44fa6e \
-                    sha256 f7c80cc85fcfd199594b3180bd5c60e5ac86ef362842422ea121a1d67d879042 \
-                    size   2200455 \
+                    rmd160  5330fd1c0e66d3de144fc10ccaaa5c234ffd7cdb \
+                    sha256  c8159542cca0c656b5de5df4b655d9314c6a95d868d7e3ebbdec72ca12a58ed3 \
+                    size    2261743 \
                     ${no_OS_distfile} \
-                    rmd160 dbe43395fc0b22919ac7e6a5e2f355987e4dd2b7 \
-                    sha256 53670c8f0a9feaa774d8c3067ba201b31c0197294bdd00a1795c72a0368aac40 \
-                    size   44184797
+                    rmd160  dbe43395fc0b22919ac7e6a5e2f355987e4dd2b7 \
+                    sha256  53670c8f0a9feaa774d8c3067ba201b31c0197294bdd00a1795c72a0368aac40 \
+                    size    44184797
 
 post-extract {
 
@@ -90,60 +91,64 @@ long_description    ${description} This port provides all the source code requir
 license             MIT LGPL-2 GPL-2
 platforms           darwin
 
-depends_build-append port:pkgconfig
-depends_lib-append  path:lib/libusb-1.0.dylib:libusb
+depends_build-append \
+    port:pkgconfig \
 
-# temporary patch to correctly build "test_config_file" on OSX
-
-# patchfiles-append   patch-include_clock_gettime.c_shim.diff
+depends_lib-append \
+    path:lib/libusb-1.0.dylib:libusb \
+    port:libedit \
+    port:tecla
 
 # temporary patch to fix CMake MATCHES "Clang"
 
 patchfiles-append   patch-clang-matches.diff
 
-# do VPATH (out of source tree) build
-
-cmake.out_of_source yes
-
-# remove top-level library path, such that internal libraries are used
-# instead of any already-installed ones.
+# remove top-level library and include paths, such that internal
+# libraries & headers are used instead of any already-installed ones.
 
 configure.ldflags-delete -L${prefix}/lib
-
-# override the default version info,
-# per ticket #46197, to be MacPorts-specific
-
-configure.args-append -DVERSION_INFO_OVERRIDE="MacPorts-${version}"
-
-# do not treat compiler warnings as errors
-configure.args-append -DTREAT_WARNINGS_AS_ERRORS=OFF
-
-# do not use 'pandoc' even if it is installed
-
-configure.args-append -DPANDOC_EXECUTABLE=NO
-
-# default to building all variants
-
-default_variants +tecla
-
-variant tecla description "Build with support for the tecla interactive command line" {
-
-    depends_lib-append \
-        port:tecla
-
-    configure.args-append \
-        -DENABLE_LIBTECLA=ON
-
-}
-
-if {![variant_isset tecla]} {
-
-    configure.args-append \
-        -DENABLE_LIBTECLA=OFF
-
-}
-
-# documentation does not work as of 20140126
+configure.cppflags-delete -I${prefix}/include
 
 configure.args-append \
-    -DBUILD_DOCUMENTATION=OFF
+    -DVERSION_INFO_OVERRIDE="MacPorts-${version}" \
+    -DTREAT_WARNINGS_AS_ERRORS=OFF \
+    -DENABLE_LIBTECLA=ON \
+    -DENABLE_LIBEDIT=ON
+
+# BladeRF cmake doesn't understand build type "MacPorts";
+# use release unless +debug is set
+
+if {[variant_isset debug]} {
+    cmake.build_type Debug
+} else {
+    cmake.build_type Release
+}
+
+variant docs description "Install BladeRF documentation" {}
+
+default_variants +docs
+
+if {[variant_isset docs]} {
+
+    depends_build-append \
+        port:doxygen \
+        port:help2man \
+        port:pandoc
+
+    configure.args-append \ \
+        -DDOXYGEN_EXECUTABLE=${prefix}/bin/doxygen \
+        -DPANDOC_EXECUTABLE=${prefix}/bin/pandoc \
+        -DBUILD_DOCUMENTATION=ON \
+        -DBUILD_BLADERF_CLI_DOCUMENTATION=ON \
+        -DBUILD_BLADERF_CLI_INTERACTIVE_HELP=ON
+
+} else {
+
+    configure.args-append \ \
+        -DDOXYGEN_EXECUTABLE= \
+        -DPANDOC_EXECUTABLE= \
+        -DBUILD_DOCUMENTATION=NO \
+        -DBUILD_BLADERF_CLI_DOCUMENTATION=NO \
+        -DBUILD_BLADERF_CLI_INTERACTIVE_HELP=NO
+
+}

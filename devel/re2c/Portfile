@@ -3,11 +3,11 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        skvadrik re2c 2.0.1
+github.setup        skvadrik re2c 2.1.1
 revision            0
-checksums           rmd160  8ca2d2a18e0e3330e30f7a8f1aed051e4bb7973f \
-                    sha256  aef8b50bb75905b2d55a7236380c0efdc756fa077fe16d808aaacbb10fb53531 \
-                    size    1284460
+checksums           rmd160  91bd1148bf576c8767789be389650c0971520388 \
+                    sha256  036ee264fafd5423141ebd628890775aa9447a4c4068a6307385d7366fe711f8 \
+                    size    1340740
 
 categories          devel
 platforms           darwin

@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/kubernetes-sigs/kustomize 3.8.1 kustomize/v
+go.setup            github.com/kubernetes-sigs/kustomize 4.1.3 kustomize/v
 revision            0
 
 categories          devel
@@ -23,9 +23,9 @@ long_description    kustomize lets you customize raw, template-free YAML files f
 
 homepage            https://kustomize.io
 
-checksums           rmd160  785513f119809bd5957f3a4a59ff7f6f14dd1b3b \
-                    sha256  576483bbb493f42cccddc382c10f380ec32e479c259cd4c5c29e38655eb3ca81 \
-                    size    25768272
+checksums           rmd160  40a532da644f11c6ab3cffaf8e6f5af5a0780fcc \
+                    sha256  3865c0e11f4ca74474469d9d5bf8db57b1b87d6e133efb8258ca2b6d8e5d12b5 \
+                    size    25087377
 
 build.dir           ${worksrcpath}/${name}
 
@@ -36,6 +36,11 @@ build.args          -ldflags \" \
                         -X sigs.k8s.io/kustomize/api/provenance.gitCommit=unknown \
                         -X sigs.k8s.io/kustomize/api/provenance.buildDate=unknown \
                     \"
+
+# FIXME: This port currently can't be built without allowing go mod to fetch
+# dependencies during the build phase. See
+# https://trac.macports.org/ticket/61192
+build.env-delete    GOPROXY=off GO111MODULE=off
 
 destroot {
     xinstall -m 0755 ${build.dir}/${name} ${destroot}${prefix}/bin/

@@ -12,7 +12,7 @@ deprecated.upstream_support no
 
 name			ruby
 version			1.8.7-p374
-revision		10
+revision		12
 
 categories		lang ruby
 maintainers		{kimuraw @kimuraw}
@@ -76,12 +76,22 @@ patchfiles		patch-vendordir.diff \
 				patch-ext-tk-extconf.rb.diff \
 				patch-ext_openssl_extconf_rb.diff \
 				patch-ext_openssl_ossl_ssl_c.diff \
-				patch-ext_openssl_ossl.h.diff
+				patch-ext_openssl_ossl.h.diff \
+				implicit.patch
 
 # ignore getcontext() and setcontext()
 # on 10.5 or later, these functions have some problems (SEGV on ppc, slower than 1.8.6)
 # http://chopine.be/lrz/ruby-osx-patches/ignore-gsetcontext.diff
 patchfiles-append patch-node.h.diff
+
+# replace old config.{guess,sub} with recent versions from automake
+depends_build-append    port:automake
+post-patch {
+    set automake_dirs [glob -directory ${prefix}/share automake-*]
+    set automake_dir [lindex [lsort -command vercmp $automake_dirs] end]
+    copy -force ${automake_dir}/config.guess ${automake_dir}/config.sub \
+        ${worksrcpath}
+}
 
 use_parallel_build		no
 
@@ -115,7 +125,24 @@ configure.args	--enable-shared \
 # ignore minor version for archdir, like i686-darwin9
 configure.env	UNAME_RELEASE=${os.major}
 
-if {[variant_isset universal]} {
+# [NOTE] workaround for mismatch of sdk versions on macOS 11.x,
+# such as MacOSX11.0.sdk (buildbot) <=> MacOSX11.1.sdk (user's Mac).
+# (see ruby27)
+post-build {
+    if {${os.major} >= 20} {
+        # rewrite MacOSX11.1.sdk -> MacOSX.sdk in rbconfig.rb
+        file copy ${worksrcpath}/rbconfig.rb ${worksrcpath}/rbconfig.rb.orig
+        reinplace -E -q {s|(/MacOSX)[0-9\.]+(\.sdk[\'\"]?[[:blank:]])|\1\2|g} \
+		    ${worksrcpath}/rbconfig.rb
+        reinplace -E -q {s|(/MacOSX)[0-9\.]+(\.sdk[\'\"]?)$|\1\2|g} \
+		    ${worksrcpath}/rbconfig.rb
+    }
+}
+
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
+if {${universal_possible} && [variant_isset universal]} {
 	# NOTE: directory layout of port:ruby +universal
 	#   universal binary
 	#     - bin/
@@ -126,7 +153,7 @@ if {[variant_isset universal]} {
 	#     -                                             /ppc-apple-darwin*/
 	#   pure ruby libraries
 	#     - lib/ruby/[1.8|site_ruby/1.8|vendor_ruby/1.8]/
-	foreach arch ${universal_archs} {
+	foreach arch ${configure.universal_archs} {
 		append merger_configure_env(${arch}) "ARCH_FLAG=\"-arch ${arch}\" "
 		# force environment "ac_cv_build" to specify locations of extension
 		# modules(*.bundle), headers(ruby.h, config.h, ..) and rbconfig.rb.
@@ -138,11 +165,7 @@ if {[variant_isset universal]} {
 			"ac_cv_build=\"${cpu_type}-apple-darwin${os.major}\" "
 	}
 } elseif {[info exists build_arch] && ${build_arch} ne ""} {
-    if {[vercmp [macports_version] 2.5.99] >= 0} {
 	configure.env-append "ARCH_FLAG=-arch ${build_arch}"
-	} else {
-	configure.env-append ARCH_FLAG="-arch ${build_arch}"
-	}
 }
 
 destroot.target	install install-doc

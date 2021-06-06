@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           perl5 1.0
+
+perl5.branches      5.26 5.28 5.30
+perl5.setup         Tk-IDElayout 0.37 ../../authors/id/C/CA/CAC
+
+platforms           darwin
+maintainers         {@chrstphrchvz gmx.us:chrischavez} openmaintainer
+license             {Artistic-1 GPL}
+
+description         Tk::IDElayout - Perl/Tk widget for layout of frames \
+                    similar to an IDE
+
+long_description    \
+    Tk::IDElayout is a widget for managing the layout of Tk frames \
+    (and other widgets) like an IDE (Integrated Development Environment) \
+    similar to Eclipse or Microsoft Visual Studio.
+
+checksums           rmd160  bb00218e92d06e8952cfeaaeed8871b9d742febc \
+                    sha256  5853053811818836a1b4c01c4bd5f2b822cc350448421abfec34740d732d7320 \
+                    size    176926
+
+if {${perl5.major} ne ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-graph \
+                    port:p${perl5.major}-tk \
+                    port:p${perl5.major}-tk-dynatabframe
+}

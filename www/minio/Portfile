@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           github 1.0
 
 # UPDATE THESE IN SYNC!
-set version         2020-08-05T21-34-13Z
-set commit          a20d4568a2ef73de2eb4902c5b42f30ff37a24a7
+version             2021-05-11T23-27-41Z
+set commit          fe21aa356cdd46b1ddc087571cd29584523efcf7
 
 set relversion      [regsub {(T..)-(..)-(..Z)} $version {\1:\2:\3}]
 # This is not used for fetching, but is compiled into the executable
@@ -22,12 +22,13 @@ long_description \
     photos, videos, log files, backups and container / VM images. Size of an \
     object can range from a few KBs to a maximum of 5TB. See also minio-mc \
     for command-line client.
-license             Apache-2
+
+license             AGPL-3
 
 checksums \
-    rmd160  c69afed35cc1d29bcb0b1739ed2ec3b527facc55 \
-    sha256  3151210988f92b5bc2706d9c5c2859c2039d0e57427f70c609c3d96d06679bf8 \
-    size    9266353
+    rmd160  13b28877ad99a340bccc85488677b0f6c5a21569 \
+    sha256  cda41c9badb265045e9d475baf8c77adaac1148e8fb0e34c053bbf4d30d13bd8 \
+    size    9537359
 
 set goproj          github.com/${github.author}/${github.project}
 
@@ -69,7 +70,7 @@ destroot {
 }
 
 startupitem.create      yes
-startupitem.name        ${name} 
+startupitem.name        ${name}
 startupitem.executable  ${prefix}/bin/${name} server \
                            --config-dir=${prefix}/etc/minio \
                            --address :9000 \

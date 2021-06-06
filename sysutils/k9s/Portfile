@@ -3,12 +3,19 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/derailed/k9s 0.21.7 v
+go.setup            github.com/derailed/k9s 0.24.10 v
+revision            0
+
 homepage            https://k9scli.io
 
 categories          sysutils devel
-maintainers         {breun.nl:nils @breun} openmaintainer
-description         K9s
+
+maintainers         {breun.nl:nils @breun} \
+                    {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
+
+description         K9s - Kubernetes CLI To Manage Your Clusters In Style
+
 long_description    K9s provides a curses based terminal UI to interact with \
                     your Kubernetes clusters. The aim of this project is to \
                     make it easier to navigate, observe and manage your \
@@ -17,19 +24,28 @@ long_description    K9s provides a curses based terminal UI to interact with \
                     interact with observed Kubernetes resources.
 
 platforms           darwin
-supported_archs     x86_64
 license             Apache-2
+installs_libs       no
 
-checksums           rmd160  f049bf298a5b4b8049f3989416a9021aae046b2c \
-                    sha256  576418b30b175861022e27e970f40698d5bf4bf8f013592fb50fc1975aecf237 \
-                    size    6082738
+checksums           rmd160  8107067909dc52a29686cb27bde8d459206268d6 \
+                    sha256  9ed419006e8c9b8b82b12f0c07ff0ae8c75b8f2d9956536775aa00f1d25558f0 \
+                    size    6194467
 
+set build_date      [exec date +%FT%T%z]
 # Reproduce the "build" target from the upstream Makefile
-set go_ldflags      "-w -X ${go.package}/cmd.version=${version} \
+set go_ldflags      "-w -s \
+    -X ${go.package}/cmd.version=v${version} \
     -X ${go.package}/cmd.commit=unknown \
-    -X ${go.package}/cmd.date=unknown"
+    -X ${go.package}/cmd.date=${build_date}"
 build.args          -ldflags \"${go_ldflags}\" ${go.package}
+
+# FIXME: This port currently can't be built without allowing go mod to fetch
+# dependencies during the build phase. See
+# https://trac.macports.org/ticket/61192
+build.env-delete    GOPROXY=off GO111MODULE=off
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
 }
+
+github.tarball_from archive

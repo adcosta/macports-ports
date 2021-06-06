@@ -1,14 +1,13 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           compiler_blacklist_versions 1.0
 
 name                dar
-version             2.6.10
+version             2.7.1
 revision            0
-checksums           rmd160  dc2f647a4be8c3069267b8a6105d430675c8155b \
-                    sha256  16a0b755c648c4ce6598e258ccf375f55d4f2f943448341ed41085ac7a27d2e7 \
-                    size    2140424
+checksums           rmd160  0fe25e0151747345f1798f0f00b364d018005c86 \
+                    sha256  76dade8adbeb817ffc78bf592c8200487ab5650234cf539539a9cbc5d346beef \
+                    size    2290659
 
 categories          archivers
 platforms           darwin
@@ -20,15 +19,17 @@ description         Disk Archiver
 long_description    dar is a shell command that backs up directory trees \
                     and files.
 
-homepage            http://dar.sourceforge.net/
+homepage            https://dar.sourceforge.io
 master_sites        sourceforge:project/dar/dar/${version}
 
 depends_build       port:doxygen \
                     port:pkgconfig
 
-depends_lib         port:bzip2 \
+depends_lib         port:argon2 \
+                    port:bzip2 \
                     port:curl \
                     port:gettext \
+                    port:gpgme \
                     port:libgcrypt \
                     port:libiconv \
                     port:lzo2 \
@@ -36,10 +37,13 @@ depends_lib         port:bzip2 \
                     port:xz \
                     port:zlib
 
-compiler.cxx_standard 2011
+patchfiles          dynamic_lookup-11.patch
 
-# error: unknown type name 'thread_local'
-compiler.blacklist-append {clang < 800}
+compiler.cxx_standard 2014
+compiler.thread_local_storage yes
+
+# https://github.com/Edrusb/DAR/issues/29
+configure.cxxflags-append -std=c++14
 
 universal_variant   no
 

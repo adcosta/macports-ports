@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           conflicts_build 1.0
 
 name                samba3
-conflicts           talloc
+conflicts           samba4 talloc
 version             3.6.25
 revision            3
 categories          net
@@ -49,6 +49,7 @@ configure.args      --libdir=${prefix}/lib/${name} \
 patchfiles          patch-Makefile.in.diff \
                     patch-configure.diff \
                     patch-source_pkgconfig_all_pc_in.diff \
+                    patch-implicit.diff \
                     patch-lib_system_smbd.c.diff
 
 variant kerberos description "Enable Kerberos support" {

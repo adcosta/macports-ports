@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/fullstorydev/grpcurl 1.7.0 v
+go.setup            github.com/fullstorydev/grpcurl 1.8.1 v
+revision            0
 
 categories          devel net
 license             MIT
@@ -24,13 +25,18 @@ long_description    {*}${description}. The main purpose for this tool is to \
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  bbfbbc54aa63f15b2d44571b76a3db0990c8f6a6 \
-                    sha256  2e15b03e61e502de7746fbabfd6c04d687ea9fbe2c14a053ae18947b0f168cc8 \
-                    size    127134
+checksums           rmd160  de6ed46c26be615936aa48cc5c2f876694080ac5 \
+                    sha256  f78918528aec30f602a38c26bce0654522e55973c0c4dbe2912eaf5f30e53df5 \
+                    size    137955
 
 build.pre_args      -ldflags \"-X 'main.version=${version}'\"
 build.args          ./cmd/grpcurl
 installs_libs       no
+
+# FIXME: This port currently can't be built without allowing go mod to fetch
+# dependencies during the build phase. See
+# https://trac.macports.org/ticket/61192
+build.env-delete    GOPROXY=off GO111MODULE=off
 
 destroot {
     xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/

@@ -6,7 +6,7 @@ PortGroup compiler_blacklist_versions 1.0
 
 name                gcc43
 version             4.3.6
-revision            15
+revision            16
 platforms           darwin
 categories          lang
 maintainers         nomaintainer
@@ -211,7 +211,7 @@ post-destroot {
             ln -s ${prefix}/lib/libgcc/${dylib} ${destroot}${prefix}/lib/${name}/${dylib}
         }
 
-        if {[variant_isset universal]} {
+        if {[variant_exists universal] && [variant_isset universal]} {
             foreach archdir [glob ${destroot}${prefix}/lib/${name}/*/] {
                 if {[file exists ${archdir}/${dylib}]} {
                     delete ${archdir}/${dylib}

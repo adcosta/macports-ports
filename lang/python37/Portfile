@@ -5,8 +5,9 @@ PortGroup select 1.0
 
 name                python37
 
-# Remember to keep py37-tkinter, py37-htmldocs, and py37-gdbm's versions sync'd with this
-version             3.7.8
+# Remember to keep py37-tkinter and py37-gdbm's versions sync'd with this
+version             3.7.10
+revision            2
 
 set major           [lindex [split $version .] 0]
 set branch          [join [lrange [split ${version} .] 0 1] .]
@@ -24,16 +25,20 @@ master_sites        ${homepage}ftp/python/${version}/
 
 distname            Python-${version}
 use_xz              yes
-checksums           md5 a224ef2249a18824f48fba9812f4006f \
-                    rmd160 67af3c8cbdfbadd49bbbb56690b3da90799dc687 \
-                    sha256 43a543404b363f0037f89df8478f19db2dbc0d6f3ffee310bc2997fa71854a63
+checksums           md5 9e34914bc804ab2e7d955b49c5e1e391 \
+                    rmd160 ae83786be55bf99889d9fe25826e7b4333dd8a52 \
+                    sha256 f8d82e7572c86ec9d55c8627aae5040124fd2203af400c383c821b980306ee6b
 
 patchfiles          patch-setup.py.diff \
                     patch-Lib-cgi.py.diff \
                     patch-configure.diff \
                     patch-Lib-ctypes-macholib-dyld.py.diff \
                     patch-libedit.diff \
-                    patch-configure-xcode4bug.diff
+                    patch-configure-xcode4bug.diff \
+                    implicit.patch \
+                    sysconfig.py.diff \
+                    distutils_spawn.py.patch \
+                    macos11.patch
 
 depends_build       port:pkgconfig
 depends_lib         port:bzip2 \
@@ -63,6 +68,8 @@ configure.args      --enable-framework=${frameworks_dir} \
                     --with-system-ffi
 
 configure.ccache    no
+# pkg-config removes -I flags for paths in CPATH, which confuses python.
+configure.env       PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1
 
 post-patch {
     reinplace "s|@@PREFIX@@|${prefix}|g" \
@@ -102,17 +109,18 @@ platform darwin {
 
     post-build {
         set buildlibdir [lindex [glob -directory ${worksrcpath}/build lib.*-*-*-${branch}] 0]
+        # preserve mtime of sysconfig data file to avoid rebuilding things after changing it
+        set oldmtime [file mtime ${buildlibdir}/_sysconfigdata_m_darwin_darwin.py]
+
         # Without this, LINKFORSHARED is set to
         # ... $(PYTHONFRAMEWORKDIR)/Versions/$(VERSION)/$(PYTHONFRAMEWORK)
         # (this becomes Python.framework/Versions/3.7/Python) which doesn't
         # work for dependents that incorrectly use this variable to find out
         # how to link against python (see ticket #15099); instead we mirror
         # the behavior of `python-config --ldflags` here.
-        system -W ${buildlibdir} "awk -F : \
-            \"/'LINKFORSHARED'/ {printf \\\"%s: '-L${framewdir}/lib/python${branch}/${confdir}\
-            -lpython${branch}m -ldl -framework CoreFoundation',\\n\\\", \\\$1; getline; next} {print}\"\
-            _sysconfigdata_m_darwin_darwin.py > _sysconfigdata_m_darwin_darwin.py.new"
-        file rename -force ${buildlibdir}/_sysconfigdata_m_darwin_darwin.py.new \
+        set lfs_pattern {^([[:space:]]*'LINKFORSHARED':).*}
+        set lfs_replacement "\\1 '-L${framewdir}/lib/python${branch}/${confdir} -lpython${branch}m -ldl -framework CoreFoundation',"
+        reinplace -E s|${lfs_pattern}|${lfs_replacement}| \
             ${buildlibdir}/_sysconfigdata_m_darwin_darwin.py
 
         # remove -arch flags from the config
@@ -122,6 +130,8 @@ platform darwin {
         # also remove gettext overlinking
         reinplace "s|-lintl||" \
             ${buildlibdir}/_sysconfigdata_m_darwin_darwin.py
+
+        file mtime ${buildlibdir}/_sysconfigdata_m_darwin_darwin.py $oldmtime
     }
 
     post-destroot {

@@ -3,16 +3,16 @@
 PortSystem          1.0
 
 name                highlight
-version             3.57
+version             4.1
 revision            0
-checksums           rmd160  aab32330ef947d9e83f229d007cf202c1a0b0e66 \
-                    sha256  f203f75e7e35ce381d0a13270bfdc9ee53fa965c39cc137a9927b9ff0e3be913 \
-                    size    1412857
+checksums           rmd160  caaf0be6515db2e4d98f1cf7648f219875c97a8e \
+                    sha256  3a4b6aa55b9837ea217f78e1f52bb294dbf3aaf4ccf8a5553cf859be4fbf3907 \
+                    size    1469115
 
 categories          textproc devel
 platforms           darwin
 license             GPL-3
-maintainers         nomaintainer
+maintainers         {i0ntempest @i0ntempest} openmaintainer
 description         converts source code to formatted text with syntax highlighting
 long_description    ${description}
 

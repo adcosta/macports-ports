@@ -5,11 +5,11 @@ PortGroup           app 1.0
 PortGroup           active_variants 1.1
 
 name                pspp-devel
-set buildstamp      20200803050502
-set buildhash       ge45cdf
-version             1.3.0
-revision            33
-# depends_test port:p${perl5.major}-text-diff
+set buildstamp      20210509231725
+set buildhash       g1d424c
+epoch               1
+version             1.5.3
+revision            5
 categories          math
 license             GPL-3+
 maintainers         {snc @nerdling}
@@ -35,19 +35,23 @@ depends_lib-append  path:lib/pkgconfig/cairo.pc:cairo \
                     port:gsl \
                     port:libiconv \
                     port:libxml2 \
+                    port:librsvg \
                     port:ncurses \
-                    path:bin/perl:perl5 \
+                    port:perl5.28 \
                     path:lib/pkgconfig/pango.pc:pango \
-                    port:python37 \
+                    port:python39 \
                     port:readline \
                     port:spread-sheet-widget \
+                    port:texinfo \
                     port:zlib
 
-depends_build-append    port:pkgconfig
+depends_build-append    port:pkgconfig port:p5.28-text-diff port:coreutils
 
-checksums           rmd160  915e136fbb27b4c15a1b754bc7448ce21b9e1c33 \
-                    sha256  381e30013de8b49677f4aa70d3b393cdeb970c0dbb91c53279d01e603e7f51d4 \
-                    size    7543400
+depends_test-append port:p5.28-text-diff port:coreutils
+
+checksums           rmd160  c3beebb355f468ef00530b6ff65979e07404eb07 \
+                    sha256  7c36f7239c6178021691fff7f98860bc9f90f022f8c04a93152371f27a431c1c \
+                    size    8663244
 
 post-extract {
     if {[variant_isset gui]} {
@@ -62,9 +66,12 @@ post-patch {
     }
 }
 
+# error: type name requires a specifier or qualifier
+compiler.c_standard  2011
+
 #configure.cflags-append -g
-configure.python    ${prefix}/bin/python3.7
-configure.perl      ${prefix}/bin/perl
+configure.python    ${prefix}/bin/python3.9
+configure.perl      ${prefix}/bin/perl5.28
 configure.args-append   --disable-rpath \
                         --without-libpq \
                         --without-gui \
@@ -77,10 +84,10 @@ if {[lsearch -exact ${nif_compilers} ${configure.compiler}] > -1} {
     configure.optflags-append -fno-inline-functions
 }
 
-build.target-append  html
-
+test.args           -j${build.jobs}
 test.run            yes
 test.target         check
+test.env            TESTSUITEFLAGS="-j${build.jobs}"
 #test.env            TESTSUITEFLAGS='-v -k unrepresentable'
 #test.env            TESTSUITEFLAGS='1177 1178 1179 1180 1181 1182 1183 1184 1185 1186'
 

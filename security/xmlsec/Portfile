@@ -3,8 +3,12 @@
 PortSystem                  1.0
 
 name                        xmlsec
-version                     1.2.25
-revision                    1
+version                     1.2.32
+revision                    0
+checksums                   rmd160  7f372ec157dc762f8c78852bd3bea3d570ae1ed4 \
+                            sha256  e383702853236004e5b08e424b8afe9b53fe9f31aaa7a5382f39d9533eb7c043 \
+                            size    1989258
+
 categories                  security textproc devel
 license                     MIT
 platforms                   darwin
@@ -12,17 +16,14 @@ maintainers                 nomaintainer
 
 description                 XML Security Library is a C library based on LibXML2.
 
-long_description            XML Security Library is a C library based on LibXML2. The \
-                            library supports major XML security standards. XML Signature, \
-                            XML Encryption, Canonical XML and Exclusive Canonical XML.
+long_description            {*}${description}. The library supports major XML security \
+                            standards. XML Signature, XML Encryption, Canonical XML and \
+                            Exclusive Canonical XML.
 
 homepage                    https://www.aleksey.com/xmlsec/
 master_sites                ${homepage}download/ \
                             ftp://ftp.xmlsoft.org/xmlsec/releases/
 distname                    xmlsec1-${version}
-
-checksums                   rmd160  f81aed97a5cc7de1a71ea32de02b73c32f7bdbf5 \
-                            sha256  967ca83edf25ccb5b48a3c4a09ad3405a63365576503bf34290a42de1b92fcd2
 
 depends_build               port:pkgconfig
 
@@ -32,12 +33,14 @@ depends_lib                 port:libxml2 \
                             port:libtool \
                             port:zlib
 
-patchfiles                  patch-src-dl.c.diff
+patchfiles                  patch-src-dl.c.diff \
+                            dynamic_lookup-11.patch
 post-patch {
     reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/src/dl.c
 }
 
-configure.args              --with-libxml=${prefix} \
+configure.args              --disable-silent-rules \
+                            --with-libxml=${prefix} \
                             --with-libxslt=${prefix}
 
 # Add gcrypt support.
@@ -54,7 +57,7 @@ configure.args-append       --with-gnutls=
 
 # Add nss and nspr support.
 depends_lib-append          port:nss port:nspr
-configure.args-append       --with-nss=${prefix} --with-nspr=${prefix}
+configure.args-append       --with-nss --with-nspr
 configure.ldflags-append    -L${prefix}/lib/nss -L${prefix}/lib/nspr
 # nss is not universal.
 universal_variant           no

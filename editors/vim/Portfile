@@ -1,25 +1,27 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
 PortSystem          1.0
 PortGroup           github 1.0
 
-name                vim
-set vim_version     8.1
-set vim_patchlevel  2234
+set vim_version     8.2
+set vim_patchlevel  2681
 github.setup        vim vim ${vim_version}.${vim_patchlevel} v
+
 categories          editors
 platforms           darwin freebsd
 license             Vim GPL-2+
 maintainers         {raimue @raimue}
 
 description         Vi \"workalike\" with many additional features
-long_description \
-    Vim is an advanced text editor that seeks to provide the power of the   \
-    de-facto Unix editor 'Vi', with a more complete feature set.
+long_description    Vim is an advanced text editor that seeks to provide the\
+                    power of the de-facto Unix editor 'Vi', with a more\
+                    complete feature set.
 
-homepage            http://www.vim.org/
+homepage            https://www.vim.org/
 
-checksums           rmd160  8dcac709773878f1e6d1108fb66c0e84d40a7aed \
-                    sha256  e84b732784beef1c414e1c340db3cc712dc8aad909c2b1e9d9dd9cd3a5242e6d \
-                    size    14584470
+checksums           rmd160  6635aee5718a31c6b692b3529fb4ea96a217eb20 \
+                    sha256  f0b8b7f013097adc9b3a40d199f4c5bc58cba9774b08bb1427ce51bd7dbf50d8 \
+                    size    15458967
 
 depends_lib         port:ncurses \
                     port:gettext \
@@ -110,7 +112,7 @@ variant python27 description {Enable Python scripting} {
     # Overwriting autoconf.cmd above removes dependency, add it again
     depends_build-append port:autoconf
 }
-variant python36 conflicts python37 description {Enable Python scripting} {
+variant python36 conflicts python37 python38 python39 description {Enable Python scripting} {
     configure.args-append   --enable-python3interp --with-python3-command=${prefix}/bin/python3.6
     patchfiles-append       patch-python3.diff
     depends_lib-append      port:python36
@@ -119,10 +121,28 @@ variant python36 conflicts python37 description {Enable Python scripting} {
     # Overwriting autoconf.cmd above removes dependency, add it again
     depends_build-append port:autoconf
 }
-variant python37 conflicts python36 description {Enable Python scripting} {
+variant python37 conflicts python36 python38 python39 description {Enable Python scripting} {
     configure.args-append   --enable-python3interp --with-python3-command=${prefix}/bin/python3.7
     patchfiles-append       patch-python3.diff
     depends_lib-append      port:python37
+
+    use_autoconf yes
+    # Overwriting autoconf.cmd above removes dependency, add it again
+    depends_build-append port:autoconf
+}
+variant python38 conflicts python36 python37 python39 description {Enable Python scripting} {
+    configure.args-append   --enable-python3interp --with-python3-command=${prefix}/bin/python3.8
+    patchfiles-append       patch-python3.diff
+    depends_lib-append      port:python38
+
+    use_autoconf yes
+    # Overwriting autoconf.cmd above removes dependency, add it again
+    depends_build-append port:autoconf
+}
+variant python39 conflicts python36 python37 python38 description {Enable Python scripting} {
+    configure.args-append   --enable-python3interp --with-python3-command=${prefix}/bin/python3.9
+    patchfiles-append       patch-python3.diff
+    depends_lib-append      port:python39
 
     use_autoconf yes
     # Overwriting autoconf.cmd above removes dependency, add it again

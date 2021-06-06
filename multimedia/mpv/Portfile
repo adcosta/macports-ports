@@ -6,11 +6,11 @@ PortGroup               waf 1.0
 PortGroup               legacysupport 1.0
 
 # Please revbump mpv whenever ffmpeg{,-devel} is updated!
-github.setup            mpv-player mpv 0.32.0 v
+github.setup            mpv-player mpv 0.33.1 v
 revision                1
 categories              multimedia
 license                 GPL-2+
-maintainers             {ionic @Ionic} {@i0ntempest me.com:szf1234} openmaintainer
+maintainers             {ionic @Ionic} {i0ntempest @i0ntempest} openmaintainer
 platforms               darwin
 
 description             mpv is a movie player based on MPlayer and mplayer2.
@@ -22,7 +22,7 @@ long_description        ${description} It plays most MPEG/VOB, AVI, Ogg/OGM, \
                         and even H.264 movies.
 homepage                http://www.mpv.io/
 
-set waf_version         2.0.20
+set waf_version         2.0.22
 set waf_distfile        waf-${waf_version}
 set mpv_distfile        ${distfiles}
 master_sites-append     https://waf.io/:waf
@@ -31,17 +31,17 @@ distfiles-append        ${waf_distfile}:waf
 extract.only-delete     ${waf_distfile}
 
 checksums               ${mpv_distfile} \
-                        rmd160  f1edb330a1ed7de701480aeb323c076422c5b47c \
-                        sha256  ba59bfc96a633b48a5b635aae7be6f9cf544f8bff42a6d06f20634ead28d11b2 \
-                        size    3148937 \
+                        rmd160  a771544eb8c8d326a6b86898798e9f81f7c8a16c \
+                        sha256  e8098d6eb20ee7b3ad4b1ba4ada039360e2aac49c6ad992792a89981a1b5ceef \
+                        size    3260184 \
                         ${waf_distfile} \
-                        rmd160  213ef296fe7b942b0395af7c0031f9b1c916a68b \
-                        sha256  bf971e98edc2414968a262c6aa6b88541a26c3cd248689c89f4c57370955ee7f \
-                        size    104725
+                        rmd160  3b25fa70d1534e8d3fdfd15c698d2d15810e2f23 \
+                        sha256  0a09ad26a2cfc69fa26ab871cb558165b60374b5a653ff556a0c6aca63a00df1 \
+                        size    104880
 
 installs_libs           no
 
-depends_build           port:pkgconfig
+depends_build-append    port:pkgconfig
 depends_lib             path:lib/libavcodec.dylib:ffmpeg \
                         path:bin/perl:perl5 \
                         port:libiconv \
@@ -76,7 +76,6 @@ configure.post_args-delete   --nocache
 # We cannot use --enable-cplayer here. Only --disable-cplayer
 # is recognized. Boo!
 configure.args-append   --enable-manpage-build \
-                        --enable-libass \
                         --enable-coreaudio \
                         --enable-cocoa \
                         --enable-cplugins \
@@ -113,9 +112,7 @@ configure.args-append   --disable-caca \
                         --disable-javascript \
                         --disable-jpeg \
                         --disable-libarchive \
-                        --disable-libass-osd \
                         --disable-libbluray \
-                        --disable-libsmbclient \
                         --disable-lua \
                         --disable-openal \
                         --disable-pdf-build \
@@ -168,7 +165,7 @@ platform macosx {
         compiler.blacklist-append   *gcc* cc macports-*
     }
 
-    if {${os.major} <= 14 || ${configure.build_arch} ne "x86_64"} {
+    if {${os.major} <= 14 || ${configure.build_arch} ni [list x86_64 arm64]} {
         # Disable Cocoa output.
         # Users on old systems will need to embrace X11.
         configure.args-replace      --enable-cocoa \
@@ -223,8 +220,11 @@ platform darwin {
         }
     }
 
-    # Fix for building on >= 10.14
-    if {[vercmp ${xcodeversion} 11] >= 0 || ${os.major} >= 18} {
+    # C11 atomics is mandatory from version 0.33.0
+    compiler.c_standard 2011
+
+    # Should eliminate most swift (module) related problems
+    if {[vercmp ${xcodeversion} 9.1] >= 0 || ${os.major} >= 16} {
         use_xcode yes
     }
 
@@ -261,6 +261,9 @@ platform darwin {
         }
     }
 
+    # Fix for https://trac.macports.org/ticket/61319
+    configure.env-append   MACOS_SDK=${configure.sdkroot}
+
     post-extract {
         xinstall -m 0644 -W "${filespath}" config-maintainer "${worksrcpath}/TOOLS/"
     }
@@ -284,7 +287,7 @@ platform darwin {
             reinplace -W "${worksrcpath}/TOOLS" "/@@HWDEC_CUDA@@/d" config-maintainer
         }
 
-        if {${os.major} < 11 || ${configure.build_arch} ne "x86_64"} {
+        if {${os.major} < 11 || ${configure.build_arch} ni [list x86_64 arm64]} {
             reinplace -W "${worksrcpath}/TOOLS" "s/@@BACKEND@@/x11/" config-maintainer
         } else {
             reinplace -W "${worksrcpath}/TOOLS" "s/@@BACKEND@@/cocoa/" config-maintainer
@@ -294,20 +297,21 @@ platform darwin {
 
 
 # Shameless copy from ipe-tools.
-set python.versions         {27 38}
+set python.versions         {38 39}
 dict set python.legacy_versions 37 38
 # After Python 3.9 is released, and mpv can be built with it,
 # replace with the above lines with the following:
 #set python.versions         {27 39}
 #dict set python.legacy_versions 38 39
 
-set python.default_version  38
+set python.default_version  39
 set python.version          ""
 
 # Create python variants.
 foreach ver ${python.versions} {
     set variant_line {variant python${ver} description }
-    append variant_line " {Use python${ver} to generate man pages}"
+    set python_branch [join [split ${ver} {}] "."]
+    append variant_line " {Use Python ${python_branch} to build ${name} and generate man pages}"
 
     foreach over ${python.versions} {
         if {${ver} == ${over}} {
@@ -327,7 +331,9 @@ foreach ver ${python.versions} {
 # Create legacy python variants, mapping to the replacement version.
 dict for {legacy_ver replace_ver} ${python.legacy_versions} {
     set variant_line {variant python${legacy_ver} description }
-    append variant_line " {Legacy variant for python${legacy_ver} mapping to python${replace_ver}}"
+    set legacy_branch [join [split ${legacy_ver} {}] "."]
+    set replace_branch [join [split ${replace_ver} {}] "."]
+    append variant_line " {Legacy variant for Python ${legacy_branch} mapping to Python ${replace_branch}}"
     append variant_line " requires python${replace_ver}"
 
     foreach over ${python.versions} {
@@ -355,9 +361,12 @@ if {${variant_none}} {
 }
 
 # Set ${python.version} to the currently active variant.
+# And let waf use the same python version as the currently active variant.
 foreach ver ${python.versions} {
     if {[variant_isset python${ver}]} {
         set python.version ${ver}
+        set python_branch [join [split ${python.version} {}] "."]
+        waf.python_branch ${python_branch}
     }
 }
 
@@ -415,7 +424,7 @@ variant bundle description {Enable the optional macOS bundle of mpv} {
 }
 
 variant screenshot description {Enable optional screenshot support} {
-    depends_lib-append      path:lib/libjpeg.dylib:jpeg
+    depends_lib-append      path:include/turbojpeg.h:libjpeg-turbo
     configure.args-replace  --disable-jpeg \
                             --enable-jpeg
 }
@@ -424,23 +433,17 @@ variant network description {Enable networking support via youtube-dl (supports 
     depends_run-append      port:youtube-dl
 }
 
-variant bluray description {Enable Bluray and AACS encryption support} {
+variant bluray description {Enable Bluray and AACS/BD+ encryption support} {
     depends_lib-append     port:libbluray
+    depends_run-append     port:libaacs \
+                           port:libbdplus
     configure.args-delete  --disable-libbluray
-    if {${os.platform} eq "darwin" && ${os.major} > 10} {
-        depends_run-append     port:libaacs
-        notes-append {
+    notes-append {
                     
                     To play Bluray discs with AACS encryption, decryption key database file "keydb.cfg" needs to be placed at:
                     * ~/Library/Preferences/aacs/ (on macOS, or)
                     * ~/.config/aacs/ (on other darwin).
                     You can easily find this file on the internet.
-        }
-    } else {
-        notes-append {
-                    
-                    Bluray AACS encryption support is not available on Snow Leopard or older systems.
-        }
     }
 }
 
@@ -529,18 +532,17 @@ variant caca description {Enable animated ASCII art video output} {
 
 variant osd description {Enable onscreen display and TrueType font support} {
     depends_lib-append      port:lua52
-    configure.args-delete   --disable-lua \
-                            --disable-libass-osd
+    configure.args-delete   --disable-lua
     configure.args-append   --enable-lua \
-                            --lua=52fbsd \
-                            --enable-libass-osd
+                            --lua=52fbsd
 }
 
-variant smb description {Enable Samba support} {
-    depends_lib-append      path:lib/pkgconfig/smbclient.pc:samba3
-    configure.args-replace  --disable-libsmbclient \
-                            --enable-libsmbclient
-}
+#variant smb description {Enable Samba support} {
+#    depends_lib-append      path:lib/pkgconfig/smbclient.pc:samba3
+#    configure.args-replace  --disable-libsmbclient \
+#                            --enable-libsmbclient
+#}
+# Removed in 0.33.0
 
 variant debug description {Compile with debugging symbols} {
     configure.args-delete   --disable-debug-build

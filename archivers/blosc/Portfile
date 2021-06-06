@@ -5,7 +5,7 @@ PortGroup           cmake 1.1
 PortGroup           github 1.0
 PortGroup           legacysupport 1.0
 
-github.setup        Blosc c-blosc 1.20.0 v
+github.setup        Blosc c-blosc 1.21.0 v
 revision            0
 
 name                blosc
@@ -26,9 +26,9 @@ long_description    Blosc is a high performance compressor optimized \
 
 homepage            http://www.blosc.org/
 
-checksums           rmd160  025e0ab21305017a6a3de7d9184d56067985a05c \
-                    sha256  ae0b094231b2719bdd7543da9c283965711785bb044519f0b8491a4a49299f5f \
-                    size    879082
+checksums           rmd160  cc37870b8387dc610a676e50c587327c356e0b37 \
+                    sha256  1fa5885817550e5ea5c8614aa908228b3a156c8df93f31502cc603a91715a0f5 \
+                    size    907465
 
 depends_lib-append  port:lz4    \
                     port:zlib   \

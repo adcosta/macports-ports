@@ -3,21 +3,21 @@
 PortSystem              1.0
 PortGroup               github 1.0
 
-github.setup            tj git-extras 6.0.0
+github.setup            tj git-extras 6.2.0
+
+checksums               rmd160  20136226ef7ed65176e6a3b3cc78927aebbc1997 \
+                        sha256  6a1083be771ee794b303ce0bea8eafce2202e98472a13bdf7996148dbb369fa7 \
+                        size    156743
+
 maintainers             {grimreaper @grimreaper} openmaintainer
 platforms               darwin
 categories              devel
 supported_archs         noarch
 
 description             Git utilities
-long_description        \
-    ${description} -- repo summary, repl, changelog population, author \
-    commit percentages and more
+long_description        ${description} -- repo summary, repl, changelog population, author \
+                        commit percentages and more
 license                 MIT
-
-checksums           rmd160  7df9d0b30bdf6f19816f63b83fe9369579e7ac9e \
-                    sha256  c4160ff7de85a27ee75d7607ed99feded7f6f64809440db48b7a1000ecc5aa6f \
-                    size    149521
 
 use_configure           no
 

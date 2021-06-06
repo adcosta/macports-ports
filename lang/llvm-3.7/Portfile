@@ -16,8 +16,8 @@ PortGroup active_variants 1.1
 set llvm_version        3.7
 set llvm_version_no_dot 37
 name                    llvm-${llvm_version}
-revision                4
-subport                 clang-${llvm_version} { revision 6 }
+revision                5
+subport                 clang-${llvm_version} { revision 7 }
 set suffix              mp-${llvm_version}
 set sub_prefix          ${prefix}/libexec/llvm-${llvm_version}
 dist_subdir             llvm
@@ -63,9 +63,6 @@ if {${subport} eq "llvm-${llvm_version}"} {
     depends_build       port:cctools
     depends_skip_archcheck-append cctools ld64
 
-    # Clang doesn't actually use any of these, but the LLVM makefile
-    # system overlinks its binaries. Remove (or convert to build deps?)
-    # after #46040 is resolved.
     depends_lib-append  port:libedit port:libffi port:ncurses port:zlib
 
     # Avoid requiring a bootstrap version of perl5 on 10.6.
@@ -103,6 +100,7 @@ master_sites            https://releases.llvm.org/${version}
 if {${os.platform} eq "darwin" && ${os.major} < 11 && ${cxx_stdlib} eq "libc++" && ![file executable ${prefix}/bin/xz]} {
     # xz needs a macports-clang compiler to build in this configuration
     depends_extract     port:xz-bootstrap
+    depends_skip_archcheck-append   xz-bootstrap
     extract.suffix      .tar.xz
     extract.cmd         ${prefix}/libexec/libcxx-bootstrap/bin/xz
 } else {
@@ -265,21 +263,12 @@ platform darwin {
 }
 
 variant universal {
-    if {[vercmp [macports_version] 2.5.99] >= 0} {
     build.env-append \
         UNIVERSAL=1 \
         UNIVERSAL_ARCH=[get_canonical_archs]
     destroot.env-append \
         UNIVERSAL=1 \
         UNIVERSAL_ARCH=[get_canonical_archs]
-    } else {
-    build.env-append \
-        UNIVERSAL=1 \
-        UNIVERSAL_ARCH="[get_canonical_archs]"
-    destroot.env-append \
-        UNIVERSAL=1 \
-        UNIVERSAL_ARCH="[get_canonical_archs]"
-    }
 
     post-extract {
         # workaround a bug in Apple's shipped gcc driver-driver, patched in
@@ -489,6 +478,7 @@ if {${subport} eq "llvm-${llvm_version}"} {
         depends_lib
         depends_run
         archive_sites
+        known_fail yes
         pre-fetch {
             ui_error "${subport} is not supported on macOS Mojave or newer."
             return -code error {unsupported platform}

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        django django 2.2.6
+github.setup        django django 2.2.23
 name                py-django
 categories-append   www
 platforms           darwin
@@ -18,7 +18,7 @@ long_description    Django is a high-level Python Web framework that \
 
 homepage            https://www.djangoproject.com
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 supported_archs     noarch
 
 if {${name} ne ${subport}} {
@@ -31,11 +31,13 @@ if {${name} ne ${subport}} {
 
         github.livecheck.regex  {(1\..+?)}
     } else {
-        checksums       rmd160  56a529ecbad5e6ebc80548147467f811ec4a9f63 \
-                        sha256  c681febae35c6cae49369c7920e100a72f3f800838fc3f371809c681b6e00b2e \
-                        size    8914096
+        checksums       rmd160  ea22fba68a0cd8fe5b7d8d1329e9c26087700b25 \
+                        sha256  2145979ea31f3bf683a51c389d0523a12ec1a104935729b51d4465709f497715 \
+                        size    8939544
 
         livecheck.type  none
+
+        depends_run-append      port:py${python.version}-sqlparse
     }
 
     depends_build-append    port:py${python.version}-setuptools

@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        slackapi python-slackclient 2.7.2 v
+github.setup        slackapi python-slackclient 2.9.3 v
 name                py-slackclient
 categories-append   irc
 platforms           darwin
 supported_archs     noarch
 license             MIT
 
-python.versions     36 37 38
+python.versions     36 37 38 39
 
 maintainers         {gmail.com:giovanni.bussi @GiovanniBussi} openmaintainer
 
@@ -21,13 +21,14 @@ long_description    The Python slackclient is a developer kit for interfacing wi
 
 homepage            https://slack.dev/python-slackclient/
 
-checksums           rmd160  0ad05eb4c7ace9b5228a8dbe8fa520defa4b8a15 \
-                    sha256  0908181db3448fb5d14e67d931afc341c6a73d18d26ca791c512f33fe85fa748 \
-                    size    2461167
+checksums           rmd160  1e8335d8498cfbea3eb77c360a581e301ca18f78 \
+                    sha256  505aad133ecc0563a75e1c7d7b1d3cc27f291fb155e03553ac06fcc01eaeed6a \
+                    size    2580387
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools
     depends_lib-append      port:py${python.version}-aiohttp
+    depends_lib-append      port:py${python.version}-typing_extensions
 
     livecheck.type none
 }

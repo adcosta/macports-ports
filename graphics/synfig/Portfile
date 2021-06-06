@@ -3,21 +3,24 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        synfig synfig 1.2.2 v
+github.setup        synfig synfig 1.4.1 v
 categories          graphics
 platforms           darwin
 maintainers         {ryandesign @ryandesign} openmaintainer
 license             GPL-2+
 
 homepage            https://www.synfig.org
-master_sites        sourceforge:project/synfig/releases/${version}/source/
+master_sites        sourceforge:project/synfig/releases/${version}/
 dist_subdir         ${subport}
+
+compiler.cxx_standard \
+                    2011
 
 if {${subport} eq ${name}} {
     revision            0
-    checksums           rmd160  ddc2de6a6243519cbc146ed72619a8d58f6a145f \
-                        sha256  5f5f7b33483041165f9a63fe4d95eb815971c7444569e574206f6964e83cc2ef \
-                        size    5005298
+    checksums           rmd160  38c4c43a258937f28eb136d38817a7bf887b1e31 \
+                        sha256  f90f1dcff1a409bbe2bfbb2cf42b7019cf735bec3223722db2feba6e198d1bc1 \
+                        size    5061453
 
     description         vector-based 2-D animation package
 
@@ -40,7 +43,7 @@ if {${subport} eq ${name}} {
                         port:fontconfig \
                         port:gettext \
                         port:ImageMagick \
-                        port:jpeg \
+                        path:include/turbojpeg.h:libjpeg-turbo \
                         port:libdv \
                         port:libiconv \
                         port:libmng \
@@ -51,8 +54,6 @@ if {${subport} eq ${name}} {
                         port:mlt \
                         port:openexr \
                         path:lib/pkgconfig/pango.pc:pango
-
-    patchfiles          no-extern-C.patch
 
     configure.args      --with-boost=${prefix}
 
@@ -77,10 +78,10 @@ if {${subport} eq ${name}} {
 }
 
 subport ETL {
-    revision            0
-    checksums           rmd160  0cf881584ac7ef57066c0e4f651c9561af552063 \
-                        sha256  0dc19c5a6c9e964054ca3af6dacd6ab0c198d78071cfab2aebac178afe454d8b \
-                        size    377133
+    revision            1
+    checksums           rmd160  da231d981138381a1a01b2c263eecd93b9a9d590 \
+                        sha256  ecb61942da60dca8e623af8ad03656897d10b03296e8907dd3c6c296390a074c \
+                        size    275770
 
     supported_archs     noarch
 
@@ -91,8 +92,10 @@ subport ETL {
                         types and functions from the C++ Standard Template \
                         Library (STL).
 
+    depends_lib-append  port:glibmm
+
     # ETL-config is a wrapper around pkg-config
-    depends_run         port:pkgconfig
+    depends_lib-append  port:pkgconfig
 
     post-destroot {
         set docdir ${destroot}${prefix}/share/doc/${subport}
@@ -109,9 +112,9 @@ subport ETL {
 
 subport synfigstudio {
     revision            0
-    checksums           rmd160  0eee777a88c74d85048c215eb592cfa2a5dbe0d1 \
-                        sha256  76fa37998af634cf694f9b5bdfcb90220bc88f8527df117d9282a39fe01489e2 \
-                        size    5801316
+    checksums           rmd160  9f6cb62cf598b20b660725358fd756a63e66d15b \
+                        sha256  af9a9b0064064907ae24a693b607dcba633a8a2cd45fa1357f61c035efd6020e \
+                        size    6472875
 
     description         synfig animation studio
 

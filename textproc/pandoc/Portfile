@@ -2,31 +2,41 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
+PortGroup           compiler_blacklist_versions 1.0
 PortGroup           haskell_stack 1.0
 
-github.setup        jgm pandoc 2.9.2.1
-revision            1
-checksums           rmd160  593c88a301fdaf5f6da615508e2c29b314f5952c \
-                    sha256  f7530a6f94f32ab24a9776ffe808dfe5659f4bd9be53de4f16cea3cfa134bce8 \
-                    size    12670219
-
+github.setup        jgm pandoc 2.13
+revision            0
 categories          textproc haskell
 platforms           darwin
 license             GPL-3
 maintainers         nomaintainer
 
 description         Conversion between markup formats
-long_description    \
-    Pandoc is a Haskell library for converting from one markup format to \
-    another, and a command-line tool that uses this library. It can read \
-    markdown and (subsets of) HTML, reStructuredText, LaTeX, DocBook, MediaWiki \
-    markup, and Textile, and it can write markdown, reStructuredText, HTML, \
-    LaTeX, ConTeXt, Docbook, OpenDocument, ODT, Word docx, RTF, MediaWiki, \
-    Textile, groff man pages, plain text, Emacs Org-Mode, AsciiDoc, EPUB (v2 \
-    and v3), FictionBook2, and S5, Slidy and Slideous HTML slide shows.
+
+long_description    Pandoc is a Haskell library for converting from \
+                    one markup format to another, and a command-line \
+                    tool that uses this library. It can read markdown \
+                    and (subsets of) HTML, reStructuredText, LaTeX, \
+                    DocBook, MediaWiki markup, and Textile, and it can \
+                    write markdown, reStructuredText, HTML, LaTeX, \
+                    ConTeXt, Docbook, OpenDocument, ODT, Word docx, \
+                    RTF, MediaWiki, Textile, groff man pages, plain \
+                    text, Emacs Org-Mode, AsciiDoc, EPUB (v2 and v3), \
+                    FictionBook2, and S5, Slidy and Slideous HTML \
+                    slide shows.
+
+homepage            https://pandoc.org
+
+checksums           rmd160  204eb8641f6d769fa8a7208ba22db53826d56e00 \
+                    sha256  b76a0fe1cc83a56141dbe5e7cef2a218c3e54341b5c9aaba36c668291dc89b43 \
+                    size    13028046
 
 test.run            yes
 test.args           --test-arguments='-p markdown'
+
+compiler.blacklist-append \
+                   {clang < 900}
 
 post-destroot {
     xinstall -d ${destroot}${prefix}/share/doc

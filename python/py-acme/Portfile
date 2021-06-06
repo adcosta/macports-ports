@@ -4,30 +4,29 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-set real_name       acme
-name                py-${real_name}
-github.setup        certbot certbot 1.7.0 v
+name                py-acme
+github.setup        certbot certbot 1.16.0 v
 revision            0
-worksrcdir          certbot-${version}/${real_name}
 categories-append   security
 license             Apache-2
 maintainers         {mps @Schamschula} openmaintainer
 description         ACME protocol implementation in Python.
-long_description    ${description}
+long_description    {*}${description}
 platforms           darwin
 homepage            https://certbot.eff.org/
 
-python.versions     27 36 37 38
+python.versions     36 37 38 39
 
-checksums           rmd160  31ebfae8a262532d5964f45b328633f33046c7b5 \
-                    sha256  87d1889cda34d4662e9678b9dc93eee683d50622820a0c1eb510016d419fcad1 \
-                    size    1416649
+checksums           rmd160  663cd3b94958627d91062fc52af74d7426dc0b2f \
+                    sha256  0c88b968cc38161ae2bd105aec73b19ebf70227c317b5d5f1273efc4bc3ffea1 \
+                    size    1383912
 
 if {${name} ne ${subport}} {
+    build.dir       ${worksrcpath}/acme
+
     depends_build-append \
                     port:py${python.version}-funcsigs \
                     port:py${python.version}-mock \
-                    port:py${python.version}-nose \
                     port:py${python.version}-setuptools
 
     depends_lib-append  \
@@ -44,5 +43,5 @@ if {${name} ne ${subport}} {
                     port:py${python.version}-tz \
                     port:py${python.version}-werkzeug
 
-    livecheck.type      none
+    livecheck.type  none
 }

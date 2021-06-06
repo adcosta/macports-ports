@@ -1,7 +1,6 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem              1.0
-PortGroup               compiler_blacklist_versions 1.0
 PortGroup               github  1.0
 PortGroup               cmake   1.0
 
@@ -18,7 +17,7 @@ long_description        \
 
 platforms               darwin
 
-github.setup            CGAL cgal 5.0.2 releases/CGAL-
+github.setup            CGAL cgal 5.2.1 v
 revision                0
 conflicts               cgal4
 github.tarball_from     releases
@@ -32,9 +31,10 @@ use_xz                  yes
 
 homepage                http://www.cgal.org/
 
-checksums               rmd160  7c32a43b3c32fb63ec2ea36224eb7750efd1ca17 \
-                        sha256  bb3594ba390735404f0972ece301f369b1ff12646ad25e48056b4d49c976e1fa \
-                        size    22147464
+checksums           rmd160  58a1632cce68c0f06830434158d9d5e6af47b452 \
+                    sha256  7e80b710a2b05cf7c22ce6fd8000905957c2263ab0048185b5010172b5bc19e6 \
+                    size    23256952
+
 
 worksrcdir              CGAL-${version}
 depends_lib-append      port:boost \
@@ -43,17 +43,13 @@ depends_lib-append      port:boost \
                         port:gmp \
                         path:include/eigen3/Eigen/Eigen:eigen3
 
-compiler.cxx_standard   2011
+compiler.cxx_standard   2014
 compiler.thread_local_storage yes
-# Work around thread local compiler selection bug. Remove after
-# https://github.com/macports/macports-base/pull/161 is released.
-compiler.blacklist-append {clang < 800}
 
 configure.args-append   -DCGAL_HEADER_ONLY=OFF
 
 variant headers_only description "Install only the headers" {
-    configure.args-delete   -DCGAL_HEADER_ONLY=OFF
-    configure.args-append   -DCGAL_HEADER_ONLY=ON
+    configure.args-replace   -DCGAL_HEADER_ONLY=OFF -DCGAL_HEADER_ONLY=ON
 }
 
 github.livecheck.regex  {([0-9.]+)}

@@ -3,14 +3,10 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        johnkerl miller 5.8.0 v
-github.tarball_from archive
+github.setup        johnkerl miller 5.10.2 v
+revision            0
 
-platforms           darwin
-categories          textproc
-license             BSD
-
-maintainers         {gmail.com:herby.gillot @herbygillot} openmaintainer
+homepage            https://johnkerl.org/miller/doc
 
 description         Miller is like awk, sed, cut, join, and sort for \
                     name-indexed data such as CSV, TSV, and tabular JSON
@@ -27,27 +23,22 @@ long_description    Miller is like awk, sed, cut, join, and sort for \
                     limited to the familiar CSV, TSV, and JSON. (Miller can \
                     handle positionally-indexed data as a special case.)
 
-homepage            https://johnkerl.org/miller/doc/
+platforms           darwin
+categories          textproc
+license             BSD
 
-checksums           rmd160  2d21ea4144a5988fbf0da939d65355a824230eec \
-                    sha256  83fcb8218145654583f5c384d3c8e055f478f1da919d51e9be3c489a006492c2 \
-                    size    5003415
+checksums           rmd160  a11720c8ed61f52e0725aca847b16b14f10a7920 \
+                    sha256  b6026479ee7315656d7ec228d0084f86d4cecc5b8b00d5400f5fb3600af65eb3 \
+                    size    6192382
+
+maintainers         {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
+
+github.tarball_from archive
 
 installs_libs       no
 
-set mlr_doc_dir     ${prefix}/share/doc/${name}
-
 test.run            yes
 test.target         check
-
-pre-destroot {
-    system -W "${worksrcpath}/doc" "${build.cmd} DESTDIR=\"${destroot}\" install-man"
-}
-
-destroot {
-    xinstall -m 755 ${worksrcpath}/c/mlr ${destroot}${prefix}/bin/
-    xinstall -d -m 755 ${destroot}${mlr_doc_dir}
-    copy {*}[glob ${worksrcpath}/doc/*] ${destroot}${mlr_doc_dir}/
-}
 
 notes "miller is installed as mlr"

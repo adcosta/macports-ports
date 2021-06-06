@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           github 1.0
 
 # UPDATE THESE IN SYNC!
-set version         2020-07-31T23-34-13Z
-set commit          6a98216c53b36d942ed77311338e4e93e391b902
+version             2021-05-12T03-10-11Z
+set commit          7d142be7111bfc82960dc4a9cc5395cc5ca6e9c8
 
 set relversion      [regsub {(T..)-(..)-(..Z)} $version {\1:\2:\3}]
 # This is not used for fetching, but is compiled into the executable
@@ -20,12 +20,13 @@ description         Provides cloud-enabled UNIX commands like ls, cat, cp, etc.
 long_description \
     ${description} It supports filesystems and Amazon S3 compatible cloud \
     storage service (AWS Signature v2 and v4). See minio port for server.
-license             Apache-2
+
+license             AGPL-3
 
 checksums \
-    rmd160  6fa4566e6c26353a9747757e57f96b11aa8d42bf \
-    sha256  00be34b1ca0be24c08099f9d77bda0b288b6a6270986de2838c84e33f0f9c11f \
-    size    398114
+    rmd160  af8feb69a7879b9563e3a73b4b8e84551c5bfc1d \
+    sha256  265df726ac37e2b65af058d4e1e4b80821b4a9d08af00ee8ecf17e5fe339a340 \
+    size    395233
 
 set goproj          github.com/${github.author}/${github.project}
 

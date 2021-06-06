@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/golang-migrate/migrate 4.12.2 v
+go.setup            github.com/golang-migrate/migrate 4.14.1 v
 name                go-migrate
 
 categories          devel databases
@@ -22,13 +22,18 @@ long_description    {*}${description} Migrate reads migrations from sources \
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  77ef8e76d8b73eac941e1e78e4b3ba154cf72f8a \
-                    sha256  319df7514586f343ce5d8ca57e0942bb8b15e6442a8fc4c48bc0e92ba9d2e870 \
-                    size    151160
+checksums           rmd160  9b2446c916e3e1b88ffc45d10a115905dd99b164 \
+                    sha256  51f80a9eb49f5905b303597a8a14b54b3fb405e954ba8feec72d7e5f53056d4f \
+                    size    159439
 
 build.cmd           make
 build.pre_args      VERSION=${version}
 build.args          build-cli
+
+# FIXME: This port currently can't be built without allowing go mod to fetch
+# dependencies during the build phase. See
+# https://trac.macports.org/ticket/61192
+build.env-delete    GOPROXY=off GO111MODULE=off
 
 post-extract {
     # Comment out builds for non-Darwin platforms

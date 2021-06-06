@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.26 5.28 5.30
-perl5.setup         Ogg-Vorbis-Header-PurePerl 1.03
+perl5.setup         Ogg-Vorbis-Header-PurePerl 1.05
 revision            0
 maintainers         nomaintainer
 categories-append   audio
@@ -14,6 +14,6 @@ long_description    ${description}
 supported_archs     noarch
 platforms           darwin
 
-checksums           rmd160  47c3b99c8084af47059ce6b922717d0fdb566f45 \
-                    sha256  47449cf3a0b72dc8c29405f23c3a683d5dee69fab9f71abfc5cc777c54cb7231 \
-                    size    18814
+checksums           rmd160  ae6c4bf6d77ca630ff5a762a29e11be04b421671 \
+                    sha256  521d3808f42d7122a6b06c33a6eae6d7c39947aab57c4c8ccafcc4f603fda53e \
+                    size    69433

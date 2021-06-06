@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/containous/yaegi 0.8.14 v
+go.setup            github.com/traefik/yaegi 0.9.18 v
+revision            0
 
 description         Yaegi is Another Elegant Go Interpreter
 
@@ -24,12 +25,24 @@ categories          devel
 license             Apache-2
 installs_libs       no
 
-checksums           rmd160  23138fa8aa5fb6479bca130cfc1da4ef6c0d000a \
-                    sha256  b4692361ce6faba6c02474d4dac5f3573066e852e0a881f04a0f610c17559712 \
-                    size    1946238
+checksums           rmd160  978b76bcaa23a3ba27e94580c2c1e155a4232557 \
+                    sha256  f1b0f32f02f97b508488c7eea0484ba9f4b6293c604d23aba050cf0b8d826d68 \
+                    size    2002352
 
-build.target        github.com/containous/yaegi/cmd/yaegi
+build.cmd           make
+build.target        install
+
+github.tarball_from archive
+
+patch {
+    # Explicitly embed the version into the build command in the Makefile,
+    # instead of trying to dynamically determine it from the current git tag.
+    # We are using a tarball, and not a checked-out git repository, so querying
+    # for git tag will fail.
+    reinplace -E "s|\\$\\$\\(git describe --tags\\)|v${version}|" \
+        ${worksrcpath}/Makefile
+}
 
 destroot {
-    xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+    xinstall -m 755 ${gopath}/bin/${name} ${destroot}${prefix}/bin/
 }

@@ -4,13 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pandas
-version             1.1.0
+version             1.2.4
 revision            0
 categories-append   science
 license             BSD
 platforms           darwin
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,18 +20,21 @@ long_description    ${description}
 
 homepage            https://pandas.pydata.org
 
-checksums           rmd160  e8c06611a8b43cb613c98cc949610dc275ac198c \
-                    sha256  b39508562ad0bb3f384b0db24da7d68a2608b9ddc85b1d931ccaaa92d5e45273 \
-                    size    5211071
+checksums           rmd160  edb56bddc6f3b1fab9db2fdf4e7f6af1a84ea7a4 \
+                    sha256  649ecab692fade3cbfcf967ff936496b0cfba0af00a55dfaacd82bdda5cb2279 \
+                    size    5469105
 
 if {${name} ne ${subport}} {
     if {${python.version} eq 27} {
         version             0.24.2
-        revision            0
+        revision            1
         distname            ${python.rootname}-${version}
         checksums           rmd160  a4b18e58b6be7bf13893dbccaf73542918dda1c8 \
                             sha256  4f919f409c433577a501e023943e582c57355d50a724c589e78bc1d551a535a2 \
                             size    11837693
+
+        # fix implicit declaration of tolower_ascii()
+        patchfiles-append   patch-a3c158dad2.diff
 
         depends_lib-append  port:py${python.version}-scipy \
                             port:py${python.version}-tables \
@@ -45,6 +48,13 @@ if {${name} ne ${subport}} {
         checksums           rmd160  cb526595c8b38bd4973a49ebebb61c165421628b \
                             sha256  52da74df8a9c9a103af0a72c9d5fdc8e0183a90884278db7f386b5692a2220a4 \
                             size    12632585
+    } elseif {${python.version} eq 36} {
+        version             1.1.5
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  593ee2c082df6b4edc85670cd0221dfec5b51b30 \
+                            sha256  f10fc41ee3c75a474d3bdf68d396f10782d013d7f67db99c0efbfd0acb99701b \
+                            size    5229894
     }
 
     use_parallel_build  no

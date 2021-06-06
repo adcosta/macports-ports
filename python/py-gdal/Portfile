@@ -6,7 +6,7 @@ PortGroup           python 1.0
 name                py-gdal
 python.rootname     GDAL
 # keep version in sync with gdal; rebuilt after gdal update
-version             3.1.0
+version             3.3.0
 revision            0
 
 categories-append   gis
@@ -15,19 +15,16 @@ license             MIT
 maintainers         {petr @petrrr} openmaintainer
 
 description         GDAL: Geospatial Data Abstraction Library
-long_description \
-    This Python package and extensions are a number of tools for programming \
-    and manipulating the GDAL Geospatial Data Abstraction Library.
+long_description    This Python package and extensions are a number of tools for programming \
+                    and manipulating the GDAL Geospatial Data Abstraction Library.
 
 homepage            https://www.gdal.org
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
-distname            ${python.rootname}-${version}
 
-checksums           rmd160  01ee8ed2be1649a3b55651a374b2d5618e232296 \
-                    sha256  e33bbbff7214ac7cf5bf03132abbd311f3545fd42bb77900efc436986234b325 \
-                    size    592314
+checksums           rmd160  36e6ca95a27aa5ed2b27922d590135e2ed417fd6 \
+                    sha256  ed314a0b3f8b3729a9f6d8ca23f21473c2ff4a946d1a2969e0a1937bf0f4e700 \
+                    size    743089
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 if {${name} ne ${subport}} {
     compiler.cxx_standard   2011

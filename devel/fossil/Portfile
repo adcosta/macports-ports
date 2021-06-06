@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                fossil
-version             2.11.1
+version             2.15
 revision            0
 epoch               20110901182519
 categories          devel
@@ -26,9 +26,9 @@ distname            ${name}-src-${version}
 
 worksrcdir          ${name}-${version}
 
-checksums           rmd160  1f769d1e3258ad3fc3feb45510a8bfd941aac936 \
-                    sha256  b391f34fada5f16eba452f36d2ad8baa3fe2a5267bf8f4169cb1b9832c0cb8eb \
-                    size    5850806
+checksums           rmd160  edc41d11df01a118e0b315cd468ba385bffb769a \
+                    sha256  671edda9a014474d0f07b4c616b37222e218275b3c8e5414657830c6f351877b \
+                    size    6222434
 
 test.run            yes
 

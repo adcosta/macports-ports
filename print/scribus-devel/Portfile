@@ -8,12 +8,12 @@ PortGroup           qt5 1.0
 qt5.depends_component qttools qttranslations
 qt5.min_version     5.11.0
 
-set git_commit      9e328e04526c2573a6c780b5889437988cabfd11
-set git_date        20200809
+set git_commit      2dbeda3c6793075305b6adaf26f7be5d455a88ba
+set git_date        20201209
 github.setup        scribusproject scribus ${git_commit}
 name                scribus-devel
-version             1.5.6.svn-${git_date}
-revision            0
+version             1.5.7.svn-${git_date}
+revision            1
 categories          print
 license             LGPL-2+ BSD MIT
 platforms           darwin
@@ -29,9 +29,9 @@ long_description    Scribus is an open source desktop publishing program. It \
 
 homepage            https://www.scribus.net/
 
-checksums           rmd160  58cff3067ff986d85d08627302c90a57f87dee40 \
-                    sha256  ba94c0ffbdd5c55d6cfbe669f5384382233ff67e1ebb2bcbddda3d388e0e49fb \
-                    size    87542682
+checksums           rmd160  ad37f7b805c1df1e9f91625660c1f23310efee8d \
+                    sha256  cd40b8b0917cb27df0f13b1ba98d21442ab878690fc82cf5a503ac83f6b09e0b \
+                    size    88261640
 
 depends_build-append \
                     path:bin/perl:perl5

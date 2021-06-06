@@ -5,7 +5,7 @@ PortGroup           active_variants 1.1
 
 name                xcircuit
 version             3.9.73
-revision            7
+revision            9
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          x11 cad
 platforms           darwin
@@ -50,6 +50,9 @@ require_active_variants cairo x11
 
 use_autoreconf      yes
 autoreconf.args     -fvi
+
+# functions.c:1989:4: error: implicit declaration of function 'UDrawXAt' is invalid in C99
+patchfiles-append   patch-xcircuit-implicit-udrawxat.diff
 
 configure.cflags-append -Wno-return-type
 

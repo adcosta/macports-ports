@@ -1,0 +1,254 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                libreoffice
+version             7.1.4.1
+revision            0
+categories          office aqua
+license             {LGPL-3 MPL-1.1}
+platforms           macosx
+maintainers         {gmail.com:audvare @Tatsh} openmaintainer
+description         Free, open source office suite.
+long_description    LibreOffice is a free and powerful office suite, and a successor to \
+                    OpenOffice.org (commonly known as OpenOffice). Its clean interface and \
+                    feature-rich tools help you unleash your creativity and enhance your \
+                    productivity.
+homepage            https://www.libreoffice.org
+
+set short_version   [string range $version 0 end-2]
+set main_uri        https://download.documentfoundation.org/${name}/src/${short_version}/
+set addons_uri      https://dev-www.libreoffice.org/src/
+set extern_uri      https://dev-www.libreoffice.org/extern/
+use_xz              yes
+set main_distfile   ${name}-${version}${extract.suffix}
+
+livecheck.type      regex
+livecheck.url       https://downloadarchive.documentfoundation.org/${name}/old/latest/src/
+livecheck.regex     "${name}-((?:\\d+\\.\\d+\\.\\d+)(?:\\.\\d+))?${extract.suffix}</a></td>"
+
+extract.only        ${main_distfile} \
+                    ${name}-dictionaries-${version}.tar.xz \
+                    ${name}-translations-${version}.tar.xz
+master_sites        ${main_uri}:main \
+                    ${extern_uri}:opens \
+                    ${addons_uri}:dtoa \
+                    ${main_uri}:dicts \
+                    ${main_uri}:translations
+distfiles           ${main_distfile}:main \
+                    ${name}-dictionaries-${version}.tar.xz:dicts \
+                    ${name}-translations-${version}.tar.xz:translations \
+                    dtoa-20180411.tgz:dtoa \
+                    f543e6e2d7275557a839a164941c0a86e5f2c3f2a0042bfc434c88c6dde9e140-opens___.ttf:opens
+
+checksums           libreoffice-${version}.tar.xz \
+                    rmd160  087650a73e01aaafa2b2ab7db7c9bfd0f71c82e5 \
+                    sha256  c4f88f00833c4f9b00b722bcdb9219c9ea731f3543a55721e21568fb9a411d04 \
+                    size    244322884 \
+                    libreoffice-dictionaries-${version}.tar.xz \
+                    rmd160  5581c859a41761072c01414d73520b8edfcc851f \
+                    sha256  2bb44ea2b808b9ba5238bd71c435f887cf3de8375cee23ac7f7e7e699206a70d \
+                    size    47234696 \
+                    libreoffice-translations-${version}.tar.xz \
+                    rmd160  95d2abeace5bff61582cd8d8965596f7006ef7a1 \
+                    sha256  13bb79382c8b22c3fdbd350842a3b74f23bd5d730e041a8ade6a40b9816bd2a2 \
+                    size    184929336 \
+                    dtoa-20180411.tgz \
+                    rmd160  8d1bba737d8b58c3fb09533f35af2a03e05d9849 \
+                    sha256  0082d0684f7db6f62361b76c4b7faba19e0c7ce5cb8e36c4b65fea8281e711b4 \
+                    size    48893 \
+                    f543e6e2d7275557a839a164941c0a86e5f2c3f2a0042bfc434c88c6dde9e140-opens___.ttf \
+                    rmd160  b9e2cc0c836faa59eca3bfc0f24e1b790646b112 \
+                    sha256  f543e6e2d7275557a839a164941c0a86e5f2c3f2a0042bfc434c88c6dde9e140 \
+                    size    207992
+
+depends_build-append \
+    port:autoconf \
+    port:automake \
+    port:bison \
+    port:cppunit \
+    port:flex \
+    port:gettext \
+    port:gperf \
+    port:mesa \
+    port:pkgconfig \
+    port:ucpp \
+    port:unixODBC
+depends_lib-append  \
+    port:apr \
+    port:apr-util \
+    port:boost \
+    port:box2d \
+    port:bzip2 \
+    port:clucene \
+    port:curl \
+    port:expat \
+    port:gdbm \
+    port:gettext \
+    port:graphite2 \
+    port:harfbuzz \
+    port:harfbuzz-icu \
+    port:hunspell \
+    port:hyphen \
+    port:icu \
+    path:include/turbojpeg.h:libjpeg-turbo \
+    port:lcms2 \
+    port:libabw \
+    port:libcdr-0.1 \
+    port:libcmis \
+    port:libe-book \
+    port:libepoxy \
+    port:libepubgen \
+    port:libetonyek \
+    port:libexttextcat \
+    port:libfreehand \
+    port:libiconv \
+    port:liblangtag \
+    port:libmspub \
+    port:libmwaw \
+    port:libnumbertext \
+    port:libodfgen \
+    port:libpagemaker \
+    port:libpng \
+    port:libqxp \
+    port:librevenge \
+    port:libstaroffice \
+    port:libvisio-0.1 \
+    port:libwpd-0.10 \
+    port:libwpg-0.3 \
+    port:libwps \
+    port:libxml2 \
+    port:libxslt \
+    port:libzmf \
+    port:mdds \
+    port:mythes \
+    port:ncurses \
+    port:neon \
+    port:nspr \
+    port:nss \
+    port:orcus \
+    port:ossp-uuid \
+    port:raptor2 \
+    port:readline \
+    port:redland \
+    port:serf1 \
+    port:sqlite3 \
+    port:xmlsec \
+    port:xz \
+    port:zlib
+# Try to keep this in sync with the Python portgroup.
+set pyver 3.9
+set python_version [string index ${pyver} 0][string index ${pyver} end]
+depends_run-append \
+    port:python${python_version} \
+    port:py${python_version}-lxml
+
+if {${os.platform} eq "darwin" && ${os.major} < 19} {
+    known_fail yes
+    pre-fetch {
+        ui_error "Building ${name} @${version} requires macOS 10.15 or later."
+        ui_error ""
+        ui_error "Consider downloading a version from LibreOffice's website:"
+        ui_error "https://www.libreoffice.org/download/download/"
+        ui_error ""
+        return -code error "incompatible OS X version"
+    }
+}
+
+patchfiles \
+    patch-configure.diff \
+    patch-ucb_ucp_webdav_webdavprovider_cxx.diff \
+    patch-unpack-sources-fix-for-bsd-find.diff
+
+set product_name LibreOffice
+
+pre-configure {
+    system "cd ${worksrcpath} && env NOCONFIGURE=1 ./autogen.sh"
+}
+
+use_xcode           yes
+# CMS_NO_REGISTER_KEYWORD required for C++17 or newer compiler.
+# PYTHON_CFLAGS and PYTHON_LIBS have to be non-empty
+configure.env-append  \
+    "LCMS2_CFLAGS=-I${prefix}/include -DCMS_NO_REGISTER_KEYWORD=1" \
+    PYTHON=${prefix}/bin/python${pyver} \
+    PYTHON_CFLAGS=-I${frameworks_dir}/Python.framework/Versions/${pyver}/include/python${pyver} \
+    "PYTHON_LIBS=-L${frameworks_dir}/Python.framework/Versions/${pyver}/lib -lpython${pyver} -ldl -framework CoreFoundation"
+
+# Most arguments are from
+# https://wiki.documentfoundation.org/LibreOffice_Vanilla_for_Mac#LibreOffice_Vanilla
+configure.args-append  \
+    --disable-breakpad \
+    --disable-bundle-mariadb \
+    --disable-ccache \
+    --disable-coinmp \
+    --disable-epm \
+    --disable-ext-ct2n \
+    --disable-ext-numbertext \
+    --disable-fetch-external \
+    --disable-firebird-sdbc \
+    --disable-ldap \
+    --disable-lotuswordpro \
+    --disable-lpsolve \
+    --disable-neon \
+    --disable-odk \
+    --disable-online-update \
+    --disable-openssl \
+    --disable-pdfimport \
+    --disable-pdfium \
+    --disable-postgresql-sdbc \
+    --disable-qrcodegen \
+    --disable-report-builder \
+    --disable-vlc \
+    --enable-bogus-pkg-config \
+    --enable-cups \
+    --enable-extension-integration \
+    --enable-mpl-subset \
+    --enable-python=system \
+    --enable-readonly-installset \
+    --enable-release-build \
+    --enable-symbols \
+    --with-external-tar=${distpath} \
+    --with-myspell-dicts \
+    --with-package-version=${version} \
+    --with-parallelism=${build.jobs} \
+    --with-product-name=${product_name} \
+    --with-system-clucene \
+    --with-system-epoxy \
+    --with-system-gpgmepp \
+    --with-system-headers \
+    --with-system-hunspell \
+    --with-system-jars \
+    --with-system-libabw \
+    --with-system-libcmis \
+    --with-system-libebook \
+    --with-system-libepubgen \
+    --with-system-libexttextcat \
+    --with-system-libmwaw \
+    --with-system-libnumbertext \
+    --with-system-libqxp \
+    --with-system-libs \
+    --with-system-libstaroffice \
+    --with-system-libzmf \
+    --with-system-mdds \
+    --with-system-mythes \
+    --with-system-orcus \
+    --with-system-ucpp \
+    --with-system-xmlsec \
+    --with-theme=colibre \
+    --with-tls=nss \
+    --with-vendor=MacPorts \
+    --with-webdav=serf \
+    --without-doxygen \
+    --without-fonts \
+    --without-java \
+    --without-package-format \
+    --without-system-dicts \
+    --without-system-sane \
+    \"--with-lang=bg br ca ca-valencia cy cs da de el en-US en-GB es et eu fi fr ga gd gl hr hu id is it ja km lt lv nb nl nn pl pt pt-BR ro ru sk sl sv ta tr uk zh-CN zh-TW\"
+
+build.target    build-nocheck
+
+destroot {
+    copy ${worksrcpath}/instdir/${product_name}.app ${destroot}${applications_dir}
+}

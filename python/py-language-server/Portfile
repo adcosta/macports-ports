@@ -6,8 +6,12 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-language-server
-github.setup        palantir python-language-server 0.34.1
-revision            0
+github.setup        palantir python-language-server 0.36.2
+github.tarball_from archive
+revision            2
+
+# stealth update, remove when updating to new version
+dist_subdir          ${name}/${version}
 
 categories-append   devel
 platforms           darwin
@@ -18,11 +22,11 @@ maintainers         {reneeotten @reneeotten} openmaintainer
 description         An implementation of the Language Server Protocol for Python
 long_description    ${description}
 
-checksums           rmd160  58ac2d5e87f10a823fd40f7db3ec4286becf771a \
-                    sha256  05b5e24254e8c79ad8b02f8611a0ec8145e277944d17cd58f5aefe55d7c8b11b \
-                    size    457974
+checksums           rmd160  cf9f5be95659eff1c9a9fabbf136e0653a9258d7 \
+                    sha256  fb573f780467c1cae0de47065eecbaaf9b457bd5cbe9f5cf8409224e1cd21cf6 \
+                    size    463591
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 if {${subport} ne ${name}} {
     depends_lib-append \
@@ -54,11 +58,17 @@ if {${subport} ne ${name}} {
         reinplace "s|@@FLAKE8_BIN@@|flake8-${python.branch}|g" ${worksrcpath}/pyls/plugins/flake8_lint.py
         reinplace "s|@@FLAKE8_BIN@@|flake8-${python.branch}|g" ${worksrcpath}/test/plugins/test_flake8_lint.py
         reinplace "s|@@PYTHON_BIN@@|${python.bin}|g" ${worksrcpath}/pyls/plugins/flake8_lint.py
+
+        # temporary reinplace to remove version cap on jedi, pyflakes, and pycodestyle
+        reinplace {s|'jedi>=0\.17\.2,<0\.18\.0'|'jedi>=0\.17\.2,<0.19.0'|g} ${worksrcpath}/setup.py
+        reinplace {s|'pyflakes>=2\.2\.0,<2\.3\.0'|'pyflakes>=2.2.0,<2.4.0'|g} ${worksrcpath}/setup.py
+        reinplace {s|'pycodestyle>=2\.6\.0,<2\.7\.0'|'pycodestyle>=2.6.0,<2.8.0'|g} ${worksrcpath}/setup.py
     }
 
     depends_test-append \
                     port:py${python.version}-pytest \
-                    port:py${python.version}-mock
+                    port:py${python.version}-mock \
+                    port:py${python.version}-flaky
 
     test.run        yes
     test.cmd        py.test-${python.branch}

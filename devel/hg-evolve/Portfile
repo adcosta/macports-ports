@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               python 1.0
+
+name                    hg-evolve
+version                 10.3.1
+revision                0
+
+categories              devel
+license                 GPL-2
+platforms               darwin
+supported_archs         noarch
+maintainers             {lbschenkel @lbschenkel} openmaintainer
+
+homepage                https://www.mercurial-scm.org/doc/evolution/
+description             Additional history rewriting commands for Mercurial.
+long_description        Additional history rewriting commands for Mercurial \
+                        for faster and safer mutable history. The extension \
+                        offers a safe and simple way to refine changesets \
+                        locally and propagate those changes to other \
+                        repositories. The complex issues that can arise from \
+                        exchanging draft changesets are automatically \
+                        detected and handled, and it possible's for multiple \
+                        developers to safely rewrite the same parts of history \
+                        in a distributed way.
+
+checksums               rmd160  d3b0f7a9092d4081b9ab7fb1583ed18e4ea6f5b5 \
+                        sha256  cbc46f7381eb4bb0435eb3e2d2336ef77e9d5b3fabbb6b2c38cabe7d9bb2bc0f \
+                        size    848245
+
+python.default_version  39
+
+depends_lib-append      port:mercurial
+
+
+notes                   "
+To enable the evolve extension, add the following to your ~/.hgrc:
+
+\[extensions\]
+evolve =
+"
+
+post-patch {
+    file delete ${worksrcpath}/hgext3rd/__init__.py
+}

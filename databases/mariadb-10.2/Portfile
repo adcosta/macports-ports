@@ -6,12 +6,12 @@ legacysupport.newest_darwin_requires_legacy 10
 
 name                mariadb-10.2
 set name_mysql      ${name}
-version             10.2.33
+version             10.2.38
 set version_branch  [join [lrange [split ${version} .] 0 1] .]
 # Please set revision_client and revision_server to 0 if you bump
 # version; these can be changed independently for the 2 subports, but
 # can be changed at the same time if that's what's required.
-set revision_client 0
+set revision_client 1
 set revision_server 0
 categories          databases
 platforms           darwin
@@ -23,8 +23,12 @@ if {$subport eq $name} {
     PortGroup           cmake 1.0
     PortGroup           select 1.0
     PortGroup           github 1.0
+    PortGroup           compiler_blacklist_versions 1.0
 
     compiler.cxx_standard 2011
+
+    # https://trac.macports.org/ticket/60805
+    compiler.blacklist-append {clang < 900}
 
     github.setup        MariaDB server ${version} mariadb-
     revision            ${revision_client}
@@ -46,7 +50,7 @@ if {$subport eq $name} {
 
     set submodule_github_author  MariaDB
     set submodule_github_project mariadb-connector-c
-    set submodule_github_branch  a746c3af449a8754e78ad7971e59e79af7957cdb
+    set submodule_github_branch  180c543704d627a50a52aaf60e24ca14e0ec4686
 
     set main_distname ${distname}
     set main_distfile ${distfiles}
@@ -59,14 +63,14 @@ if {$subport eq $name} {
     master_sites ${github.homepage}/archive/${git.branch}:tagone \
                  https://github.com/${submodule_github_author}/${submodule_github_project}/archive/${submodule_github_branch}:tagtwo
 
-    checksums    ${main_distfile} \
-                 rmd160 4aed7234cd683f4cf73145fdb757fa6248b62e70 \
-                 sha256 5a6d6a04d6130b9efd2259b050899a579d45896569602ebbff4aec696e685152 \
-                 size   64710402 \
-                 ${submodule_distfile} \
-                 rmd160 9ee86632bb8b43aee53c8930a2058db871934195 \
-                 sha256 c673e270324a4fd15a2948648e401b9a48bbbc6ce0a94ddac312bd5028f4c43f \
-                 size   753351
+    checksums       ${main_distfile} \
+                    rmd160  6862dc13a9068fcfa844d9fe6e342ba409fd26da \
+                    sha256  2d9454057b33bc79845083762c3d91c9d6b33c010d46bfa7ef772eed6cc547f2 \
+                    size    64994438 \
+                    ${submodule_distfile} \
+                    rmd160  20a4f48baa758d75df8b754b937bdd27f257050c \
+                    sha256  97650c04406ca0b016ee645e9e63df7bed6596c35affd71f8f023d5af766cfb6 \
+                    size    975616
 
     worksrcdir   ${github.project}-${git.branch}
 
@@ -80,7 +84,8 @@ if {$subport eq $name} {
     }
 
     depends_lib-append  port:zlib port:tcp_wrappers port:ncurses port:judy \
-                        path:lib/libssl.dylib:openssl port:libxml2
+                        path:lib/libssl.dylib:openssl port:libxml2 \
+                        port:pcre2
     depends_run-append  port:mysql_select
 
     select.group        mysql
@@ -100,6 +105,10 @@ if {$subport eq $name} {
                    patch-libmariadb_libmariadb_CMakeLists.txt.diff \
                    patch-libmariadb_mariadb_config_CMakeLists.txt.diff \
                    patch-cmake_mysql_version.cmake.diff
+
+    # patch to provide minimum changes required for ARM64 support;
+    # guessing this will be fixed in the next release.
+    patchfiles-append patch-include_my_global.h.diff
 
     post-patch {
         reinplace "s|@NAME@|${name_mysql}|g" \
@@ -141,7 +150,12 @@ if {$subport eq $name} {
                         -DMYSQL_MAINTAINER_MODE:STRING=AUTO \
                         -DICONV_LIBRARIES=${prefix}/lib/libiconv.dylib \
                         -DICONV_INCLUDE_DIR:PATH=${prefix}/include \
-                        -DCONNECT_WITH_LIBXML2=ON
+                        -DCONNECT_WITH_JDBC=OFF \
+                        -DCONNECT_WITH_LIBXML2=ON \
+                        -DCONNECT_WITH_MONGO=OFF \
+                        -DCONNECT_WITH_ODBC=OFF \
+                        -DCONNECT_WITH_REST=OFF \
+                        -DWITH_PCRE=system
 
     post-destroot {
         # proc portdestroot::destroot_finish fails to find and compress our man pages

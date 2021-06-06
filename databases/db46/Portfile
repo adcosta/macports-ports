@@ -1,3 +1,5 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
 PortSystem 1.0
 PortGroup  muniversal 1.0
 
@@ -56,8 +58,10 @@ autoreconf.cmd          ${autoreconf.dir}/s_config
 autoreconf.args         --force --verbose --install \
                         --include=${prefix}/share/aclocal \
                         --include=${autoreconf.dir}/aclocal \
-                        --include=${autoreconf.dir}/aclocal_java \
-patchfiles-append       autoreconf-fix.patch
+                        --include=${autoreconf.dir}/aclocal_java
+
+patchfiles-append       autoreconf-fix.patch \
+                        implicit.patch
 depends_build-append    port:autoconf port:automake port:libtool
 
 configure.dir   ${worksrcpath}/build_unix
@@ -126,7 +130,7 @@ subport ${name}-java {
     }
 }
 
-if {$subport == $name} {
+if {$subport eq $name} {
 
     post-destroot {
         foreach bin [glob -tails -directory ${destroot}${prefix}/bin/ db_*] {
@@ -144,7 +148,7 @@ if {$subport == $name} {
     }
 
     variant compat185 description {build with db185 compatibility mode} {
-	configure.args-append	--enable-compat185
+        configure.args-append   --enable-compat185
     }
 } else {
     # There is no Java specific install target, so delete everything
@@ -158,15 +162,15 @@ if {$subport == $name} {
         # Install the docs into the main ports's doc directory so that
         # the link in index.html to java/index.html works.
         foreach f [lsort [glob -tails -directory ${p}/share/doc/${name} *]] {
-            if {${f} != {java}} {
+            if {${f} ne "java"} {
                 delete ${p}/share/doc/${name}/${f}
             }
         }
         ln -s ${name} ${p}/share/doc/${subport}
 
         foreach f [lsort [glob -tails -directory ${p}/lib/${name} *]] {
-            if {   ${f} != {db.jar}
-                && [string compare -length 10 {libdb_java} ${f}]} {
+            if {${f} ne "db.jar"
+                && [string compare -length 10 "libdb_java" ${f}]} {
                 delete ${p}/lib/${name}/${f}
             }
         }
@@ -188,6 +192,4 @@ if { [variant_isset universal] } {
     }
 }
 
-livecheck.type  regex
-livecheck.url   http://www.oracle.com/technetwork/database/berkeleydb/downloads/index-082944.html
-livecheck.regex {(4\.6(?:\.\d+)*)\.tar\.gz}
+livecheck.type  none

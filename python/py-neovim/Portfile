@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        neovim pynvim 0.4.1
+github.setup        neovim pynvim 0.4.3
 revision            0
 name                py-neovim
 maintainers         {g5pw @g5pw} openmaintainer
@@ -17,11 +17,11 @@ license             Apache-2
 
 supported_archs     noarch
 
-checksums           rmd160  9d3084c884f581426e3f001a6984767cb2f339d4 \
-                    sha256  a1076d50fa6ee23ad5f58af6f72def220792349ad34cde77e0d4343c55a8fe41 \
-                    size    52340
+checksums           rmd160  31842c48610d5b046750b6d9f6bf339b49ba5c11 \
+                    sha256  944223e79aee008ed6ed36d1e893c72d2a1362511831e72197ea2a73e990374d \
+                    size    52817
 
-python.versions     27 35 36 37 38
+python.versions     27 36 37 38 39
 
 if { ${name} ne ${subport} } {
     depends_build-append \

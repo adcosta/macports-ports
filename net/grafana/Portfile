@@ -1,39 +1,49 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           github 1.0
+PortGroup           golang 1.0
+PortGroup           legacysupport 1.1
 
-github.setup        grafana grafana 7.1.3 v
+go.setup            github.com/grafana/grafana 7.5.7 v
+revision            0
+
+homepage            https://grafana.com
 
 description         The tool for beautiful monitoring and metric analytics & \
-                    dashboards for Graphite, InfluxDB & Prometheus & More
+                    dashboards for Graphite, InfluxDB, Prometheus & More
 
 long_description    Grafana allows you to query, visualize, alert on and \
                     understand your metrics no matter where they are stored. \
                     Create, explore, and share dashboards with your team and \
                     foster a data driven culture.
 
-homepage            https://grafana.com/
-
 platforms           darwin
 categories          net sysutils
 license             Apache-2
 
-maintainers         {gmail.com:herby.gillot @herbygillot} openmaintainer
+maintainers         {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
+
+checksums           rmd160  af50ff58a17d78f8d1986c8c45fb16ee20581206 \
+                    sha256  ec1271b5a7202a12cb8046141025ad61aaa42e54425ab40acb7de46461896838 \
+                    size    10926986
 
 github.tarball_from archive
 
-depends_build       port:go \
-                    port:nodejs12 \
+depends_build-append \
+                    path:bin/node:nodejs15 \
                     port:yarn
 
-build.env           GOPATH=${workpath} PATH=${workpath}/bin:$env(PATH)
+# Allow fetching deps at build time for now
+build.env-delete    GO111MODULE=off GOPROXY=off
 
+build.cmd           make
 build.target        all
 
 use_configure       no
 installs_libs       no
 use_parallel_build  no
+use_xcode           yes
 
 set grafana_user        ${name}
 set grafana_conf_dir    ${prefix}/etc/${name}
@@ -47,12 +57,7 @@ set grafana_plist_dir   ${prefix}/etc/LaunchDaemons/org.macports.${name}
 
 add_users               ${grafana_user} group=${grafana_user} realname=Grafana
 
-checksums   rmd160  2ec27040770403dcfc82baf5199a2256bfe83dff \
-            sha256  e76a83345fd9510ca0276fcde2c8e75376d15a051d6d4d3aa699b995d6f6f398 \
-            size    10016434
-
-
-post-extract {
+post-patch {
 
     copy ${filespath}/${grafana_plist} ${workpath}
 
@@ -61,6 +66,12 @@ post-extract {
     reinplace "s|@PREFIX@|${prefix}|g"              ${workpath}/${grafana_plist}
     reinplace "s|@CONFFILE@|${grafana_conf_file}|g" ${workpath}/${grafana_plist}
     reinplace "s|@SHAREDIR@|${grafana_share_dir}|g" ${workpath}/${grafana_plist}
+
+    # Disable nodejs version limitation
+    reinplace {s|"node": ">=12 <13"|"node": ">=12"|} ${worksrcpath}/package.json
+
+    # Run yarn in verbose mode
+    reinplace {s|yarn install|yarn install --verbose|g} ${worksrcpath}/Makefile
 }
 
 

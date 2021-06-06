@@ -31,7 +31,10 @@ use_parallel_build no
 
 depends_build   port:byacc
 
-patch {
+patchfiles      patch-configure.diff \
+                patch-lib-utparse.y.diff \
+                patch-udunits-udunits.c.diff
+post-patch {
         reinplace "s|yacc|${prefix}/bin/byacc|" ${worksrcpath}/lib/Makefile.in
         reinplace "s|\$(prefix)/man|\$(prefix)/share/man|" ${worksrcpath}/port/master.mk.in
 }

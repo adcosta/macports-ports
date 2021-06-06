@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/kubernetes-sigs/krew 0.3.4 v
+go.setup            github.com/kubernetes-sigs/krew 0.4.1 v
+revision            0
 
 description         Find and install kubectl plugins
 
@@ -15,20 +16,39 @@ long_description    Krew is the package manager for kubectl plugins. Krew \
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  e8b370e3e66fa39453a8cf1be4e77fc95b58b2dd \
-                    sha256  9a10120ddf7611547da373240c2cb64a40cc8e6226ec09d662581e9765a62be7 \
-                    size    568686
-
 categories          sysutils
 license             Apache-2
 installs_libs       no
+supported_archs     x86_64
 
-build.target        sigs.k8s.io/krew/cmd/krew
+go.package          sigs.k8s.io/krew
+
+depends_build-append \
+                    port:gox
+
+# krew 0.4.1 isn't building when using vendored dependencies.
+# Allow it to build as it normally would for now.
+build.env-delete    GO111MODULE=off GOPROXY=off
+
+build.env-append    OSARCH=darwin/amd64
+
+build.cmd           ./hack/make-binaries.sh
+build.target
+
+patch {
+    reinplace "s|^git_tag=.*|git_tag=${version}|" ${build.cmd}
+    reinplace {s|^git_rev=.*|git_rev=""|} ${build.cmd}
+}
 
 destroot {
-    xinstall -m 755 ${worksrcpath}/krew ${destroot}${prefix}/bin/
+    xinstall -m 755 ${worksrcpath}/out/bin/${name}-darwin_amd64 \
+        ${destroot}${prefix}/bin/${name}
 
     set krew_doc_dir ${prefix}/share/doc/${name}
     xinstall -d ${destroot}${krew_doc_dir}
     copy {*}[glob ${worksrcpath}/docs/*] ${destroot}${krew_doc_dir}/
 }
+
+checksums           rmd160  671833bbde21bcc1a68098ebd443da6a80f9cff4 \
+                    sha256  f2a10266f7e6b55fac7e6d07c1b116ced5891abdeb6f0afd284c1d53cc90652e \
+                    size    568573

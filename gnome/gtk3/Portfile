@@ -5,11 +5,12 @@ PortGroup           muniversal 1.0
 PortGroup           xcodeversion 1.0
 PortGroup           active_variants 1.1
 PortGroup           compiler_blacklist_versions 1.0
+PortGroup           legacysupport 1.1
 
 name                gtk3
 set real_name       gtk+
 epoch               1
-version             3.24.22
+version             3.24.23
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          gnome x11
 license             LGPL-2.1+
@@ -29,13 +30,14 @@ use_xz              yes
 
 master_sites        gnome:sources/gtk+/${branch}/
 
-checksums           rmd160  af613b25fb40eccd91121de45067c34b9cad4442 \
-                    sha256  bf18a4a5dff28a7b02aaef1b949c2d09c96c18387eddab152bb4cd55a5b67dda \
-                    size    21349784
+checksums           rmd160  d00da1f7f1fb620c7fac28d95858bb734db78bed \
+                    sha256  5d864d248357a2251545b3387b35942de5f66e4c66013f0962eb5cb6f8dae2b1 \
+                    size    21345936
 
 minimum_xcodeversions {9 3.1}
 
-depends_build       port:pkgconfig
+depends_build       port:gtk-doc \
+                    path:bin/pkg-config:pkgconfig
 
 depends_lib         port:atk \
                     path:lib/pkgconfig/pango.pc:pango \
@@ -50,13 +52,16 @@ depends_lib-append  port:mesa
 depends_run         port:shared-mime-info \
                     port:hicolor-icon-theme
 
-patchfiles          O_CLOEXEC-10.6-and-earlier.patch \
-                    patch-accomodate-macOS-11.0-Big-Sur.diff
+# darwin 10 and earlier requires legacy support for O_CLOEXEC
+legacysupport.newest_darwin_requires_legacy 10
 
 # use autoreconf to deal with dependency tracking issues in configure
 use_autoreconf      yes
 autoreconf.args     -fvi
 
+# OS X 10.11 and earlier does not have NSEventTypeTabletProximity and the version check macro is broken
+# see https://gitlab.gnome.org/GNOME/gtk/-/issues/3592
+patchfiles   patch-gdk_quartz-10.11_compat.diff
 
 # gtk3 +quartz uses instancetype which is not available
 # before approximately Xcode 4.6 (#49391)
@@ -69,9 +74,13 @@ if {[variant_isset quartz]} {
     compiler.blacklist  *gcc-3.* *gcc-4.* {clang < 300}
 }
 
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
+
 # gobject-introspection uses g-ir-scanner, which uses $CC from env
 
-if {[variant_isset universal]} {
+if {${universal_possible} && [variant_isset universal]} {
     foreach arch ${configure.universal_archs} {
         lappend merger_build_args(${arch})  CC='${configure.cc} -arch ${arch}'
         lappend merger_build_args(${arch})  CC_FOR_BUILD='${configure.cc} -arch ${arch}'
@@ -158,7 +167,7 @@ platform darwin {
     }
 }
 
-if {[variant_isset universal]} {
+if {${universal_possible} && [variant_isset universal]} {
     set cups /usr/bin/cups-config
     if {[info exists universal_sysroot]} {
         set cups ${universal_sysroot}${cups}
@@ -236,7 +245,6 @@ if {[variant_isset universal]} {
 variant quartz conflicts x11 {
     require_active_variants path:lib/pkgconfig/cairo.pc:cairo quartz
     require_active_variants path:lib/pkgconfig/pango.pc:pango quartz
-    require_active_variants port:gdk-pixbuf2 "" x11
 
     configure.args-append   --enable-quartz-backend
 }

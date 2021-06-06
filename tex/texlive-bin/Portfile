@@ -15,7 +15,7 @@ PortGroup       muniversal 1.0
 
 name            texlive-bin
 version         2020.54632
-revision        2
+revision        4
 
 categories      tex
 maintainers     {dports @drkp}
@@ -94,13 +94,21 @@ patchfiles-append  \
                    patch-texk_texlive_linked_scripts_Makefile.in.diff \
                    patch-texk_kpathsea_Makefile.in.diff \
                    patch-texk_chktex_Makefile.in.diff \
-                   patch-texk_xdvik_xdvi-sh.in.diff
+                   patch-texk_xdvik_xdvi-sh.in.diff \
+                   patch-utils_texdoctk_Makefile.in.diff
 
 # patches to luajit/luajittex's config scripts to correctly detect
 # architecture in universal builds
 patchfiles-append  patch-libs_luajit_configure.diff \
                    patch-texk_web2c_configure.diff
 
+# fix finding of snprintf and vsnprintf on macOS 11.0
+# https://trac.macports.org/ticket/60963
+patchfiles-append  patch-texk_kpathsea_configure.diff
+
+# fix build on ARM64, which does not have "finite()"
+# https://trac.macports.org/ticket/61547
+patchfiles-append  patch-texk_web2c_luatexdir_luafontloader_fontforge_fontforge-fix_finite.diff
 
 post-patch {
     reinplace "s|@@TEXMFDIST@@|${texlive_texmfdist}|" ${worksrcpath}/texk/texlive/linked_scripts/Makefile.in
@@ -108,6 +116,7 @@ post-patch {
     reinplace "s|@@TEXMFDIST@@|${texlive_texmfdist}|" ${worksrcpath}/texk/tex4htk/Makefile.in
     reinplace "s|@@TEXLIVE_BINDIR@@|${texlive_bindir}|" ${worksrcpath}/texk/xdvik/xdvi-sh.in
     reinplace "s|@@TEXMFDIST@@|${texlive_texmfdist}|" ${worksrcpath}/texk/chktex/Makefile.in
+    reinplace "s|@@TEXMFDIST@@|${texlive_texmfdist}|" ${worksrcpath}/utils/texdoctk/Makefile.in
 
     # Defaults for the texmf search paths need to be compiled into
     # libkpathsea -- really, just the location of texmf.cnf, which
@@ -202,8 +211,11 @@ configure.ldflags-delete    -L${prefix}/lib
 configure.cppflags-append   -isystem${prefix}/include
 configure.env-append        LIBRARY_PATH=${prefix}/lib
 
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
 # luajittex does not support ppc
-if {[variant_isset universal]} {
+if {${universal_possible} && [variant_isset universal]} {
     set merger_configure_args(ppc) --disable-luajittex
     set merger_configure_args(ppc64) --disable-luajittex
 } else {
@@ -216,15 +228,9 @@ if {[variant_isset universal]} {
 
 # work around bug in texlive makefiles where $OBJC is not recorded
 # during configure phase
-if {[vercmp [macports_version] 2.5.99] >= 0} {
 build.env                   OBJC=${configure.objc} \
                             "OBJCFLAGS=${configure.objcflags} [get_canonical_archflags objc]" \
                             OBJCXX=${configure.objcxx}
-} else {
-build.env                   OBJC=${configure.objc} \
-                            OBJCFLAGS="${configure.objcflags} [get_canonical_archflags objc]" \
-                            OBJCXX=${configure.objcxx}
-}
 
 # this is not optimal, but we have to duplicate this cxx11 PG logic here
 # because of https://trac.macports.org/ticket/56280
@@ -234,11 +240,7 @@ if {[string match *clang* ${configure.cxx}]} {
 if {[string match macports-libstdc++ ${configure.cxx_stdlib}]} {
         lappend configure.objcxxflags -D_GLIBCXX_USE_CXX11_ABI=0
 }
-if {[vercmp [macports_version] 2.5.99] >= 0} {
 build.env-append        "OBJCXXFLAGS=${configure.objcxxflags} [get_canonical_archflags objcxx]"
-} else {
-build.env-append        OBJCXXFLAGS="${configure.objcxxflags} [get_canonical_archflags objcxx]"
-}
 
 # work around differences between libc++ and libstdc++ headers building with clang
 # https://trac.macports.org/ticket/54358#comment:26
@@ -288,7 +290,7 @@ post-destroot   {
     # by the TeXDist prefpane; it seems that future versions of the
     # prefpane will want these.
     xinstall -d ${destroot}${texlive_mactex_texdistdir}-${version}
-    if {[variant_isset universal]} {
+    if {[variant_exists universal] && [variant_isset universal]} {
         ln -s ${texlive_mactex_texbindir} \
             ${destroot}${texlive_mactex_texdistdir}-${version}/universal-darwin
     } else {
@@ -356,7 +358,7 @@ post-destroot   {
     # by testing the binaries in the directory called `uname -p`.
     # `uname -p` outputs i386 also for x86_64 systems.
     xinstall -d ${destroot}${texdist_mpfd}/Programs
-    if {[variant_isset universal]} {
+    if {[variant_exists universal] && [variant_isset universal]} {
         if {[string match "*ppc*" ${configure.universal_archs}]} {
             ln -s ${texlive_mactex_texbindir} ${destroot}${texdist_mpfd}/Programs/powerpc
             ln -s ${texlive_mactex_texbindir} ${destroot}${texdist_mpfd}/Programs/ppc

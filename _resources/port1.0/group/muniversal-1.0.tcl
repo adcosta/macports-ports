@@ -27,7 +27,7 @@
 #              merger_no_3_archs: if yes, merger will not work correctly if there are three supported architectures
 
 options universal_archs_supported merger_must_run_binaries merger_no_3_archs merger_arch_flag merger_arch_compiler
-default universal_archs_supported {${universal_archs}}
+default universal_archs_supported {${configure.universal_archs}}
 default merger_must_run_binaries no
 default merger_no_3_archs no
 default merger_arch_flag yes
@@ -41,21 +41,21 @@ proc muniversal_arch_flag_supported {args} {
 proc muniversal_get_arch_flag {arch {fortran ""}} {
     global os.arch
     # Prefer -arch to -m
-    if {[muniversal_arch_flag_supported] && ${fortran}==""} {
+    if {[muniversal_arch_flag_supported] && ${fortran} eq ""} {
         set archf "-arch ${arch}"
     } else {
-        if { ${os.arch}=="i386" && ${arch}=="i386" } {
+        if {${os.arch} eq "i386" && ${arch} eq "i386"} {
             set archf -m32
-        } elseif { ${os.arch}=="i386" && ${arch}=="x86_64" } {
+        } elseif {${os.arch} eq "i386" && ${arch} eq "x86_64"} {
             set archf -m64
-        } elseif { ${os.arch}=="powerpc" && ${arch}=="ppc" } {
+        } elseif {${os.arch} eq "powerpc" && ${arch} eq "ppc"} {
             set archf -m32
-        } elseif { ${os.arch}=="powerpc" && ${arch}=="ppc64" } {
+        } elseif {${os.arch} eq "powerpc" && ${arch} eq "ppc64"} {
             set archf -m64
-        } elseif { ${os.arch}=="arm" && ${arch}=="arm64" } {
+        } elseif {${os.arch} eq "arm" && ${arch} eq "arm64"} {
             set archf -m64
         } else {
-            if { ${fortran}=="" } {
+            if {${fortran} eq ""} {
                 return -code error "selected compiler can't build for ${arch}"
             } else {
                 return ""
@@ -98,30 +98,24 @@ proc merger_target_provides {ditem args} {
 
 merger_target_provides ${org.macports.destroot} destroot
 
-variant universal {
-    global universal_archs_to_use
-
-    foreach arch ${universal_archs} {
-        foreach lang {c cxx objc objcxx cpp ld} {
-            configure.universal_${lang}flags-delete -arch ${arch}
-        }
+# add the universal variant if appropriate
+# (replaces the proc of the same name in portutil.tcl)
+proc universal_setup {args} {
+    if {![exists os.universal_supported] || ![option os.universal_supported]} {
+        ui_debug "OS doesn't support universal builds, so not adding the universal variant"
+        return
     }
 
-    # Disabling dependency tracking is only required when building for
-    # multiple architectures simultaneously.
-    configure.universal_args-delete --disable-dependency-tracking
-
-    foreach lang {c cxx objc objcxx cpp ld} {
-        configure.${lang}flags-append   {*}[option configure.universal_${lang}flags]
-    }
+    global merger_must_run_binaries merger_no_3_archs universal_archs_to_use \
+        universal_archs_supported configure.universal_archs os.arch os.major
 
     # user has specified that build platform must be able to run binaries for supported architectures
-    if { ${merger_must_run_binaries}=="yes" } {
-        if {${os.arch}=="arm"} {
+    if {${merger_must_run_binaries} eq "yes"} {
+        if {${os.arch} eq "arm"} {
             set universal_archs_supported [ldelete ${universal_archs_supported} "ppc"]
             set universal_archs_supported [ldelete ${universal_archs_supported} "ppc64"]
             set universal_archs_supported [ldelete ${universal_archs_supported} "i386"]
-        } elseif { ${os.arch}=="i386" } {
+        } elseif {${os.arch} eq "i386"} {
             set universal_archs_supported [ldelete ${universal_archs_supported} "ppc64"]
             set universal_archs_supported [ldelete ${universal_archs_supported} "arm64"]
             if {${os.major} >= 9 && [sysctl hw.cpu64bit_capable] == 0} {
@@ -139,41 +133,35 @@ variant universal {
 
     # set universal_archs_to_use as the intersection of universal_archs and universal_archs_supported
     set universal_archs_to_use {}
-    foreach arch ${universal_archs} {
-        set arch_ok no
-        foreach archt ${universal_archs_supported} {
-            if { ${arch}==${archt} } {
-                set arch_ok yes
-            }
-        }
-        if { ${arch_ok}=="yes" } {
+    foreach arch ${configure.universal_archs} {
+        if {${arch} in ${universal_archs_supported}} {
             lappend universal_archs_to_use ${arch}
         }
     }
 
     # if merger_no_3_archs is yes, prune universal_archs_to_use until it only has two elements
-    if { ${merger_no_3_archs}=="yes" } {
+    if {${merger_no_3_archs} eq "yes"} {
         if { [llength ${universal_archs_to_use}] >= 3 } {
             # First, try to remove ppc64 unless we're powerpc
-            if { ${os.arch} != "powerpc" } {
+            if {${os.arch} ne "powerpc"} {
                 set universal_archs_to_use [ldelete ${universal_archs_to_use} "ppc64"]
             }
         }
 
         if { [llength ${universal_archs_to_use}] >= 3 } {
             # Next, delete archs that are not evolutionarilary adjacent
-            if { ${os.arch} == "powerpc" } {
+            if {${os.arch} eq "powerpc"} {
                 set universal_archs_to_use [ldelete ${universal_archs_to_use} "arm64"]
-            } else if {${os.arch} == "arm" } {
+            } else if {${os.arch} eq "arm"} {
                 set universal_archs_to_use [ldelete ${universal_archs_to_use} "ppc"]
             }
         }
 
         if { [llength ${universal_archs_to_use}] >= 3 } {
             # Next continue to prune architectures that are not evolutionarilary adjacent
-            if { ${os.arch} == "arm" } {
+            if {${os.arch} eq "arm"} {
                 set universal_archs_to_use [ldelete ${universal_archs_to_use} "i386"]
-            } else if { ${os.arch} == "powerpc" } {
+            } else if {${os.arch} eq "powerpc"} {
                 set universal_archs_to_use [ldelete ${universal_archs_to_use} "x86_64"]
             }
         }
@@ -184,9 +172,9 @@ variant universal {
 
         if { [llength ${universal_archs_to_use}] >= 3 } {
             # Lastly, remove remaining cross-compiled arch
-            if { ${os.arch} == "powerpc" } {
+            if {${os.arch} eq "powerpc"} {
                 set universal_archs_to_use [ldelete ${universal_archs_to_use} "i386"]
-            } else if { ${os.arch} == "i386" } {
+            } else if {${os.arch} eq "i386"} {
                 set universal_archs_to_use [ldelete ${universal_archs_to_use} "ppc"]
             }
         }
@@ -197,8 +185,32 @@ variant universal {
         }
     }
 
+    # ensure correct archs are recorded in the registry, archive name, etc
+    configure.universal_archs {*}${universal_archs_to_use}
+
+    if {[llength ${configure.universal_archs}] < 2} {
+        ui_debug "muniversal: < 2 archs supported, not adding universal variant"
+    } else {
+
+ui_debug "muniversal: adding universal variant"
+
+variant universal {
+    foreach arch ${configure.universal_archs} {
+        foreach lang {c cxx objc objcxx cpp ld} {
+            configure.universal_${lang}flags-delete -arch ${arch}
+        }
+    }
+
+    # Disabling dependency tracking is only required when building for
+    # multiple architectures simultaneously.
+    configure.universal_args-delete --disable-dependency-tracking
+
+    foreach lang {c cxx objc objcxx cpp ld} {
+        configure.${lang}flags-append   {*}[option configure.universal_${lang}flags]
+    }
+
     # if Portfile has configure {...}, save the procedure
-    if {[info procs userproc-org.macports.configure-configure-0] != ""} {
+    if {[info procs userproc-org.macports.configure-configure-0] ne ""} {
         rename userproc-org.macports.configure-configure-0 userproc-org.macports.configure-configure-1
     }
 
@@ -249,7 +261,7 @@ variant universal {
             set archf [muniversal_get_arch_flag ${arch}]
             set archff [muniversal_get_arch_flag ${arch} "fortran"]
 
-            if { ${merger_arch_flag} != "no" } {
+            if {${merger_arch_flag} ne "no"} {
                 configure.cflags-append    ${archf}
                 configure.cxxflags-append  ${archf}
                 configure.objcflags-append ${archf}
@@ -271,13 +283,13 @@ variant universal {
             # Don't set the --host unless we have to.
             set host ""
             if { [info exists merger_host($arch)] } {
-                if { $merger_host($arch) != "" } {
+                if {$merger_host($arch) ne ""} {
                     set host  --host=$merger_host($arch)
                 }
-            } elseif {[file tail ${configure.cmd}] != "cmake"} {
+            } elseif {[file tail ${configure.cmd}] ne "cmake"} {
                 # check if building for a word length we can't run
                 set bits_differ 0
-                if {(${arch}=="x86_64" || ${arch}=="ppc64") &&
+                if {${arch} in [list ppc64 x86_64] &&
                     (${os.major} < 9 || [sysctl hw.cpu64bit_capable] == 0)} {
                     set bits_differ 1
                 }
@@ -289,9 +301,9 @@ variant universal {
 
                 # check if building for a completely different arch
                 if {$bits_differ || $config_guess_bug
-                                 || (${os.arch}=="arm" && (${arch}=="i386" || ${arch}=="x86_64" || ${arch}=="ppc" || ${arch}=="ppc64"))
-                                 || (${os.arch}=="i386" && (${arch}=="arm64" || ${arch}=="ppc" || ${arch}=="ppc64"))
-                                 || (${os.arch}=="powerpc" && (${arch}=="i386" || ${arch}=="x86_64"))} {
+                                 || (${os.arch} eq "arm" && ${arch} in [list i386 ppc ppc64 x86_64])
+                                 || (${os.arch} eq "i386" && ${arch} in [list arm64 ppc ppc64])
+                                 || (${os.arch} eq "powerpc" && ${arch} in [list i386 x86_64])} {
                     switch -- ${arch} {
                         arm64   {set host "--host=aarch64-apple-${os.platform}${os.version}"}
                         x86_64  {set host "--host=x86_64-apple-${os.platform}${os.version}"}
@@ -301,7 +313,7 @@ variant universal {
                     }
                 }
             }
-            if {$host != ""} {
+            if {$host ne ""} {
                 configure.args-append       ${host}
             }
 
@@ -327,13 +339,13 @@ variant universal {
                 configure.fc        [portconfigure::configure_get_compiler fc]
             }
 
-            if { ${merger_arch_compiler} != "no" } {
+            if {${merger_arch_compiler} ne "no"} {
                 configure.cc   ${configure.cc}   ${archf}
                 configure.cxx  ${configure.cxx}  ${archf}
                 configure.objc ${configure.objc} ${archf}
-                if { ${configure.fc}  != "" } { configure.fc   ${configure.fc}  ${archff} }
-                if { ${configure.f77} != "" } { configure.f77  ${configure.f77} ${archff} }
-                if { ${configure.f90} != "" } { configure.f90  ${configure.f90} ${archff} }
+                if {${configure.fc}  ne ""} {configure.fc   ${configure.fc}  ${archff}}
+                if {${configure.f77} ne ""} {configure.f77  ${configure.f77} ${archff}}
+                if {${configure.f90} ne ""} {configure.f90  ${configure.f90} ${archff}}
             }
 
             set configure_dir_save  ${configure.dir}
@@ -372,7 +384,7 @@ variant universal {
                 }
             }
 
-            if {[info procs userproc-org.macports.configure-configure-1] != ""} {
+            if {[info procs userproc-org.macports.configure-configure-1] ne ""} {
                 set    worksrcpath_save ${worksrcpath}
                 option worksrcpath      ${worksrcpath}-${arch}
 
@@ -411,7 +423,7 @@ variant universal {
             if { [info exists merger_configure_env(${arch})] } {
                 configure.env-delete        {*}$merger_configure_env(${arch})
             }
-            if { ${merger_arch_flag} != "no" } {
+            if {${merger_arch_flag} ne "no"} {
                 configure.ldflags-delete   ${archf}
                 configure.f90flags-delete  ${archff}
                 configure.fcflags-delete   ${archff}
@@ -426,7 +438,7 @@ variant universal {
     }
 
     # if Portfile has build {...}, save the procedure
-    if {[info procs userproc-org.macports.build-build-0] != ""} {
+    if {[info procs userproc-org.macports.build-build-0] ne ""} {
         rename userproc-org.macports.build-build-0 userproc-org.macports.build-build-1
     }
 
@@ -461,7 +473,7 @@ variant universal {
                 }
             }
 
-            if {[info procs userproc-org.macports.build-build-1] != ""} {
+            if {[info procs userproc-org.macports.build-build-1] ne ""} {
                 set    worksrcpath_save ${worksrcpath}
                 option worksrcpath      ${worksrcpath}-${arch}
 
@@ -485,7 +497,7 @@ variant universal {
     }
 
     # if Portfile has destroot {...}, save the procedure
-    if {[info procs userproc-org.macports.destroot-destroot-0] != ""} {
+    if {[info procs userproc-org.macports.destroot-destroot-0] ne ""} {
         rename userproc-org.macports.destroot-destroot-0 userproc-org.macports.destroot-destroot-1
     }
 
@@ -525,7 +537,7 @@ variant universal {
                 }
             }
 
-            if {[info procs userproc-org.macports.destroot-destroot-1] != ""} {
+            if {[info procs userproc-org.macports.destroot-destroot-1] ne ""} {
                 set    worksrcpath_save ${worksrcpath}
                 option worksrcpath      ${worksrcpath}-${arch}
                 set    destroot_save    ${destroot}
@@ -557,14 +569,14 @@ variant universal {
 
         set ditem ${org.macports.destroot}
         set procedure [ditem_key $ditem merger-post]
-        if {$procedure != ""} {
+        if {$procedure ne ""} {
             set targetname [ditem_key $ditem name]
             ui_debug "Executing org.macports.merger-post-destroot"
             set result [catch { $procedure $targetname } errstr]
             # Save variables in order to re-throw the same error code.
             set errcode $::errorCode
             set errinfo $::errorInfo
-            if {$result != 0} {
+            if {$result ne 0} {
                 set portname $subport
                 ui_error "$targetname for port $portname returned: $errstr"
                 ui_debug "Error code: $errcode"
@@ -610,7 +622,7 @@ variant universal {
             xinstall -d -m 0755 ${dir}
 
             foreach fl [glob -directory ${dir2} -tails -nocomplain * .*] {
-                if { ${fl} == "." || ${fl} == ".." } {
+                if {${fl} in [list . ..]} {
                     continue
                 }
                 if { ![muniversal_file_or_symlink_exists ${dir1}/${fl}] } {
@@ -620,7 +632,7 @@ variant universal {
                 }
             }
             foreach fl [glob -directory ${dir1} -tails -nocomplain * .*] {
-                if { ${fl} == "." || ${fl} == ".." } {
+                if {${fl} in [list . ..]} {
                     continue
                 }
                 if { ![muniversal_file_or_symlink_exists ${dir2}/${fl}] } {
@@ -632,16 +644,16 @@ variant universal {
                     ui_debug "universal: merge: merging ${prefixDir}/${fl} from ${base1} and ${base2}"
 
                     # Ensure files are of same type
-                    if { [file type ${dir1}/${fl}]!=[file type ${dir2}/${fl}] } {
+                    if {[file type ${dir1}/${fl}] ne [file type ${dir2}/${fl}]} {
                         error "${dir1}/${fl} and ${dir2}/${fl} are of different types"
                     }
 
-                    if { [file type ${dir1}/${fl}]=="link" } {
+                    if {[file type ${dir1}/${fl}] eq "link"} {
                         # Files are links
                         ui_debug "universal: merge: ${prefixDir}/${fl} is a link"
 
                         # Ensure links don't point to different things
-                        if { [file readlink ${dir1}/${fl}]==[file readlink ${dir2}/${fl}] } {
+                        if {[file readlink ${dir1}/${fl}] eq [file readlink ${dir2}/${fl}]} {
                             copy ${dir1}/${fl} ${dir}
                         } else {
                             error "${dir1}/${fl} and ${dir2}/${fl} point to different targets (can't merge them)"
@@ -667,11 +679,11 @@ variant universal {
                                 # lipo and libtool have failed, so assume they are text files to be merged
                                 set dontdiff no
                                 foreach dont ${merger_dont_diff} {
-                                    if { ${dont}=="${prefixDir}/${fl}" } {
+                                    if {${dont} eq "${prefixDir}/${fl}"} {
                                         set dontdiff yes
                                     }
                                 }
-                                if { ${dontdiff}==yes } {
+                                if {${dontdiff} eq yes} {
                                     # user has specified that diff does not work
                                     # attempt to give each file a unique name and create a new file which includes one of the original depending on the arch
 
@@ -698,7 +710,7 @@ variant universal {
                                             # To find these modules, GFortran might require -M or -J.
                                             file mkdir ${dir}/mods32
                                             file mkdir ${dir}/mods64
-                                            if { ${arch1}=="i386" || ${arch1}=="ppc" } {
+                                            if {${arch1} in [list i386 ppc]} {
                                                 copy ${dir1}/${fl} ${dir}/mods32
                                                 copy ${dir2}/${fl} ${dir}/mods64
                                             } else {
@@ -712,7 +724,7 @@ variant universal {
                                         }
                                         *.la {
                                             global destroot.delete_la_files
-                                            if {${destroot.delete_la_files} == "yes"} {
+                                            if {${destroot.delete_la_files} eq "yes"} {
                                                 ui_debug "universal: merge: ${prefixDir}/${fl} differs in ${base1} and ${base2}; ignoring due to delete_la_files"
                                             } else {
                                                 return -code error "${prefixDir}/${fl} differs in ${base1} and ${base2} and cannot be merged"
@@ -786,7 +798,7 @@ variant universal {
                                             }
                                         }
                                         default {
-                                            if { ! [catch {system "test `head -c2 ${dir1}/${fl}` == '#!'"}] } {
+                                            if { ! [catch {system "test \"`head -c2 ${dir1}/${fl}`\" = '#!'"}] } {
                                                 # Shell script, hopefully striping out arch flags works...
                                                 mergeStripArchFlags ${dir1} ${dir2} ${dir} ${fl}
                                             } elseif { ! [catch {system "/usr/bin/diff -dw ${diffFormat} \"${dir1}/${fl}\" \"${dir2}/${fl}\" > \"${dir}/${fl}\"; test \$? -le 1"}] } {
@@ -860,7 +872,9 @@ variant universal {
         foreach arch ${universal_archs_to_use} {
             # Rosetta does not translate G5 instructions
             # PowerPC systems can't translate Intel instructions
-            if { (${os.arch}=="i386" && ${arch}!="ppc64") || (${os.arch}=="powerpc" && ${arch}!="i386" && ${arch}!="x86_64") } {
+            if {(${os.arch} eq "arm" && ${arch} in [list arm64 x86_64])
+                || (${os.arch} eq "i386" && ${arch} in [list i386 ppc x86_64])
+                || (${os.arch} eq "powerpc" && ${arch} in [list ppc ppc64])} {
                 ui_info "$UI_PREFIX [format [msgcat::mc "Testing %1\$s for architecture %2\$s"] ${subport} ${arch}]"
 
                 if { [info exists merger_test_env(${arch})] } {
@@ -899,6 +913,8 @@ variant universal {
             }
         }
     }
+}
+}
 }
 
 # [muniversal_file_or_symlink_exists ${f}] tells you if ${f} exists. And unlike

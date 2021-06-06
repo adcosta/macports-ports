@@ -8,7 +8,7 @@ name                gcc46
 # Whenever this port is bumped for version/revision, please revbump dragonegg-3.4-gcc-4.6
 epoch               1
 version             4.6.4
-revision            14
+revision            15
 platforms           darwin
 categories          lang
 maintainers         nomaintainer
@@ -214,7 +214,7 @@ post-destroot {
             ln -s ${prefix}/lib/libgcc/${dylib} ${destroot}${prefix}/lib/${name}/${dylib}
         }
 
-        if {[variant_isset universal]} {
+        if {[variant_exists universal] && [variant_isset universal]} {
             foreach archdir [glob ${destroot}${prefix}/lib/${name}/*/] {
                 if {[file exists ${archdir}/${dylib}]} {
                     delete ${archdir}/${dylib}

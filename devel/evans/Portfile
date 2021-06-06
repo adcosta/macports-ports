@@ -3,12 +3,10 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/ktr0731/evans 0.9.0
+go.setup            github.com/ktr0731/evans 0.9.3
+revision            0
 
-maintainers         {gmail.com:herby.gillot @herbygillot} \
-                    openmaintainer
-
-homepage            https://evans.syfm.me/
+homepage            https://evans.syfm.me
 
 description         Evans is a more expressive universal gRPC client
 
@@ -21,10 +19,16 @@ categories          devel
 license             MIT
 installs_libs       no
 
-checksums           rmd160  616a15ea9e8a88dc3bed2f87ac36641d85a9c094 \
-                    sha256  203cf60b24c2a65672f19f4e256b664f973fba5a7eb7c18c9cccd6489c73415d \
-                    size    34528799
+maintainers         {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
+
+# Issues with vendored deps: allow fetching deps at build time
+build.env-delete    GO111MODULE=off GOPROXY=off
 
 destroot {
     xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
 }
+
+checksums           rmd160  6ebb68dae0657ee791f4201816de2506640cc908 \
+                    sha256  d39b32dd638c15e9b1f09902600d521803d3b10f5985f10349829fddc7b6563d \
+                    size    34539819

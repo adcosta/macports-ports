@@ -4,7 +4,8 @@ PortSystem          1.0
 PortGroup           muniversal 1.0
 
 name                fldigi
-version             4.1.14
+version             4.1.18
+revision            0
 # same sources but with different version
 set version_flarq   4.3.7
 categories          science
@@ -19,12 +20,13 @@ long_description    Fldigi (Fast Light Digital Modem Application), is a \
 homepage            http://www.w1hkj.com
 master_sites        http://www.w1hkj.com/files/${name}/
 
-checksums           rmd160  644f873c91019cd50183156690caf4e900246ffd \
-                    sha256  b21bec36a5ed1c44207da9128c52108ad5263bb2b0772932f9c7f500f6ea2643 \
-                    size    4792805
+checksums           rmd160  cc8cb2d3c8595f83ddfac5cdcc6282e791872713 \
+                    sha256  3c7fd84ab3a84ba4525b251e9d56120daee626a3831684a974fdad476f90270d \
+                    size    4847091
 
 depends_build-append \
-    port:pkgconfig
+    port:pkgconfig \
+    port:asciidoc
 
 depends_lib-append \
     path:lib/libfltk.dylib:fltk \
@@ -35,7 +37,8 @@ depends_lib-append \
     port:portaudio
 
 configure.args-append \
-    --without-pulseaudio
+    --without-pulseaudio \
+    --with-asciidoc
 
 # build fix: remove -no-stack-check on macOS < 10.10
 if {${os.platform} eq "darwin" && ${os.major} <= 13} {
@@ -47,14 +50,16 @@ if {${os.platform} eq "darwin" && ${os.major} <= 13} {
 # We put this into a pre-configure block so it can be evaluated _after_ platform selection.
 pre-configure {
 
-    # enable optimization (SSE3) on all Intel hardwares
-    if {[variant_isset universal]} {
-        set merger_configure_args(x86_64) configure.args-append --enable-optimizations=sse3
-        set merger_configure_args(i386)   configure.args-append --enable-optimizations=sse3
+    # enable optimization on all Intel hardwares
+    if {[variant_exists universal] && [variant_isset universal]} {
+        set merger_configure_args(x86_64) configure.args-append --enable-optimizations=x86-64
+        set merger_configure_args(i386)   configure.args-append --enable-optimizations=i686
+    } elseif {[variant_isset native]} {
+        configure.args-append --enable-optimizations=native
     } else {
         switch -- ${configure.build_arch} {
-            x86_64 { configure.args-append --enable-optimizations=sse3 }
-            i386   { configure.args-append --enable-optimizations=sse3 }
+            x86_64 { configure.args-append --enable-optimizations=x86-64 }
+            i386   { configure.args-append --enable-optimizations=i686 }
         }
     }
 
@@ -84,6 +89,10 @@ variant pulseaudio description {Build fldigi with pulseaudio support} {
     configure.args-append --with-pulseaudio
     depends_lib-append \
         port:pulseaudio
+}
+
+variant native conflicts universal description {Enable native cpu flags optimization} {
+    # check pre-configure
 }
 
 default_variants-append +bundle

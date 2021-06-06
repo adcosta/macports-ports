@@ -4,17 +4,19 @@ PortSystem          1.0
 
 PortGroup           legacysupport 1.0
 
-legacysupport.newest_darwin_requires_legacy 13
+legacysupport.newest_darwin_requires_legacy 15
 
 name                go
 epoch               2
-version             1.15
+version             1.16.5
+revision            0
+
 categories          lang
 platforms           darwin freebsd linux
 license             BSD
-maintainers         {ciserlohn @ci42} openmaintainer
 description         compiled, garbage-collected, concurrent programming \
                     language developed by Google Inc.
+
 long_description    \
     The Go programming language is an open source project to make programmers \
     more productive. Go is expressive, concise, clean, and efficient. Its \
@@ -26,23 +28,33 @@ long_description    \
     language that feels like a dynamically typed, interpreted language. Go \
     is developed by Google Inc.
 
-homepage            https://golang.org/
+homepage            https://golang.org
 master_sites        https://storage.googleapis.com/golang/
 distfiles           ${name}${version}.src.tar.gz
 worksrcdir          ${name}
 
-checksums           rmd160  c3854e2d4912723cf761d648e1380290c4ba8b60 \
-                    sha256  69438f7ed4f532154ffaf878f3dfd83747e7a00b70b3556eddabf7aaee28ac3a \
-                    size    23002901
+maintainers         {ciserlohn @ci42} \
+                    {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
 
-depends_build       port:go-1.4
+set go_src_dist     ${name}${version}.src${extract.suffix}
+
+checksums           ${go_src_dist} \
+                    rmd160  dfbe9538c56f60215d699b611aac1db182751e5c \
+                    sha256  7bfa7e5908c7cc9e75da5ddf3066d7cbcf3fd9fa51945851325eebc17f50ba80 \
+                    size    20921372
+
+extract.only        ${go_src_dist}
 
 set GOROOT          ${worksrcpath}
 set GOROOT_FINAL    ${prefix}/lib/${name}
 
-supported_archs     i386 x86_64
+supported_archs     arm64 i386 x86_64
 
-switch ${build_arch} {
+switch ${configure.build_arch} {
+    arm64 {
+        set GOARCH arm64
+    }
     i386 {
         set GOARCH 386
     }
@@ -59,12 +71,14 @@ use_configure       no
 build.dir           ${worksrcpath}/src
 build.cmd           ./make.bash
 build.target
-build.env           GOROOT_BOOTSTRAP=${prefix}/lib/go-1.4 \
-                    GOROOT=${GOROOT} \
+build.env           GOROOT=${GOROOT} \
                     GOARCH=${GOARCH} \
                     GOOS=darwin \
                     GOROOT_FINAL=${GOROOT_FINAL} \
                     CC=${configure.cc}
+# Set build.jobs to -1 to disable MacPorts from adding the -j flag for
+# parallel builds, since the build.cmd contains "make".
+build.jobs          -1
 
 if {${os.platform} eq "darwin" && ${os.major} <= ${legacysupport.newest_darwin_requires_legacy}} {
     # The legacy support PG will not actually change anything in this port directly,
@@ -73,11 +87,26 @@ if {${os.platform} eq "darwin" && ${os.major} <= ${legacysupport.newest_darwin_r
 
     # Older compilers don't support the -Wno-nullability-completeness flag and if
     # that's the case, they won't need it anyway, so just patch it out.
-    patchfiles-append   cgo-drop-no-nullability-completeless.patch
+    patchfiles-append   patch-cgo-drop-no-nullability-completeness.diff
+
+    # Fix building with the -x flag ("show all commands as they are executed"),
+    # useful for debugging of the bootstrapping process.
+    # Only needed for debugging the build/bootstrapping process.
+    # FIXME: report this as a bug and have it or a better version of it upstreamed.
+    #patchfiles-append   patch-go-internal-buildid-and-gc-fix-debug.diff
+
+    # Show all commands while building packages and only build one package at a time in
+    # the last bootstrapping step.
+    # Only needed for debugging the build/bootstrapping process.
+    #patchfiles-append   patch-build-show-commands.diff
 
     build.env-append    "GO_EXTLINK_ENABLED=1" \
                         "GO_LDFLAGS=\"-extldflags=${configure.ldflags}\"" \
-                        "BOOT_GO_LDFLAGS=-extldflags=${configure.ldflags}"
+                        "BOOT_GO_LDFLAGS=-extldflags=${configure.ldflags}" \
+                        "CGO_LDFLAGS=-g -O2 ${configure.ldflags}"
+
+    # Might be useful while debugging issues.
+    #build.args          "-v=3"
 
     notes-append [subst {
                     go had to be specially patched and built to work on your platform.
@@ -86,7 +115,8 @@ if {${os.platform} eq "darwin" && ${os.major} <= ${legacysupport.newest_darwin_r
                     so make sure change your environment to use the following variables:
                       * GO_EXTLINK_ENABLED="1"
                     to always force go to use the external gcc or clang linker and
-                      * GO_LDFLAGS="\\\"-extldflags=${configure.ldflags}\\\""
+                      * GO_LDFLAGS="\\\"-extldflags=\${configure.ldflags}\\\""
+                      * CGO_LDFLAGS="-g -O2 \${configure.ldflags}"
                     to force-link any binary against the legacy support library.\
                     Use exactly the quoting provided here, even if it may look odd,\
                     or compilation will fail.
@@ -98,6 +128,35 @@ if {${os.platform} eq "darwin" && ${os.major} <= ${legacysupport.newest_darwin_r
 }
 
 use_parallel_build  no
+
+if {${configure.build_arch} eq "arm64"} {
+
+    # Use a temporary installation of the binary ARM64 Go distribution to
+    # build Go for ARM64
+    set go_bin_dist         ${name}${version}.darwin-arm64${extract.suffix}
+    set go_bin_path         ${workpath}/go_prebuilt
+
+    build.env-append        GOROOT_BOOTSTRAP=${go_bin_path}/go
+
+    distfiles-append        ${go_bin_dist}
+
+    checksums-append        ${go_bin_dist} \
+                            rmd160  8d71eb0ad4554df11079df3f5878800688fc7097 \
+                            sha256  7b1bed9b63d69f1caa14a8d6911fbd743e8c37e21ed4e5b5afdbbaa80d070059 \
+                            size    125731583
+
+    post-extract {
+        xinstall -d ${go_bin_path}
+        system -W ${go_bin_path} \
+            "${extract.cmd} ${extract.pre_args} ${distpath}/${go_bin_dist} ${extract.post_args}"
+    }
+
+} else {
+
+    build.env-append        GOROOT_BOOTSTRAP=${prefix}/lib/go-1.4
+
+    depends_build-append    port:go-1.4
+}
 
 post-build {
     system "find ${worksrcpath} -type d -name .hg* -print0 | xargs -0 rm -rf"

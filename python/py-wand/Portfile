@@ -5,14 +5,14 @@ PortGroup           python 1.0
 
 name                py-wand
 python.rootname     Wand
-version             0.6.2
+version             0.6.6
 revision            0
 categories-append   graphics
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -21,9 +21,9 @@ long_description    ${description}
 
 homepage            http://wand-py.org/
 
-checksums           rmd160  29a08b5b2b19d3e06792af44451ff51eb82e4d2b \
-                    sha256  65440e478b595aaa18483e25091adacf6d4458c49c2fd8d59e0fd44a7393a14a \
-                    size    10503865
+checksums           rmd160  ca6316736937d5f7b2384ed6fd4588b30d5b0122 \
+                    sha256  540a2da5fb3ada1f0abf6968e0fa01ca7de6cd517f3be5c52d03a4fc8d54d75e \
+                    size    11477246
 
 if {${name} ne ${subport}} {
     depends_build-append \

@@ -3,11 +3,11 @@
 PortSystem          1.0
 
 name                web-ext
-version             4.1.0
+version             5.4.1
 revision            0
-checksums           rmd160  4d23463bfcb9113cc8523e741176a9aa17574e3a \
-                    sha256  330e634d988fbafba584fc09ee5fcf42ff058d778373072ea12d7f530b26203c \
-                    size    70866
+checksums           rmd160  10d3b7eac6061c70d887961b211795388f545d2b \
+                    sha256  09a0d33b3b2216e1d6de202e3cdfcd36ffabbe9436434bea0628678c6bdeaec3 \
+                    size    76394
 
 categories          devel
 maintainers         nomaintainer
@@ -23,7 +23,7 @@ extract.suffix      .tgz
 
 platforms           darwin
 
-depends_lib-append  path:bin/node:nodejs10
+depends_lib-append  path:bin/node:nodejs14
 
 depends_build-append \
                     path:bin/npm:npm6

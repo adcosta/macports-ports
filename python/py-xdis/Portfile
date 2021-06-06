@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-xdis
-version             5.0.3
+version             5.0.9
 # Note if you update this, make sure it supports the newest versions
 # of pythonXY in magics.py
 platforms           darwin
@@ -25,11 +25,11 @@ long_description \
 
 homepage            https://github.com/rocky/python-xdis
 
-checksums           rmd160  66c2d5dbc671c5c077cd957a668202055b4030a0 \
-                    sha256  69653ec580651cbba8ae1a36b880c10f2bf4ba76b3fc039960ffa45a64af5f21 \
-                    size    232715
+checksums           rmd160  410a61684b0ec773d0ebf14818ebcde16fa815b4 \
+                    sha256  ba217fbd7bfb24fdca4c124cf941e4ff8878eb45f07ff0d4730deeb01f79561b \
+                    size    235293
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-click \

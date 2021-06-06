@@ -8,10 +8,10 @@ PortGroup           legacysupport 1.0
 
 name                gegl-devel
 conflicts           gegl
-set git_commit      eceb8567fbe37738436276cf453f7598d8493ea0
-set git_date        20200221
-version             0.4.23-${git_date}
-revision            3
+set git_commit      123e846bed6c74696f25e150f425030d5b886ed2
+set git_date        20201101
+version             0.4.27-${git_date}
+revision            1
 license             {GPL-3+ LGPL-3+}
 categories          graphics
 maintainers         {devans @dbevans}
@@ -32,15 +32,14 @@ git.branch          ${git_commit}
 
 depends_build-append \
                     port:pkgconfig \
-                    port:w3m \
                     port:python38
 
 depends_lib         port:babl-devel \
                     path:lib/pkgconfig/cairo.pc:cairo \
                     path:lib/pkgconfig/pango.pc:pango \
                     port:gdk-pixbuf2 \
-                    port:jpeg \
-                    port:luajit \
+                    path:include/turbojpeg.h:libjpeg-turbo \
+                    path:lib/libluajit-5.1.2.dylib:luajit \
                     port:exiv2 \
                     port:gexiv2 \
                     port:gobject-introspection \
@@ -57,7 +56,6 @@ depends_lib         port:babl-devel \
                     port:py38-gobject3 \
                     port:poppler \
                     port:SuiteSparse_UMFPACK \
-                    port:vala \
                     port:webp
 
 # proposed fix for 32 bit builds
@@ -71,21 +69,24 @@ post-patch {
     }
 }
 
-# needs C++11
-compiler.cxx_standard 2011
+# needs C++14 C11
+compiler.cxx_standard 2014
+compiler.c_standard   2011
 
-# blacklist compilers that do not support C11 (redefinition of typedef 'GeglDownscale2x2Fun' in gegl-algorithms.h at line 51)
-# tweak gcc blacklisting for 10.5 ppc
 # version 0.4.14+ requires apple clang 700.0.72 (Xcode 7.0.0) to build new parallelization code
 # ../gegl/gegl-parallel.h:134:29: error: expected expression '[] (gint     i,'
-compiler.blacklist-append  *gcc-3.* *gcc-4.* {clang < 700}
+compiler.blacklist-append  {clang < 700}
 
-set python_framework      ${frameworks_dir}/Python.framework/Versions/3.8
-configure.pkg_config_path ${python_framework}/lib/pkgconfig
+set python_framework        ${frameworks_dir}/Python.framework/Versions/3.8
+configure.pkg_config_path   ${python_framework}/lib/pkgconfig
+
+# disable vala extensions by default (currently broken)
+# enable with +vala variant for testing
+configure.args-append       -Dvapigen=disabled
 
 # at present, luajit does not build on PowerPC
 platform darwin powerpc {
-    depends_lib-delete port:luajit
+    depends_lib-delete path:lib/libluajit-5.1.2.dylib:luajit
     configure.args-append -Dlua=false
 }
 
@@ -105,8 +106,11 @@ platform darwin powerpc {
 #    }
 #}
 
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
 # gobject-introspection uses g-ir-scanner, which uses $CC from env
-if {[variant_isset universal]} {
+if {${universal_possible} && [variant_isset universal]} {
     foreach arch ${configure.universal_archs} {
         lappend merger_build_env(${arch})  "CC=${configure.cc} -arch ${arch}"
         lappend merger_destroot_env(${arch})  "CC=${configure.cc} -arch ${arch}"
@@ -119,6 +123,11 @@ if {[variant_isset universal]} {
 variant gtk_docs description {Build API docs using gtk-doc} {
     depends_build-append    port:gtk-doc
     configure.args-append -Ddocs=true
+}
+
+variant vala description {Enable build of vala extensions} {
+    depends_lib-append port:vala
+    configure.args-delete -Dvapigen=disabled
 }
 
 variant workshop description {Enable build of workshop operations} {

@@ -3,15 +3,16 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        qpdf qpdf 10.0.1 release-qpdf-
-checksums           rmd160  cc0864688a307219ca72e1671ab39f9092e87503 \
-                    sha256  5d2277c738188b7f4e3f01a6db7f2937ed6df54671f1fba834cd3d7ff865827b \
-                    size    18399985
+github.setup        qpdf qpdf 10.3.2 release-qpdf-
+revision            0
+checksums           rmd160  ca150df40d7679f2035479381a36f853af070787 \
+                    sha256  062808c40ef8741ec8160ae00168638a712cfa1d4bf673e8e595ab5eba1da947 \
+                    size    18943834
 
 categories          textproc pdf
 platforms           darwin
 license             Apache-2
-maintainers         nomaintainer
+maintainers         {mps @Schamschula} openmaintainer
 
 description         content-preserving PDF transformation system
 long_description    QPDF is a command-line program that does structural, \
@@ -20,8 +21,10 @@ long_description    QPDF is a command-line program that does structural, \
 homepage            http://qpdf.sourceforge.net/
 github.tarball_from releases
 
-depends_lib         port:jpeg \
+depends_lib         path:include/turbojpeg.h:libjpeg-turbo \
                     port:gnutls \
                     port:libxml2 \
                     port:libxslt \
                     port:zlib
+
+compiler.cxx_standard   2014

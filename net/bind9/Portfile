@@ -1,94 +1,100 @@
-PortSystem 1.0
-PortGroup  legacysupport 1.0
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:et:sw=4:ts=4:sts=4
 
-name			bind9
-version			9.16.5
-categories		net
-maintainers		{geeklair.net:dluke @danielluke}
-platforms		darwin freebsd sunos
+PortSystem      1.0
+PortGroup       legacysupport 1.0
 
-description		Domain Name System server
-license			MPL
+name            bind9
+version         9.16.16
+categories      net
+maintainers     {geeklair.net:dluke @danielluke}
+platforms       darwin freebsd sunos
 
-long_description	The BIND DNS Server is used on the vast majority of name \
-				serving machines on the Internet, providing a robust \
-				and stable architecture on top of which an \
-				organization's naming architecture can be built. The \
-				resolver library included in the BIND distribution \
-				provides the standard APIs for translation between domain names \
-				and Internet addresses and is intended to be linked with applications \
-				requiring name service.
+description     Domain Name System server
+license         MPL
 
-homepage		https://www.isc.org/
+long_description \
+                The BIND DNS Server is used on the vast majority of name \
+                serving machines on the Internet, providing a robust \
+                and stable architecture on top of which an \
+                organization's naming architecture can be built. The \
+                resolver library included in the BIND distribution \
+                provides the standard APIs for translation between domain names \
+                and Internet addresses and is intended to be linked with applications \
+                requiring name service.
 
-distname		bind-${version}
-master_sites		isc:${name}/${version}
+homepage        https://www.isc.org/
 
-checksums	rmd160	28228bd5d7531026e9b0cc324235d347e704bf57 \
-		sha256	6378b3e51fef11a8be4794dc48e8111ba92d211c0dfd129a0c296ed06a3dc075 \
-		size	3474044
+distname        bind-${version}
+master_sites    isc:${name}/${version}
 
-use_xz			yes
+checksums       rmd160    3e6d92c834b91bd25122278ac6e9f41795040213 \
+                sha256    6c913902adf878e7dc5e229cea94faefc9d40f44775a30213edd08860f761d7b \
+                size      5016864
 
-depends_build		port:pkgconfig
+use_xz          yes
 
-depends_lib		path:lib/libssl.dylib:openssl  \
-			port:libuv \
-			port:libxml2 \
-			port:python38 \
-			port:py38-ply
+depends_build   port:pkgconfig
 
-use_parallel_build	no
-universal_variant	no
+depends_lib     path:lib/libssl.dylib:openssl  \
+                port:libuv \
+                port:libxml2 \
+                port:python39 \
+                port:py39-ply
 
-compiler.blacklist	gcc-4.2
+use_parallel_build \
+                no
+universal_variant \
+                no
 
-patchfiles		atomics.patch
+compiler.blacklist \
+                gcc-4.2
 
-test.run		yes
-test.target		test
+patchfiles      atomics.patch
 
-startupitem.create	yes
-startupitem.netchange	yes
-startupitem.executable	${prefix}/sbin/named -u named -f
+test.run        yes
+test.target     test
 
-add_users		named group=named
+startupitem.create      yes
+startupitem.netchange   yes
+startupitem.executable  ${prefix}/sbin/named -u named -f
 
-configure.env		STD_CDEFINES=-DDIG_SIGCHASE=1
+add_users       named group=named
 
-configure.args		--mandir=${prefix}/share/man \
-				--with-openssl=${prefix} \
-				--without-libjson \
-				--with-python=${prefix}/bin/python3.8
+configure.env   STD_CDEFINES=-DDIG_SIGCHASE=1
+
+configure.args  --mandir=${prefix}/share/man \
+                --with-openssl=${prefix} \
+                --without-libjson \
+                --with-python=${prefix}/bin/python3.9
 
 platform darwin 8 {
-	configure.args-append --with-dlopen=no \
-				--with-gssapi=no
+    configure.args-append --with-dlopen=no \
+                          --with-gssapi=no
 }
 
 platform darwin 9 {
-	configure.args-append --with-dlopen=no
+    configure.args-append --with-dlopen=no
 }
 
-post-destroot	{
-	# Ensure needed directories
-	xinstall -o named -g named -m 755 -d \
-		${destroot}${prefix}/var/named \
-		${destroot}${prefix}/var/run/named
+post-destroot    {
+    # Ensure needed directories
+    xinstall -o named -g named -m 755 -d \
+        ${destroot}${prefix}/var/named \
+        ${destroot}${prefix}/var/run/named
 
-	# Install the conf file as a sample
-	xinstall -o root -m 644 ${filespath}/named.conf \
-		${destroot}${prefix}/etc/named.conf.dist
-	reinplace "s|%%PREFIX%%|${prefix}|g" \
-		${destroot}${prefix}/etc/named.conf.dist
+    # Install the conf file as a sample
+    xinstall -o root -m 644 ${filespath}/named.conf \
+        ${destroot}${prefix}/etc/named.conf.dist
+    reinplace "s|%%PREFIX%%|${prefix}|g" \
+        ${destroot}${prefix}/etc/named.conf.dist
 
-	# Install the db files as samples
-	foreach f "db.127.0.0 db.cache db.localhost" {
-		xinstall -o named -g named -m 644 ${filespath}/${f} \
-			${destroot}${prefix}/var/named/${f}.dist
-	}
+    # Install the db files as samples
+    foreach f "db.127.0.0 db.cache db.localhost" {
+        xinstall -o named -g named -m 644 ${filespath}/${f} \
+            ${destroot}${prefix}/var/named/${f}.dist
+    }
 
-	destroot.keepdirs ${destroot}${prefix}/var/run/named
+    destroot.keepdirs ${destroot}${prefix}/var/run/named
 }
 
 notes "******************************************************
@@ -113,6 +119,6 @@ notes "******************************************************
 * logging into a directory where this new user can write files.
 ******************************************************"
 
-livecheck.type	regex
-livecheck.url	${homepage}downloads/
-livecheck.regex	"BIND(\\d+\.\\d+\.\\d+(?:-P\\d+)?).tar.gz - tar.gz\\s*</a>"
+livecheck.type   regex
+livecheck.url    ${homepage}downloads/
+livecheck.regex  "BIND(\\d+\.\\d+\.\\d+(?:-P\\d+)?).tar.gz - tar.gz\\s*</a>"

@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-parso
-version             0.8.0
+version             0.8.2
 revision            0
 categories-append   devel
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,9 +20,9 @@ long_description    ${description}
 
 homepage            https://github.com/davidhalter/parso
 
-checksums           rmd160  c2a595f56ad619e0c27c5085317325f4a1610431 \
-                    sha256  2b6db14759c528d857eeb9eac559c2166b2554548af39f5198bdfb976f72aa64 \
-                    size    395215
+checksums           rmd160  6e3c6f178aac28523a35e6779bea9205f4b118d6 \
+                    sha256  12b83492c6239ce32ff5eed6d3639d6a536170723c6f3f1506869f1ace413398 \
+                    size    397046
 
 if {${name} ne ${subport}} {
     depends_build-append \

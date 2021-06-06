@@ -3,8 +3,9 @@
 PortSystem          1.0
 PortGroup           cmake 1.1
 PortGroup           github 1.0
+PortGroup           boost 1.0
 
-github.setup        googlei18n libphonenumber 8.12.7 v
+github.setup        googlei18n libphonenumber 8.12.14 v
 revision            1
 name                libphonenumber-cpp
 license             Apache-2
@@ -29,23 +30,22 @@ master_sites        ${github.master_sites}:main \
                     ${gtest_master}:gtest
 
 checksums           ${main_distfile} \
-                    rmd160  1c0182f61b84d3975d6680d2a62034b68e08ad50 \
-                    sha256  9e8a1d9b58dc4170b27fddecd881ca77ab1a93436a509a3a1d57be3a584f553f \
-                    size    7976739 \
+                    rmd160  5e7b3b64c4725aec1ca4acb783e2309a31f78bd3 \
+                    sha256  adbc7a18265004d1f1ea93426d686b17f3f3555e97994e87bfaed40aec5a2cc6 \
+                    size    8231850 \
                     ${gtest_distfile} \
                     rmd160  f2f7f96adf1ab8aae3f6204fdba3ff150fd4396b \
                     sha256  9dc9157a9a1551ec7a7e43daea9a694a0bb5fb8bec81235d8a1e6ef64c716dcb \
                     size    904349
 
-worksrcdir          google-libphonenumber-39fd157/cpp
+worksrcdir          google-libphonenumber-05af024/cpp
 
 patchfiles          patch-cpp-CMakeLists.txt.diff
 
 depends_build-append \
                     port:pkgconfig
 
-depends_lib-append  port:boost \
-                    port:icu \
+depends_lib-append  port:icu \
                     port:protobuf3-cpp
 
 configure.args-append \

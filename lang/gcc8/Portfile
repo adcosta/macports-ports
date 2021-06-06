@@ -6,10 +6,11 @@ PortGroup compiler_blacklist_versions  1.0
 PortGroup xcodeversion                 1.0
 PortGroup conflicts_build              1.0
 PortGroup xcode_workaround             1.0
+PortGroup cltversion                   1.0
 
 epoch               4
 name                gcc8
-version             8.4.0
+version             8.5.0
 revision            0
 subport             libgcc8 { revision 0 }
 platforms           darwin
@@ -33,15 +34,29 @@ master_sites        ftp://ftp.funet.fi/pub/mirrors/sources.redhat.com/pub/gcc/re
 distname            gcc-${version}
 use_xz              yes
 
-checksums           rmd160  4b3890e8865fae1d2b91166fb98e1097f5401d4a \
-                    sha256  e30a6e52d10e1f27ed55104ad233c30bd1e99cfb5ff98ab022dc941edd1b2dd4 \
-                    size    63713440
+checksums           rmd160  e7f3dedec67864006bf9f7e358817ce713b4476e \
+                    sha256  d308841a511bb830a6100397b0042db24ce11f642dab6ea6ee44842e5325ed50 \
+                    size    63841008
 
 # Check if this is the last supported gcc version for this system.
 # If it is, libgcc8 installs a full runtime, otherwise it only installs
 # what is missing from newer libgccX builds.
 # NOTE : The logic here must match that in the libgcc port.
 set isLastSupported [ expr ${os.major} < 11 ]
+
+patchfiles          patch-fix-libgccjit-soname
+
+if { ${os.major} > 19 } {
+    # https://trac.macports.org/ticket/60908
+    # Patch for macOS 11 (Darwin20) version numbering taken from
+    # https://github.com/iains/gcc-darwin-arm64/commit/556ab512
+    patchfiles-append         big-sur-version-fix.diff
+    # Build doesn't understand a 11.0 deployment target so force to 10.16
+    macosx_deployment_target  10.16
+    # Fix detection of sanitizer support
+    # https://trac.macports.org/ticket/61494
+    patchfiles-append         fix-sanitisers-darwin20.diff
+}
 
 depends_lib         port:cctools \
                     port:gmp \
@@ -53,7 +68,7 @@ depends_lib         port:cctools \
                     port:zlib
 depends_run         port:gcc_select
 if { ${isLastSupported} } {
-    depends_run-append  path:lib/libgcc/libgcc_s.1.dylib:libgcc
+    depends_run-append  path:share/doc/libgcc/README:libgcc
 } else {
     depends_run-append  port:libgcc8
 }
@@ -67,9 +82,14 @@ platform darwin {
     configure.pre_args-append --build=${build_arch}-apple-darwin${os.major}
 }
 
+set gcc_configure_langs {c c++ objc obj-c++ lto fortran}
+if {${subport} eq "gcc8"} {
+    lappend gcc_configure_langs jit
+}
+
 configure.dir       ${workpath}/build
 configure.cmd       ${worksrcpath}/configure
-configure.args      --enable-languages=c,c++,objc,obj-c++,lto,fortran \
+configure.args      --enable-languages=[join ${gcc_configure_langs} ","] \
                     --libdir=${prefix}/lib/${name} \
                     --includedir=${prefix}/include/${name} \
                     --infodir=${prefix}/share/info \
@@ -92,13 +112,27 @@ configure.args      --enable-languages=c,c++,objc,obj-c++,lto,fortran \
                     --with-as=${prefix}/bin/as \
                     --with-ld=${prefix}/bin/ld \
                     --with-ar=${prefix}/bin/ar \
-                    --with-bugurl=https://trac.macports.org/newticket
+                    --with-bugurl=https://trac.macports.org/newticket \
+                    --enable-host-shared
 
 # see https://lists.macports.org/pipermail/macports-dev/2017-August/036209.html
 # --disable-tls does not limit functionality
 # it only determines how std::call_once works
 configure.args-append \
                     --disable-tls
+
+if { ${os.platform} eq "darwin" } {
+    if { [vercmp ${xcodeversion} 12.5] >= 0 || [ vercmp ${cltversion} 12.5 ] >= 0 } {
+        pre-configure {
+            ui_warn "Applying '--without-build-config' workaround to Xcode ${xcodeversion} / CLT ${cltversion}"
+            ui_warn "If versions > 12.5 please check if it is still required"
+        }
+        # gcc has build issues on macOS 11.3 with the use of Xcode clang via cctools for ld
+        # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100340
+        # https://trac.macports.org/ticket/62775
+        configure.args-append  --without-build-config
+    }
+}
 
 configure.env-append \
                     AR_FOR_TARGET=${prefix}/bin/ar \
@@ -124,7 +158,7 @@ pre-configure {
         #
         # https://trac.macports.org/ticket/53726
         # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79885
-        configure.args-append --with-sysroot="${configure.sdkroot}"
+        configure.args-append --with-sysroot="[regsub {MacOSX1[1-9]\.[0-9]+\.sdk} ${configure.sdkroot} {MacOSX.sdk}]"
     }
 
     # TODO: Remove when base automatically creates configure.dir (2.2.1?).
@@ -151,10 +185,10 @@ destroot.target     install install-info-host
 
 # Is this gcc release supported here.
 # NOTE : The logic here must match that in the libgcc port.
-if { ${os.major} < 10 } {
+if { ${os.major} < 10 || ${os.arch} eq "arm" } {
     known_fail  yes
     pre-fetch {
-        ui_error "${name} ${version} is not supported on Darwin ${os.major}"
+        ui_error "${name} ${version} is not supported on Darwin ${os.major} ${os.arch}"
         return -code error "incompatible OS X version"
     }
 }
@@ -245,7 +279,7 @@ if {${subport} eq "libgcc8"} {
                 }
 
                 move ${destroot}${prefix}/lib/libgcc/${dylib} ${destroot}${prefix}/lib/libgcc.merged
-                if {[variant_isset universal]} {
+                if {[variant_exists universal] && [variant_isset universal]} {
                     foreach archdir [glob ${destroot}${prefix}/lib/libgcc/*/] {
                         set archdir_nodestroot [string map "${destroot}/ /" ${archdir}]
                         if {[file exists ${archdir}/${dylib}]} {
@@ -319,7 +353,7 @@ if {${subport} eq "libgcc8"} {
                 ln -s ${prefix}/lib/libgcc/${dylib} ${destroot}${prefix}/lib/${name}/${dylib}
             }
 
-            if {[variant_isset universal]} {
+            if {[variant_exists universal] && [variant_isset universal]} {
                 foreach archdir [glob ${destroot}${prefix}/lib/${name}/*/] {
                     if {[file exists ${archdir}/${dylib}]} {
                         delete ${archdir}/${dylib}

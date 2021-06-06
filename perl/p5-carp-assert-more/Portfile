@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.26 5.28 5.30
-perl5.setup         Carp-Assert-More 1.20
+perl5.setup         Carp-Assert-More 1.26
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Convenience wrappers around Carp::Assert
@@ -12,9 +12,9 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  fdf292add8fd4ce61a18bb581425d57b07e71b7c \
-                    sha256  852904ce242298935e2102603393fb3a7e9a83a39dc4e90acbd573f76483569a \
-                    size    13282
+checksums           rmd160  2b50537181b7f05747c2560082a86fbe637ebe21 \
+                    sha256  b3d66c2c55330e5d6b81b2d26c5f63c1ac3ef0e0bc6a27b2c0fc1e491ba9a493 \
+                    size    15205
 
 if {${perl5.major} != ""} {
     depends_lib-append \

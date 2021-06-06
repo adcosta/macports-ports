@@ -3,15 +3,12 @@
 PortSystem          1.0
 
 name                abcMIDI
-version             2020.07.14
+version             2021.05.25
 revision            0
-checksums           rmd160  996cdefdb185c6025d8a9b0eccfd645a3c1a711f \
-                    sha256  09f2839f9ec171e5c8253998d510dbd16959e68f98b74fa8a18f22f4ffeab837 \
-                    size    553774
 
 categories          audio
 platforms           darwin
-maintainers         nomaintainer
+maintainers         {outlook.de:judaew @judaew} openmaintainer
 license             GPL-2+
 
 description         Abc to midi and vice versa converter
@@ -21,17 +18,27 @@ long_description    ABC is a text-based music notation language. Abc2midi is a p
 homepage            https://ifdo.ca/~seymour/runabc/top.html
 master_sites        https://ifdo.ca/~seymour/runabc/
 
-worksrcdir          abcmidi
+checksums           rmd160  cd98735e4e47c88443f7da274b2796aecbc55833 \
+                    sha256  6831fb83bb579249a3865f499a89784be1f67a57f90c4b454d1ac5f30c3ecf2e \
+                    size    604797
 
 use_zip             yes
 
 post-extract {
     file attributes ${worksrcpath}/configure -permissions a+x
+
+    foreach f [glob -types d ${worksrcpath}/*] {
+        file attributes ${f} -permissions 0755
+    }
 }
 
 patchfiles-append   patch-configure.diff
 
-installs_libs       no
+test.run            yes
+test {
+    system -W ${worksrcpath}/samples "../abc2midi drums.abc"
+    system -W ${worksrcpath}/samples "../midi2abc drums1.mid"
+}
 
 livecheck.type      regex
 livecheck.url       ${homepage}

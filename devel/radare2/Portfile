@@ -4,12 +4,12 @@ PortSystem          1.0
 PortGroup           conflicts_build 1.0
 PortGroup           github 1.0
 
-github.setup        radareorg radare2 4.5.0
+github.setup        radareorg radare2 5.3.0
 revision            0
 categories          devel
 platforms           darwin
 license             LGPL-3+
-maintainers         {g5pw @g5pw} {@i0ntempest me.com:szf1234} openmaintainer
+maintainers         {g5pw @g5pw} {i0ntempest @i0ntempest} openmaintainer
 description         Opensource tools to disasm, debug, analyze and manipulate binary files.
 long_description    ${name} provides {*}${description}.
 homepage            https://www.radare.org/
@@ -21,9 +21,9 @@ depends_lib         port:capstone \
                     port:libzip
 conflicts_build     ${name}
 
-checksums           rmd160  361a04b407210823675fe406440c07dfb66804bf \
-                    sha256  a7d35f62fb449c4b911a90d14049c2f4b763ebc645900e4c27ac6919595784ad \
-                    size    8264274
+checksums           rmd160  905f2cd6180f3f0e6edaf3c83c5ca8310921c17e \
+                    sha256  deb651af0347ae7cde9cdfde7dd4c5645222a072d6caf99782218f98b7606939 \
+                    size    8499961
 
 configure.args-append \
                     --with-syscapstone \

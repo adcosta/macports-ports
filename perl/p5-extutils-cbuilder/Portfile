@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.26 5.28 5.30
-perl5.setup         ExtUtils-CBuilder 0.280234
+perl5.setup         ExtUtils-CBuilder 0.280236
 epoch               2
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
@@ -19,9 +19,9 @@ long_description    This module can build the C portions of Perl modules by \
 
 platforms           darwin
 
-checksums           rmd160  a2bbcf372d7cbfe779c22cb2fd627beeec16ecca \
-                    sha256  d80095ea1f28b4908cbedacead63f61f762472bba898281449dad782deecf1c3 \
-                    size    40448
+checksums           rmd160  bc6fff2344f330d097c6129fa46923e1ecb07c98 \
+                    sha256  abc21827eb8a513171bf7fdecefce9945132cb76db945036518291f607b1491f \
+                    size    40237
 
 if {${perl5.major} != ""} {
     depends_lib-append \

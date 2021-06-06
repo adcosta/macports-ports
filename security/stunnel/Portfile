@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                stunnel
-version             5.56
+version             5.59
 revision            0
 set major           [lindex [split ${version} .] 0]
 categories          security net
@@ -26,9 +26,9 @@ master_sites        https://www.stunnel.org/downloads/archive/${major}.x/ \
                     http://ftp.nluug.nl/pub/networking/stunnel/archive/${major}.x/ \
                     http://stunnel.cybermirror.org/archive/${major}.x/
 
-checksums           rmd160  6934239db636aadffe5d6559164f07efb8b2e7aa \
-                    sha256  7384bfb356b9a89ddfee70b5ca494d187605bb516b4fff597e167f97e2236b22 \
-                    size    981163
+checksums           rmd160  327dbe72dc7b1e8e97b8e92ffd49abd6d7ba6a09 \
+                    sha256  137776df6be8f1701f1cd590b7779932e123479fb91e5192171c16798815ce9f \
+                    size    995508
 
 depends_lib         path:lib/libssl.dylib:openssl
 
@@ -37,6 +37,7 @@ patchfiles          patch-configure \
                     patch-tools-openssl.cnf.diff
 
 configure.args      --disable-libwrap \
+                    --disable-silent-rules \
                     --with-ssl=${prefix}
 
 build.target-append cert

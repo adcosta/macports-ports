@@ -3,13 +3,12 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        GoogleContainerTools skaffold 1.13.1 v
+github.setup        GoogleContainerTools skaffold 1.25.0 v
 revision            0
 
 categories          devel
 maintainers         {breun.nl:nils @breun} openmaintainer
 platforms           darwin
-supported_archs     x86_64
 license             Apache-2
 
 description         Skaffold is a command line tool that facilitates continuous development for Kubernetes applications
@@ -23,9 +22,9 @@ homepage            https://skaffold.dev
 
 github.tarball_from archive
 
-checksums           rmd160  09aed5d6a59413c49036d304800501a349aa3a86 \
-                    sha256  6dca88942d86fd50286d08dc665bfdd3af945934414e7d809fd772e028a552ca \
-                    size    27340085
+checksums           rmd160  0594ec5c8396950cd3a406bdb566ea8719999427 \
+                    sha256  de267c84d95d13bc6358821d352d716c597f76d7ba842c982e99d76be510c485 \
+                    size    23764164
 
 depends_build       port:go
 

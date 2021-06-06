@@ -4,11 +4,11 @@ PortSystem          1.0
 
 name                phpmyadmin
 set my_name         phpMyAdmin
-version             5.0.2
+version             5.1.0
 revision            0
-checksums           rmd160  11199b51f8aa4f506e2bdc4e5d4f1f21735f5063 \
-                    sha256  cbcc78d1499308d9329950fcba2ebaa84c559a934fe54efc027d459d8e4161c8 \
-                    size    8018752
+checksums           rmd160  999513fdb1f5d044869f54a1701996e4c02711a0 \
+                    sha256  aa8ccf357f672012384df34e1c2bc70147476761c8458a0dad6233497e142c68 \
+                    size    7902416
 
 categories          www php databases
 platforms           darwin freebsd
@@ -32,7 +32,7 @@ use_xz              yes
 
 # The php variants deliberately do not conflict
 
-foreach php {php71 php72 php73 php74} {
+foreach php {php71 php72 php73 php74 php80} {
     variant ${php} description "Use ${php}" "
         depends_run-append  port:${php}-gd \
                             port:${php}-mbstring \
@@ -42,8 +42,8 @@ foreach php {php71 php72 php73 php74} {
     "
 }
 
-if {![variant_isset php71] && ![variant_isset php72] && ![variant_isset php73] && ![variant_isset php74]} {
-    default_variants +php74
+if {![variant_isset php71] && ![variant_isset php72] && ![variant_isset php73] && ![variant_isset php74] && ![variant_isset php80]} {
+    default_variants +php80
 }
 
 set docroot         ${destroot}${prefix}/www/${name}

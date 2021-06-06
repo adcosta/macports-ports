@@ -5,7 +5,7 @@ PortGroup           java 1.0
 
 name                NetBeans
 set name_lower      [string tolower ${name}]
-version             12.0
+version             12.4
 categories          aqua devel java
 license             Apache-2
 maintainers         openmaintainer {amake @amake}
@@ -26,9 +26,9 @@ platforms           darwin
 distname            ${name_lower}-${version}-bin
 master_sites        apache:${name_lower}/${name_lower}/${version}
 
-checksums           rmd160  a31595c00b29fed66d8c5a94d23715d5fdfebe8d \
-                    sha256  85d91529c18f672322af58d21cae853178d574dd35d53a6cfe45992b99c64545 \
-                    size    374859809
+checksums           rmd160  bc00f2b481e91305dd3d5f2aa2d3f1226505b565 \
+                    sha256  d8b5dcfec4009978f27afcd04c71c660d90fce880b71d4d1664ac5471f00d41d \
+                    size    428321926
 
 worksrcdir          ${name_lower}
 

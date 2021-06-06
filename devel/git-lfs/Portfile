@@ -3,7 +3,7 @@
 PortSystem              1.0
 PortGroup               golang 1.0
 
-go.setup                github.com/git-lfs/git-lfs 2.11.0 v
+go.setup                github.com/git-lfs/git-lfs 2.13.3 v
 revision                0
 maintainers             {raimue @raimue} \
                         openmaintainer
@@ -16,9 +16,9 @@ long_description        {*}${description} is an extension for versioning large f
 homepage                https://git-lfs.github.com/
 license                 MIT
 
-checksums               rmd160  b2283326cba21a0584b53c70b96ebb8cf1dffcf0 \
-                        sha256  5554ee1fbb617efe62bdbe67252e3d191ae30f431a2ed5c409f6eacb3c26ddda \
-                        size    2839801
+checksums               rmd160  9fa6f82ba5e8f9f1470bc933ca6b8328eac73073 \
+                        sha256  e5074b852fdff64c939b7802272c2351d59f35c09cde0184a0efa6d557bd488c \
+                        size    2902168
 
 depends_build-append    port:rb27-ronn-ng
 depends_run             port:git

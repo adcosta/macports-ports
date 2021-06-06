@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                barman
-version             2.10
+version             2.12
 categories          databases
 platforms           darwin
 license             GPL-3
@@ -21,13 +21,11 @@ long_description    Barman (Backup and Recovery Manager) is an open-source \
 
 homepage            https://www.pgbarman.org
 
-master_sites        pypi:[string index ${name} 0]/${name}
+checksums           rmd160  71e3359e8e564a42ba30e4a5bf4121da4fc7f2ed \
+                    sha256  4ecf08ead94fd86469f7438820a5f2f9c4565af50edd29bceb3ab676d54fe581 \
+                    size    1262415
 
-checksums           rmd160  cf2fe82664338a8c3d449ccdf56c77113b1bb08f \
-                    sha256  46e0af093eaf53065b3cfcf3ed5548b1446629d9177ff4941d65c6d96a7ae5e5 \
-                    size    1247335
-
-python.default_version 38
+python.default_version 39
 
 depends_lib-append  port:py${python.version}-argcomplete \
                     port:py${python.version}-argh \

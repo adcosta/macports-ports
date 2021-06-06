@@ -3,8 +3,13 @@
 PortSystem          1.0
 
 name                libksba
-version             1.4.0
+version             1.5.1
 revision            0
+
+checksums           rmd160  acd81d43397c9ddb2f60d4036fe3a42d7dabc75c \
+                    sha256  b0f4c65e4e447d9a2349f6b8c0e77a28be9531e4548ba02c545d1f46dc7bf921 \
+                    size    659280
+
 categories          devel security
 platforms           darwin
 license             GPL-3+
@@ -27,10 +32,6 @@ depends_lib         port:gettext \
 
 master_sites        gnupg
 use_bzip2           yes
-
-checksums           rmd160  ba9579c3ca9a4c5df8e7a0d5681150de2d790f81 \
-                    sha256  bfe6a8e91ff0f54d8a329514db406667000cb207238eded49b599761bfca41b6 \
-                    size    651319
 
 test.run            yes
 test.target         check

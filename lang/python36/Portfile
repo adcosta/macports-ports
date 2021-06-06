@@ -6,8 +6,9 @@ PortGroup select 1.0
 name                python36
 
 epoch               20170717
-# Remember to keep py36-tkinter, py36-htmldocs, and py36-gdbm's versions sync'd with this
-version             3.6.11
+# Remember to keep py36-tkinter and py36-gdbm's versions sync'd with this
+version             3.6.13
+revision            1
 
 set major           [lindex [split $version .] 0]
 set branch          [join [lrange [split ${version} .] 0 1] .]
@@ -25,9 +26,9 @@ master_sites        ${homepage}ftp/python/${version}/
 
 distname            Python-${version}
 use_xz              yes
-checksums           md5 8f91c770b546a4938efbdb3064796c6c \
-                    rmd160 d1577bbfb4fb6b9c47389383e2b5ff9abb7db9e3 \
-                    sha256 741ebdcbc4e3937a5ff23517dd455ebf7d543ea9fef6f5cf6f46e575d6c4fda4
+checksums           md5 1c04330ffff21cd777dc38e2310fc452 \
+                    rmd160 129f0f49c2db86c17f768f320484f116bd61cf2c \
+                    sha256 a47a43a53abb42286a2c11965343ff56711b9e64e8d11bf2c6701a4fb8ce1a0f
 
 patchfiles          patch-setup.py.diff \
                     patch-Lib-cgi.py.diff \
@@ -37,7 +38,9 @@ patchfiles          patch-setup.py.diff \
                     omit-local-site-packages.patch \
                     patch-configure-xcode4bug.diff \
                     patch-_osx_support.py.diff \
-                    darwin20.diff
+                    darwin20.diff \
+                    implicit.patch \
+                    sysconfig.py.diff
 
 depends_build       port:pkgconfig
 depends_lib         port:bzip2 \
@@ -52,6 +55,18 @@ depends_lib         port:bzip2 \
                     port:zlib
 depends_run         port:python_select \
                     port:python3_select
+
+platform darwin arm {
+    known_fail  yes
+    if {$build_arch ne "x86_64"} {
+        pre-fetch {
+            error "${name} cannot be built for Apple Silicon"
+        }
+        depends_build
+        depends_lib
+        depends_run
+    }
+}
 
 # blacklist llvm-gcc-4.2 compiler known to produce bad code
 compiler.blacklist  *llvm-gcc-4.2
@@ -104,17 +119,18 @@ platform darwin {
     }
     post-build {
         set buildlibdir [lindex [glob -directory ${worksrcpath}/build lib.*-*-*-${branch}] 0]
+        # preserve mtime of sysconfig data file to avoid rebuilding things after changing it
+        set oldmtime [file mtime ${buildlibdir}/_sysconfigdata_m_darwin_darwin.py]
+
         # Without this, LINKFORSHARED is set to
         # ... $(PYTHONFRAMEWORKDIR)/Versions/$(VERSION)/$(PYTHONFRAMEWORK)
         # (this becomes Python.framework/Versions/3.6/Python) which doesn't
         # work for dependents that incorrectly use this variable to find out
         # how to link against python (see ticket #15099); instead we mirror
         # the behavior of `python-config --ldflags` here.
-        system -W ${buildlibdir} "awk -F : \
-            \"/'LINKFORSHARED'/ {printf \\\"%s: '-L${framewdir}/lib/python${branch}/${confdir}\
-            -lpython${branch}m -ldl -framework CoreFoundation',\\n\\\", \\\$1; getline; next} {print}\"\
-            _sysconfigdata_m_darwin_darwin.py > _sysconfigdata_m_darwin_darwin.py.new"
-        file rename -force ${buildlibdir}/_sysconfigdata_m_darwin_darwin.py.new \
+        set lfs_pattern {^([[:space:]]*'LINKFORSHARED':).*}
+        set lfs_replacement "\\1 '-L${framewdir}/lib/python${branch}/${confdir} -lpython${branch}m -ldl -framework CoreFoundation',"
+        reinplace -E s|${lfs_pattern}|${lfs_replacement}| \
             ${buildlibdir}/_sysconfigdata_m_darwin_darwin.py
 
         # remove -arch flags from the config
@@ -124,6 +140,8 @@ platform darwin {
         # also remove gettext overlinking
         reinplace "s|-lintl||" \
            ${buildlibdir}/_sysconfigdata_m_darwin_darwin.py
+
+        file mtime ${buildlibdir}/_sysconfigdata_m_darwin_darwin.py $oldmtime
     }
     post-destroot {
         foreach dir { Headers Resources Python Versions/Current } {

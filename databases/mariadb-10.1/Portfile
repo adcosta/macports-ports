@@ -6,12 +6,12 @@ legacysupport.newest_darwin_requires_legacy 10
 
 name                mariadb-10.1
 set name_mysql      ${name}
-version             10.1.46
+version             10.1.48
 set version_branch  [join [lrange [split ${version} .] 0 1] .]
 # Please set revision_client and revision_server to 0 if you bump
 # version; these can be changed independently for the 2 subports, but
 # can be changed at the same time if that's what's required.
-set revision_client 0
+set revision_client 1
 set revision_server 0
 categories          databases
 platforms           darwin
@@ -49,12 +49,13 @@ if {$subport eq $name} {
     patchfiles          patch-cmake-install_layout.cmake.diff \
                         patch-CMakeLists.txt.diff
 
-    checksums           rmd160 00d1a7a3e9b72b264e6f4ca594da9013e2a7d02c \
-                        sha256 cde355a750fcbe7a3956576b2a410dd1f7ed8c0f35de3676de8708782725ae15 \
-                        size   63741294
+    checksums           rmd160 5b9b7e55fa8f17e93106800155fce2001ff0e667 \
+                        sha256 069d58b1e2c06bb1e6c31249eda34138f41fb8ae3dec7ecaeba8035812c87cf9 \
+                        size   63769566
     revision            ${revision_client}
 
-    depends_lib-append  port:zlib port:tcp_wrappers port:ncurses port:judy
+    depends_lib-append  port:zlib port:tcp_wrappers port:ncurses port:judy \
+                        port:pcre2
     depends_run-append  port:mysql_select
 
     select.group        mysql
@@ -72,6 +73,10 @@ if {$subport eq $name} {
             file attributes ${worksrcpath}/${f} -permissions a+x
         }
     }
+
+    # patch to provide minimum changes required for ARM64 support;
+    # guessing this will be fixed in the next release.
+    patchfiles-append patch-include_my_global.h.diff
 
     post-patch {
         reinplace "s|@NAME@|${name_mysql}|g" \
@@ -96,6 +101,7 @@ if {$subport eq $name} {
                         -DDEFAULT_COLLATION:STRING=utf8_general_ci \
                         -DWITH_EMBEDDED_SERVER:BOOL=ON \
                         -DWITH_ZLIB:STRING=system \
+                        -DWITH_INNODB_LZO=OFF \
                         -DWITH_UNIT_TESTS:BOOL=ON \
                         -DWITHOUT_TOKUDB_STORAGE_ENGINE:BOOL=ON \
                         -DWITHOUT_MROONGA_STORAGE_ENGINE:BOOL=ON \
@@ -105,7 +111,12 @@ if {$subport eq $name} {
                         -DWITH_READLINE:BOOL=ON \
                         -DWITH_LIBWRAP:BOOL=ON \
                         -DWITH_SSL:STRING=no \
-                        -DMYSQL_MAINTAINER_MODE:STRING=AUTO
+                        -DMYSQL_MAINTAINER_MODE:STRING=AUTO \
+                        -DCONNECT_WITH_JDBC=OFF \
+                        -DCONNECT_WITH_MONGO=OFF \
+                        -DCONNECT_WITH_ODBC=OFF \
+                        -DCONNECT_WITH_REST=OFF \
+                        -DWITH_PCRE=system
 
     post-build {
         set dirs ${cmake.build_dir}
@@ -198,8 +209,8 @@ simultaneously.
 "
 
     livecheck.type      regex
-    livecheck.url       https://downloads.mariadb.org
-    livecheck.regex     "btn-large\" href=\"/mariadb/(${version_branch}\[^/\]+)/\">"
+    livecheck.url       https://downloads.mariadb.org/mariadb/+releases/
+    livecheck.regex     "href=\"/mariadb/(${version_branch}\[^/\]+)/\">"
 }
 
 subport ${name_mysql}-server {

@@ -13,11 +13,12 @@ description         GUI Application for FreeDV - an open source digital \
     voice protocol that integrates the modems, codecs, and FEC
 long_description    ${description}
 
-github.setup        drowe67 freedv-gui 1.4 v
-checksums           rmd160  724a79f1b7685f063b4d18a17f21bf2998e61fd7 \
-                    sha256  3f1ab49b8cdb9f40643e0bc7af1d69bdcf2efb5ac7efc5255e32c7936797d766 \
-                    size    5795465
-revision            4
+github.setup        drowe67 freedv-gui e1e6ad30ca68b5b925b5317751e169d706018059
+version             20210603-[string range ${github.version} 0 7]
+checksums           rmd160  e88a1ccc289b2ef97c006707f5dea9addb08bbfc \
+                    sha256  2815f443216588ba9f363e19334205e24ef50ac2cf2bde577fc89f5fb2aa042c \
+                    size    9436227
+revision            0
 
 # move from commit to version
 epoch               1
@@ -26,7 +27,7 @@ depends_build-append \
     port:pkgconfig
 
 wxWidgets.use \
-    wxWidgets-3.0
+    wxWidgets-3.2
 
 depends_lib-append \
     port:${wxWidgets.port} \

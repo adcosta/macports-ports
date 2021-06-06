@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                xapian-core
-version             1.4.16
+version             1.4.18
 categories          devel
 platforms           darwin
 maintainers         {ryandesign @ryandesign} openmaintainer
@@ -30,9 +30,9 @@ if {${subport} eq ${name}} {
     # version.h does not get generated properly when there are multiple -arch flags
     PortGroup                   muniversal 1.0
 
-    checksums                   rmd160  e93160ce02c8ce50c2fb97709c907e56c595415c \
-                                sha256  4937f2f49ff27e39a42150e928c8b45877b0bf456510f0785f50159a5cb6bf70 \
-                                size    3041132
+    checksums                   rmd160  d3948297e31f3a622827c275ea3b05a6d8e6151e \
+                                sha256  196ddbb4ad10450100f0991a599e4ed944cbad92e4a6fe813be6dce160244b77 \
+                                size    2984508
 
     # TODO: Fix xapian-config to not require the .la file
     # /opt/local/bin/xapian-config --ltlibs --cxxflags
@@ -41,8 +41,8 @@ if {${subport} eq ${name}} {
 
     depends_lib                 port:zlib
 
-    if {[variant_exists universal] && [variant_isset universal]} {
-        post-build {
+    post-build {
+        if {[variant_exists universal] && [variant_isset universal]} {
             foreach arch ${universal_archs_to_use} {
                 # xapian-config records build directory, which interferes with universal merge
                 reinplace "s|${worksrcpath}-${arch}|${worksrcpath}|g" ${worksrcpath}-${arch}/xapian-config
@@ -59,9 +59,9 @@ if {${subport} eq ${name}} {
 
 subport xapian-omega {
     revision                    0
-    checksums                   rmd160  00be3e3b5767c3bbb19696de57428d96cd6d8987 \
-                                sha256  b4fbeb9922d84af42ba80c0258cd07d103fd7f56c719f147049aa84598557694 \
-                                size    546360
+    checksums                   rmd160  a869606b5378f77ad55034894e94755da04ba828 \
+                                sha256  14bec53234bea5eb36aa4b91940842e62c7968f4fd68c959db396c15069acbaf \
+                                size    549892
 
     description                 web application using the Xapian library
     long_description            Xapian Omega is an application built on the \
@@ -81,10 +81,10 @@ subport xapian-omega {
     configure.args              --with-iconv
 }
 
-if [string match {xapian-bindings-*} ${subport}] {
-    checksums                   rmd160  a79bec38150bdce4af306f4290aad077a7986364 \
-                                sha256  8791ec6d15cdd2fa065e414033d0b1cd5cf61916fdb47ae5d36c3dfe69be621b \
-                                size    1133900
+if {[string match {xapian-bindings-*} ${subport}]} {
+    checksums                   rmd160  e6227de5c1a732fa7d6e59a69b8ac896603f06f5 \
+                                sha256  fe52064e90d202f7819130ae3ad013c8b2b9cb517ad9fd607cf41d0110c5f18f \
+                                size    1135644
 
     homepage                    ${homepage}/docs/bindings/
 
@@ -132,7 +132,7 @@ subport xapian-bindings-java {
 }
 
 # Perl
-foreach v {5.26 5.28 5.30} {
+foreach v {5.26 5.28 5.30 5.32} {
     subport xapian-bindings-perl${v} "
         revision                0
 
@@ -179,7 +179,7 @@ foreach v {5.5 5.6 7.0 7.1 7.2 7.3 7.4} {
 }
 
 # Python
-foreach v {2.7 3.5 3.6 3.7 3.8} {
+foreach v {2.7 3.5 3.6 3.7 3.8 3.9} {
     set v_no_dot [string map {. {}} ${v}]
     if {[vercmp ${v} 3] >= 0} {
         set suffix 3
@@ -206,7 +206,7 @@ foreach v {2.7 3.5 3.6 3.7 3.8} {
 }
 
 # Ruby
-foreach v {2.1 2.2 2.3 2.4 2.5 2.6} {
+foreach v {2.1 2.2 2.3 2.4 2.5 2.6 2.7} {
     set v_no_dot [string map {. {}} ${v}]
     subport xapian-bindings-ruby${v_no_dot} "
         revision                0

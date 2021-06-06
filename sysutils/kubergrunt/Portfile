@@ -2,12 +2,10 @@
 
 PortSystem          1.0
 PortGroup           golang 1.0
+PortGroup           legacysupport 1.1
 
-go.setup            github.com/gruntwork-io/kubergrunt 0.5.13 v
-
-categories          sysutils
-license             Apache-2
-installs_libs       no
+go.setup            github.com/gruntwork-io/kubergrunt 0.7.1 v
+revision            0
 
 description         Kubergrunt is a standalone go binary with a collection of \
                     commands to fill in the gaps between Terraform, Helm, and \
@@ -24,23 +22,25 @@ long_description    kubergrunt is a standalone go binary with a collection of \
                     TLS certificate key pairs and storing them as Kubernetes \
                     Secrets on any Kubernetes cluster.
 
+categories          sysutils
+license             Apache-2
+installs_libs       no
+
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  6dbed7716bacd6ffff225f1f0717ab6fedfd67f1 \
-                    sha256  867998917c086365a935b5f58dda54ebe2e3b3224563bce19d5d522cbae94fc1 \
-                    size    119914
+# Allow fetching deps at build time
+build.env-delete    GO111MODULE=off GOPROXY=off
 
-depends_build-append \
-                    port:dep
-
-build.pre_args      -v -o ${worksrcpath}/${name}
+build.pre_args      -o ${worksrcpath}/${name}
 build.args          ./cmd
-
-pre-build {
-    system -W "${worksrcpath}" "${build.env} dep ensure -v -vendor-only"
-}
 
 destroot {
     xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
 }
+
+github.tarball_from archive
+
+checksums           rmd160  181eaacb8469ec2b8ed7472737fd0b01268095aa \
+                    sha256  116043e5353a26e3a008f57209dd6b0fc52d76d33eeee1b93c671b5b43718137 \
+                    size    119577

@@ -9,13 +9,13 @@ PortGroup           compiler_blacklist_versions 1.0
 # Require C++11
 compiler.cxx_standard 2011
 
-# some older Clang say they support C++11 when they don't 
-# this is the same blacklisting as for jsoncpp, on which vtk depends. 
-compiler.blacklist-append {clang < 900} 
+# some older Clang say they support C++11 when they don't
+# this is the same blacklisting as for jsoncpp, on which vtk depends.
+compiler.blacklist-append {clang < 900}
 
 name                vtk
 version             8.2.0
-revision            1
+revision            6
 categories          graphics devel
 platforms           darwin
 license             BSD
@@ -49,7 +49,7 @@ depends_lib-append \
     port:gl2ps \
     port:glew \
     port:hdf5 \
-    port:jpeg \
+    path:include/turbojpeg.h:libjpeg-turbo \
     port:jsoncpp \
     port:libharu \
     port:libogg \
@@ -62,14 +62,13 @@ depends_lib-append \
 
 mpi.enforce_variant hdf5
 
+# FT_CALLBACK_DEF: https://gitlab.kitware.com/vtk/vtk/-/issues/18033 
 patchfiles          patch-pugixml.diff \
-                    patch-IOMovie-module.cmake.diff
+                    patch-IOMovie-module.cmake.diff \
+                    patch-FT_CALLBACK_DEF.diff \
+                    patch-qpainter.diff
 
-if {[variant_isset python38]} {
-    # https://gitlab.kitware.com/vtk/vtk/-/commit/257b9d7b18d5f3db3fe099dc18f230e23f7dfbab
-    # Remove this when upgrading the version, because it was merged for VTK9
-    patchfiles-append  patch-python38-tp_print.diff  
-}
+
 
 configure.pre_args-delete \
                     -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=ON
@@ -82,6 +81,7 @@ configure.args-append \
                     -DVTK_WRAP_JAVA:BOOL=OFF \
                     -DVTK_USE_SYSTEM_LIBRARIES:BOOL=ON \
                     -DVTK_USE_SYSTEM_LIBPROJ:BOOL=OFF \
+                    -DVTK_USE_SYSTEM_DIY2:BOOL=OFF \
                     -DVTK_USE_COCOA:BOOL=ON
 
 # As proposed at #46890
@@ -115,7 +115,7 @@ variant qt5 description {Add Qt5 support.} {
 }
 
 # Supported pythons
-set python_versions {27 36 37 38}
+set python_versions {27 36 37 38 39}
 
 foreach pyver ${python_versions} {
     # Conflicting python versions
@@ -124,8 +124,8 @@ foreach pyver ${python_versions} {
         if {${other_pyver} ne ${pyver}} {
             if {${other_pyver} ni ${other_python_versions}} {
                 lappend other_python_versions python${other_pyver}
-                }
             }
+        }
     }
 
     # Get python branch
@@ -149,6 +149,14 @@ foreach pyver ${python_versions} {
                     -DVTK_USE_SYSTEM_MPI4PY:BOOL=ON
             }
     "
+
+    if {[variant_isset python${pyver}]} {
+        if {[vercmp $pyver 37] > 0} {
+            # https://gitlab.kitware.com/vtk/vtk/-/commit/257b9d7b18d5f3db3fe099dc18f230e23f7dfbab
+            # Remove this when upgrading the version, because it was merged for VTK9
+            patchfiles-append  patch-python38-tp_print.diff
+        }
+    }
 }
 
 variant xdmf description {Add XDMF readers} {
@@ -165,10 +173,17 @@ variant xdmf description {Add XDMF readers} {
 }
 
 if {[mpi_variant_isset]} {
-    depends_lib-append port:diy2
     configure.args-append \
         -DVTK_Group_MPI:BOOL=ON
 
+}
+
+if {${os.platform} eq "darwin" && ${os.major} < 11} {
+    known_fail yes
+    pre-fetch {
+        ui_error "${name} @${version} requires macOS 10.7 or greater."
+        return -code error "incompatible macOS X version"
+    }
 }
 
 livecheck.type      regex

@@ -4,7 +4,7 @@ PortSystem      1.0
 PortGroup       compiler_blacklist_versions 1.0
 
 name            xorg-server-1.18
-conflicts       xorg-server xorg-server-devel
+conflicts       xorg-server-legacy xorg-server xorg-server-devel
 version         1.18.4
 revision        0
 categories      x11 devel
@@ -86,6 +86,13 @@ patchfiles \
 # enables the automake option "subdir-objects" so that automake
 # doesn't complain about subdirectory *.in replacement files usage.
 patchfiles-append 2001-enable-automake-subdir-objects.patch
+
+if { ${os.major} >= 19 } {
+    # remove this line
+    #    _appFlags._active = YES;
+    # as _appFlags is no longer available in Darwin19 and newer
+    patchfiles-append remove-appflags-active-hack.diff
+}
 
 patch.pre_args -p1
 

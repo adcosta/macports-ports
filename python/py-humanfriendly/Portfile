@@ -4,10 +4,10 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-humanfriendly
-version             4.18
-checksums           rmd160  3f94abf1bb0ea8748bd874ed1c19454d9f89fdf7 \
-                    sha256  33ee8ceb63f1db61cce8b5c800c531e1a61023ac5488ccde2ba574a85be00a85 \
-                    size    345853
+version             9.1
+checksums           rmd160  20d8946e84bdf7c8f8d9da3bd4a9105eda11da6f \
+                    sha256  066562956639ab21ff2676d1fda0b5987e985c534fc76700a19bd54bcb81121d \
+                    size    359616
 
 categories-append   devel
 platforms           darwin
@@ -16,16 +16,14 @@ maintainers         {ijackson @JacksonIsaac} openmaintainer
 supported_archs     noarch
 
 description         Human friendly output for text interfaces using Python
-long_description    ${description}
+long_description    {*}${description}
 homepage            https://humanfriendly.readthedocs.io/
 
-master_sites        pypi:h/${python.rootname}
-distname            ${python.rootname}-${version}
-
-python.versions     36 37
+python.versions     36 37 38 39
 
 if {${name} ne ${subport}} {
     depends_lib-append  \
         port:py${python.version}-setuptools
     livecheck.type  none
+    notes-append "The CLI tool can be used by running humanfriendly-${python.branch}"
 }

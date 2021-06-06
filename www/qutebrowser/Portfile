@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           github 1.0
+
+github.setup        qutebrowser qutebrowser 2.2.3 v
+revision            0
+
+description         A keyboard-driven, vim-like browser based on PyQt5
+long_description    ${description}
+
+platforms           darwin
+categories          www
+license             GPL-3
+maintainers         {amake @amake} openmaintainer
+
+homepage            https://www.qutebrowser.org/
+
+checksums           rmd160  0b3274106f3acb7c3baf66d06316897819300182 \
+                    sha256  369c814985815aca4da370a6471c1d3090f5d555ca145a563f7cbeb928664962 \
+                    size    5473930
+
+python.default_version 39
+
+depends_build-append port:py${python.default_version}-setuptools
+
+depends_lib-append  port:py${python.default_version}-pyqt5-webengine \
+                    port:py${python.default_version}-jinja2 \
+                    port:py${python.default_version}-yaml \
+
+# TODO: Add optional adblock library: https://github.com/ArniDagur/python-adblock

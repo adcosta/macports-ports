@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        jakubroztocil httpie 2.2.0
+github.setup        jakubroztocil httpie 2.4.0
 
 maintainers         {g5pw @g5pw} openmaintainer
 categories          net
@@ -18,26 +18,31 @@ long_description    HTTPie (pronounced aych-tee-tee-pie) is a command line HTTP 
                     generally interacting with HTTP servers.
 platforms           darwin
 license             BSD
-homepage            http://httpie.org
+homepage            https://httpie.io/
 
-variant python36 conflicts python37 python38 description "Use Python 3.6" {}
-variant python37 conflicts python36 python38 description "Use Python 3.7" {}
-variant python38 conflicts python36 python37 description "Use Python 3.8" {}
+variant python36 conflicts python37 python38 python39 description "Use Python 3.6" {}
+variant python37 conflicts python36 python38 python39 description "Use Python 3.7" {}
+variant python38 conflicts python36 python37 python39 description "Use Python 3.8" {}
+variant python39 conflicts python36 python37 python38 description "Use Python 3.9" {}
 
 if {[variant_isset python36]} {
     python.default_version 36
 } elseif {[variant_isset python37]} {
     python.default_version 37
+} elseif {[variant_isset python39]} {
+    python.default_version 39
 } else {
     default_variants +python38
     python.default_version 38
 }
 
 depends_lib-append  port:py${python.version}-requests \
-                    port:py${python.version}-pygments
+                    port:py${python.version}-requests-toolbelt \
+                    port:py${python.version}-pygments \
+                    port:py${python.version}-socks
 
-checksums           rmd160  130bf5fc79562e39497e16d96eb7aa6c806494c2 \
-                    sha256  5d0dddeb491176ba5c3c46ef233871cee31b8ff2886584ca0f0d0a369afedc1d \
-                    size    1761920
+checksums           rmd160  4c791ff11b153e3f6037cb42280b1dc20a05de77 \
+                    sha256  767290c062f944117fd42c41fcc751c82adff170f149622bf0cc3ab2587c41ca \
+                    size    1772552
 
 python.link_binaries_suffix

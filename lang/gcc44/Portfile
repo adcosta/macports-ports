@@ -7,7 +7,7 @@ PortGroup compiler_blacklist_versions 1.0
 name                gcc44
 epoch               1
 version             4.4.7
-revision            14
+revision            15
 platforms           darwin
 categories          lang
 maintainers         nomaintainer
@@ -213,7 +213,7 @@ post-destroot {
             ln -s ${prefix}/lib/libgcc/${dylib} ${destroot}${prefix}/lib/${name}/${dylib}
         }
 
-        if {[variant_isset universal]} {
+        if {[variant_exists universal] && [variant_isset universal]} {
             foreach archdir [glob ${destroot}${prefix}/lib/${name}/*/] {
                 if {[file exists ${archdir}/${dylib}]} {
                     delete ${archdir}/${dylib}

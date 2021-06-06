@@ -14,6 +14,7 @@ platforms           darwin macosx
 # glfw does not build on Mac OS X 10.5 or prior due to CoreGraphics
 # references that are 10.6+.
 if {${os.platform} eq "darwin" && ${os.major} < 10} {
+    known_fail      yes
     pre-fetch {
         ui_error "$name does not build on Mac OS X 10.5 'Leopard' or prior."
         error "unsupported platform"
@@ -48,19 +49,11 @@ if {${os.platform} eq "darwin" && ${os.major} == 10} {
 
     # requires c11 support as of 82ca58da (20190305) for
     # <stdatomic.h>; 3.3 was released shortly after this change, so
-    # this requirement is now for all modern GLFW. hopefully the
-    # following force a C11 compliant compiler to be used! require GCC
-    # >= 4.6 (4.9 for full C11) or MacPorts' Clang >= 3.1 or
-    # AppleClang >= 700. MacPorts' Clang starts at 3.3, so nothing to
-    # block there!
-
+    # this requirement is now for all modern GLFW.
+    compiler.c_standard   2011
+    # <stdatomic.h> support was introduced in Xcode 7.0
     PortGroup compiler_blacklist_versions 1.0
-
-    compiler.blacklist-append macports-gcc-4.3 macports-gcc-4.4 macports-gcc-4.5 \
-        macports-gcc macports-gcc-4.6 macports-gcc-4.7 macports-gcc-4.8 \
-        macports-llvm-gcc-4.2 macports-dragonegg-3.3 macports-dragonegg-3.4 \
-        apple-gcc-4.0 apple-gcc-4.2 gcc-3.3 gcc-4.0 llvm-gcc-4.2 gcc cc \
-        {clang < 700} macports-clang-3.*
+    compiler.blacklist-append {clang < 700}
 
     compiler.cxx_standard 2011
 
@@ -72,11 +65,11 @@ if {${os.platform} eq "darwin" && ${os.major} == 10} {
 
         # release
 
-        github.setup glfw glfw 3.3.2
-        checksums rmd160 33cf93d62c22862144bcfd25894a165d970d7206 \
-                  sha256 ae736d73367b7f38a714ce4ee22cc2afa6749464d3ed7d3544848715aaea03a2 \
-                  size   760096
-        revision  0
+        github.setup glfw glfw 3.3.4
+        checksums   rmd160  87c35b8aa8162bc2af6e643ac2e1153d15a7b518 \
+                    sha256  9d4cc392dc7c90e9501db1456de115c723287f1b9847ac59c3334772d7240fcf \
+                    size    762985
+        revision    0
 
         # bump the epoch because I moved the version from 20151012 to 3.1.2
 
@@ -90,22 +83,18 @@ if {${os.platform} eq "darwin" && ${os.major} == 10} {
 
         patchfiles-append patch-CMakeLists.txt.release.diff
 
-        # patch to fix install name of library
-
-        patchfiles-append patch-src_CMakeLists.txt.release.diff
-
     } else {
 
         # devel
 
-        github.setup glfw glfw 844bc8031c63284ba324217b39b663a104fc4d35
-        version   20200519-[string range ${github.version} 0 7]
-        checksums rmd160 f9d557c39e787e872165b4d84ed202dbce977eb8 \
-                  sha256 acf8216b2da2fb922cda92891736ae1b747743bdc6fb49d1ceb0effd93a6d7db \
-                  size   760969
-        revision  0
+        github.setup glfw glfw 114776a24605418e6d719d2f30141e351e93c6e0
+        version     20210513-[string range ${github.version} 0 7]
+        checksums   rmd160  cbd74477a895ad04abed3132d9aee11137b53f31 \
+                    sha256  c33350c396a7cf7484f08389aa2341a17bdbdbbe0cfc3e0867a3100eb69e3ae1 \
+                    size    782639
+        revision    0
 
-        conflicts       glfw
+        conflicts   glfw
         long_description ${description}: \
             This port follows the GIT master version of GLFW, which is typically updated every few days to weeks.
 
@@ -113,16 +102,12 @@ if {${os.platform} eq "darwin" && ${os.major} == 10} {
 
         patchfiles-append patch-CMakeLists.txt.devel.diff
 
-        # patch to fix install name of library
-
-        patchfiles-append patch-src_CMakeLists.txt.devel.diff
-
     }
 }
 
 # use the real home page, not github's
 
-homepage            http://www.glfw.org/
+homepage            https://www.glfw.org
 
 # do VPATH (out of source tree) build
 

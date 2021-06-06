@@ -1,314 +1,18 @@
-diff --git gqrx.pro gqrx.pro
-index cae9bb6..49addf7 100644
---- gqrx.pro
-+++ gqrx.pro
-@@ -123,6 +123,7 @@ SOURCES += \
-     src/qtgui/afsk1200win.cpp \
-     src/qtgui/agc_options.cpp \
-     src/qtgui/audio_options.cpp \
-+    src/qtgui/bandplan.cpp \
-     src/qtgui/bookmarks.cpp \
-     src/qtgui/bookmarkstablemodel.cpp \
-     src/qtgui/bookmarkstaglist.cpp \
-@@ -143,7 +144,9 @@ SOURCES += \
-     src/qtgui/qtcolorpicker.cpp \
-     src/receivers/nbrx.cpp \
-     src/receivers/receiver_base.cpp \
--    src/receivers/wfmrx.cpp
-+    src/receivers/wfmrx.cpp \
-+    src/qtgui/dxc_spots.cpp \
-+    src/qtgui/dxc_options.cpp
- 
- HEADERS += \
-     src/applications/gqrx/gqrx.h \
-@@ -183,6 +186,7 @@ HEADERS += \
-     src/qtgui/afsk1200win.h \
-     src/qtgui/agc_options.h \
-     src/qtgui/audio_options.h \
-+    src/qtgui/bandplan.h \
-     src/qtgui/bookmarks.h \
-     src/qtgui/bookmarkstablemodel.h \
-     src/qtgui/bookmarkstaglist.h \
-@@ -204,7 +208,9 @@ HEADERS += \
-     src/qtgui/qtcolorpicker.h \
-     src/receivers/nbrx.h \
-     src/receivers/receiver_base.h \
--    src/receivers/wfmrx.h
-+    src/receivers/wfmrx.h \
-+    src/qtgui/dxc_spots.h \
-+    src/qtgui/dxc_options.h
- 
- FORMS += \
-     src/applications/gqrx/mainwindow.ui \
-@@ -221,7 +227,8 @@ FORMS += \
-     src/qtgui/iq_tool.ui \
-     src/qtgui/dockrxopt.ui \
-     src/qtgui/ioconfig.ui \
--    src/qtgui/nb_options.ui
-+    src/qtgui/nb_options.ui \
-+    src/qtgui/dxc_options.ui
- 
- # Use pulseaudio (ps: could use equals? undocumented)
- equals(AUDIO_BACKEND, "pulseaudio"): {
-diff --git src/applications/gqrx/mainwindow.cpp src/applications/gqrx/mainwindow.cpp
-index b6e9407..a669580 100644
---- src/applications/gqrx/mainwindow.cpp
-+++ src/applications/gqrx/mainwindow.cpp
-@@ -48,6 +48,7 @@
- #include <QSvgWidget>
- #include "qtgui/ioconfig.h"
- #include "mainwindow.h"
-+#include "qtgui/dxc_spots.h"
- 
- /* Qt Designer files */
- #include "ui_mainwindow.h"
-@@ -57,6 +58,7 @@
- #include "remote_control_settings.h"
- 
- #include "qtgui/bookmarkstaglist.h"
-+#include "qtgui/bandplan.h"
- 
- MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
-     QMainWindow(parent),
-@@ -69,7 +71,9 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
-     dec_afsk1200(0)
- {
-     ui->setupUi(this);
-+    BandPlan::create();
-     Bookmarks::create();
-+    DXCSpots::create();
- 
-     /* Initialise default configuration directory */
-     QByteArray xdg_dir = qgetenv("XDG_CONFIG_HOME");
-@@ -122,13 +126,20 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
-     // create I/Q tool widget
-     iq_tool = new CIqTool(this);
- 
-+    // create DXC Objects
-+    dxc_options = new DXC_Options(this);
-+    dxc_timer = new QTimer(this);
-+    dxc_timer->start(1000);
-+
-     /* create dock widgets */
-     uiDockRxOpt = new DockRxOpt();
-     uiDockRDS = new DockRDS();
-     uiDockAudio = new DockAudio();
-     uiDockInputCtl = new DockInputCtl();
-     uiDockFft = new DockFft();
-+    BandPlan::Get().setConfigDir(m_cfg_dir);
-     Bookmarks::Get().setConfigDir(m_cfg_dir);
-+    BandPlan::Get().load();
-     uiDockBookmarks = new DockBookmarks(this);
- 
-     // setup some toggle view shortcuts
-@@ -139,6 +150,10 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
-     uiDockBookmarks->toggleViewAction()->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_B));
-     ui->mainToolBar->toggleViewAction()->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
- 
-+    /* frequency setting shortcut */
-+    QShortcut *freq_shortcut = new QShortcut(QKeySequence(Qt::Key_F), this);
-+    QObject::connect(freq_shortcut, &QShortcut::activated, this, &MainWindow::frequencyFocusShortcut);
-+
-     setCorner(Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
-     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
-     setCorner(Qt::BottomLeftCorner, Qt::BottomDockWidgetArea);
-@@ -236,6 +251,7 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
-     connect(uiDockFft, SIGNAL(resetFftZoom()), ui->plotter, SLOT(resetHorizontalZoom()));
-     connect(uiDockFft, SIGNAL(gotoFftCenter()), ui->plotter, SLOT(moveToCenterFreq()));
-     connect(uiDockFft, SIGNAL(gotoDemodFreq()), ui->plotter, SLOT(moveToDemodFreq()));
-+    connect(uiDockFft, SIGNAL(bandPlanChanged(bool)), ui->plotter, SLOT(toggleBandPlan(bool)));
-     connect(uiDockFft, SIGNAL(wfColormapChanged(const QString)), ui->plotter, SLOT(setWfColormap(const QString)));
-     connect(uiDockFft, SIGNAL(wfColormapChanged(const QString)), uiDockAudio, SLOT(setWfColormap(const QString)));
- 
-@@ -259,6 +275,9 @@ MainWindow::MainWindow(const QString cfgfile, bool edit_conf, QWidget *parent) :
-     connect(uiDockBookmarks, SIGNAL(newBookmarkActivated(qint64, QString, int)), this, SLOT(onBookmarkActivated(qint64, QString, int)));
-     connect(uiDockBookmarks->actionAddBookmark, SIGNAL(triggered()), this, SLOT(on_actionAddBookmark_triggered()));
- 
-+    //DXC Spots
-+    connect(&DXCSpots::Get(), SIGNAL(DXCSpotsChanged()),this , SLOT(addClusterSpot()));
-+    connect(dxc_timer, SIGNAL(timeout()), this, SLOT(checkDXCSpotTimeout()));
- 
-     // I/Q playback
-     connect(iq_tool, SIGNAL(startRecording(QString)), this, SLOT(startIqRecording(QString)));
-@@ -348,6 +367,9 @@ MainWindow::~MainWindow()
-     audio_fft_timer->stop();
-     delete audio_fft_timer;
- 
-+    dxc_timer->stop();
-+    delete dxc_timer;
-+
-     if (m_settings)
-     {
-         m_settings->setValue("configversion", 2);
-@@ -370,6 +392,7 @@ MainWindow::~MainWindow()
-     }
- 
-     delete iq_tool;
-+    delete dxc_options;
-     delete ui;
-     delete uiDockRxOpt;
-     delete uiDockAudio;
-@@ -591,6 +614,7 @@ bool MainWindow::loadConfig(const QString cfgfile, bool check_crash,
-     uiDockRxOpt->readSettings(m_settings);
-     uiDockFft->readSettings(m_settings);
-     uiDockAudio->readSettings(m_settings);
-+    dxc_options->readSettings(m_settings);
- 
-     {
-         int64_val = m_settings->value("input/frequency", 14236000).toLongLong(&conv_ok);
-@@ -710,6 +734,7 @@ void MainWindow::storeSession()
- 
-         remote->saveSettings(m_settings);
-         iq_tool->saveSettings(m_settings);
-+        dxc_options->saveSettings(m_settings);
- 
-         {
-             int     flo, fhi;
-@@ -2056,6 +2081,11 @@ void MainWindow::afsk1200win_closed()
-     dec_afsk1200 = 0;
- }
- 
-+/** Show DXC Options. */
-+void MainWindow::on_actionDX_Cluster_triggered()
-+{
-+    dxc_options->show();
-+}
- 
- /**
-  * Cyclic processing for acquiring samples from receiver and processing them
-@@ -2335,3 +2365,19 @@ void MainWindow::on_actionAddBookmark_triggered()
-         ui->plotter->updateOverlay();
-     }
- }
-+
-+void MainWindow::addClusterSpot()
-+{
-+    ui->plotter->updateOverlay();
-+}
-+
-+void MainWindow::checkDXCSpotTimeout()
-+{
-+    DXCSpots::Get().checkSpotTimeout();
-+    ui->plotter->updateOverlay();
-+}
-+
-+void MainWindow::frequencyFocusShortcut()
-+{
-+    ui->freqCtrl->setFrequencyFocus();
-+}
-diff --git src/applications/gqrx/mainwindow.h src/applications/gqrx/mainwindow.h
-index de45c6b..38f15c4 100644
---- src/applications/gqrx/mainwindow.h
-+++ src/applications/gqrx/mainwindow.h
-@@ -32,6 +32,7 @@
- #include <QMessageBox>
- #include <QFileDialog>
- #include <QSvgWidget>
-+#include <QShortcut>
- 
- #include "qtgui/dockrxopt.h"
- #include "qtgui/dockaudio.h"
-@@ -41,6 +42,8 @@
- #include "qtgui/dockrds.h"
- #include "qtgui/afsk1200win.h"
- #include "qtgui/iq_tool.h"
-+#include "qtgui/dxc_options.h"
-+#include "qtgui/dxc_spots.h"
- 
- #include "applications/gqrx/remote_control.h"
- 
-@@ -99,6 +102,7 @@ private:
-     DockRDS        *uiDockRDS;
- 
-     CIqTool        *iq_tool;
-+    DXC_Options    *dxc_options;
- 
- 
-     /* data decoders */
-@@ -110,6 +114,7 @@ private:
-     QTimer   *iq_fft_timer;
-     QTimer   *audio_fft_timer;
-     QTimer   *rds_timer;
-+    QTimer   *dxc_timer;
- 
-     receiver *rx;
- 
-@@ -126,6 +131,8 @@ private:
-     void updateGainStages(bool read_from_device);
-     void showSimpleTextFile(const QString &resource_path,
-                             const QString &window_title);
-+    /* key shortcut */
-+    void frequencyFocusShortcut();
- 
- private slots:
-     /* rf */
-@@ -201,6 +208,9 @@ private slots:
-     /* Bookmarks */
-     void onBookmarkActivated(qint64 freq, QString demod, int bandwidth);
- 
-+    /* DXC Spots */
-+    void addClusterSpot();
-+
-     /* menu and toolbar actions */
-     void on_actionDSP_triggered(bool checked);
-     int  on_actionIoConfig_triggered();
-@@ -218,6 +228,7 @@ private slots:
-     void on_actionAbout_triggered();
-     void on_actionAboutQt_triggered();
-     void on_actionAddBookmark_triggered();
-+    void on_actionDX_Cluster_triggered();
- 
- 
-     /* window close signals */
-@@ -230,6 +241,7 @@ private slots:
-     void iqFftTimeout();
-     void audioFftTimeout();
-     void rdsTimeout();
-+    void checkDXCSpotTimeout();
- };
- 
- #endif // MAINWINDOW_H
-diff --git src/applications/gqrx/mainwindow.ui src/applications/gqrx/mainwindow.ui
-index 0fb1f36..dc39a81 100644
---- src/applications/gqrx/mainwindow.ui
-+++ src/applications/gqrx/mainwindow.ui
-@@ -195,7 +195,7 @@
-      <x>0</x>
-      <y>0</y>
-      <width>521</width>
--     <height>19</height>
-+     <height>22</height>
-     </rect>
-    </property>
-    <widget class="QMenu" name="menu_File">
-@@ -242,6 +242,7 @@
-     <addaction name="separator"/>
-     <addaction name="actionAFSK1200"/>
-     <addaction name="separator"/>
-+    <addaction name="actionDX_Cluster"/>
-    </widget>
-    <addaction name="menu_File"/>
-    <addaction name="menu_Tools"/>
-@@ -541,6 +542,17 @@
-     <string>Ctrl+W</string>
-    </property>
-   </action>
-+  <action name="actionDX_Cluster">
-+   <property name="text">
-+    <string>DX Cluster</string>
-+   </property>
-+   <property name="toolTip">
-+    <string>Open DX Cluster Dialog</string>
-+   </property>
-+   <property name="shortcut">
-+    <string>Ctrl+C</string>
-+   </property>
-+  </action>
-  </widget>
-  <layoutdefault spacing="6" margin="11"/>
-  <customwidgets>
+From 744e5a611616eda0390cbd0a5631c4718f293c05 Mon Sep 17 00:00:00 2001
+From: Davide Gerhard <rainbow@irh.it>
+Date: Fri, 17 Apr 2020 13:35:08 +0200
+Subject: [PATCH] Improved noise blankers
+
+https://github.com/csete/gqrx/pull/573
+---
+ src/dsp/rx_noise_blanker_cc.cpp | 729 ++++++++++++++++++++++++++++++--
+ src/dsp/rx_noise_blanker_cc.h   | 171 +++++++-
+ src/receivers/nbrx.cpp          |  48 ++-
+ src/receivers/nbrx.h            |   2 +
+ 4 files changed, 885 insertions(+), 65 deletions(-)
+
 diff --git src/dsp/rx_noise_blanker_cc.cpp src/dsp/rx_noise_blanker_cc.cpp
-index c8e2447..ae9fd2b 100644
+index 65d3b6a..ef3cec6 100644
 --- src/dsp/rx_noise_blanker_cc.cpp
 +++ src/dsp/rx_noise_blanker_cc.cpp
 @@ -26,6 +26,14 @@
@@ -337,10 +41,11 @@ index c8e2447..ae9fd2b 100644
        d_nb1_on(false),
        d_nb2_on(false),
        d_sample_rate(sample_rate),
-@@ -52,10 +60,293 @@ rx_nb_cc::rx_nb_cc(double sample_rate, float thld1, float thld2)
+@@ -53,10 +61,295 @@ rx_nb_cc::rx_nb_cc(double sample_rate, float thld1, float thld2)
        d_hangtime(0)
  {
-     memset(d_delay, 0, 8 * sizeof(gr_complex));
+ 
++    memset(d_delay, 0, 8 * sizeof(gr_complex));
 +
 +
 +    // Init nb1 params
@@ -585,6 +290,7 @@ index c8e2447..ae9fd2b 100644
 +    d_nb2_oainidx  = d_nb2_init_oainidx;
 +    d_nb2_oaoutidx = 0;
 +    d_nb2_saveidx  = 0;
++
  }
  
  rx_nb_cc::~rx_nb_cc()
@@ -631,7 +337,7 @@ index c8e2447..ae9fd2b 100644
  
  }
  
-@@ -68,30 +359,38 @@ int rx_nb_cc::work(int noutput_items,
+@@ -69,30 +362,38 @@ int rx_nb_cc::work(int noutput_items,
                     gr_vector_const_void_star &input_items,
                     gr_vector_void_star &output_items)
  {
@@ -641,7 +347,7 @@ index c8e2447..ae9fd2b 100644
 +    float *out = (float *) output_items[0];
      int i;
  
-     boost::mutex::scoped_lock lock(d_mutex);
+     std::lock_guard<std::mutex> lock(d_mutex);
  
      // copy data into output buffer then perform the processing on that buffer
 -    for (i = 0; i < noutput_items; i++)
@@ -682,7 +388,7 @@ index c8e2447..ae9fd2b 100644
  /*! \brief Perform noise blanker 1 processing.
   *  \param buf The data buffer holding gr_complex samples.
   *  \param num The number of samples in the buffer.
-@@ -101,35 +400,156 @@ int rx_nb_cc::work(int noutput_items,
+@@ -102,35 +403,156 @@ int rx_nb_cc::work(int noutput_items,
   *
   * FIXME: Needs different constants for higher sample rates?
   */
@@ -698,10 +404,7 @@ index c8e2447..ae9fd2b 100644
 +    double y, error, sigma, inv_sigp;
 +    double nel, nev;
 +    for (i = 0; i < num; i++)
-     {
--        cmag = abs(buf[i]);
--        d_delay[d_sigidx] = buf[i];
--        d_avgmag_nb1 = 0.999*d_avgmag_nb1 + 0.001*cmag;
++    {
 +        d_nb1_d[d_nb1_in_idx] = buf[i];
 +
 +        y = 0;
@@ -728,17 +431,12 @@ index c8e2447..ae9fd2b 100644
 +            if((d_nb1_lidx -= d_nb1_ldecr) < d_nb1_lidx_min) d_nb1_lidx = d_nb1_lidx_min;
 +        }
 +        d_nb1_ngamma = d_nb1_gamma * (d_nb1_lidx * d_nb1_lidx) * (d_nb1_lidx * d_nb1_lidx) * d_nb1_den_mult;
- 
--        if ((d_hangtime == 0) && (cmag > (d_thld_nb1*d_avgmag_nb1)))
--            d_hangtime = 7;
++
 +        c0 = 1.0 - d_nb1_two_mu * d_nb1_ngamma;
 +        c1 = d_nb1_two_mu * error * inv_sigp;
- 
--        if (d_hangtime > 0)
++
 +        for (j = 0; j < d_nb1_n_taps; j++)
-         {
--            buf[i] = zero;
--            d_hangtime--;
++        {
 +            idx = (d_nb1_in_idx + j + d_nb1_delay) & d_nb1_mask;
 +            d_nb1_w[j] = c0 * d_nb1_w[j] + c1 * d_nb1_d[idx];
 +        }
@@ -755,7 +453,10 @@ index c8e2447..ae9fd2b 100644
 +    if (x == 0.0)
 +        res = 1.0;
 +    else
-+    {
+     {
+-        cmag = abs(buf[i]);
+-        d_delay[d_sigidx] = buf[i];
+-        d_avgmag_nb1 = 0.999*d_avgmag_nb1 + 0.001*cmag;
 +        if (x < 0.0) x = -x;
 +        if (x <= 3.75)
 +        {
@@ -768,10 +469,9 @@ index c8e2447..ae9fd2b 100644
 +                      + 3.0899424) * p
 +                      + 3.5156229) * p
 +                      + 1.0;
-         }
-         else
-         {
--            buf[i] = d_delay[d_delidx];
++        }
++        else
++        {
 +            p = 3.75 / x;
 +            res = exp (x) / sqrt (x)
 +                  * (((((((( + 0.00392377  * p
@@ -783,14 +483,15 @@ index c8e2447..ae9fd2b 100644
 +                             + 0.00225319) * p
 +                             + 0.01328592) * p
 +                             + 0.39894228);
-         }
++        }
 +    }
 +    return res;
 +}
  
--        d_sigidx = (d_sigidx + 7) & 7;
--        d_delidx = (d_delidx + 7) & 7;
-+
+-        if ((d_hangtime == 0) && (cmag > (d_thld_nb1*d_avgmag_nb1)))
+-            d_hangtime = 7;
+ 
+-        if (d_hangtime > 0)
 +double bessI1 (double x)
 +{
 +    double res, p;
@@ -800,7 +501,9 @@ index c8e2447..ae9fd2b 100644
 +    {
 +        if (x < 0.0) x = -x;
 +        if (x <= 3.75)
-+        {
+         {
+-            buf[i] = zero;
+-            d_hangtime--;
 +            p = x / 3.75;
 +            p = p * p;
 +            res = x 
@@ -811,9 +514,10 @@ index c8e2447..ae9fd2b 100644
 +                         + 0.51498869) * p
 +                         + 0.87890594) * p
 +                         + 0.5);
-+        }
-+        else
-+        {
+         }
+         else
+         {
+-            buf[i] = d_delay[d_delidx];
 +            p = 3.75 / x;
 +            res = exp (x) / sqrt (x)
 +                  * (((((((( - 0.00420059  * p
@@ -825,12 +529,14 @@ index c8e2447..ae9fd2b 100644
 +                             - 0.00362018) * p
 +                             - 0.03988024) * p
 +                             + 0.39894228);
-+        }
-     }
+         }
++    }
 +    return res;
- }
- 
++}
 +
+ 
+-        d_sigidx = (d_sigidx + 7) & 7;
+-        d_delidx = (d_delidx + 7) & 7;
 +void rx_nb_cc::interpM (double* res, double x, int nvals, double* xvals, double* yvals)
 +{
 +    if (x <= xvals[0])
@@ -846,15 +552,15 @@ index c8e2447..ae9fd2b 100644
 +        xlhigh = log10(xvals[idx]);
 +        frac = (log10 (x) - xllow) / (xlhigh - xllow);
 +        *res = yvals[idx - 1] + frac * (yvals[idx] - yvals[idx - 1]);
-+    }
-+}
-+
+     }
+ }
+ 
 +
 +
  /*! \brief Perform noise blanker 2 processing.
   *  \param buf The data buffer holding gr_complex samples.
   *  \param num The number of samples in the buffer.
-@@ -139,21 +559,246 @@ void rx_nb_cc::process_nb1(gr_complex *buf, int num)
+@@ -140,21 +562,246 @@ void rx_nb_cc::process_nb1(gr_complex *buf, int num)
   *
   * FIXME: Needs different constants for higher sample rates?
   */
@@ -1114,18 +820,19 @@ index c8e2447..ae9fd2b 100644
  
  void rx_nb_cc::set_threshold1(float threshold)
 diff --git src/dsp/rx_noise_blanker_cc.h src/dsp/rx_noise_blanker_cc.h
-index 8b4907e..a99924b 100644
+index b4432e3..1e8ec21 100644
 --- src/dsp/rx_noise_blanker_cc.h
 +++ src/dsp/rx_noise_blanker_cc.h
-@@ -25,6 +25,7 @@
- 
+@@ -26,6 +26,8 @@
+ #include <mutex>
  #include <gnuradio/sync_block.h>
  #include <gnuradio/gr_complex.h>
 +#include <gnuradio/fft/fft.h>
- #include <boost/thread/mutex.hpp>
++#include <boost/thread/mutex.hpp>
  
  class rx_nb_cc;
-@@ -60,22 +61,46 @@ protected:
+ 
+@@ -64,22 +66,46 @@ protected:
  
  public:
      ~rx_nb_cc();
@@ -1175,8 +882,8 @@ index 8b4907e..a99924b 100644
 +
  
  private:
-     boost::mutex  d_mutex;  /*! Used to lock internal data while processing or setting parameters. */
-@@ -89,8 +114,145 @@ private:
+     std::mutex d_mutex;     /*! Used to lock internal data while processing or setting parameters. */
+@@ -93,8 +119,145 @@ private:
      float  d_avgmag_nb2;    /*! Average magnitude. */
      gr_complex d_avgsig, d_delay[8];
      int    d_delidx, d_sigidx, d_hangtime;   // FIXME: need longer buffer for higher sampel rates?
@@ -1322,1321 +1029,11 @@ index 8b4907e..a99924b 100644
  
 +
  #endif /* RX_NB_CC_H */
-diff --git src/qtgui/CMakeLists.txt src/qtgui/CMakeLists.txt
-index 38db002..677858f 100644
---- src/qtgui/CMakeLists.txt
-+++ src/qtgui/CMakeLists.txt
-@@ -7,6 +7,8 @@ add_source_files(SRCS_LIST
- 	agc_options.h
- 	audio_options.cpp
- 	audio_options.h
-+	bandplan.cpp
-+	bandplan.h
- 	bookmarks.cpp
- 	bookmarks.h
- 	bookmarkstablemodel.cpp
-@@ -44,6 +46,8 @@ add_source_files(SRCS_LIST
- 	plotter.h
- 	qtcolorpicker.cpp
- 	qtcolorpicker.h
-+        dxc_spots.cpp
-+        dxc_options.cpp
- )
- 
- #######################################################################################################################
-@@ -62,5 +66,6 @@ add_source_files(UI_SRCS_LIST
- 	ioconfig.ui
- 	iq_tool.ui
- 	nb_options.ui
-+        dxc_options.ui
- )
- 
-diff --git src/qtgui/bandplan.cpp src/qtgui/bandplan.cpp
-new file mode 100644
-index 0000000..25a9d96
---- /dev/null
-+++ src/qtgui/bandplan.cpp
-@@ -0,0 +1,112 @@
-+/* -*- c++ -*- */
-+/*
-+ * Gqrx SDR: Software defined radio receiver powered by GNU Radio and Qt
-+ *           http://gqrx.dk/
-+ *
-+ * Copyright 2013 Christian Lindner DL2VCL, Stefano Leucci.
-+ *
-+ * Gqrx is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 3, or (at your option)
-+ * any later version.
-+ *
-+ * Gqrx is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with Gqrx; see the file COPYING.  If not, write to
-+ * the Free Software Foundation, Inc., 51 Franklin Street,
-+ * Boston, MA 02110-1301, USA.
-+ */
-+#include <Qt>
-+#include <QFile>
-+#include <QStringList>
-+#include <QTextStream>
-+#include <QString>
-+#include <QSet>
-+#include <algorithm>
-+#include "bandplan.h"
-+#include <stdio.h>
-+#include <wchar.h>
-+
-+BandPlan* BandPlan::m_pThis = 0;
-+
-+BandPlan::BandPlan()
-+{
-+    
-+}
-+
-+void BandPlan::create()
-+{
-+    m_pThis = new BandPlan;
-+}
-+
-+BandPlan& BandPlan::Get()
-+{
-+    return *m_pThis;
-+}
-+
-+void BandPlan::setConfigDir(const QString& cfg_dir)
-+{
-+    m_bandPlanFile = cfg_dir + "/bandplan.csv";
-+    printf("BandPlanFile is %s\n", m_bandPlanFile.toStdString().c_str());
-+}
-+
-+bool BandPlan::load()
-+{
-+    QFile file(m_bandPlanFile);
-+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return false;
-+    
-+    m_BandInfoList.clear();
-+    
-+    while (!file.atEnd())
-+    {
-+        QString line = QString::fromUtf8(file.readLine().trimmed());
-+        if(line.isEmpty() || line.startsWith("#"))
-+            continue;
-+
-+        QStringList strings = line.split(",");
-+
-+        if (strings.count() < 6){
-+            printf("BandPlan: Ignoring Line:\n  %s\n", line.toLatin1().data());
-+        } else {
-+            BandInfo info;
-+            info.minFrequency = strings[0].toLongLong();
-+            info.maxFrequency = strings[1].toLongLong();
-+            info.modulation   = strings[2].trimmed();
-+            info.step         = strings[3].toInt();
-+            info.color        = QColor(strings[4].trimmed());
-+            info.name         = strings[5].trimmed();
-+
-+            m_BandInfoList.append(info);
-+        }
-+    }
-+    file.close();
-+    
-+    emit BandPlanChanged();
-+    return true;
-+}
-+
-+QList<BandInfo> BandPlan::getBandsInRange(qint64 low, qint64 high)
-+{
-+    QList<BandInfo> found;
-+    for (int i = 0; i < m_BandInfoList.size(); i++) {
-+        if(m_BandInfoList[i].maxFrequency < low) continue;
-+        if(m_BandInfoList[i].minFrequency > high) continue;
-+        found.append(m_BandInfoList[i]);
-+    }
-+    return found;
-+}
-+
-+QList<BandInfo> BandPlan::getBandsEncompassing(qint64 freq)
-+{
-+    QList<BandInfo> found;
-+    for (int i = 0; i < m_BandInfoList.size(); i++) {
-+        if(m_BandInfoList[i].maxFrequency < freq) continue;
-+        if(m_BandInfoList[i].minFrequency > freq) continue;
-+        found.append(m_BandInfoList[i]);
-+    }
-+    return found;
-+}
-\ No newline at end of file
-diff --git src/qtgui/bandplan.h src/qtgui/bandplan.h
-new file mode 100644
-index 0000000..115dcda
---- /dev/null
-+++ src/qtgui/bandplan.h
-@@ -0,0 +1,83 @@
-+/* -*- c++ -*- */
-+/*
-+ * Gqrx SDR: Software defined radio receiver powered by GNU Radio and Qt
-+ *           http://gqrx.dk/
-+ *
-+ * Copyright 2013 Christian Lindner DL2VCL, Stefano Leucci.
-+ *
-+ * Gqrx is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 3, or (at your option)
-+ * any later version.
-+ *
-+ * Gqrx is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with Gqrx; see the file COPYING.  If not, write to
-+ * the Free Software Foundation, Inc., 51 Franklin Street,
-+ * Boston, MA 02110-1301, USA.
-+ */
-+#ifndef BANDPLAN_H
-+#define BANDPLAN_H
-+
-+#include <QtGlobal>
-+#include <QObject>
-+#include <QString>
-+#include <QMap>
-+#include <QList>
-+#include <QStringList>
-+#include <QColor>
-+
-+
-+
-+struct BandInfo
-+{
-+    qint64  minFrequency;
-+    qint64  maxFrequency;
-+    QString name;
-+    QString modulation;
-+    qint64  step;
-+    QColor  color;
-+
-+    BandInfo()
-+    {
-+        this->minFrequency = 0;
-+        this->maxFrequency = 0;
-+        this->step = 1;
-+    }
-+
-+    bool operator<(const BandInfo &other) const
-+    {
-+        return minFrequency < other.minFrequency;
-+    }
-+};
-+
-+class BandPlan : public QObject
-+{
-+    Q_OBJECT
-+public:
-+    // This is a Singleton Class now because you can not send qt-signals from static functions.
-+    static void create();
-+    static BandPlan& Get();
-+    bool load();
-+    int size() { return m_BandInfoList.size(); }
-+    BandInfo& getBand(int i) { return m_BandInfoList[i]; }
-+    QList<BandInfo> getBandsInRange(qint64 low, qint64 high);
-+    QList<BandInfo> getBandsEncompassing(qint64 freq);
-+
-+    void setConfigDir(const QString&);
-+
-+private:
-+    BandPlan(); // Singleton Constructor is private.
-+    QList<BandInfo>  m_BandInfoList;
-+    QString          m_bandPlanFile;
-+    static BandPlan* m_pThis;
-+
-+signals:
-+    void BandPlanChanged(void);
-+};
-+
-+#endif // BANDPLAN_H
-diff --git src/qtgui/dockaudio.cpp src/qtgui/dockaudio.cpp
-index ff920ec..c20b07e 100644
---- src/qtgui/dockaudio.cpp
-+++ src/qtgui/dockaudio.cpp
-@@ -74,6 +74,7 @@ DockAudio::DockAudio(QWidget *parent) :
-     ui->audioSpectrum->setFilterBoxEnabled(false);
-     ui->audioSpectrum->setCenterLineEnabled(false);
-     ui->audioSpectrum->setBookmarksEnabled(false);
-+    ui->audioSpectrum->setBandPlanEnabled(false);
-     ui->audioSpectrum->setFftRange(-80., 0.);
-     ui->audioSpectrum->setVdivDelta(40);
-     ui->audioSpectrum->setHdivDelta(40);
-diff --git src/qtgui/dockfft.cpp src/qtgui/dockfft.cpp
-index e91cfa1..3ec577f 100644
---- src/qtgui/dockfft.cpp
-+++ src/qtgui/dockfft.cpp
-@@ -274,6 +274,12 @@ void DockFft::saveSettings(QSettings *settings)
-     else
-         settings->remove("db_ranges_locked");
- 
-+    // Band Plan
-+    if (ui->bandPlanCheckbox->isChecked())
-+        settings->setValue("bandplan", true);
-+    else
-+        settings->remove("bandplan");
-+
-     if (QString::compare(ui->cmapComboBox->currentData().toString(), DEFAULT_COLORMAP))
-         settings->setValue("waterfall_colormap", ui->cmapComboBox->currentData().toString());
-     else
-@@ -346,6 +352,10 @@ void DockFft::readSettings(QSettings *settings)
-     bool_val = settings->value("db_ranges_locked", false).toBool();
-     ui->lockButton->setChecked(bool_val);
- 
-+    bool_val = settings->value("bandplan", false).toBool();
-+    ui->bandPlanCheckbox->setChecked(bool_val);
-+    emit bandPlanChanged(bool_val);
-+
-     QString cmap = settings->value("waterfall_colormap", "gqrx").toString();
-     ui->cmapComboBox->setCurrentIndex(ui->cmapComboBox->findData(cmap));
- 
-@@ -522,6 +532,11 @@ void DockFft::on_peakDetectionButton_toggled(bool checked)
-     emit peakDetectionToggled(checked);
- }
- 
-+void DockFft::on_bandPlanCheckbox_stateChanged(int state)
-+{
-+    emit bandPlanChanged(state == 2);
-+}
-+
- /** lock button toggled */
- void DockFft::on_lockButton_toggled(bool checked)
- {
-diff --git src/qtgui/dockfft.h src/qtgui/dockfft.h
-index 5d8fb7f..b888cd1 100644
---- src/qtgui/dockfft.h
-+++ src/qtgui/dockfft.h
-@@ -67,6 +67,7 @@ signals:
-     void fftFillToggled(bool fill);                /*! Toggle filling area under FFT plot. */
-     void fftPeakHoldToggled(bool enable);          /*! Toggle peak hold in FFT area. */
-     void peakDetectionToggled(bool enabled);       /*! Enable peak detection in FFT plot */
-+    void bandPlanChanged(bool enabled);            /*! Toggle Band Plan at bottom of FFT area. */
-     void wfColormapChanged(const QString &cmap);
- 
- public slots:
-@@ -93,6 +94,7 @@ private slots:
-     void on_peakHoldButton_toggled(bool checked);
-     void on_peakDetectionButton_toggled(bool checked);
-     void on_lockButton_toggled(bool checked);
-+    void on_bandPlanCheckbox_stateChanged(int state);
-     void on_cmapComboBox_currentIndexChanged(int index);
- 
- private:
-diff --git src/qtgui/dockfft.ui src/qtgui/dockfft.ui
-index 033cc19..749eaaf 100644
---- src/qtgui/dockfft.ui
-+++ src/qtgui/dockfft.ui
-@@ -851,7 +851,7 @@
-             </property>
-            </widget>
-           </item>
--          <item row="14" column="0" colspan="4">
-+          <item row="15" column="0" colspan="4">
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-@@ -939,8 +939,7 @@
-              </size>
-             </property>
-             <property name="toolTip">
--             <string>&lt;html&gt;Number of FFT points to calculate. Higher values will require more CPU time. This will not influence the number of points on the display since that parameter is adjusted automatically according to the display size.
--&lt;/html&gt;</string>
-+             <string>&lt;html&gt;Number of FFT points to calculate. Higher values will require more CPU time. This will not influence the number of points on the display since that parameter is adjusted automatically according to the display size.&lt;/html&gt;</string>
-             </property>
-             <property name="editable">
-              <bool>false</bool>
-@@ -1107,6 +1106,16 @@
-             </property>
-            </widget>
-           </item>
-+          <item row="14" column="0" colspan="4">
-+            <widget class="QCheckBox" name="bandPlanCheckbox">
-+              <property name="toolTip">
-+                <string>Enable Band Plan on bottom of spectrum</string>
-+              </property>
-+              <property name="text">
-+                <string>Enable Band Plan</string>
-+              </property>
-+            </widget>
-+          </item>
-          </layout>
-         </item>
-        </layout>
-diff --git src/qtgui/dxc_options.cpp src/qtgui/dxc_options.cpp
-new file mode 100644
-index 0000000..d30e2ca
---- /dev/null
-+++ src/qtgui/dxc_options.cpp
-@@ -0,0 +1,119 @@
-+#include "dxc_options.h"
-+#include "ui_dxc_options.h"
-+#include <QTcpSocket>
-+#include <QString>
-+#include <QStringList>
-+#include "dxc_spots.h"
-+
-+DXC_Options::DXC_Options(QWidget *parent) :
-+    QDialog(parent),
-+    ui(new Ui::DXC_Options)
-+{
-+    ui->setupUi(this);
-+    TCPSocket = new QTcpSocket(this);
-+    connect(TCPSocket, SIGNAL(connected()),this, SLOT(connected()));
-+    connect(TCPSocket, SIGNAL(disconnected()),this, SLOT(disconnected()));
-+    connect(TCPSocket, SIGNAL(readyRead()),this, SLOT(readyToRead()));
-+}
-+
-+DXC_Options::~DXC_Options()
-+{
-+    delete ui;
-+}
-+
-+/*! \brief Catch window close events.
-+ *
-+ * This method is called when the user closes the audio options dialog
-+ * window using the window close icon. We catch the event and hide the
-+ * dialog but keep it around for later use.
-+ */
-+void DXC_Options::closeEvent(QCloseEvent *event)
-+{
-+    hide();
-+    event->ignore();
-+}
-+
-+/*! \brief Catch window show events. */
-+void DXC_Options::showEvent(QShowEvent * event)
-+{
-+    Q_UNUSED(event);
-+}
-+
-+void DXC_Options::on_pushButton_DXCConnect_clicked()
-+{
-+    DXCSpots::Get().setSpotTimeout(ui->lineEdit_DXCSpottimeout->text().toInt());
-+    TCPSocket->connectToHost(ui->lineEdit_DXCAddress->text(),ui->lineEdit_DXCPort->text().toInt());
-+    if(!TCPSocket->waitForConnected(5000))
-+    {
-+        ui->plainTextEdit_DXCMonitor->appendPlainText(TCPSocket->errorString());
-+    }
-+}
-+
-+void DXC_Options::on_pushButton_DXCDisconnect_clicked()
-+{
-+    TCPSocket->close();
-+}
-+
-+void DXC_Options::connected()
-+{
-+    ui->plainTextEdit_DXCMonitor->appendPlainText("Connected");
-+    ui->pushButton_DXCConnect->setDisabled(true);
-+    ui->pushButton_DXCDisconnect->setEnabled(true);
-+}
-+void DXC_Options::disconnected()
-+{
-+    ui->plainTextEdit_DXCMonitor->appendPlainText("Disconnected");
-+    ui->pushButton_DXCDisconnect->setDisabled(true);
-+    ui->pushButton_DXCConnect->setEnabled(true);
-+}
-+void DXC_Options::readyToRead()
-+{
-+    DXCSpotInfo info;
-+    QStringList Spot;
-+    QString incommingMessage;
-+    incommingMessage = TCPSocket->readAll();
-+    ui->plainTextEdit_DXCMonitor->appendPlainText(incommingMessage);
-+    if(incommingMessage.contains("enter your call", Qt::CaseInsensitive))
-+    {
-+        TCPSocket->write(ui->lineEdit_DXCUSername->text().append("\r\n").toUtf8());
-+        ui->plainTextEdit_DXCMonitor->appendPlainText(ui->lineEdit_DXCUSername->text().append("\r\n"));
-+    }
-+    else if(incommingMessage.contains("DX de", Qt::CaseInsensitive) &&
-+            incommingMessage.contains(ui->lineEdit_DXCFilter->text()))
-+    {
-+        Spot = incommingMessage.split(" ", QString::SkipEmptyParts);
-+        info.name = Spot[4].trimmed();
-+        info.frequency = Spot[3].toDouble() * 1000;
-+        DXCSpots::Get().add(info);
-+    }
-+}
-+void DXC_Options::saveSettings(QSettings *settings)
-+{
-+    if (!settings)
-+        return;
-+
-+    settings->beginGroup("dxcluster");
-+
-+    settings->setValue("DXCAddress", ui->lineEdit_DXCAddress->text());
-+    settings->setValue("DXCPort", ui->lineEdit_DXCPort->text());
-+    settings->setValue("DXCUsername", ui->lineEdit_DXCUSername->text());
-+    settings->setValue("DXCSpotTimeout", ui->lineEdit_DXCSpottimeout->text());
-+    settings->setValue("DXCFilter", ui->lineEdit_DXCFilter->text());
-+
-+    settings->endGroup();
-+}
-+
-+void DXC_Options::readSettings(QSettings *settings)
-+{
-+    if (!settings)
-+        return;
-+
-+    settings->beginGroup("dxcluster");
-+    ui->lineEdit_DXCAddress->setText(settings->value("DXCAddress", "localhost").toString());
-+    ui->lineEdit_DXCPort->setText(settings->value("DXCPort", "7300").toString());
-+    ui->lineEdit_DXCUSername->setText(settings->value("DXCUsername", "nocall").toString());
-+    ui->lineEdit_DXCSpottimeout->setText(settings->value("DXCSpotTimeout", "10").toString());
-+    ui->lineEdit_DXCFilter->setText(settings->value("DXCFilter", "").toString());
-+
-+    settings->endGroup();
-+}
-diff --git src/qtgui/dxc_options.h src/qtgui/dxc_options.h
-new file mode 100644
-index 0000000..b026c02
---- /dev/null
-+++ src/qtgui/dxc_options.h
-@@ -0,0 +1,42 @@
-+#ifndef DXC_OPTIONS_H
-+#define DXC_OPTIONS_H
-+
-+
-+#include <QCloseEvent>
-+#include <QShowEvent>
-+#include <QTcpSocket>
-+#include <QSettings>
-+
-+#include <QDialog>
-+
-+namespace Ui {
-+class DXC_Options;
-+}
-+
-+class DXC_Options : public QDialog
-+{
-+    Q_OBJECT
-+
-+public:
-+    explicit DXC_Options(QWidget *parent = 0);
-+    ~DXC_Options();
-+
-+    void closeEvent(QCloseEvent *event);
-+    void showEvent(QShowEvent * event);
-+    void saveSettings(QSettings *settings);
-+    void readSettings(QSettings *settings);
-+
-+private slots:
-+
-+    void on_pushButton_DXCConnect_clicked();
-+    void on_pushButton_DXCDisconnect_clicked();
-+    void connected();
-+    void disconnected();
-+    void readyToRead();
-+
-+private:
-+    Ui::DXC_Options *ui;
-+    QTcpSocket *TCPSocket;
-+};
-+
-+#endif // DXC_OPTIONS_H
-diff --git src/qtgui/dxc_options.ui src/qtgui/dxc_options.ui
-new file mode 100644
-index 0000000..c0d7387
---- /dev/null
-+++ src/qtgui/dxc_options.ui
-@@ -0,0 +1,168 @@
-+<?xml version="1.0" encoding="UTF-8"?>
-+<ui version="4.0">
-+ <class>DXC_Options</class>
-+ <widget class="QDialog" name="DXC_Options">
-+  <property name="geometry">
-+   <rect>
-+    <x>0</x>
-+    <y>0</y>
-+    <width>500</width>
-+    <height>405</height>
-+   </rect>
-+  </property>
-+  <property name="windowTitle">
-+   <string>DXC Options</string>
-+  </property>
-+  <layout class="QGridLayout" name="gridLayout_2">
-+   <item row="0" column="0">
-+    <widget class="QGroupBox" name="groupBox">
-+     <property name="title">
-+      <string>DX Cluster Settings</string>
-+     </property>
-+     <layout class="QGridLayout" name="gridLayout">
-+      <item row="1" column="0" colspan="2">
-+       <widget class="QLabel" name="label_DXCSpottimeout">
-+        <property name="sizePolicy">
-+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-+          <horstretch>0</horstretch>
-+          <verstretch>0</verstretch>
-+         </sizepolicy>
-+        </property>
-+        <property name="text">
-+         <string>Spot Timeout/min:</string>
-+        </property>
-+       </widget>
-+      </item>
-+      <item row="2" column="0" colspan="2">
-+       <widget class="QLabel" name="label_DXCUsername">
-+        <property name="sizePolicy">
-+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-+          <horstretch>0</horstretch>
-+          <verstretch>0</verstretch>
-+         </sizepolicy>
-+        </property>
-+        <property name="text">
-+         <string>Username:</string>
-+        </property>
-+       </widget>
-+      </item>
-+      <item row="0" column="0">
-+       <widget class="QLabel" name="label_DXCAddress">
-+        <property name="sizePolicy">
-+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-+          <horstretch>0</horstretch>
-+          <verstretch>0</verstretch>
-+         </sizepolicy>
-+        </property>
-+        <property name="text">
-+         <string>Address:</string>
-+        </property>
-+       </widget>
-+      </item>
-+      <item row="0" column="5">
-+       <widget class="QLabel" name="label_DXCPort">
-+        <property name="sizePolicy">
-+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-+          <horstretch>0</horstretch>
-+          <verstretch>0</verstretch>
-+         </sizepolicy>
-+        </property>
-+        <property name="text">
-+         <string>Port:</string>
-+        </property>
-+       </widget>
-+      </item>
-+      <item row="0" column="6">
-+       <widget class="QLineEdit" name="lineEdit_DXCPort">
-+        <property name="text">
-+         <string>7300</string>
-+        </property>
-+       </widget>
-+      </item>
-+      <item row="0" column="1" colspan="4">
-+       <widget class="QLineEdit" name="lineEdit_DXCAddress">
-+        <property name="text">
-+         <string>127.0.0.1</string>
-+        </property>
-+       </widget>
-+      </item>
-+      <item row="1" column="4">
-+       <widget class="QLineEdit" name="lineEdit_DXCSpottimeout">
-+        <property name="text">
-+         <string>10</string>
-+        </property>
-+       </widget>
-+      </item>
-+      <item row="2" column="4">
-+       <widget class="QLineEdit" name="lineEdit_DXCUSername">
-+        <property name="text">
-+         <string>nocall</string>
-+        </property>
-+       </widget>
-+      </item>
-+      <item row="3" column="4">
-+       <widget class="QPushButton" name="pushButton_DXCDisconnect">
-+        <property name="enabled">
-+         <bool>false</bool>
-+        </property>
-+        <property name="text">
-+         <string>Disconnect</string>
-+        </property>
-+       </widget>
-+      </item>
-+      <item row="3" column="6">
-+       <widget class="QPushButton" name="pushButton_DXCConnect">
-+        <property name="text">
-+         <string>Connect</string>
-+        </property>
-+       </widget>
-+      </item>
-+      <item row="1" column="5">
-+       <widget class="QLabel" name="label_DXCFilter">
-+        <property name="text">
-+         <string>Filter:</string>
-+        </property>
-+       </widget>
-+      </item>
-+      <item row="1" column="6">
-+       <widget class="QLineEdit" name="lineEdit_DXCFilter">
-+        <property name="placeholderText">
-+         <string>ex. CW or RTTY</string>
-+        </property>
-+       </widget>
-+      </item>
-+     </layout>
-+    </widget>
-+   </item>
-+   <item row="1" column="0">
-+    <widget class="QPlainTextEdit" name="plainTextEdit_DXCMonitor">
-+     <property name="font">
-+      <font>
-+       <pointsize>10</pointsize>
-+      </font>
-+     </property>
-+     <property name="documentTitle">
-+      <string/>
-+     </property>
-+     <property name="readOnly">
-+      <bool>true</bool>
-+     </property>
-+     <property name="plainText">
-+      <string/>
-+     </property>
-+     <property name="textInteractionFlags">
-+      <set>Qt::NoTextInteraction</set>
-+     </property>
-+     <property name="maximumBlockCount">
-+      <number>240</number>
-+     </property>
-+     <property name="toolTipDuration" stdset="0">
-+      <number>-3</number>
-+     </property>
-+    </widget>
-+   </item>
-+  </layout>
-+ </widget>
-+ <resources/>
-+ <connections/>
-+</ui>
-diff --git src/qtgui/dxc_spots.cpp src/qtgui/dxc_spots.cpp
-new file mode 100644
-index 0000000..0932b8d
---- /dev/null
-+++ src/qtgui/dxc_spots.cpp
-@@ -0,0 +1,107 @@
-+/* -*- c++ -*- */
-+/*
-+ * Gqrx SDR: Software defined radio receiver powered by GNU Radio and Qt
-+ *           http://gqrx.dk/
-+ *
-+ * Gqrx is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 3, or (at your option)
-+ * any later version.
-+ *
-+ * Gqrx is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with Gqrx; see the file COPYING.  If not, write to
-+ * the Free Software Foundation, Inc., 51 Franklin Street,
-+ * Boston, MA 02110-1301, USA.
-+ */
-+#include <Qt>
-+#include <QFile>
-+#include <QStringList>
-+#include <QTextStream>
-+#include <QString>
-+#include <QSet>
-+#include <algorithm>
-+#include "dxc_spots.h"
-+#include <stdio.h>
-+#include <wchar.h>
-+
-+DXCSpots* DXCSpots::m_pThis = 0;
-+
-+DXCSpots::DXCSpots()
-+{
-+}
-+
-+void DXCSpots::create()
-+{
-+    m_pThis = new DXCSpots;
-+}
-+
-+DXCSpots& DXCSpots::Get()
-+{
-+    return *m_pThis;
-+}
-+
-+void DXCSpots::add(DXCSpotInfo &info)
-+{
-+    info.time = QTime::currentTime();
-+    // check only callsign, so if present remove and re-append
-+    // if check also frequency we can only change the time
-+    if (m_DXCSpotList.contains(info))
-+        m_DXCSpotList.removeAt(m_DXCSpotList.indexOf(info));
-+    m_DXCSpotList.append(info);
-+    std::stable_sort(m_DXCSpotList.begin(),m_DXCSpotList.end());
-+    emit( DXCSpotsChanged() );
-+}
-+
-+void DXCSpots::checkSpotTimeout()
-+{
-+    for (int i = 0; i < m_DXCSpotList.size(); i++)
-+    {
-+        if ( m_DXCSpotTimeout < m_DXCSpotList[i].time.secsTo(QTime::currentTime() ))
-+        {
-+            m_DXCSpotList.removeAt(i);
-+        }
-+    }
-+    std::stable_sort(m_DXCSpotList.begin(),m_DXCSpotList.end());
-+    emit( DXCSpotsChanged() );
-+}
-+
-+void DXCSpots::remove(int index)
-+{
-+    m_DXCSpotList.removeAt(index);
-+    emit( DXCSpotsChanged() );
-+}
-+
-+QList<DXCSpotInfo> DXCSpots::getDXCSpotsInRange(qint64 low, qint64 high)
-+{
-+    DXCSpotInfo info;
-+    info.frequency=low;
-+    QList<DXCSpotInfo>::const_iterator lb = std::lower_bound(m_DXCSpotList.begin(), m_DXCSpotList.end(), info);
-+    info.frequency=high;
-+    QList<DXCSpotInfo>::const_iterator ub = std::upper_bound(m_DXCSpotList.begin(), m_DXCSpotList.end(), info);
-+
-+    QList<DXCSpotInfo> found;
-+
-+    while (lb != ub)
-+    {
-+        const DXCSpotInfo& info = *lb;
-+        //if(info.IsActive())
-+        {
-+          found.append(info);
-+        }
-+        lb++;
-+    }
-+
-+    return found;
-+
-+}
-+
-+const QColor DXCSpotInfo::GetColor() const
-+{
-+    return DXCSpotInfo::color;
-+}
-+
-diff --git src/qtgui/dxc_spots.h src/qtgui/dxc_spots.h
-new file mode 100644
-index 0000000..c7b0d00
---- /dev/null
-+++ src/qtgui/dxc_spots.h
-@@ -0,0 +1,91 @@
-+/* -*- c++ -*- */
-+/*
-+ * Gqrx SDR: Software defined radio receiver powered by GNU Radio and Qt
-+ *           http://gqrx.dk/
-+ *
-+ * Copyright 2013 Christian Lindner DL2VCL, Stefano Leucci.
-+ *
-+ * Gqrx is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 3, or (at your option)
-+ * any later version.
-+ *
-+ * Gqrx is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with Gqrx; see the file COPYING.  If not, write to
-+ * the Free Software Foundation, Inc., 51 Franklin Street,
-+ * Boston, MA 02110-1301, USA.
-+ */
-+#ifndef DXC_SPOTS_H
-+#define DXC_SPOTS_H
-+
-+#include <QtGlobal>
-+#include <QObject>
-+#include <QString>
-+#include <QMap>
-+#include <QList>
-+#include <QStringList>
-+#include <QColor>
-+#include <QTime>
-+
-+struct DXCSpotInfo
-+{
-+    qint64  frequency;
-+    QString name;
-+    QTime time;
-+    QColor color;
-+
-+    DXCSpotInfo()
-+    {
-+        this->frequency = 0;
-+        this->time = QTime::currentTime();
-+        this->color=(Qt::lightGray);
-+    }
-+
-+    bool operator<(const DXCSpotInfo &other) const
-+    {
-+        return frequency < other.frequency;
-+    }
-+
-+    bool operator==(const DXCSpotInfo &other) const
-+    {
-+        // we check only the name because frequency can change a bit
-+        // not good for multi-operator with the case callsign
-+        return name == other.name;
-+    }
-+
-+    const QColor GetColor() const;
-+};
-+
-+class DXCSpots : public QObject
-+{
-+    Q_OBJECT
-+public:
-+    // This is a Singleton Class now because you can not send qt-signals from static functions.
-+    static void create();
-+    static DXCSpots& Get();
-+
-+    void add(DXCSpotInfo& info);
-+    void checkSpotTimeout();
-+    void remove(int index);
-+    void setSpotTimeout(int i) {m_DXCSpotTimeout = i * 60;}
-+    DXCSpotInfo& getDXCSpot(int i) { return m_DXCSpotList[i]; }
-+    QList<DXCSpotInfo> getDXCSpotsInRange(qint64 low, qint64 high);
-+    //int lowerBound(qint64 low);
-+    //int upperBound(qint64 high);
-+
-+private:
-+    DXCSpots(); // Singleton Constructor is private.
-+    QList<DXCSpotInfo> m_DXCSpotList;
-+    int m_DXCSpotTimeout;
-+    static DXCSpots* m_pThis;
-+
-+signals:
-+    void DXCSpotsChanged(void);
-+};
-+
-+#endif // DXC_SPOTS_H
-diff --git src/qtgui/freqctrl.cpp src/qtgui/freqctrl.cpp
-index ed419ed..d9dd132 100644
---- src/qtgui/freqctrl.cpp
-+++ src/qtgui/freqctrl.cpp
-@@ -484,6 +484,7 @@ void CFreqCtrl::keyPressEvent(QKeyEvent *event)
-     // call base class if dont over ride key
-     bool      fSkipMsg = false;
-     qint64    tmp;
-+    uint8_t position = 0;
- 
-     // qDebug() <<event->key();
- 
-@@ -849,3 +850,16 @@ void CFreqCtrl::cursorEnd()
-                                     center()));
-     }
- }
-+
-+void CFreqCtrl::setFrequencyFocus()
-+{
-+    uint8_t position = floor(log10(m_freq));
-+    position = (uint8_t)fmax(position, 4);      // restrict min to 100s of kHz
-+
-+    QMouseEvent *mouseEvent = new QMouseEvent(QEvent::MouseMove,
-+                                              m_DigitInfo[position].dQRect.center(),
-+                                              Qt::NoButton,
-+                                              Qt::NoButton,
-+                                              Qt::NoModifier);
-+    mouseMoveEvent(mouseEvent);
-+}
-diff --git src/qtgui/freqctrl.h src/qtgui/freqctrl.h
-index 08143ab..adeea2a 100644
---- src/qtgui/freqctrl.h
-+++ src/qtgui/freqctrl.h
-@@ -56,6 +56,7 @@ signals:
- 
- public slots:
-     void    setFrequency(qint64 freq);
-+    void    setFrequencyFocus();
- 
- protected:
-     void    paintEvent(QPaintEvent *);
-diff --git src/qtgui/plotter.cpp src/qtgui/plotter.cpp
-index a9d9cff..aaf5950 100644
---- src/qtgui/plotter.cpp
-+++ src/qtgui/plotter.cpp
-@@ -64,7 +64,9 @@ int gettimeofday(struct timeval * tp, struct timezone * tzp)
- #include <QtGlobal>
- #include <QToolTip>
- #include "plotter.h"
-+#include "bandplan.h"
- #include "bookmarks.h"
-+#include "dxc_spots.h"
- 
- // Comment out to enable plotter debug messages
- //#define PLOTTER_DEBUG
-@@ -84,6 +86,9 @@ int gettimeofday(struct timeval * tp, struct timezone * tzp)
- #define PLOTTER_FILTER_BOX_COLOR    0xFFA0A0A4
- // FIXME: Should cache the QColors also
- 
-+#define HOR_MARGIN 5
-+#define VER_MARGIN 5
-+
- static inline bool val_is_out_of_range(float val, float min, float max)
- {
-     return (val < min || val > max);
-@@ -146,7 +151,9 @@ CPlotter::CPlotter(QWidget *parent) : QFrame(parent)
- 
-     m_FilterBoxEnabled = true;
-     m_CenterLineEnabled = true;
-+    m_BandPlanEnabled = true;
-     m_BookmarksEnabled = true;
-+    m_DXCSpotsEnabled = true;
- 
-     m_Span = 96000;
-     m_SampleFreq = 96000;
-@@ -168,6 +175,7 @@ CPlotter::CPlotter(QWidget *parent) : QFrame(parent)
-     m_Percent2DScreen = 35;	//percent of screen used for 2D display
-     m_VdivDelta = 30;
-     m_HdivDelta = 70;
-+    m_BandPlanHeight = 22;
- 
-     m_FreqDigits = 3;
- 
-@@ -214,17 +222,20 @@ void CPlotter::mouseMoveEvent(QMouseEvent* event)
-             bool onTag = false;
-             if(pt.y() < 15 * 10) // FIXME
-             {
--                for(int i = 0; i < m_BookmarkTags.size() && !onTag; i++)
-+                if(m_BookmarksEnabled || m_DXCSpotsEnabled)
-                 {
--                    if (m_BookmarkTags[i].first.contains(event->pos()))
--                        onTag = true;
-+                    for(int i = 0; i < Taglist.size() && !onTag; i++)
-+                    {
-+                        if (Taglist[i].first.contains(event->pos()))
-+                            onTag = true;
-+                    }
-                 }
-             }
-             // if no mouse button monitor grab regions and change cursor icon
-             if (onTag)
-             {
-                 setCursor(QCursor(Qt::PointingHandCursor));
--                m_CursorCaptured = BOOKMARK;
-+                m_CursorCaptured = TAG;
-             }
-             else if (isPointCloseTo(pt.x(), m_DemodFreqX, m_CursorCaptureDelta))
-             {
-@@ -286,10 +297,20 @@ void CPlotter::mouseMoveEvent(QMouseEvent* event)
-                     m_CursorCaptured = NOCAP;
-                 }
-                 if (m_TooltipsEnabled)
--                    QToolTip::showText(event->globalPos(),
--                                       QString("F: %1 kHz")
--                                       .arg(freqFromX(pt.x())/1.e3f, 0, 'f', 3),
--                                       this);
-+                {
-+                    qint64 hoverFrequency = freqFromX(pt.x());
-+                    QString toolTipText = QString("F: %1 kHz").arg(hoverFrequency/1.e3f, 0, 'f', 3);
-+                    QFontMetrics metrics(m_Font);
-+                    int bandTopY = m_OverlayPixmap.height() - metrics.height() - 2 * VER_MARGIN - m_BandPlanHeight;
-+                    QList<BandInfo> hoverBands = BandPlan::Get().getBandsEncompassing(hoverFrequency);
-+                    if(m_BandPlanEnabled && pt.y() > bandTopY && hoverBands.size() > 0)
-+                    {
-+                        toolTipText.append("\n");
-+                        for (int i = 0; i < hoverBands.size(); i++)
-+                            toolTipText.append("\n" + hoverBands[i].name);
-+                    }
-+                    QToolTip::showText(event->globalPos(), toolTipText, this);
-+                }
-             }
-             m_GrabPosition = 0;
-         }
-@@ -687,13 +708,13 @@ void CPlotter::mousePressEvent(QMouseEvent * event)
-                 resetHorizontalZoom();
-             }
-         }
--        else if (m_CursorCaptured == BOOKMARK)
-+        else if (m_CursorCaptured == TAG)
-         {
--            for (int i = 0; i < m_BookmarkTags.size(); i++)
-+            for (int i = 0; i < Taglist.size(); i++)
-             {
--                if (m_BookmarkTags[i].first.contains(event->pos()))
-+                if (Taglist[i].first.contains(event->pos()))
-                 {
--                    m_DemodCenterFreq = m_BookmarkTags[i].second;
-+                    m_DemodCenterFreq = Taglist[i].second;
-                     emit newDemodFreq(m_DemodCenterFreq, m_DemodCenterFreq - m_CenterFreq);
-                     break;
-                 }
-@@ -1271,8 +1292,7 @@ void CPlotter::drawOverlay()
-     painter.setBrush(Qt::SolidPattern);
-     painter.fillRect(0, 0, w, h, QColor(PLOTTER_BGD_COLOR));
- 
--#define HOR_MARGIN 5
--#define VER_MARGIN 5
-+    QList<BookmarkInfo> tags;
- 
-     // X and Y axis areas
-     m_YAxisWidth = metrics.width("XXXX") + 2 * HOR_MARGIN;
-@@ -1281,25 +1301,47 @@ void CPlotter::drawOverlay()
-     int xAxisTop = h - xAxisHeight;
-     int fLabelTop = xAxisTop + VER_MARGIN;
- 
--    if (m_BookmarksEnabled)
-+    if (m_BookmarksEnabled || m_DXCSpotsEnabled)
-     {
--        m_BookmarkTags.clear();
-+        Taglist.clear();
-         static const QFontMetrics fm(painter.font());
-         static const int fontHeight = fm.ascent() + 1;
-         static const int slant = 5;
-         static const int levelHeight = fontHeight + 5;
-         const int nLevels = h / (levelHeight + slant);
--        QList<BookmarkInfo> bookmarks = Bookmarks::Get().getBookmarksInRange(m_CenterFreq + m_FftCenter - m_Span / 2,
-+        if (m_BookmarksEnabled)
-+        {
-+            tags = Bookmarks::Get().getBookmarksInRange(m_CenterFreq + m_FftCenter - m_Span / 2,
-+                                                         m_CenterFreq + m_FftCenter + m_Span / 2);
-+        }
-+        else
-+        {
-+            tags.clear();
-+        }
-+        if (m_DXCSpotsEnabled)
-+        {
-+            QList<DXCSpotInfo> dxcspots = DXCSpots::Get().getDXCSpotsInRange(m_CenterFreq + m_FftCenter - m_Span / 2,
-                                                                              m_CenterFreq + m_FftCenter + m_Span / 2);
-+            QListIterator<DXCSpotInfo> iter(dxcspots);
-+            while(iter.hasNext())
-+            {
-+                BookmarkInfo tempDXCSpot;
-+                DXCSpotInfo IterDXCSpot = iter.next();
-+                tempDXCSpot.name = IterDXCSpot.name;
-+                tempDXCSpot.frequency = IterDXCSpot.frequency;
-+                tags.append(tempDXCSpot);
-+            }
-+            std::stable_sort(tags.begin(),tags.end());
-+        }
-         QVector<int> tagEnd(nLevels + 1);
--        for (int i = 0; i < bookmarks.size(); i++)
-+        for (int i = 0; i < tags.size(); i++)
-         {
--            x = xFromFreq(bookmarks[i].frequency);
-+            x = xFromFreq(tags[i].frequency);
- 
- #if defined(_WIN16) || defined(_WIN32) || defined(_WIN64)
-             int nameWidth = fm.width(bookmarks[i].name);
- #else
--            int nameWidth = fm.boundingRect(bookmarks[i].name).width();
-+            int nameWidth = fm.boundingRect(tags[i].name).width();
- #endif
- 
-             int level = 0;
-@@ -1319,9 +1361,9 @@ void CPlotter::drawOverlay()
-             const auto levelNHeightBottom = levelNHeight + fontHeight;
-             const auto levelNHeightBottomSlant = levelNHeightBottom + slant;
- 
--            m_BookmarkTags.append(qMakePair<QRect, qint64>(QRect(x, levelNHeight, nameWidth + slant, fontHeight), bookmarks[i].frequency));
-+            Taglist.append(qMakePair<QRect, qint64>(QRect(x, level * levelHeight, nameWidth + slant, fontHeight), tags[i].frequency));
- 
--            QColor color = QColor(bookmarks[i].GetColor());
-+            QColor color = QColor(tags[i].GetColor());
-             color.setAlpha(0x60);
-             // Vertical line
-             painter.setPen(QPen(color, 1, Qt::DashLine));
-@@ -1340,10 +1382,85 @@ void CPlotter::drawOverlay()
-             painter.setPen(QPen(color, 2, Qt::SolidLine));
-             painter.drawText(x + slant, levelNHeight, nameWidth,
-                              fontHeight, Qt::AlignVCenter | Qt::AlignHCenter,
--                             bookmarks[i].name);
-+                             tags[i].name);
-+        }
-+    }
-+
-+    if (m_BandPlanEnabled)
-+    {
-+        QList<BandInfo> bands = BandPlan::Get().getBandsInRange(m_CenterFreq + m_FftCenter - m_Span / 2,
-+                                                                m_CenterFreq + m_FftCenter + m_Span / 2);
-+
-+        for (int i = 0; i < bands.size(); i++)
-+        {
-+            int band_left = xFromFreq(bands[i].minFrequency);
-+            int band_right = xFromFreq(bands[i].maxFrequency);
-+            int band_width = band_right - band_left;
-+            rect.setRect(band_left, xAxisTop - m_BandPlanHeight, band_width, m_BandPlanHeight);
-+            painter.fillRect(rect, bands[i].color);
-+            QString band_label = bands[i].name + " (" + bands[i].modulation + ")";
-+            int textWidth = metrics.width(band_label);
-+            if (band_left < w && band_width > textWidth + 20)
-+            {
-+                painter.setOpacity(1.0);
-+                rect.setRect(band_left, xAxisTop - m_BandPlanHeight, band_width, metrics.height());
-+                painter.setPen(QColor(PLOTTER_TEXT_COLOR));
-+                painter.drawText(rect, Qt::AlignCenter, band_label);
-+            }
-         }
-     }
- 
-+/*
-+    if (m_DXCSpotsEnabled)
-+    {
-+        m_DXCSpotTags.clear();
-+        static const QFontMetrics fm(painter.font());
-+        static const int fontHeight = fm.ascent() + 1;
-+        static const int slant = 5;
-+        static const int levelHeight = fontHeight + 5;
-+        static const int nLevels = 10;
-+        QList<DXCSpotInfo> dxcspots = DXCSpots::Get().getDXCSpotsInRange(m_CenterFreq + m_FftCenter - m_Span / 2,
-+                                                                         m_CenterFreq + m_FftCenter + m_Span / 2);
-+        int tagEnd[nLevels] = {0};
-+        for (int i = 0; i < dxcspots.size(); i++)
-+        {
-+            x = xFromFreq(dxcspots[i].frequency);
-+
-+#if defined(_WIN16) || defined(_WIN32) || defined(_WIN64)
-+            int nameWidth = fm.width(dxcspots[i].name);
-+#else
-+            int nameWidth = fm.boundingRect(dxcspots[i].name).width();
-+#endif
-+            int level = 0;
-+            while(level < nLevels && tagEnd[level] > x)
-+                level++;
-+
-+            if(level == nLevels)
-+                level = 0;
-+            tagEnd[level] = x + nameWidth + slant - 1;
-+            m_DXCSpotTags.append(qMakePair<QRect, qint64>(QRect(x, level * levelHeight, nameWidth + slant, fontHeight), dxcspots[i].frequency));
-+
-+            QColor color = QColor(dxcspots[i].GetColor());
-+            color.setAlpha(0x60);
-+            // Vertical line
-+            painter.setPen(QPen(color, 1, Qt::DashLine));
-+            painter.drawLine(x, level * levelHeight + fontHeight + slant, x, xAxisTop);
-+            // Horizontal line
-+            painter.setPen(QPen(color, 1, Qt::SolidLine));
-+            painter.drawLine(x + slant, level * levelHeight + fontHeight,
-+                             x + nameWidth + slant - 1,
-+                             level * levelHeight + fontHeight);
-+            // Diagonal line
-+            painter.drawLine(x + 1, level * levelHeight + fontHeight + slant - 1,
-+                             x + slant - 1, level * levelHeight + fontHeight + 1);
-+            color.setAlpha(0xFF);
-+            painter.setPen(QPen(color, 2, Qt::SolidLine));
-+            painter.drawText(x + slant, level * levelHeight, nameWidth,
-+                             fontHeight, Qt::AlignVCenter | Qt::AlignHCenter,
-+                             dxcspots[i].name);
-+        }
-+    }
-+*/
-     if (m_CenterLineEnabled)
-     {
-         x = xFromFreq(m_CenterFreq);
-@@ -1515,7 +1632,7 @@ void CPlotter::makeFrequencyStrs()
-     }
- }
- 
--// Convert from screen coordinate to frequency
-+// Convert from frequency to screen coordinate
- int CPlotter::xFromFreq(qint64 freq)
- {
-     int w = m_OverlayPixmap.width();
-@@ -1528,7 +1645,7 @@ int CPlotter::xFromFreq(qint64 freq)
-     return x;
- }
- 
--// Convert from frequency to screen coordinate
-+// Convert from screen coordinate to frequency
- qint64 CPlotter::freqFromX(int x)
- {
-     int w = m_OverlayPixmap.width();
-@@ -1674,6 +1791,12 @@ void CPlotter::setPeakDetection(bool enabled, float c)
-         m_PeakDetection = c;
- }
- 
-+void CPlotter::toggleBandPlan(bool state)
-+{
-+    m_BandPlanEnabled = state;
-+    updateOverlay();
-+}
-+
- void CPlotter::calcDivSize (qint64 low, qint64 high, int divswanted, qint64 &adjlow, qint64 &step, int& divs)
- {
- #ifdef PLOTTER_DEBUG
-diff --git src/qtgui/plotter.h src/qtgui/plotter.h
-index f4cb362..aa70fad 100644
---- src/qtgui/plotter.h
-+++ src/qtgui/plotter.h
-@@ -38,6 +38,8 @@ public:
-     void setCenterLineEnabled(bool enabled) { m_CenterLineEnabled = enabled; }
-     void setTooltipsEnabled(bool enabled) { m_TooltipsEnabled = enabled; }
-     void setBookmarksEnabled(bool enabled) { m_BookmarksEnabled = enabled; }
-+    void setDXCSpotsEnabled(bool enabled) { m_DXCSpotsEnabled = enabled; }
-+    void setBandPlanEnabled(bool enabled) { m_BandPlanEnabled = enabled; }
- 
-     void setNewFftData(float *fftData, int size);
-     void setNewFftData(float *fftData, float *wfData, int size);
-@@ -146,6 +148,7 @@ public slots:
-     void setPandapterRange(float min, float max);
-     void setWaterfallRange(float min, float max);
-     void setPeakDetection(bool enabled, float c);
-+    void toggleBandPlan(bool state);
-     void updateOverlay();
- 
-     void setPercent2DScreen(int percent)
-@@ -172,7 +175,7 @@ private:
-         RIGHT,
-         YAXIS,
-         XAXIS,
--        BOOKMARK
-+        TAG
-     };
- 
-     void        drawOverlay();
-@@ -223,8 +226,10 @@ private:
-     qint64      m_FreqPerDiv;
-     bool        m_CenterLineEnabled;  /*!< Distinguish center line. */
-     bool        m_FilterBoxEnabled;   /*!< Draw filter box. */
--    bool        m_TooltipsEnabled;     /*!< Tooltips enabled */
-+    bool        m_TooltipsEnabled;    /*!< Tooltips enabled */
-+    bool        m_BandPlanEnabled;    /*!< Show/hide band plan on spectrum */
-     bool        m_BookmarksEnabled;   /*!< Show/hide bookmarks on spectrum */
-+    bool        m_DXCSpotsEnabled;   /*!< Show/hide DXC Spots on spectrum */
-     int         m_DemodHiCutFreq;
-     int         m_DemodLowCutFreq;
-     int         m_DemodFreqX;		//screen coordinate x position
-@@ -261,6 +266,7 @@ private:
-     QFont       m_Font;         /*!< Font used for plotter (system font) */
-     int         m_HdivDelta; /*!< Minimum distance in pixels between two horizontal grid lines (vertical division). */
-     int         m_VdivDelta; /*!< Minimum distance in pixels between two vertical grid lines (horizontal division). */
-+    int         m_BandPlanHeight; /*!< Height in pixels of band plan (if enabled) */
- 
-     quint32     m_LastSampleRate;
- 
-@@ -270,7 +276,7 @@ private:
-     float       m_PeakDetection;
-     QMap<int,int>   m_Peaks;
- 
--    QList< QPair<QRect, qint64> >     m_BookmarkTags;
-+    QList< QPair<QRect, qint64> >     Taglist;
- 
-     // Waterfall averaging
-     quint64     tlast_wf_ms;        // last time waterfall has been updated
 diff --git src/receivers/nbrx.cpp src/receivers/nbrx.cpp
-index 9370c70..fa1507c 100644
+index b3c7385..c32698c 100644
 --- src/receivers/nbrx.cpp
 +++ src/receivers/nbrx.cpp
-@@ -63,8 +63,7 @@ nbrx::nbrx(float quad_rate, float audio_rate)
+@@ -65,8 +65,7 @@ nbrx::nbrx(float quad_rate, float audio_rate)
  
      demod = demod_fm;
      connect(self(), 0, iq_resamp, 0);
@@ -2646,7 +1043,7 @@ index 9370c70..fa1507c 100644
      connect(filter, 0, meter, 0);
      connect(filter, 0, sql, 0);
      connect(sql, 0, agc, 0);
-@@ -72,15 +71,16 @@ nbrx::nbrx(float quad_rate, float audio_rate)
+@@ -74,15 +73,16 @@ nbrx::nbrx(float quad_rate, float audio_rate)
  
      if (audio_rr0)
      {
@@ -2708,7 +1105,7 @@ index 9370c70..fa1507c 100644
          }
      }
  
-@@ -268,15 +272,17 @@ void nbrx::set_demod(int rx_demod)
+@@ -273,15 +277,17 @@ void nbrx::set_demod(int rx_demod)
      {
          if (d_demod == NBRX_DEMOD_NONE)
          {
@@ -2729,7 +1126,7 @@ index 9370c70..fa1507c 100644
  
              connect(audio_rr0, 0, self(), 0);
              connect(audio_rr0, 0, self(), 1);
-@@ -286,13 +292,15 @@ void nbrx::set_demod(int rx_demod)
+@@ -291,13 +297,15 @@ void nbrx::set_demod(int rx_demod)
      {
          if (d_demod == NBRX_DEMOD_NONE)
          {
@@ -2750,7 +1147,7 @@ index 9370c70..fa1507c 100644
      }
  }
 diff --git src/receivers/nbrx.h src/receivers/nbrx.h
-index 1aa845c..a57909d 100644
+index d0e0f00..26acfa4 100644
 --- src/receivers/nbrx.h
 +++ src/receivers/nbrx.h
 @@ -36,6 +36,7 @@
@@ -2761,11 +1158,14 @@ index 1aa845c..a57909d 100644
  
  class nbrx;
  
-@@ -122,6 +123,7 @@ private:
+@@ -132,6 +133,7 @@ private:
      gr::analog::simple_squelch_cc::sptr sql;        /*!< Squelch. */
      gr::blocks::complex_to_float::sptr  demod_raw;  /*!< Raw I/Q passthrough. */
      gr::blocks::complex_to_real::sptr   demod_ssb;  /*!< SSB demodulator. */
 +
      rx_demod_fm_sptr          demod_fm;   /*!< FM demodulator. */
      rx_demod_am_sptr          demod_am;   /*!< AM demodulator. */
-     resampler_ff_sptr         audio_rr0;  /*!< Audio resampler. */
+     rx_demod_amsync_sptr      demod_amsync;   /*!< AM-Sync demodulator. */
+-- 
+2.29.2
+

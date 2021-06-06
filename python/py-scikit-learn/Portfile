@@ -4,13 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-scikit-learn
-version             0.23.2
+version             0.24.2
 revision            0
 categories-append   science
 platforms           darwin
 license             BSD
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -24,9 +24,9 @@ long_description    Scikit-learn integrates machine learning algorithms \
 
 homepage            https://scikit-learn.org/
 
-checksums           rmd160  7a8ff512b89c571697bd6cff695a4c9a532663bc \
-                    sha256  20766f515e6cd6f954554387dfae705d93c7b544ec0e6c6a5d8e006f6f7ef480 \
-                    size    7155833
+checksums           rmd160  b93d0caf869e29f60bea722e2a86bd1fddc7a663 \
+                    sha256  d14701a12417930392cd3898e9646cf5670c190b933625ebe7511b1f7d7b8736 \
+                    size    7524030
 
 if {${name} ne ${subport}} {
     depends_build-append \

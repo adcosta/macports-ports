@@ -1,0 +1,81 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           golang 1.0
+
+go.setup            github.com/elves/elvish 0.15.0 v
+revision            0
+
+homepage            https://elv.sh
+
+description         Friendly Interactive Shell and Expressive Programming \
+                    Language
+
+long_description    Elvish is a friendly interactive shell and an expressive \
+                    programming language. It runs on Linux, BSDs, macOS and \
+                    Windows.
+
+categories          shells
+license             BSD
+
+maintainers         {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
+
+installs_libs       no
+
+build.cmd           make
+build.args          VERSION=${version}
+build.target        get
+
+use_parallel_build  no
+
+patch {
+    # Since we are not working within a checked-out git repository, disable
+    # attempting to determine the version number from git tags. Instead, set
+    # the actual version explicitly.
+    reinplace -E "s|\\\$\\\$\\\(git describe --tags --always --dirty=-dirty\\\)|v${version}|" \
+        ${worksrcpath}/Makefile
+}
+
+destroot {
+    xinstall -m 755 ${gopath}/bin/${name} ${destroot}${prefix}/bin/
+}
+
+github.livecheck.regex {([0-9.]+)}
+
+checksums           ${distname}${extract.suffix} \
+                        rmd160  25f9e9654aa38aaf23865c1c968c90264ac6ffdc \
+                        sha256  89eae42a09510df3de250c6ffd85f646054af8ab26a52e53a9e89fcfcbcc3294 \
+                        size    603617
+
+go.vendors          golang.org/x/sys \
+                        lock    c12d262b63d8 \
+                        rmd160  e96b9a22d4a7519872a78461337d9b9602b14f51 \
+                        sha256  3432e1055b4990dc198ae92a1ad0676cf577c786d45897609949b58fbec74093 \
+                        size    1060953 \
+                    go.etcd.io/bbolt \
+                        repo    github.com/etcd-io/bbolt \
+                        lock    v1.3.5 \
+                        rmd160  95dffb4bbbeec637c46a4ddd0ee218fa2fa4c3c8 \
+                        sha256  ca218846d724343915b264d1c246c34eb39e81ed14535931f370c2db838d4d99 \
+                        size    96543 \
+                    github.com/xiaq/persistent \
+                        lock    3175cfb92e14 \
+                        rmd160  924a3bec37d85e81ecd8e45afe35636adced8b23 \
+                        sha256  98015fdab7c61772d6963da759dc956d06594733378155adf6822a2ceb7688d0 \
+                        size    19399 \
+                    github.com/mattn/go-isatty \
+                        lock    v0.0.12 \
+                        rmd160  4f55aecbddbee6089cbac8456d2932bce2cb57e7 \
+                        sha256  d4d1912998d401389e06ee1dbed06e32a8db95350416f227fbe6a59ac84f0651 \
+                        size    4549 \
+                    github.com/creack/pty \
+                        lock    v1.1.11 \
+                        rmd160  59af3958845963790280e10bb0ff275e202406c5 \
+                        sha256  648758575d338a1abcc7f3f3cbc9c138f079355d4defe709949ecd7e639c48a2 \
+                        size    8407 \
+                    github.com/BurntSushi/toml \
+                        lock    v0.3.1 \
+                        rmd160  fb9650e2d16525153645e5547626f242f3800149 \
+                        sha256  8cc9e5dc68e247554227973d0b4e023b27bbd9ba5a26e4fb40f44743afcb35f1 \
+                        size    42087

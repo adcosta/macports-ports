@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        numba llvmlite 0.33.0 v
+github.setup        numba llvmlite 0.36.0 v
 name                py-llvmlite
 revision            0
 categories-append   devel science
 platforms           darwin
 license             BSD
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,9 +20,9 @@ long_description    ${description}
 
 homepage            http://llvmlite.pydata.org/
 
-checksums           rmd160  0fa98a1efb67b2eaac9078e7ea61ecec7ca12347 \
-                    sha256  824d911f4643fbfc791d90ca6c0d512710113968bbc41c2cbd42ad7b7700c2b5 \
-                    size    196476
+checksums           rmd160  536800f1a3eb17976c75f12aa36c5e81e6c6a93b \
+                    sha256  4456512490b24d2f614058d1e14fa947eba1c3ca2c30776f99cc22b34ae7feee \
+                    size    232080
 
 if {${name} ne ${subport}} {
     patchfiles-append   patch-ffi_Makefile.osx.diff
@@ -30,11 +30,19 @@ if {${name} ne ${subport}} {
     if {${python.version} <= 35} {
         set llvmver "8.0"
     } else {
-        set llvmver "9.0"
+        set llvmver "10"
     }
 
     post-patch {
         reinplace "s|%%CXX%%|clang++-mp-${llvmver}|" ${worksrcpath}/ffi/Makefile.osx
+
+        if {${python.version} > 35 && ${os.major} <= 10} {
+            # https://trac.macports.org/ticket/61302
+            reinplace "s|%%MP_EXTRA_LDFLAGS%%|-framework CoreFoundation|" \
+                ${worksrcpath}/ffi/Makefile.osx
+        } else {
+            reinplace "s|%%MP_EXTRA_LDFLAGS%%||" ${worksrcpath}/ffi/Makefile.osx
+        }
     }
 
     depends_build-append \

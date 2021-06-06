@@ -6,9 +6,9 @@ PortGroup           github 1.0
 PortGroup           gobject_introspection 1.0
 
 github.setup        lathiat avahi 0.8 v
-revision            0
+revision            2
 categories          net devel
-maintainers         nomaintainer
+maintainers         {i0ntempest @i0ntempest} openmaintainer
 license             LGPL-2.1+
 platforms           darwin
 description         Avahi is an Implementation of the DNS Service Discovery and Multicast DNS \
@@ -44,7 +44,9 @@ post-patch {
 }
 
 depends_build       port:pkgconfig \
-                    port:intltool
+                    port:intltool \
+                    port:libxml2 \
+                    port:xmltoman
 
 depends_lib         port:expat \
                     port:gdbm \
@@ -80,7 +82,6 @@ configure.args      --disable-autoipd \
                     --with-distro=darwin \
                     --enable-compat-libdns_sd \
                     --disable-gtk3 \
-                    --disable-xmltoman \
                     --disable-gtk \
                     --disable-tests \
                     --with-avahi-priv-access-group=${avahi_priv_group} \
@@ -89,6 +90,9 @@ configure.args      --disable-autoipd \
 
 # __APPLE_USE_RFC_2292 should be removed once avahi is updated to support RFC 3542
 configure.cppflags-append   -L${prefix}/lib -D__APPLE_USE_RFC_2292
+
+# libevent-watch.c:285: error: 'for' loop initial declaration used outside C99 mode
+configure.cflags-append     -std=c99
 
 set daemon_uniquename   org.freedesktop.avahi-daemon
 set dnsconfd_uniquename org.freedesktop.avahi-dnsconfd
@@ -142,22 +146,23 @@ variant mono description {Enable Mono support} {
 variant test description {Build tests} {
     configure.args-delete   --disable-tests
     configure.args-append   --enable-tests
-    test.run            yes
-    test.target         check
+    test.run                yes
+    test.target             check
 }
 
 variant gtk description {Build with GTK2} {
     depends_lib-append      port:gtk2 \
                             port:libglade2
     configure.args-replace  --disable-gtk --enable-gtk
-    configure.args-append --disable-manpages
-    post-destroot {delete ${destroot}${prefix}/share/man/man1/*}
 }
 
 variant gtk3 description {Build with GTK3} {
     depends_lib-append      port:gtk3
     configure.args-delete   --disable-gtk3
-    configure.args-append --disable-manpages
+    # Enable manpages that are built with gtk variant but not with gtk3
+    pre-configure {
+        reinplace "s|HAVE_GTK_TRUE|HAVE_GTK2OR3_TRUE|g" ${worksrcpath}/man/Makefile.in
+    }
 }
 
 variant qt4 description {Build with Qt4} {
@@ -168,12 +173,12 @@ variant qt4 description {Build with Qt4} {
 variant qt5 description {Build with Qt5} {
     PortGroup   qt5 1.0
     # This configure script does not use CXXFLAGS variable for Qt5 compile test so I have to do this
-    configure.env-append QT5_CFLAGS=-std=c++11\ -DQT_CORE_LIB\ -F${qt_dir}/lib\ -I${qt_dir}/lib/QtCore.framework/Headers\ -I${qt_dir}/include
-    compiler.cxx_standard 2011
+    configure.env-append    QT5_CFLAGS=-std=c++11\ -DQT_CORE_LIB\ -F${qt_dir}/lib\ -I${qt_dir}/lib/QtCore.framework/Headers\ -I${qt_dir}/include
+    compiler.cxx_standard   2011
     configure.args-delete   --disable-qt5
 }
 
-variant python27 conflicts python38 description {Build with Python 2.7} {
+variant python27 conflicts python38 python39 description {Build with Python 2.7} {
     configure.python        ${prefix}/bin/python2.7
     depends_lib-append      port:dbus-python27 \
                             port:py27-gdbm
@@ -181,12 +186,20 @@ variant python27 conflicts python38 description {Build with Python 2.7} {
     configure.pkg_config_path-append ${frameworks_dir}/Python.framework/Versions/2.7/lib/pkgconfig
 }
 
-variant python38 conflicts python27 description {Build with Python 3.8} {
+variant python38 conflicts python27 python39 description {Build with Python 3.8} {
     configure.python        ${prefix}/bin/python3.8
     depends_lib-append      port:dbus-python38 \
                             port:py38-gdbm
     depends_lib-append      port:py38-gobject3
     configure.pkg_config_path-append ${frameworks_dir}/Python.framework/Versions/3.8/lib/pkgconfig
+}
+
+variant python39 conflicts python27 python38 description {Build with Python 3.9} {
+    configure.python        ${prefix}/bin/python3.9
+    depends_lib-append      port:dbus-python39 \
+                            port:py39-gdbm
+    depends_lib-append      port:py39-gobject3
+    configure.pkg_config_path-append ${frameworks_dir}/Python.framework/Versions/3.9/lib/pkgconfig
 }
 
 variant x11 conflicts quartz {
@@ -205,12 +218,12 @@ if {![variant_isset quartz]} {
 if {![variant_isset gtk]} {
     default_variants-append +gtk3
 }
-if {![variant_isset python27]} {
-    default_variants-append +python38
+if {![variant_isset python27] && ![variant_isset python38]} {
+    default_variants-append +python39
 }
 
 pre-configure {
-    if {![variant_isset python38] && ![variant_isset python27]} {
+    if {![variant_isset python39] && ![variant_isset python38] && ![variant_isset python27]} {
         ui_error "avahi requires Python, please use a Python variant."
         return -code error
     }

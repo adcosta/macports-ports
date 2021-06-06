@@ -6,6 +6,7 @@ PortGroup           github 1.0
 PortGroup           app 1.0
 PortGroup           active_variants 1.1
 PortGroup           conflicts_build 1.0
+PortGroup           boost 1.0
 
 name                gnuradio
 maintainers         {michaelld @michaelld} {ra1nb0w @ra1nb0w}
@@ -20,13 +21,15 @@ platforms           darwin macosx
 compiler.c_standard   2011
 compiler.cxx_standard 2011
 
+boost.version       1.71
+
 if {${subport} eq ${name}} {
 
-    github.setup    gnuradio gnuradio 3.8.1.0 v
-    checksums       rmd160  4c4a4eb71cf4ed7f3782167a17e979059103d99a \
-                    sha256  97763da635063d472eae7cbb7680f36c69359ea5b88348d26f8fa7f8b5e7289a \
-                    size    3377964
-    revision        2
+    github.setup    gnuradio gnuradio 3.8.3.0 v
+    checksums       rmd160  27036f8efd2d35ce17a2eb871355b6056ca029df \
+                    sha256  babd0114be950229c6002518f689b2df719fc69584114f18785284ad82d886bd \
+                    size    3390350
+    revision        1
 
     long_description    ${description}: \
         This port is kept up with the GNU Radio release, \
@@ -34,16 +37,13 @@ if {${subport} eq ${name}} {
 
     conflicts           gnuradio37 gnuradio-next
 
-    set python_versions { 3.6 3.7 3.8 }
-    set default_python_variant +python37
+    set python_versions { 3.6 3.7 3.8 3.9 }
+    set default_python_variant +python39
 
     # temporary patch to fix and allow external setting for
     # CMAKE_C/CXX_STANDARD
     patchfiles-append \
         patch-C_CXX_STANDARD.38.diff
-    # TODO check temporary patch to fix using Thrift 0.9.2 through 0.12.0
-    patchfiles-append \
-        patch-fixes_for-thrift.38.diff
     # temporary patch to fix usage of GNURadioControlPortClient
     patchfiles-append \
         patch-fix-GNURadioControlPortClient-usage.38.diff
@@ -52,19 +52,8 @@ if {${subport} eq ${name}} {
     patchfiles-append \
         patch-quartz_drag_n_drop.38.diff \
         patch-quartz_drop_crash.38.diff
-    # REMOVE with next release
-    # use Meta as modifier key
-    patchfiles-append \
-        patch-use_meta_key.diff
-    # temporary patch to fix building using certain "static const"
-    # declarations on older compilers
-    patchfiles-append \
-        patch-fix-digital_lib_map_bb_impl.38.diff
 
     set GR_VERSION_INFO "Release 3.8"
-
-    # avoid issue with SWIG API changes
-    conflicts_build gnuradio
 
     github.livecheck.regex  {(3.8.[0-9.]+)}
 }
@@ -76,7 +65,7 @@ subport gnuradio37 {
     checksums       rmd160  0165a52a4770a02b4843544e4ba6bc59d84fa7d1 \
                     sha256  3d895e29417efd4ef8ab4053bed2ea9117b4476c0ae729f065088242f0f61f9f \
                     size    4460817
-    revision        1
+    revision        4
 
     long_description    ${description}: \
         This port is kept up with the GNU Radio 3.7 release, \
@@ -126,7 +115,7 @@ subport gnuradio-next {
     checksums       rmd160  0a9e1294036e786116c96d68f9116e3f2798d325 \
                     sha256  bb2dab14e159a4b58ccf317ece3b4132959739f4b5b217d8e0add3c5ce581f5f \
                     size    3950832
-    revision        2
+    revision        6
 
     long_description    ${description}: \
         This port is kept up with the GNU Radio GIT 'master' \
@@ -208,7 +197,6 @@ depends_build-append \
     port:pkgconfig
 
 depends_lib-append \
-    port:boost \
     port:fftw-3-single \
     path:lib/libmpir.dylib:mpir \
     path:lib/libvolk.dylib:volk \
@@ -247,17 +235,25 @@ configure.args-append \
     -DMPIR_LIBRARY=${prefix}/lib/libmpir.dylib \
     -DMPIRXX_LIBRARY=${prefix}/lib/libmpirxx.dylib
 
-# remove top-level library path, such that internal libraries
-# are used instead of any already-installed ones.
-configure.ldflags-delete -L${prefix}/lib
+# remove top-level library and include paths, such that internal ones
+# are searched before any already-installed ones.
+configure.cppflags-delete -I${prefix}/include
+configure.ldflags-delete  -L${prefix}/lib
 
 # install CMake files into this directory.
 configure.args-append \
     -DCMAKE_MODULES_DIR=${prefix}/share/cmake
 
+# set build type to release or debug, not "MacPorts" since the GR
+# CMake system checks for a valid value and this is not one of them
+if {[variant_isset debug]} {
+    cmake.build_type Debug
+} else {
+    cmake.build_type Release
+}
+
 # override default version string to be MacPorts-specific
 configure.args-append \
-    -DCMAKE_BUILD_TYPE=Release \
     -DGR_GIT_COUNT="MacPorts" \
     -DGR_GIT_HASH="${GR_VERSION_INFO}"
 
@@ -448,9 +444,10 @@ variant qtgui description "Install GNU Radio with support for Qt GUI" {
 
 
 if {${subport} eq "gnuradio37"} {
-    variant wxgui description "Install GNU Radio with support for Wx GUI" {
 
-        PortGroup wxWidgets 1.0
+    PortGroup wxWidgets 1.0
+
+    variant wxgui description "Install GNU Radio with support for Wx GUI" {
 
         wxWidgets.use wxWidgets-3.0
 

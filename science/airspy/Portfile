@@ -1,16 +1,16 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           cmake 1.0
+PortGroup           cmake 1.1
 PortGroup           github 1.0
 
 name                airspy
 
-github.setup        airspy airspyone_host bceca18f9e3a5f89cff78c4d949c71771d92dfd3
-version             20191204-[string range ${github.version} 0 7]
-checksums           rmd160 08d10ad1b36657cf32db39206bc5966cb9cfb1fa \
-                    sha256 1a7e3df4e3fe5f8744281ca792dce986cfa2cee82fbb4aa9094836f6a2c78e62 \
-                    size   238118
+github.setup        airspy airspyone_host 022870fd88c026c124683fa58531a3a70181ebe9
+version             20210523-[string range ${github.version} 0 7]
+checksums           rmd160  0e22e64596a921b3614dcf533d52b65f02f4c24e \
+                    sha256  c1917a9ceb204ef0772cb88f8a7347b72d8d23150d31aa67986b929088dc77ef \
+                    size    238721
 revision            0
 
 homepage            http://www.airspy.com/
@@ -25,19 +25,25 @@ platforms           darwin
 depends_build-append port:pkgconfig
 depends_lib-append	path:lib/libusb-1.0.dylib:libusb
 
-# do VPATH (out of source tree) build
-
-cmake.out_of_source yes
-
-# remove top-level library path, such that internal libraries are used
-# instead of any already-installed ones.
+# remove top-level library and includes paths, such that internal
+# libraries and headers are used instead of any already-installed ones.
 
 configure.ldflags-delete -L${prefix}/lib
+configure.cppflags-delete -I${prefix}/include
 
 # fix the lib version string to be MacPorts-specific
 
 post-patch {
 
-    reinplace "s@%d.%d.%d@%d.%d.%d MacPorts [string range ${github.version} 0 7](${version})@" ${worksrcpath}/airspy-tools/src/airspy_lib_version.c
+    reinplace "s@%d.%d.%d@%d.%d.%d MacPorts ${version}@" ${worksrcpath}/airspy-tools/src/airspy_lib_version.c
 
+}
+
+# airspy cmake doesn't understand build type "MacPorts";
+# use release unless +debug is set
+
+if {[variant_isset debug]} {
+    cmake.build_type Debug
+} else {
+    cmake.build_type Release
 }

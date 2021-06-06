@@ -4,12 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-greenlet
-version             0.4.16
+version             1.1.0
 categories-append   devel
 platforms           darwin
 license             MIT PSF
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -41,11 +41,11 @@ long_description    The \"greenlet\" package is a spin-off of \
                     Greenlets are provided as a C extension module \
                     for the regular unmodified interpreter.
 
-homepage            http://undefined.org/python/#greenlet
+homepage            https://github.com/python-greenlet/greenlet
 
-checksums           rmd160  7d153701fc2054b4564eba9d009601281a519fc4 \
-                    sha256  6e06eac722676797e8fce4adb8ad3dc57a1bb3adfb0dd3fdf8306c055a38456c \
-                    size    60576
+checksums           rmd160  657eff64deaa5bb199a43803d281fe210706ceaa \
+                    sha256  c87df8ae3f01ffb4483c796fe1b15232ce2b219f0b18126948616224d3f658ee \
+                    size    85043
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -57,7 +57,7 @@ if {${name} ne ${subport}} {
 
     test.run            yes
     test.cmd            python${python.branch}
-    test.target         run-tests.py -n
+    test.target         -m unittest discover greenlet.tests
 
     livecheck.type      none
 }

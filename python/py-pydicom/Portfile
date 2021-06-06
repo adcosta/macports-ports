@@ -5,8 +5,8 @@ PortGroup           python 1.0
 PortGroup           github 1.0
 
 name                py-pydicom
-version             2.0.0
-python.versions     27 36 37 38
+version             2.1.2
+python.versions     27 36 37 38 39
 platforms           darwin
 license             MIT BSD
 maintainers         {eborisch @eborisch} \
@@ -34,9 +34,9 @@ if {${name} ne ${subport}} {
     } else {
         github.setup        pydicom pydicom ${version} v
         checksums \
-            rmd160  03f614b4dfcfab4582be09d788e7d13b73aae76e \
-            sha256  ccde24ad9f8ff0fb9f847c144f4951536449be0975cd236a3690917cbaa324c0 \
-            size    35492647
+            rmd160  3a28811043ab2c96a0b1ef655ddbf27a9f9e97ae \
+            sha256  d4565f499512258845fb36a36fd2e460e5cb1d044188471b6c217b12821b3aab \
+            size    2090799
     }
 
     depends_lib-append      port:py${python.version}-numpy
@@ -48,9 +48,16 @@ if {${name} ne ${subport}} {
             port:py${python.version}-numpydoc \
             port:py${python.version}-Pillow \
             port:py${python.version}-sphinx \
-            port:py${python.version}-sphinx-gallery \
             port:py${python.version}-sphinx-bootstrap-theme \
+            port:py${python.version}-sphinx-copybutton \
+            port:py${python.version}-sphinx-gallery \
+            port:py${python.version}-sphinx-issues \
             port:py${python.version}-sphinx_rtd_theme
+
+        notes "
+            Documentation installed in :
+              file://${prefix}/share/doc/${subport}/html/index.html
+        "
     }
 
     post-extract {

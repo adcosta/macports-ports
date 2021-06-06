@@ -3,12 +3,12 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        vsergeev luaradio 0.7.0 v
-revision            1
+github.setup        vsergeev luaradio 0.9.1 v
+revision            0
 
-checksums           rmd160  ec6f53ba74d0ce182b297e020c5ca1251c2fb534 \
-                    sha256  081eab02877fa6060c9c8a3cd46028358a8b61c78c5d54dfed0fb0c333296fb6 \
-                    size    9194289
+checksums           rmd160  0d9e460d7096dc8040fb39955a86eade165322d2 \
+                    sha256  c4c29d7888ede6bc963849946d14153a3afad590485bc4e3cd31c210f2873b20 \
+                    size    9253547
 
 categories          science comms
 platforms           darwin
@@ -20,7 +20,7 @@ long_description    ${description}
 homepage            https://luaradio.io/
 
 depends_build-append    port:pkgconfig
-depends_lib-append      port:luajit
+depends_lib-append      path:lib/libluajit-5.1.2.dylib:luajit
 depends_run-append      port:fftw-3 \
                         port:liquid-dsp \
                         port:volk

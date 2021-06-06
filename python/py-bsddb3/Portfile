@@ -4,7 +4,7 @@ PortSystem              1.0
 PortGroup               python 1.0
 
 name                    py-bsddb3
-version                 6.2.6
+version                 6.2.9
 revision                0
 
 categories-append       databases
@@ -21,14 +21,12 @@ long_description        This port provides a nearly complete wrapping \
                         bsddb3.db module.
 
 homepage                https://pypi.python.org/pypi/${python.rootname}
-master_sites            pypi:b/${python.rootname}
-distname                ${python.rootname}-${version}
 
-checksums               rmd160  ba144c68564744d79d22574eca7ec8b946bcbc96 \
-                        sha256  42d621f4037425afcb16b67d5600c4556271a071a9a7f7f2c2b1ba65bc582d05 \
-                        size    239099
+checksums               rmd160  dd01d1fa55d37cd4948b539f8f6296a89cb9f433 \
+                        sha256  70d05ec8dc568f42e70fc919a442e0daadc2a905a1cfb7ca77f549d49d6e7801 \
+                        size    230475
 
-python.versions         35 36 37
+python.versions         36 37 38 39
 python.link_binaries    no
 python.move_binaries    no
 

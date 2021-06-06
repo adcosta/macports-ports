@@ -2,12 +2,17 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
+PortGroup           legacysupport 1.1
+PortGroup           makefile 1.0
 
-github.setup        gittup tup 0.7.9 v
+# utimensat
+legacysupport.newest_darwin_requires_legacy 16
+
+github.setup        gittup tup 0.7.11 v
 revision            0
-checksums           rmd160  234a430d9a96ebe9599b1f8c7fab58317bfa7120 \
-                    sha256  9b0951afaa749186eb55d88860405b2f6b3d88632d1b5df1ec4a0bf973d8d326 \
-                    size    4645291
+checksums           rmd160  0a94df3d9acf69a1a25bae5dcd89e848ea099e8c \
+                    sha256  be24dff5f1f32cc85c73398487a756b4a393adab5e4d8500fd5164909d3e85b9 \
+                    size    4683309
 
 categories          devel
 platforms           macosx
@@ -32,21 +37,13 @@ depends_build       port:pkgconfig
 depends_lib         port:osxfuse \
                     port:libiconv
 
+# osxfuse is not universal
+universal_variant   no
+
 patchfiles-append   dont-force-clang.patch
-patchfiles-append   fix-version.patch
-patchfiles-append   no-git-version.patch
-
-post-patch {
-    reinplace s|@VERSION@|${version}|g ${worksrcpath}/src/tup/link.sh
-}
-
-use_configure       no
 
 build.cmd           ./build.sh
-build.env-append    CC=${configure.cc} \
-                    "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
-                    "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]" \
-                    TUP_LABEL=${version}
+build.env-append    TUP_LABEL=${version}
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/build/tup ${destroot}${prefix}/bin/

@@ -1,7 +1,7 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-PortSystem 1.0
-PortGroup  active_variants 1.1
+PortSystem      1.0
+PortGroup       active_variants 1.1
 
 name            emacs
 
@@ -36,13 +36,14 @@ subport emacs-app-devel {
 
 depends_build-append port:autoconf port:automake port:libtool
 
-configure.args  --without-ns \
+configure.args  --disable-silent-rules \
+                --without-ns \
                 --without-x \
                 --without-dbus \
                 --without-gconf \
                 --without-libotf \
                 --without-m17n-flt \
-                --with-gpm \
+                --with-gmp \
                 --with-gnutls \
                 --with-json \
                 --with-xml2 \
@@ -81,28 +82,53 @@ platform darwin {
 }
 
 if {$subport eq $name || $subport eq "emacs-app"} {
-    version         27.1
-    revision        1
+    version         27.2
+    revision        0
 
-    checksums       rmd160  9ddfd28ab54c4aee168eeecb783d13599e5b5288 \
-                    sha256  ffbfa61dc951b92cf31ebe3efc86c5a9d4411a1222b8a4ae6716cfd0e2a584db \
-                    size    65782481
+    checksums       rmd160  5cf2927984b34cfd611114190c8b7f498093e994 \
+                    sha256  80ff6118fb730a6d8c704dccd6915a6c0e0a166ab1daeef9fe68afa9073ddb73 \
+                    size    67153050
 }
 
 if {$subport eq "emacs-devel" || $subport eq "emacs-app-devel"} {
-    epoch           1
-    version         20200811
+    # Need openat()
+    PortGroup       legacysupport 1.1
+    legacysupport.newest_darwin_requires_legacy 13
+
+    set date        2021-04-30
+    epoch           4
+    version         [string map {- {}} ${date}]
     revision        1
 
     fetch.type      git
-    git.url         https://github.com/emacs-mirror/emacs.git
-    git.branch      2a47ef86e95fad1dcc14a02e7471ba5d9cad4b9b
+    git.url         --shallow-since=${date}T00:00:00 https://github.com/emacs-mirror/emacs.git
+    git.branch      04266a2cacc0f0705d0d1abaada464b402cc7b07
+
+    # --shallow-since needs a newer version of git than on some older systems
+    # So use MacPorts version
+    depends_fetch-append port:git
+    git.cmd         ${prefix}/bin/git
 
     pre-configure {
         system -W ${worksrcpath} "sh ./autogen.sh"
     }
 
     livecheck.type none
+
+    variant nativecomp description {Builds emacs with native compilation support} {
+        depends_lib-append       port:gcc11
+
+        configure.args-append    --with-native-compilation
+
+        compiler.cpath-prepend   ${prefix}/include/gcc11
+        compiler.library_path-prepend \
+                                 ${prefix}/lib/gcc11
+
+        build.args-append        NATIVE_FULL_AOT=1 \
+            {BYTE_COMPILE_EXTRA_FLAGS='--eval "(setq comp-speed 2)"'}
+    }
+
+    default_variants-append +nativecomp
 } else {
     livecheck.type  regex
     livecheck.url   https://ftp.gnu.org/gnu/emacs/?C=M&O=D
@@ -128,7 +154,7 @@ if {$subport eq $name || $subport eq "emacs-devel"} {
         depends_lib-append      port:xorg-libXmu \
             port:xorg-libXaw \
             port:xpm \
-            port:jpeg \
+            path:include/turbojpeg.h:libjpeg-turbo \
             port:tiff \
             port:giflib \
             port:libpng \
@@ -147,14 +173,14 @@ if {$subport eq $name || $subport eq "emacs-devel"} {
         depends_lib-append      lib:libXm:openmotif
     }
 
-    variant gtk requires x11 description {Builds emacs as an X11 program with GTK+2 widgets} {
+    variant gtk requires x11 description {Builds emacs as an X11 program with GTK+3 widgets} {
         configure.args-delete   --with-x-toolkit=lucid
         configure.args-delete   --without-gconf
         configure.args-delete   --without-rsvg
-        configure.args-append   --with-x-toolkit=gtk2
+        configure.args-append   --with-x-toolkit=gtk3
         configure.args-append   --with-gconf
         configure.args-append   --with-rsvg
-        depends_lib-append      port:gtk2 \
+        depends_lib-append      port:gtk3 \
                                 path:lib/pkgconfig/glib-2.0.pc:glib2 \
                                 port:gconf \
                                 port:librsvg
@@ -188,12 +214,7 @@ if {$subport eq "emacs-app" || $subport eq "emacs-app-devel"} {
     categories-append   aqua
 
     configure.args-append  --with-ns \
-        --with-gif \
-        --with-jpeg \
         --with-lcms2 \
-        --with-png \
-        --with-tiff \
-        --with-xpm \
         --without-harfbuzz \
         --without-imagemagick \
         --without-rsvg \
@@ -201,12 +222,7 @@ if {$subport eq "emacs-app" || $subport eq "emacs-app-devel"} {
 
     configure.args-delete  --without-ns  --without-x
 
-    depends_lib-append  port:giflib \
-        port:jpeg \
-        port:lcms2 \
-        port:libpng \
-        port:tiff \
-        port:xpm \
+    depends_lib-append  port:lcms2
 
     universal_variant   no
 
@@ -233,14 +249,28 @@ if {$subport eq "emacs-app" || $subport eq "emacs-app-devel"} {
     }
 
     variant imagemagick description {Use ImageMagick} {
-        depends_lib-append  port:ImageMagick
-        configure.args-append --with-imagemagick
+        depends_lib-append     port:ImageMagick
+        configure.args-delete  --without-imagemagick
+        configure.args-append  --with-imagemagick
     }
 
     variant rsvg description {Use librsvg} {
         depends_lib-append     port:librsvg
+        configure.args-delete  --without-rsvg
         configure.args-append  --with-rsvg
     }
 
-    default_variants +rsvg
+    default_variants-append +rsvg
+}
+
+if {$subport eq $name || $subport eq "emacs-devel"} {
+    variant xwidgets requires gtk description {Enable use of xwidgets in Emacs buffers} {
+        configure.args-append  --with-xwidgets
+    }
+} elseif {$subport eq "emacs-app-devel"} {
+    # Quartz support was added after 27.1 had released via commit: d089c4fbfc8be432dc3015a99b4044dab0a0de97
+    # As soon as the next version is released it should support also emacs-app
+    variant xwidgets description {Enable use of xwidgets in Emacs buffers} {
+        configure.args-append  --with-xwidgets
+    }
 }

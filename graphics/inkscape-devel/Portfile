@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           cmake 1.1
+PortGroup           boost 1.0
 
 cmake.generator     Ninja
 
 name                inkscape-devel
 conflicts           inkscape inkscape-gtk3-devel
-epoch               1
-set git_commit      6c0c36ef
-set git_date        20200515
+epoch               2
+set git_commit      0ad1ac96
+set git_date        20200806
 version             0.92.5-${git_date}
-revision            2
+revision            1
 license             GPL-3+
 maintainers         {devans @dbevans}
 categories          graphics gnome
@@ -28,7 +29,7 @@ long_description    Inkscape is an multi-platform, Open-Source Vector Graphics E
 homepage            http://www.inkscape.org/
 
 fetch.type          git
-git.url             -b 0.92.x --depth 500 https://gitlab.com/inkscape/inkscape.git
+git.url             -b 0.92.x --depth 1000 https://gitlab.com/inkscape/inkscape.git
 git.branch          ${git_commit}
 
 set python_major    3
@@ -38,8 +39,9 @@ set python_version  ${python_major}${python_minor}
 # this port only uses boost headers during build
 # and does not link with any boost libraries
 # no need to rebuild due to boost library ABI changes
+boost.depends_type  build
+
 depends_build-append \
-                    port:boost \
                     port:pkgconfig \
                     port:libtool \
                     port:intltool \

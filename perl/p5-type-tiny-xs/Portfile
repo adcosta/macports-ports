@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.26 5.28 5.30
-perl5.setup         Type-Tiny-XS 0.019 ../../authors/id/T/TO/TOBYINK
+perl5.setup         Type-Tiny-XS 0.022 ../../authors/id/T/TO/TOBYINK
 platforms           darwin
 maintainers         nomaintainer
 license             {Artistic-1 GPL}
@@ -14,6 +14,6 @@ description         Type::Tiny::XS - provides an XS boost for some of \
 long_description    This module is optionally used by Type::Tiny to provide \
                     faster, C-based implementations of some type constraints.
 
-checksums           rmd160  22f37c5adb682cf023867da7d6592ddf14ceb06c \
-                    sha256  a1c0599dc9c835f36c7f809dc61165ae5a3a36a9056591b704d611b330e78a47 \
-                    size    79038
+checksums           rmd160  b2e71a2efa8af4dde9dbf229b2761d107101c2e3 \
+                    sha256  bcc34a31f7dc1d30cc803889b5c8f90e4773b73b5becbdb3860f5abe7e22ff00 \
+                    size    81002

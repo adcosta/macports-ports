@@ -3,8 +3,8 @@
 PortSystem          1.0
 
 name                littleutils
-version             1.2.1
-revision            0
+version             1.2.4
+revision            2
 categories          sysutils
 maintainers         {mps @Schamschula} openmaintainer
 platforms           darwin
@@ -24,26 +24,52 @@ homepage            https://sourceforge.net/projects/littleutils/
 master_sites        sourceforge:project/littleutils/littleutils-source/${version}/
 use_xz              yes
 
-checksums           rmd160  45ab80a10e3c537f38cda3ce869d642ad47c1541 \
-                    sha256  ae7827e7c1bab2351fee184a9b39ca1a98b271b0d57e4676a57dbb8fd6b561de \
-                    size    205532
+checksums           rmd160  a9e89e2ffc03af1746eda76c3178619c11c0e6c1 \
+                    sha256  16d01eb51d47d0d89fd5b39190b73d879dbeb215211aea9480a5751538139276 \
+                    size    207348
 
 depends_lib         port:bash \
-                    port:perl5 \
-                    port:python27 \
-                    port:gettext \
-                    port:gifsicle \
-                    port:pngcrush \
-                    port:file \
-                    port:ghostscript \
-                    port:gzip \
                     port:bzip2 \
-                    port:lzma \
+                    port:dash \
+                    port:file \
+                    port:gettext \
+                    port:ghostscript \
+                    port:gifsicle \
+                    port:gzip \
+                    port:img2pdf \
+                    port:imlib2 \
                     port:lzip \
+                    port:lzma \
                     port:lzop \
+                    port:p5.30-cryptx \
                     port:p7zip \
-                    port:xz
+                    port:perl5.30 \
+                    port:pngcrush \
+                    port:poppler \
+                    port:xz \
+                    port:zstd
 
-configure.env       PROGPYTHON=${prefix}/bin/python2.7
+destroot.target     "install install-extra"
+
+variant python37 conflicts python38 python39 description {Use Python 3.7} {
+    configure.env   PROGPYTHON=${prefix}/bin/python3.7
+    depends_lib-append \
+                    port:python37
+}
+
+variant python38 conflicts python37 python39 description {Use Python 3.8} {
+    configure.env   PROGPYTHON=${prefix}/bin/python3.8
+    depends_lib-append \
+                    port:python38
+}
+variant python39 conflicts python37 python38 description {Use Python 3.9} {
+    configure.env   PROGPYTHON=${prefix}/bin/python3.9
+    depends_lib-append \
+                    port:python39
+}
+
+if {![variant_isset python37] && ![variant_isset python39]} {
+    default_variants +python38
+}
 
 livecheck.regex     /${name}-(\[0-9.\]+)${extract.suffix}

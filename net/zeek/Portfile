@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           cmake 1.1
 
 name                zeek
-version             3.2.0
-revision            1
+version             4.0.2
+revision            0
 categories          net security
 platforms           darwin
 maintainers         {mps @Schamschula} openmaintainer
@@ -14,17 +14,17 @@ license             BSD
 description         Zeek is a powerful network analysis framework that is much different \
                     from the typical IDS you may know.
 
-long_description    ${description} Zeek is the new name for the long-established Bro \
+long_description    {*}${description} Zeek is the new name for the long-established Bro \
                     system. Note that parts of the system retain the "Bro" name, and it \
                     also often appears in the documentation and distributions.
 
 homepage            https://www.zeek.org/
-master_sites        https://old.zeek.org/downloads/
+master_sites        https://download.zeek.org/
 
 
-checksums           rmd160  37d4fb1bd1c89b19092b7ee90899b7bb8431e2bf \
-                    sha256  af3ee5635140a54d305667983d38ea28f36457c9f2f8727e90ea3ef00b22c44f \
-                    size    27367372
+checksums           rmd160  21e23dcfd6214fb405e73f1565ff1d5c7a7bc864 \
+                    sha256  550713a9d3fd348783f39c959af7e569164c95b96cc3be28d7d5557bdeebfd95 \
+                    size    29428156
 
 depends_build-append \
                     port:libgeoip \
@@ -100,6 +100,13 @@ post-destroot {
         ${destroot}${prefix}/var/spool/${name}
 }
 
+pre-activate {
+    # we have switched to the bundled caf library
+    if {![catch {set installed [lindex [registry_active caf] 0]}]} {
+        registry_deactivate_composite caf "" [list ports_nodepcheck 1]
+    }
+}
+
 post-activate {
     if {![file exists ${prefix}/etc/zeek/node.cfg]} {
         copy ${prefix}/share/examples/${name}/node.cfg ${prefix}/etc/zeek/node.cfg
@@ -159,5 +166,5 @@ ${prefix}/logs -> ${prefix}/var/log/zeek
 "
 
 livecheck.type      regex
-livecheck.url       ${master_sites}
-livecheck.regex     ${name}-(\[0-9a-z.\]+)${extract.suffix}
+livecheck.url       https://zeek.org/get-zeek/
+livecheck.regex     org/${name}-(\[0-9a-z.\]+)${extract.suffix}

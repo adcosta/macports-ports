@@ -3,9 +3,9 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26 5.28 5.30
-perl5.setup         Crypt-CBC 2.33
-revision            1
+perl5.branches      5.28 5.30 5.32
+perl5.setup         Crypt-CBC 3.04
+revision            0
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Encrypt Data with Cipher Block Chaining Mode
@@ -17,8 +17,9 @@ long_description    This is Crypt::CBC, a Perl-only implementation of the \
                     are compatible with the encryption format used by \
                     SSLeay.
 
-checksums           rmd160  f10182f4ed986e653b7b5c2fe09197b694beb40d \
-                    sha256  6a70de21b6cc7f2b100067e8e188db966e9a8001b5db6fa976e7cb5b294ae645
+checksums           rmd160  79a7ada687c38b38a93bddb1e80a920bdad1f8e6 \
+                    sha256  4026c57d0dbf6496c0d561a26f161b763d3b8edf351139c073492e21b5fbce07 \
+                    size    40237
 
 platforms           darwin
 

@@ -2,28 +2,35 @@
 
 PortSystem          1.0
 PortGroup           golang 1.0
+PortGroup           legacysupport 1.1
 
-go.setup            github.com/gravitational/teleport 4.3.5 v
+go.setup            github.com/gravitational/teleport 6.2.3 v
+revision            0
 
-homepage            http://gravitational.com/teleport/
-categories          net
-maintainers         { gmail.com:graemelawes @gclawes } \
-                    {gmail.com:herby.gillot @herbygillot} \
-                    openmaintainer
+homepage            http://gravitational.com/teleport
 
 description         Teleport SSH server and Certificate Authority
+
 long_description    Teleport is a modern SSH server and CA for managing clusters \
                     that provides secure login with certificate-based access, \
                     2-factor authentication, session logging and replay, \
                     integration with Google Apps and other OAuth identity providers, \
                     and a Web UI.  Built on the Golang SSH library, and compatible with OpenSSH
+
+categories          net
 license             Apache-2
+platforms           darwin
+installs_libs       no
+
+maintainers         { gmail.com:graemelawes @gclawes } \
+                    {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
 
 # Build process requires a git checkout
 fetch.type          git
 
-depends_lib         port:go port:zip
-platforms           darwin
+depends_lib         port:go \
+                    port:zip
 
 build.cmd           make
 build.target        full
@@ -35,3 +42,4 @@ destroot {
     }
 }
 
+github.livecheck.regex {([0-9.]+)}

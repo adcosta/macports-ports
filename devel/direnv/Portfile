@@ -33,10 +33,10 @@ subport direnv-devel {
 
 if {${name} eq ${subport}} {
 
-    go.setup  github.com/direnv/direnv 2.21.3 v
-    checksums rmd160 640c31df0aeeacce505e6f3545c6cd6f8e208776 \
-              sha256 8816e04ab1e9c22a2d446064f76ed17c0050f1900c66b144e20d20d110409f6f \
-              size   98019
+    go.setup  github.com/direnv/direnv 2.26.0 v
+    checksums rmd160 75709a28fb8aee1bb936c1c944ab06d2364a40dc \
+              sha256 2c31ec65f340b66654b1fa029db0a0ed7a52d40c1b7ab710256348b26158724f \
+              size   1378813
     revision  0
 
     depends_build-append port:shfmt

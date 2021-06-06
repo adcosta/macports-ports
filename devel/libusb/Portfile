@@ -2,6 +2,7 @@
 
 PortSystem      1.0
 PortGroup       github 1.0
+PortGroup       compiler_blacklist_versions 1.0
 
 name            libusb
 categories      devel
@@ -18,17 +19,26 @@ maintainers     {michaelld @michaelld} openmaintainer
 
 use_parallel_build no
 
+# compiler with C11 support is required to build
+# libusb as of version 1.0.24
+compiler.c_standard 2011
+# fatal error: 'stdatomic.h' file not found
+compiler.blacklist-append {clang < 700}
+
 subport libusb-devel {}
 
 if {${subport} eq ${name}} {
 
-    github.setup   libusb libusb 1.0.23 v
-    checksums      rmd160 0630bc588dd839986c8ca21374473ec4c3b5b76d \
-                   sha256 68de7c676ac17a87c508d01370cc7a656afd7a2b26f90b484fb0e911160cd4d5 \
-                   size   394009
+    github.setup   libusb libusb 1.0.24 v
+    checksums      rmd160 b07846d6434872ac9f083c3e159edc419510d120 \
+                   sha256 82a06eead29d0eb63cca6ef453e0546e7c7fcd21d390072d0e30a4af2ce6e08b \
+                   size   361098
     revision       0
 
     conflicts      libusb-devel
+
+    # see https://trac.macports.org/ticket/61868
+    patchfiles-append patch-c11-const-array-size-older-GCC.diff
 
     # overload the github livecheck regex to look for versions that
     # are just numbers and '.', no letters (e.g., "1.0.19rc1").
@@ -40,26 +50,25 @@ if {${subport} eq ${name}} {
     long_description {*}${long_description} \
         This port provides devel version of ${name}, updated weekly to monthly.
 
-    github.setup   libusb libusb 26611eaa494ed9e077b5b0e1f999f5ae377de958
-    version        20200429-[string range ${github.version} 0 7]
-    checksums      rmd160 f19679b0bb3ac2c46869daaabefd1123354f8e35 \
-                   sha256 78317fa357d0320934c379ccde873bff4b2d948cd0376405aa7a46378de11e6d \
-                   size   353628
-    revision       0
+    github.setup    libusb libusb 35e8ee98a36143da4d226fc99e95673cea188bb0
+    version         202105416-[string range ${github.version} 0 7]
+    checksums       rmd160  54f83b051b7cef08e5380ce02029bec890acc90e \
+                    sha256  3d4758aacdcc6ab8d4988c86110011f790cb1859252536c0ad01d31718d6e4a4 \
+                    size    365757
+    revision        0
 
-    conflicts      libusb
+    conflicts       libusb
 
 }
 
 # see https://trac.macports.org/ticket/56156
 patchfiles-append patch-10.7-nospeedsuper.diff
 
-depends_build    port:libtool \
+depends_build-append \
+                 port:libtool \
                  port:automake \
                  port:autoconf
 
 configure.cmd    ./autogen.sh
-
-# build verbosely
 
 build.args-append AM_DEFAULT_VERBOSITY=1

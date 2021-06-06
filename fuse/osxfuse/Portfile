@@ -13,7 +13,7 @@ set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          fuse devel
 platforms           macosx
 license             BSD APSL
-maintainers         {dports @drkp} openmaintainer
+maintainers         nomaintainer
 
 description         A FUSE-Compliant File System Implementation Mechanism \
                     for Mac OS X
@@ -27,6 +27,8 @@ long_description    FUSE for OS X implements a mechanism that makes it \
                     and header files for building filesystems.
 
 homepage            https://osxfuse.github.io/
+
+conflicts           macfuse
 
 livecheck.type      regex
 livecheck.url       ${homepage}

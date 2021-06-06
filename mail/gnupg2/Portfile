@@ -4,7 +4,7 @@ PortSystem          1.0
 
 set my_name         gnupg
 name                ${my_name}2
-version             2.2.20
+version             2.2.27
 categories          mail security
 maintainers         {jann @roederja} {ionic @Ionic} openmaintainer
 license             GPL-3+
@@ -23,9 +23,9 @@ master_sites        ${my_name}:${my_name}
 
 use_bzip2           yes
 
-checksums           rmd160  270bc4db6fc57fa791656ca7ee1742618492d323 \
-                    sha256  04a7c9d48b74c399168ee8270e548588ddbe52218c337703d7f06373d326ca30 \
-                    size    6786913
+checksums           rmd160  9f397444ed4ff9a4c8394486752bb7d4b59a7f7a \
+                    sha256  34e60009014ea16402069136e0a5f63d9b65f90096244975db5cea74b3d02399 \
+                    size    7191555
 
 platform darwin {
     if {![variant_isset pinentry] && ![variant_isset pinentry_mac]} {
@@ -82,12 +82,12 @@ variant pinentry_mac conflicts pinentry description {Handle user input via pinen
 configure.args-append --disable-openldap --with-ldap=no
 variant openldap description {Support openldap} {
     depends_lib-append      port:openldap
+    configure.cppflags-append \
+                            -DLDAP_DEPRECATED=1
     configure.args-delete   --disable-openldap
     configure.args-delete   --with-ldap=no
     configure.args-append   --with-ldap=${prefix}
 }
-
-default_variants    +openldap
 
 test.run            yes
 test.dir            ${worksrcpath}/tests

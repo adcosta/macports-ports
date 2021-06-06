@@ -3,8 +3,13 @@
 PortSystem                  1.0
 PortGroup                   github 1.0
 
-github.setup                strukturag libheif 1.6.2 v
+github.setup                strukturag libheif 1.12.0 v
 revision                    0
+
+checksums                   rmd160  f5a153cd28f7aeb6d147069284868fcd827dc8f1 \
+                            sha256  e1ac2abb354fdc8ccdca71363ebad7503ad731c84022cf460837f0839e171718 \
+                            size    1684355
+
 categories                  multimedia
 license                     LGPL-3+
 maintainers                 {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
@@ -14,16 +19,15 @@ platforms                   darwin
 
 github.tarball_from         releases
 
-checksums                   rmd160  659bf1335b86bf95c58ef022fd654bd268809d96 \
-                            sha256  bb229e855621deb374f61bee95c4642f60c2a2496bded35df3d3c42cc6d8eefc \
-                            size    1515763
-
 depends_build-append        port:pkgconfig
 
-depends_lib-append          port:gdk-pixbuf2 \
-                            port:jpeg \
+depends_lib-append          port:dav1d \
+                            port:gdk-pixbuf2 \
+                            port:aom \
+                            path:include/turbojpeg.h:libjpeg-turbo \
                             port:libde265 \
                             port:libpng \
+                            port:rav1e \
                             port:x265
 
 compiler.cxx_standard       2011
@@ -33,4 +37,16 @@ configure.args-append       --disable-go
 variant tests description {Enable tests} {
     configure.args-append   --enable-tests
     test.run                yes
+}
+
+if {${os.platform} eq "darwin" && ${os.major} < 14} {
+    # see https://trac.macports.org/ticket/62614
+    depends_lib-delete      port:rav1e
+    configure.args-append   --disable-rav1e
+}
+
+if {${os.platform} eq "darwin" && ${os.major} < 10} {
+    # https://trac.macports.org/ticket/62619
+    depends_lib-delete      port:aom
+    configure.args-append   --disable-aom
 }

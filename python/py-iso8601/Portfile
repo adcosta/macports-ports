@@ -4,28 +4,25 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-iso8601
-version             0.1.12
+version             0.1.14
 revision            0
 categories-append   devel
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 35 36 37 38
+python.versions     27 35 36 37 38 39
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         Simple module to parse ISO 8601 dates
 long_description    ${description}
 
-homepage            https://bitbucket.org/micktwomey/pyiso8601
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
+homepage            https://github.com/micktwomey/pyiso8601
 
-distname            ${python.rootname}-${version}
-
-checksums           rmd160  ae52894b339afe833b31371931c0250dfc5992b8 \
-                    sha256  49c4b20e1f38aa5cf109ddcd39647ac419f928512c869dc01d5c7098eddede82 \
-                    size    8868
+checksums           rmd160  a05d1b91c4057fa50275a41c5c91b0163fd70581 \
+                    sha256  8aafd56fa0290496c5edbb13c311f78fa3a241f0853540da09d9363eae3ebd79 \
+                    size    12722
 
 if {${name} ne ${subport}} {
     depends_build-append \

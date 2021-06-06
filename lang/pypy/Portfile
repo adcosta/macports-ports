@@ -1,19 +1,21 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           gitlab 1.0
 PortGroup           select 1.0
 
-name                pypy
-version             7.3.1
+gitlab.instance     https://foss.heptapod.net
+gitlab.setup        pypy pypy 7.3.3
 revision            0
+
 categories          lang python devel
 license             MIT PSF
 maintainers         {danchr @danchr} openmaintainer
 
 platforms           darwin
 
-homepage            http://pypy.org/
-use_bzip2           yes
+homepage            https://www.pypy.org/
+master_sites        https://downloads.python.org/${name}
 
 depends_build       port:pkgconfig \
                     port:py27-docutils
@@ -28,12 +30,18 @@ depends_lib         port:libffi \
 depends_run         port:python_select
 select.entries      [list python python-$subport $subport]
 
-patchfiles          no-embed.diff \
-                    make_output.diff \
+patchfiles          make_output.diff \
+                    patch-no-cffi-at-build.diff \
                     ffiplatform.py.diff \
                     paths.diff
 
 use_configure       no
+
+# no effort has been made to get the JIT working anywhere but x86-64,
+# and without that, PyPy has little or no benefit over CPython; if
+# you're looking for support for Apple Silicon - or ARM64 - see
+# https://morepypy.blogspot.com/2020/12/mac-meets-arm64.html
+supported_archs     x86_64
 
 # a simple mapping from scripts to modules -- ideally, upstream
 # provided these
@@ -44,6 +52,13 @@ array set module_scripts {
 }
 
 subport pypy3 {
+    # remove after 20210925
+    replaced_by    pypy36
+
+    set python.branch 3.6
+}
+
+subport pypy36 {
     set python.branch 3.6
 
     set module_scripts(venv) venv
@@ -55,12 +70,36 @@ subport pypy3 {
     select.entries-append [list python3 python3-$subport $subport]
 }
 
+subport pypy37 {
+    set python.branch 3.7
+
+    set module_scripts(venv) venv
+    set module_scripts(idle) idlelib
+
+    depends_lib-append port:xz
+
+    depends_run-append port:python3_select
+    select.entries-append [list python3 python3-$subport $subport]
+}
+
+
 subport pypy-tkinter {
     set python.branch   2.7
 }
 
 subport pypy3-tkinter {
+    # remove after 20210925
+    replaced_by         pypy36-tkinter
+
+    set python.branch 3.6
+}
+
+subport pypy36-tkinter {
     set python.branch   3.6
+}
+
+subport pypy37-tkinter {
+    set python.branch   3.7
 }
 
 if {$subport == ${name}} {
@@ -70,23 +109,29 @@ if {$subport == ${name}} {
     select.entries-append [list python2 python2-$subport $subport]
 }
 
+# delayed until ${python.branch} is set
+set gitlab.tag_prefix   release-pypy${python.branch}-v
+distname                ${name}${python.branch}-v${version}-src
+
 if {${python.branch} == 2.7} {
     patchfiles-append   pypy2-darwin.py.diff
 
-    checksums           rmd160  a9b587b014ac64ec4499fd93b0be2171dab5c501 \
-                        sha256  fc4fcf1007f91acec4b832f16a25862e42b06dbdd9b0ea72bc3313c8b975969a \
-                        size    20725620
-} else {
+    checksums           rmd160  d96834cd5b4db84ce9ecf79543478934ad25481d \
+                        sha256  f63488051ba877fd65840bf8d53822a9c6423d947839023b8720139f4b6e2336 \
+                        size    20881821
+} elseif {${python.branch} == 3.6} {
     patchfiles-append   pypy3-darwin.py.diff
 
-    checksums           rmd160  c2ea7aaf5d64d805fa76dc7fa604e7e2648195ec \
-                        sha256  437abe7575827be2f5e519e7f77fe634d4c9f5d3c9f5b7a269ac4c8c8aa7f0e9 \
-                        size    22347476
-}
+    checksums           rmd160  02e9c76e0b381d1bb7ea2f828f221a4d7cdd403a \
+                        sha256  a23d21ca0de0f613732af4b4abb0b0db1cc56134b5bf0e33614eca87ab8805af \
+                        size    22484684
+} elseif {${python.branch} == 3.7} {
+    patchfiles-append   pypy3-darwin.py.diff
 
-master_sites        https://foss.heptapod.net/pypy/pypy/repository/release-pypy${python.branch}-v${version}
-distname            archive
-dist_subdir         ${name}/pypy${python.branch}-v${version}
+    checksums           rmd160  2bdde7c11bee2ce9736effbc327abea22c410f46 \
+                        sha256  f6c96401f76331e474cca2d14437eb3b2f68a0f27220a6dcbc537445fe9d5b78 \
+                        size    24633503
+}
 
 description         A fast interpreter for Python ${python.branch}
 long_description \
@@ -100,7 +145,7 @@ build.env           PYPY_USESSION_DIR=${workpath} PYPY_LOCALBASE=${prefix} \
 
 build.dir           ${worksrcpath}/pypy/goal
 build.args          --batch --verbose \
-                    --cc=${configure.cc} --opt=jit \
+                    --cc=${configure.cc} --opt=jit --lto --compile \
                     --make-jobs=${build.jobs}
 build.target        ../../rpython/bin/rpython
 build.post_args     targetpypystandalone
@@ -117,6 +162,11 @@ destroot.target     package.py
 destroot.post_args
 
 post-patch {
+    if {[info exists replaced_by]} {
+        # remove after 20210925
+        return
+    }
+
     # sanity check, useful when upgrading, as upstream tends to move these around
     if { ![catch {exec grep --exclude "*.orig" -Ilwre /sw -e ${prefix} ${worksrcpath}} result] } {
         ui_warn "patching potentially didn't catch all references to /sw and ${prefix}:\n$result"
@@ -147,25 +197,31 @@ if {$subport ne $name} {
     depends_build-append port:pypy
     build.cmd       ${prefix}/lib/pypy/bin/pypy
 } else {
-    if {${os.platform} eq "darwin" && ${os.arch} eq "i386" && ![catch {sysctl hw.cpu64bit_capable} is64bit] && $is64bit == 1} {
+    if {${os.platform} eq "darwin" && ${os.major} < 20} {
         # use a binary distribution of pypy itself
         depends_build-append port:pypy-bootstrap
         build.cmd       ${prefix}/lib/pypy-bootstrap/bin/pypy
     } else {
         # fall back to good old CPython...
-        depends_build-append port:python27
+        depends_build-append port:python27 port:py27-pycparser port:py27-cffi
         build.cmd       ${prefix}/bin/python2.7
+    }
+}
+
+if {${os.platform} eq "darwin" && ${os.major} >= 20} {
+    if {${python.branch} == 2.7} {
+        patchfiles-append patch-big-sur-pypy27.diff
+    } elseif {${python.branch} == 3.6} {
+        patchfiles-append patch-big-sur-pypy36.diff
+    } else {
+        patchfiles-append patch-big-sur-pypy37.diff
     }
 }
 
 # a lot of memory is used before the C compiler even runs, so limit build.jobs
 # according to available memory more tightly than the default
 if {![catch {sysctl hw.memsize} memsize]} {
-    if {$build_arch eq "x86_64" || $build_arch eq "ppc64"} {
-        incr memsize -4000000000
-    } else {
-        incr memsize -2000000000
-    }
+    incr memsize -4000000000
     if {$memsize <= 0} {
         build.jobs 1
     } elseif {${build.jobs} > $memsize / 1000000000 + 1} {
@@ -174,32 +230,35 @@ if {![catch {sysctl hw.memsize} memsize]} {
 }
 
 # memory usage bug in gcc 4.2 on x86_64
-if {$build_arch eq "x86_64"} {
-    compiler.blacklist gcc-4.2
-}
+compiler.blacklist gcc-4.2
 
 platform darwin {
     # use arch -foo if available
     if {${os.major} >= 9} {
         build.cmd arch -${build_arch} ${build.cmd}
     }
-}
 
-# JIT is not available on powerpc at present
-if {${os.arch} ne "i386"} {
-    build.args-delete --opt=jit
-    build.args-append --opt=3
+    # LTO causes the the buildbots to time out on older releases
+    if {${os.major} < 15} {
+        build.args-delete --lto
+    } else {
+        # speed up the build by using thin LTO
+        patchfiles-append patch-lto-thin.diff
+    }
 }
 
 # Install support files, but only if not in a proper subport
-if {![string match "pypy*-*" ${subport}]} {
+if {![regexp \- $subport]} {
     post-destroot {
         file delete ${destroot}${prefix}/lib/${subport}.tar.bz2
-        ln -s ../lib/${subport}/bin/${subport} ${destroot}${prefix}/bin/${subport}
+        ln -s ../lib/${subport}/bin/${name} ${destroot}${prefix}/bin/${subport}
+        ln -s ../lib/${subport}/bin/${name} ${destroot}${prefix}/bin/${name}-${python.branch}
 
         xinstall -d ${destroot}${prefix}/share/man/man1
         system -W ${worksrcpath}/pypy/doc/man \
             "rst2man-2.7.py pypy.1.rst ${destroot}${prefix}/share/man/man1/${subport}.1"
+        system -W ${worksrcpath}/pypy/doc/man \
+            "rst2man-2.7.py pypy.1.rst ${destroot}${prefix}/share/man/man1/${name}-${python.branch}.1"
 
         foreach script [array names module_scripts] {
             set module $module_scripts($script)
@@ -217,9 +276,9 @@ if {[string match "pypy*-tkinter" ${subport}]} {
     set pypy_version    [string range ${subport} 0 [string first "-" ${subport}]-1]
     set pypy_root       ${prefix}/lib/${pypy_version}
 
-    description         PyPy bindings to the Tk widget set
+    description         PyPy bindings for Python ${python.branch} to the Tk widget set
     long_description    ${description}
-    categories          python graphics
+    categories          lang python graphics
 
     depends_build       port:pkgconfig \
                         port:tcl
@@ -246,23 +305,24 @@ if {[string match "pypy*-tkinter" ${subport}]} {
     post-destroot { }
 }
 
-
-set min_darwin 11
-
-if {${os.major} < ${min_darwin} && ${os.platform} eq "darwin"} {
+if {${os.major} < 11 && ${os.platform} eq "darwin"} {
     known_fail yes
 
     # https://trac.macports.org/ticket/59191
     pre-fetch {
-        ui_error "${name} ${version} requires Darwin ${min_darwin} or newer."
+        ui_error "${name} ${version} requires macOS 10.7 or newer."
         return -code error "incompatible macOS version"
     }
 }
 
+# delayed until after all of the above; remove after 20210925
+if {[info exists replaced_by]} {
+    PortGroup           obsolete 1.0
+}
+
+gitlab.livecheck.regex (\[0-9.]+)
+
 if {[regexp \- $subport]} {
     # don't check the tkinter subports
     livecheck.type none
-} else {
-    livecheck.url       https://foss.heptapod.net/api/v4/projects/76/repository/tags
-    livecheck.regex     \"release-pypy${python.branch}-v(\[0-9.\]+)\"
 }

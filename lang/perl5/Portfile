@@ -5,7 +5,7 @@ PortGroup           perl5 1.0
 PortGroup           clang_dependency 1.0
 
 name                perl5
-version             5.26.1
+version             5.28.3
 categories          lang
 platforms           darwin freebsd linux
 license             {Artistic-1 GPL}
@@ -30,8 +30,9 @@ set perl5.versions_info {
     5.22 4 5 54fdbcbf249134dc7d82b693417900286201b5e7  8b3122046d1186598082d0e6da53193b045e85e3505e7d37ee0bdd0bdb539b71  13745983
     5.24 4 4 8d6b67fc6d58334b2fdbfa9d6d7456265dca1f4e  e34ff38c54857f431f37403b757267c9998152bf46b5c750b462f62461279b10  14125130
     5.26 3 4 84ed404407c198ca2b8194c374c7914d941b6f49  9ff35a613213f29ab53975141af6825ae7d4408895538cac0922e47ab92a1477  14539342
-    5.28 3 0 d2ae86e19666b689cad4c866e7d95c6491fd50c1  77dc1ddf541643af14d585867d3d0741cce45d0dbe8f1467024e63165d9e2fc5  12382032
+    5.28 3 1 d2ae86e19666b689cad4c866e7d95c6491fd50c1  77dc1ddf541643af14d585867d3d0741cce45d0dbe8f1467024e63165d9e2fc5  12382032
     5.30 3 0 7aaec213f6537a53abd8fd97bb96d91b681cdf1e  6967595f2e3f3a94544c35152f9a25e0cb8ea24ae45f4bf1882f2e33f4a400f4  12375128
+    5.32 1 0 ad9013fa389e3e73940c90b7d4ffd542a0cafc70  57cc47c735c8300a8ce2fa0643507b44c4ae59012bfdad0121313db639e02309  12610988
 }
 
 foreach {perl5.v perl5.subversion perl5.revision perl5.rmd160 perl5.sha256 perl5.size} ${perl5.versions_info} {
@@ -131,6 +132,20 @@ foreach {perl5.v perl5.subversion perl5.revision perl5.rmd160 perl5.sha256 perl5
             patchfiles-append \
                             ${perl5.major}/enable-syscall-on-sierra.patch
         }
+        if {${perl5.major} == 5.28} {
+            # Fix build failure when parent paths are not completely accessible.
+            # https://github.com/perl/perl5/issues/16903#issuecomment-544100709
+            patchfiles-append \
+                            ${perl5.major}/add-internals-getcwd.patch \
+                            ${perl5.major}/dont-write-invalid-write_buildcustomize.pl.patch \
+                            ${perl5.major}/fallback-to-built-in-getcwd.patch \
+        }
+        if {${perl5.major} >= 5.28 && ${perl5.major} <= 5.30} {
+            ## backport the fix for "macOS 11.x" that went into 5.32.1
+            ## see https://github.com/Perl/perl5/pull/17946
+            patchfiles-append \
+                            ${perl5.major}/patch-hints-darwin_sh.diff \
+        }
 
         post-patch {
             reinplace -W ${worksrcpath} "s|__PREFIX__|${prefix}|g" \
@@ -171,16 +186,22 @@ foreach {perl5.v perl5.subversion perl5.revision perl5.rmd160 perl5.sha256 perl5
                            {-Alddlflags="$LDFLAGS"} \
                            {-Aldflags="$LDFLAGS"}
 
-        # Workaround buggy configure scripts that expect 10.x
-        if {[vercmp ${macosx_deployment_target} 11.0] >= 0} {
-            macosx_deployment_target 10.16
-        }
-        if {${os.major} >= 20} {
-            configure.env-append SYSTEM_VERSION_COMPAT=1
+        ## perl5.28 and 5.30 will compile on macOS 11.3 / Xcode 12.5 with
+        ##   the above patch-hints-darwin_sh.diff, and perl5.32(.1) has
+        ##   the fix in that patch included.  So only use the below
+        ##   work-around for "buggy configure scripts" for perl < 5.28
+        if {${perl5.major} < 5.28} {
+            # Workaround buggy configure scripts that expect 10.x
+            if {[vercmp ${macosx_deployment_target} 11.0] >= 0} {
+                macosx_deployment_target 10.16
+            }
+            if {${os.major} >= 20} {
+                configure.env-append SYSTEM_VERSION_COMPAT=1
+            }
         }
 
-        if {[variant_isset universal]} {
-            post-configure {
+        post-configure {
+            if {[variant_exists universal] && [variant_isset universal]} {
                 system "cd ${worksrcpath} && ed - ${worksrcpath}/config.h < ${filespath}/${perl5.major}/config.h.ed"
             }
         }

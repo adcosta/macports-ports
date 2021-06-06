@@ -4,7 +4,7 @@ PortSystem 1.0
 PortGroup select 1.0
 
 name            scala2.13
-version         2.13.3
+version         2.13.6
 set branch      [join [lrange [split ${version} .] 0 1] .]
 categories      lang java
 license         BSD
@@ -37,11 +37,11 @@ if {$subport == $name} {
 
     distname        scala-${version}
     extract.suffix  .tgz
-    checksums       md5     52e7afe9b8c678e39e76d8ff397f6c57 \
-                    sha1    992b67d8f648550cada8034b275a6568c310704e \
-                    rmd160  85609d0e062fb050242a1fc36787fdda1feb1ac5 \
-                    sha256  c9f3731bccf26cf39ac5413172fb41646cb19f63b8a2bb75f38e89675ce2697f \
-                    size    22414008
+    checksums       md5     6aabf8704dfd17ea9f1b297a8bcfb04c \
+                    sha1    b491e0ff053fb4deafc1a34037b9cde2a9cb1e85 \
+                    rmd160  706b5741aaf2fa8aa7784495c217b2dbdb30fc5a \
+                    sha256  49df92503cd11cc3c649683db368e5878b7e792e40156d2377e52326e935ed43 \
+                    size    23407489
 
     destroot {
         set man1dir ${sharedir}/man/man1
@@ -75,11 +75,11 @@ subport ${name}-docs {
     distname        scala-docs-${version}
     use_xz          yes
     extract.suffix  .txz
-    checksums       md5     42ed5a79228941622670cc71f4efdb8e \
-                    sha1    7c66ce82929493641951072c3810270d6dc258af \
-                    rmd160  0dd83572167d335d4ddce422c485ddf567eb758d \
-                    sha256  8a94e7fa43f40283aee9635ad8ccb3b3b52706a6cdfc4f1130d7f4423bdd2e87 \
-                    size    57079516
+    checksums       md5     ec1e8718015594b2dc3d8930229f238b \
+                    sha1    79a5303b604e23fbf319c19e7b83e043b9522da4 \
+                    rmd160  c5615542aede02006592925a527285a51013c413 \
+                    sha256  676a3e32abc1184d193a81b09c1eca5aef48b093f090e6d63bcd1745ef0619b6 \
+                    size    60921864
 
     worksrcdir      scala-${version}
 
@@ -90,5 +90,5 @@ subport ${name}-docs {
 }
 
 livecheck.type  regex
-livecheck.url   http://scala-lang.org/download/all.html
+livecheck.url   https://scala-lang.org/download/all.html
 livecheck.regex {/download/(2\.13\.\d+(?:\.\d+)*)\.html}

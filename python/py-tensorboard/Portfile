@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-tensorboard
-version             2.2.2
+version             2.5.0
 revision            0
 platforms           darwin
 supported_archs     noarch
@@ -17,12 +17,13 @@ long_description    TensorBoard is a suite of web applications for inspecting \
 
 homepage            https://github.com/tensorflow/tensorboard
 
-master_sites        https://files.pythonhosted.org/packages/1d/74/0a6fcb206dcc72a6da9a62dd81784bfdbff5fedb099982861dc2219014fb/
+master_sites        https://files.pythonhosted.org/packages/44/f5/7feea02a3fb54d5db827ac4b822a7ba8933826b36de21880518250b8733a/
+
 distname            tensorboard-${version}-py3-none-any
 
-checksums           rmd160  dc2310d69e601ca164385465390eebbeba79d706 \
-                    sha256  a3feb73e1221c0a512398ad2cd08570fb082d8a2ba364aa0562543ecbd3659ef \
-                    size    2951018
+checksums           rmd160  802aa7c890e9b5a8537cc5d17e96a94e62ee94e3 \
+                    sha256  e167460085b6528956b33bab1c970c989cdce47a6616273880733f5e7bde452e \
+                    size    6019104
 
 livecheck.url       https://pypi.org/project/tensorboard/
 livecheck.type      regex
@@ -31,8 +32,7 @@ livecheck.regex     /project/tensorboard/(\\d+(\\.\\d+)+)/
 extract.suffix      .whl
 extract.only
 
-python.versions        37 38
-python.default_version 38
+python.versions     37 38 39
 
 if {${name} ne ${subport}} {
     conflicts   py${python.version}-tensorboard1

@@ -6,7 +6,7 @@ PortGroup       muniversal 1.0
 name            orbit2
 set my_name     ORBit2
 version         2.14.19
-revision        2
+revision        3
 set branch      [join [lrange [split ${version} .] 0 1] .]
 maintainers     nomaintainer
 categories      devel gnome
@@ -43,7 +43,10 @@ set merger_dont_diff "${prefix}/include/orbit-2.0/orbit/orbit-config.h"
 test.run        yes
 test.target     check
 
-if { [variant_isset universal] } {
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
+if {${universal_possible} && [variant_isset universal]} {
     # Find architectures which will not run on build platform.
     if { ${os.arch} eq "i386" } {
         if { ${os.major} >= 10 } {

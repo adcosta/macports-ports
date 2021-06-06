@@ -3,13 +3,9 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/tektoncd/cli 0.11.0 v
+go.setup            github.com/tektoncd/cli 0.18.0 v
 name                tektoncd-cli
-
-categories          devel
-license             Apache-2
-platforms           darwin
-supported_archs     x86_64 i386
+revision            0
 
 description         A CLI for interacting with Tekton
 
@@ -20,28 +16,32 @@ long_description    The Tekton Pipelines cli project provides a CLI for \
                     multiple cloud providers or on-premises systems by \
                     abstracting away the underlying implementation details.
 
+categories          devel
+license             Apache-2
+platforms           darwin
+installs_libs       no
+
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  a5d215039835960e12cca87136fa885f30d071c4 \
-                    sha256  253ad979eda621ffd251988f02b29cea556cc340f956c2406841fafbf6d40371 \
-                    size    7231312
+checksums           rmd160  063662b7443afeadf24a48c2ae53dfad8c8f5e94 \
+                    sha256  346f815e5e7fef8c05ef82cba308400cf4fef49c59a64c92aa4f83b29c47b49f \
+                    size    8805503
 
-if {${build_arch} eq "x86_64"} {
-    set tektoncd_target amd64
-} else {
-    set tektoncd_target 386
+patch {
+    # Comment out build commands for Linux and Windows
+    reinplace -E "s/(GOOS=(linux|windows) GOARCH=(amd64|386).*)/# \\1/g" \
+        ${worksrcpath}/Makefile
 }
 
-patchfiles          patch-Makefile.diff
+build.env-delete    GO111MODULE=off
 
 build.cmd           make
 build.pre_args      RELEASE_VERSION=${version}
-build.args          ${tektoncd_target}
-installs_libs       no
+build.args          ${goarch}
 
 destroot {
-    xinstall -m 755 ${worksrcpath}/bin/tkn-darwin-${tektoncd_target} \
+    xinstall -m 755 ${worksrcpath}/bin/tkn-darwin-${goarch} \
                     ${destroot}${prefix}/bin/tkn
 
     copy {*}[glob ${worksrcpath}/docs/man/man1/*] \

@@ -14,7 +14,11 @@ platforms               darwin
 
 github.author           FStarLang
 
-depends_build           port:ocaml-ocamlbuild
+depends_build           port:ocaml-ocamlbuild \
+                        port:gmake
+
+# Requires gmake 3.82+
+build.cmd               ${prefix}/bin/gmake
 
 depends_lib             port:ocaml-batteries \
                         port:ocaml-stdint \
@@ -45,7 +49,7 @@ if {${fstar.stable}} {
     # Strip everything but <major>.<minor>
     fstar.release       [regsub {^([^\.]+\.[^\.]+).*} ${fstar.version} {\1}]
 } else {
-    fstar.version       20200812
+    fstar.version       20210511
     fstar.release       devel
 }
 
@@ -108,8 +112,6 @@ if {${fstar.project} eq "fstar"} {
     depends_build-append    port:coreutils
     depends_lib-append      port:z3-fstar \
                             port:gmp \
-                            port:ocaml-ulex \
-                            port:ocaml-migrate-parsetree \
                             port:realpath
     depends_run-append      port:fstar_select
 
@@ -169,19 +171,40 @@ subport fstar {
 
     patchfiles-append   fstar-stable/patch-ocaml4.08 \
                         fstar-stable/patch-examples-fix-tests
+
+    depends_lib-append  port:ocaml-ulex \
+                        port:ocaml-migrate-parsetree
+
+    build.args          PREFIX=${fstar.home}
+
+    build {
+        foreach {dir ftargets} {
+            src     {ocaml-fstar-ocaml}
+            ulib    {install-fstarlib install-fstar-tactics all}
+        } {
+            build.dir       ${worksrcpath}/${dir}
+            build.target    {*}${ftargets}
+            do-build
+        }
+    }
+
+    destroot.dir        ${worksrcpath}/src/ocaml-output
 }
 
 subport fstar-devel {
-    github.setup        ${github.author} ${github.project} 6ed1e01c3b3c8783408383389688eb3b307d6d83
+    github.setup        ${github.author} ${github.project} bcb002a0dc32da605ceda7932de4c6cc2a20b971
     version             ${fstar.version}-[string range ${github.version} 0 6]
     revision            0
 
-    checksums           rmd160  75f08ccebc2e27523db9840cd8cf153a54b5bbe3 \
-                        sha256  a4302af946d9beb1961b64d274f71f4a3e83590e82cdff51bac7a2caf819e377 \
-                        size    7789139
+    checksums           rmd160  b4e10f3d1269c2ee25b6b0989a725818457eebdb \
+                        sha256  d37bd8323e2c5a2bf2a639fa679438cca35ec591c52e1ac8cfa2c05db04788df \
+                        size    8068341
     github.tarball_from tarball
 
     patchfiles-append   fstar-devel/patch-tests_machine__integers_Makefile
+
+    depends_lib-append  port:ocaml-sedlex \
+                        port:ocaml-ppxlib
 }
 
 subport kremlin {
@@ -222,17 +245,19 @@ subport kremlin {
 }
 
 subport kremlin-devel {
-    github.setup        ${github.author} ${fstar.project} 622b0d9510e8261564f2b700c844043484dc07d3
-    version             ${fstar.version}-[string range ${github.version} 0 6]
-    revision            0
+    github.setup        ${github.author} ${fstar.project} 5a8c41548147e548b258cefa755064a48cb31b39
+    version             20210510-[string range ${github.version} 0 6]
+    revision            1
 
-    checksums           rmd160  ef22344a0c9a6975987d540282fabc17228b8e6f \
-                        sha256  e86cdf14c9208777b949aed70dc11c2c5d83754ab4a667e495a6c2bf234562da \
-                        size    881892
+    checksums           rmd160  7e7ffb011ae41c8dd55ac2a00220b08aa2b15986 \
+                        sha256  5db9af845067b58d772f47b9b24410d221cdd5b702c4153c621400f0caeec0c7 \
+                        size    894013
 
     patchfiles-append   kremlin-devel/patch-clang-driver-options \
-                        kremlin-devel/patch-fix-make-command \
                         kremlin-devel/patch-fstar-discover-path \
+                        kremlin-devel/patch-fstar-driver-no-lax \
+                        kremlin-devel/patch-kremlib-march-native \
+                        kremlin-devel/patch-kremlib-mach_absolute_time \
                         kremlin-devel/patch-test_system_system.h
 
     depends_lib-append  port:ocaml-sedlex
@@ -242,9 +267,6 @@ subport kremlin-devel {
 # Apply shared fstar/fstar-devel subport configuration
 if {${fstar.project} eq "fstar"} {
     ocaml.package_dir   ${fstar.home}/bin
-
-    build.args          PREFIX=${fstar.home}
-    build.target        ocaml-fstar-ocaml
 
     test.run            yes
     test.env            KREMLIN_HOME=${kremlin.home}/home
@@ -272,20 +294,7 @@ if {${fstar.project} eq "fstar"} {
     #   - typeclasses
     #
     depends_test        port:${kremlin.port}
-
-    destroot.dir        ${worksrcpath}/src/ocaml-output
     destroot.args       PREFIX=${destroot}${fstar.home}
-
-    build {
-        foreach {dir ftargets} {
-            src     {ocaml-fstar-ocaml}
-            ulib    {install-fstarlib install-fstar-tactics all}
-        } {
-            build.dir       ${worksrcpath}/${dir}
-            build.target    {*}${ftargets}
-            do-build
-        }
-    }
 
     post-destroot {
         # Remove intermediate build directories
@@ -353,11 +362,14 @@ if {${fstar.project} eq "fstar"} {
 
     post-patch {
         file mkdir "${workpath}/compiler-bin"
-        ln -shf ${configure.cc} ${workpath}/compiler-bin/${kremlin.cc}
+
+        set krml_cc ${workpath}/compiler-bin/${kremlin.cc}
+        xinstall -m 755 ${filespath}/krml-cc.in ${krml_cc}
+        reinplace "s|@CONFIGURE_CC@|${configure.cc}|g" ${krml_cc}
 
         # XXX: Must be kept in-sync with Driver.detect_gnu()
         foreach {cc_major} {5 6 7 8 9 10} {
-            ln -shf ${configure.cc} ${workpath}/compiler-bin/${kremlin.cc}-${cc_major}
+            ln -shf ${krml_cc} ${krml_cc}-${cc_major}
         }
     }
 

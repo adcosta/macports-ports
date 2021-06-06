@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.26 5.28 5.30
-perl5.setup         Algorithm-Diff 1.1903
+perl5.setup         Algorithm-Diff 1.201
 maintainers         {geeklair.net:dluke @danielluke} openmaintainer
 description         This is a Perl extension for computing intelligent \
                     differences between two files / lists.
@@ -15,11 +15,6 @@ long_description    ${description}
 platforms           darwin
 supported_archs     noarch
 
-checksums           rmd160  656025111d1d8c6d62abdb5cd953eba23e48f065 \
-                    sha256  30e84ac4b31d40b66293f7b1221331c5a50561a39d580d85004d9c1fff991751
-
-#since, per CPAN, this is offically an "UNAUTHORIZED RELEASE," livecheck needs to be handled specially
-
-livecheck.type      regex
-livecheck.url       https://cpan.metacpan.org/authors/id/T/TY/TYEMQ
-livecheck.regex     "${perl5.module}-(\\d+(?:\\.\\d+)*)"
+checksums           rmd160  898b947e79f55df8c947fee55b003ed68c029396 \
+                    sha256  0022da5982645d9ef0207f3eb9ef63e70e9713ed2340ed7b3850779b0d842a7d \
+                    size    30047

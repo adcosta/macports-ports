@@ -4,7 +4,12 @@ PortSystem      1.0
 PortGroup       github 1.0
 PortGroup       muniversal 1.0
 
-github.setup    libass libass 0.14.0
+github.setup    libass libass 0.15.1
+
+checksums       rmd160  e4bb726337354a49dd50309e6fc5937f08af8310 \
+                sha256  ea16d75aca1336eea4b1f5888fc62579d99aea168519dc1870ad6d5328e7e146 \
+                size    248777
+
 categories      multimedia
 license         ISC
 maintainers     nomaintainer
@@ -16,9 +21,11 @@ long_description \
     ASS/SSA (Advanced Substation Alpha/Substation Alpha) \
     subtitle format. It is mostly compatible with VSFilter.
 
-depends_build   port:pkgconfig
+depends_build   port:pkgconfig \
+                port:nasm
 depends_lib     port:fribidi \
-                port:fontconfig
+                port:fontconfig \
+                port:harfbuzz
 
 use_autoreconf  yes
 
@@ -26,10 +33,13 @@ configure.args  --enable-fontconfig \
                 --disable-harfbuzz \
                 --disable-silent-rules
 
-checksums           rmd160  0266c988fec11e2fbaa17b63e7cdb498022b65a2 \
-                    sha256  d6c5878ecc52b0617d802bc6c2c2fdf9b9c6d1d785a5d2b46c6f20b864fa1a66
+# ass.h:421: error: wrong number of arguments specified for 'deprecated' attribute
+compiler.blacklist-append *gcc-3.* *gcc-4.*
 
-if {[variant_isset universal]} {
+if {![info exists universal_possible]} {
+    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+}
+if {${universal_possible} && [variant_isset universal]} {
     # Needed by configure to correctly set the yasm build flags.
     foreach arch ${configure.universal_archs} {
         set merger_host($arch) "${arch}-apple-${os.platform}${os.major}.${os.minor}.0"
@@ -45,11 +55,11 @@ if {[variant_isset universal]} {
     lappend merger_configure_args(x86_64)   --enable-asm
     lappend merger_configure_env(i386)      LDFLAGS=-Wl,-read_only_relocs,suppress
 } else {
-    if {${build_arch} eq "i386" || ${build_arch} eq "x86_64"} {
+    if {${configure.build_arch} in "i386 x86_64"} {
         depends_build-append    port:yasm
         configure.args-append   --enable-asm
     }
-    if {${build_arch} eq "i386"} {
+    if {${configure.build_arch} eq "i386"} {
         configure.ldflags-append -Wl,-read_only_relocs,suppress
     }
 }

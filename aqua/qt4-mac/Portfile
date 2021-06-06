@@ -11,7 +11,7 @@ PortGroup           compiler_blacklist_versions 1.0
 
 name                qt4-mac
 version             4.8.7
-revision            10
+revision            12
 set branch          [join [lrange [split ${version} .] 0 1] .]
 
 categories          aqua
@@ -44,23 +44,34 @@ depends_lib-append  port:zlib \
                     port:tiff \
                     port:libpng \
                     port:libmng \
-                    path:lib/libjpeg.dylib:jpeg
+                    path:include/turbojpeg.h:libjpeg-turbo
 
 # find a way to specify the OS MINOR version.  For OSX 10.X, this
 # value will be X.  The type is this variable is integer, so we can
 # use "==" and so forth for comparison.
 
-global MINOR
+global MINOR, MAJOR
+set MAJOR ""
 set MINOR ""
 
 # hopefully the MACOSX_DEPLOYMENT_TARGET exists and is set by now.  if
 # not, last resort (which is not desirable) is to use the os.version.
 
 if {${macosx_deployment_target} ne ""} {
+    set MAJOR [lindex [split ${macosx_deployment_target} "."] 0]
     set MINOR [lindex [split ${macosx_deployment_target} "."] 1]
 } else {
-    set MINOR [expr [lindex [split ${os.version} "."] 0] - 4]
+    # Do we really need this branch still ??
+    if { ${os.major} < 20 } {
+        set MAJOR 10
+        set MINOR [expr [lindex [split ${os.version} "."] 0] - 4]
+    } else {
+        # Bit of a guess, and will not work once we have macOS 12
+        set MAJOR 11
+        set MINOR [expr [lindex [split ${os.version} "."] 0] - 20]
+    }
 }
+ui_debug "Deduced OS MAJOR.MINOR = ${MAJOR}.${MINOR}"
 
 ###############################################
 # Patches are used to both fix compiling on various OS versions, and
@@ -223,7 +234,7 @@ patchfiles-append   \
 # (20) Under 10.8 and 10.9: Patch to fix corelib linking
 
 platform darwin {
-    if {${MINOR} >= 8} {
+    if {${MAJOR} > 10 || ${MINOR} >= 8} {
         patchfiles-append patch-src_corelib_corelib.pro.diff
     }
 }
@@ -270,7 +281,7 @@ patchfiles-append   \
 # https://trac.macports.org/ticket/52332
 
 platform darwin {
-    if {${MINOR} >= 12} {
+    if {${MAJOR} > 10 || ${MINOR} >= 12} {
         patchfiles-append patch-src_gui_kernel_qmime_mac.cpp.diff
     }
 }
@@ -364,6 +375,14 @@ if {![variant_isset cxx11]} {
     patchfiles-append patch-compiler_standard.diff
 }
 
+# Fix slow drawing on Big Sur.
+# See:
+# - https://developer.apple.com/forums/thread/663256
+# - https://gist.github.com/lukaskubanek/9a61ac71dc0db8bb04db2028f2635779
+# - https://trac.wxwidgets.org/ticket/19111
+# The fix can only be compiled with the 10.12 SDK or later.
+patchfiles-append patch-qt4-contentsformat.diff
+
 # the configure script uses the compiler version to determine if QtXmlPatterns and QtWebKit can be built
 # the logic does not work for newer versions of GCC or Clang (masquerading as GCC)
 patchfiles-append patch-test_compiler_version.diff
@@ -376,15 +395,15 @@ post-extract {
         ${worksrcpath}/src/3rdparty/javascriptcore/VERSION.txt
 }
 
-# error out if trying to build on a new OSX version (> 10.15).
+# error out if trying to build on a new OSX version (> 11.0).
 
 platform darwin {
-    if {${MINOR} > 15} {
+    if { ( ${MAJOR} == 10 && ${MINOR} > 15 ) || ${MAJOR} > 11 } {
         # This project needs to be updated to build with clang++ against libc++
         depends_lib
         depends_run
         pre-fetch {
-            ui_error "$name does not currently build on Mac OS X later than 10.15 'Catalina'."
+            ui_error "$name does not currently build on Mac OS X later than 11 'Big Sur'."
             error "unsupported platform"
         }
     }
@@ -405,11 +424,11 @@ set SDK ${configure.sdkroot}
 if {${SDK} eq ""} {
     # set SDK version depending on OS version
     set sdk_version ""
-    if {${MINOR} == 4} {
+    if { ${MAJOR} == 10 && ${MINOR} == 4 } {
         # OSX 10.4 requires an additional 'u'
-        set sdk_version "10.4u"
+        set sdk_version "${MAJOR}.4u"
     } else {
-        set sdk_version "10.${MINOR}"
+        set sdk_version "${MAJOR}.${MINOR}"
     }
     if {[vercmp ${xcodeversion} 4.3] < 0} {
         set SDK ${developer_dir}/SDKs/MacOSX${sdk_version}.sdk
@@ -417,6 +436,9 @@ if {${SDK} eq ""} {
         set SDK ${developer_dir}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX${sdk_version}.sdk
     }
 }
+
+# no support for ARM64 yet
+supported_archs ppc ppc64 i386 x86_64
 
 post-patch {
     # set ARCHES in configure (per the third patchfile above), for
@@ -427,9 +449,9 @@ post-patch {
 
     set ARCHES ""
     if {[variant_exists universal] && [variant_isset universal]} {
-        set ARCHES [join ${universal_archs} " -arch "]
+        set ARCHES [join ${configure.universal_archs} " -arch "]
     } else {
-        set ARCHES ${build_arch}
+        set ARCHES ${configure.build_arch}
     }
     reinplace "s|@ARCHES@|${ARCHES}|g" ${worksrcpath}/configure
 
@@ -437,7 +459,7 @@ post-patch {
     # were all patched in (2) above, and can be easily changed or
     # overridden by the user in a project-local qmake .pro script.
 
-    set TARGET "10.${MINOR}"
+    set TARGET "${MAJOR}.${MINOR}"
     foreach fixfile {configure mkspecs/common/g++-macx.conf \
                      mkspecs/common/mac.conf qmake/qmake.pri \
                      src/tools/bootstrap/bootstrap.pro } {
@@ -663,11 +685,11 @@ pre-configure {
 
     # for 10.4 or 10.5 32-bit PPC, build as Carbon only, not Cocoa
 
-    if {${MINOR} == 4} {
+    if {${MAJOR} == 10 && ${MINOR} == 4} {
 
         configure.args-append -carbon
 
-    } elseif {${MINOR} == 5 &&
+    } elseif {${MAJOR} == 10 && ${MINOR} == 5 &&
               [llength ${qt_arch_types}] == 1 &&
               [lsearch -exact ${qt_arch_types} ppc] == 0} {
 
@@ -688,7 +710,7 @@ pre-configure {
         # not building for native arch: disable optimizing qmake
         configure.args-delete -optimized-qmake
 
-    } elseif {${MINOR} == 6 &&
+    } elseif {${MAJOR} == 10 && ${MINOR} == 6 &&
               [llength ${qt_arch_types}] == 1 &&
               [lsearch -exact ${qt_arch_types} x86] == 0} {
 
@@ -744,27 +766,27 @@ post-configure {
     # "system" includes & libraries.
 
     # SQLITE
-    reinplace "/SQLITE/s@-I${prefix}/\[^ \]*include\[^ \]*@@g" \
+    reinplace -q "/SQLITE/s@-I${prefix}/\[^ \]*include\[^ \]*@@g" \
         ${worksrcpath}/.qmake.cache
-    reinplace "/SQLITE/s@-L${prefix}/\[^ \]*lib\[^ \]*@@g" \
+    reinplace -q "/SQLITE/s@-L${prefix}/\[^ \]*lib\[^ \]*@@g" \
         ${worksrcpath}/.qmake.cache
 
     # DBUS
-    reinplace "/DBUS/s@-I${prefix}/\[^ \]*include\[^ \]*@@g" \
+    reinplace -q "/DBUS/s@-I${prefix}/\[^ \]*include\[^ \]*@@g" \
         ${worksrcpath}/.qmake.cache
-    reinplace "/DBUS/s@-L${prefix}/\[^ \]*lib\[^ \]*@@g" \
+    reinplace -q "/DBUS/s@-L${prefix}/\[^ \]*lib\[^ \]*@@g" \
         ${worksrcpath}/.qmake.cache
 
     # OPENSSL
-    reinplace "/OPENSSL/s@-I${prefix}/\[^ \]*include\[^ \]*@@g" \
+    reinplace -q "/OPENSSL/s@-I${prefix}/\[^ \]*include\[^ \]*@@g" \
         ${worksrcpath}/.qmake.cache
-    reinplace "/OPENSSL/s@-L${prefix}/\[^ \]*lib\[^ \]*@@g" \
+    reinplace -q "/OPENSSL/s@-L${prefix}/\[^ \]*lib\[^ \]*@@g" \
         ${worksrcpath}/.qmake.cache
 
     # ODBC
-    reinplace "/ODBC/s@-I${prefix}/\[^ \]*include\[^ \]*@@g" \
+    reinplace -q "/ODBC/s@-I${prefix}/\[^ \]*include\[^ \]*@@g" \
         ${worksrcpath}/.qmake.cache
-    reinplace "/ODBC/s@-L${prefix}/\[^ \]*lib\[^ \]*@@g" \
+    reinplace -q "/ODBC/s@-L${prefix}/\[^ \]*lib\[^ \]*@@g" \
         ${worksrcpath}/.qmake.cache
 }
 
@@ -808,10 +830,10 @@ post-destroot {
     regsub ${prefix} ${worksrcpath} "" from_dir
     regsub ${prefix} ${qt_dir} "" to_dir
     foreach fixfile [exec find ${dr_qt} -name "*.pc"] {
-        reinplace "s|${from_dir}|${to_dir}|g" ${fixfile}
+        reinplace -q "s|${from_dir}|${to_dir}|g" ${fixfile}
     }
     foreach fixfile [exec find ${dr_qt} -name "*.prl"] {
-        reinplace "s|${from_dir}|${to_dir}|g" ${fixfile}
+        reinplace -q "s|${from_dir}|${to_dir}|g" ${fixfile}
     }
 
     # fix .pc files
@@ -820,20 +842,20 @@ post-destroot {
 
         # remove Libs.private; they can mess up linking
 
-        reinplace "/Libs\.private/d" ${fixfile}
+        reinplace -q "/Libs\.private/d" ${fixfile}
 
         # use ${qt_dir} correctly;
         # in the .pc file, this will be ${prefix}
 
-        reinplace "s|${qt_dir}/|\${prefix}/|g" ${fixfile}
+        reinplace -q "s|${qt_dir}/|\${prefix}/|g" ${fixfile}
 
         # fix libdir
 
-        reinplace "/libdir=/s|Library/Frameworks|lib|" ${fixfile}
+        reinplace -q "/libdir=/s|Library/Frameworks|lib|" ${fixfile}
 
         # fix Libs: to use -L instead of -F
 
-        reinplace "/Libs:/s|-F|-L|" ${fixfile}
+        reinplace -q "/Libs:/s|-F|-L|" ${fixfile}
 
         # fix Libs: to use -lQt* instead of "-framework Qt*"
         # depends on whether for release or debug
@@ -843,13 +865,13 @@ post-destroot {
         if {[lsearch -regexp ${fn} debug] == 0} {
 
             # debug; need to add that string to all Qt dependency libraries
-            reinplace "/Libs:/s|-framework Qt\\(\[^ \]*\\)|-lQt\\1_debug|" \
+            reinplace -q "/Libs:/s|-framework Qt\\(\[^ \]*\\)|-lQt\\1_debug|" \
                 ${fixfile}
 
         } else {
 
             # no debug; just replace
-            reinplace "/Libs:/s|-framework Qt|-lQt|" ${fixfile}
+            reinplace -q "/Libs:/s|-framework Qt|-lQt|" ${fixfile}
 
         }
     }
@@ -869,26 +891,26 @@ post-destroot {
     # remove -L entries from .prl and .la files
 
     foreach fixfile [exec find ${dr_qt} -name "*.prl"] {
-        reinplace "/QMAKE_PRL_LIBS/s|-L\[^ \]*||g" ${fixfile}
+        reinplace -q "/QMAKE_PRL_LIBS/s|-L\[^ \]*||g" ${fixfile}
     }
     foreach fixfile [exec find ${dr_qt} -name "*.la"] {
-        reinplace "/dependency_libs/s|-L\[^ \]*||g" ${fixfile}
+        reinplace -q "/dependency_libs/s|-L\[^ \]*||g" ${fixfile}
     }
 
     # remove redundant -F entries from .prl and .la files
 
     foreach fixfile [exec find ${dr_qt} -name "*.prl"] {
-        reinplace "/QMAKE_PRL_LIBS/s|-F\[^ \]*|FREPLACEME|1" \
+        reinplace -q "/QMAKE_PRL_LIBS/s|-F\[^ \]*|FREPLACEME|1" \
             ${fixfile}
-        reinplace "/QMAKE_PRL_LIBS/s|-F\[^ \]*||g" ${fixfile}
-        reinplace "s|FREPLACEME|-F${prefix}/Library/Frameworks|1" \
+        reinplace -q "/QMAKE_PRL_LIBS/s|-F\[^ \]*||g" ${fixfile}
+        reinplace -q "s|FREPLACEME|-F${prefix}/Library/Frameworks|1" \
             ${fixfile}
     }
     foreach fixfile [exec find ${dr_qt} -name "*.la"] {
-        reinplace "/dependency_libs/s|-F\[^ \]*|FREPLACEME|1" \
+        reinplace -q "/dependency_libs/s|-F\[^ \]*|FREPLACEME|1" \
             ${fixfile}
-        reinplace "/dependency_libs/s|-F\[^ \]*||g" ${fixfile}
-        reinplace "s|FREPLACEME|-F${prefix}/Library/Frameworks|1" \
+        reinplace -q "/dependency_libs/s|-F\[^ \]*||g" ${fixfile}
+        reinplace -q "s|FREPLACEME|-F${prefix}/Library/Frameworks|1" \
             ${fixfile}
     }
 
@@ -939,15 +961,15 @@ post-destroot {
 
         # fix TARGET in .prl file
 
-        reinplace "/QMAKE_PRL_TARGET/s|Qt\\(\[^ \]*\\)|libQt\\1.${qt_major}.${t_minor}.${qt_patch}.dylib|" ${dr_qt_libs_dir}/lib${tf}.prl
+        reinplace -q "/QMAKE_PRL_TARGET/s|Qt\\(\[^ \]*\\)|libQt\\1.${qt_major}.${t_minor}.${qt_patch}.dylib|" ${dr_qt_libs_dir}/lib${tf}.prl
 
         # fix PRL_LIBS -F -> -L in .prl file
 
-        reinplace "/QMAKE_PRL_LIBS/s|-F${qt_frameworks_dir}|-L${qt_libs_dir}|" ${dr_qt_libs_dir}/lib${tf}.prl
+        reinplace -q "/QMAKE_PRL_LIBS/s|-F${qt_frameworks_dir}|-L${qt_libs_dir}|" ${dr_qt_libs_dir}/lib${tf}.prl
 
         # fix "-framework Qt*" -> "-lQt*" in .prl file
 
-        reinplace "/QMAKE_PRL_LIBS/s|-framework Qt|-lQt|g" \
+        reinplace -q "/QMAKE_PRL_LIBS/s|-framework Qt|-lQt|g" \
             ${dr_qt_libs_dir}/lib${tf}.prl
 
         # fix up .la files to work with ${prefix}/lib entries
@@ -958,33 +980,33 @@ post-destroot {
 
         # fix "name that we can dlopen" in .la file
 
-        reinplace "s|dlname=''|dlname='lib${tf}.${qt_major}.${t_minor}.${qt_patch}.dylib'|" ${dr_qt_libs_dir}/lib${tf}.la
+        reinplace -q "s|dlname=''|dlname='lib${tf}.${qt_major}.${t_minor}.${qt_patch}.dylib'|" ${dr_qt_libs_dir}/lib${tf}.la
 
         # fix "names of this library" in .la file
 
-        reinplace "s|library_names='\[^'\]*'|library_names='lib${tf}.${qt_major}.${t_minor}.${qt_patch}.dylib lib${tf}.${qt_major}.${t_minor}.dylib lib${tf}.${qt_major}.dylib lib${tf}.dylib'|" \
+        reinplace -q "s|library_names='\[^'\]*'|library_names='lib${tf}.${qt_major}.${t_minor}.${qt_patch}.dylib lib${tf}.${qt_major}.${t_minor}.dylib lib${tf}.${qt_major}.dylib lib${tf}.dylib'|" \
             ${dr_qt_libs_dir}/lib${tf}.la
 
         # fix "name of the static archive"; there is none in .la file
 
-        reinplace "s|old_library='\[^'\]*'|old_library=''|" \
+        reinplace -q "s|old_library='\[^'\]*'|old_library=''|" \
             ${dr_qt_libs_dir}/lib${tf}.la
 
         # fix "libraries that this one depends upon" in .la file
 
-        reinplace "/dependency_libs/s|-F${qt_frameworks_dir}|-L${qt_libs_dir}|"  ${dr_qt_libs_dir}/lib${tf}.la
-        reinplace "/dependency_libs/s|-framework Qt|-lQt|g" \
+        reinplace -q "/dependency_libs/s|-F${qt_frameworks_dir}|-L${qt_libs_dir}|"  ${dr_qt_libs_dir}/lib${tf}.la
+        reinplace -q "/dependency_libs/s|-framework Qt|-lQt|g" \
             ${dr_qt_libs_dir}/lib${tf}.la
-        reinplace "/dependency_libs/s| ${worksrcpath}\[^ \]*||g" \
+        reinplace -q "/dependency_libs/s| ${worksrcpath}\[^ \]*||g" \
             ${dr_qt_libs_dir}/lib${tf}.la
-        reinplace "/dependency_libs/s| -lwebcore||" \
+        reinplace -q "/dependency_libs/s| -lwebcore||" \
             ${dr_qt_libs_dir}/lib${tf}.la
-        reinplace "/dependency_libs/s| -ljscore||" \
+        reinplace -q "/dependency_libs/s| -ljscore||" \
             ${dr_qt_libs_dir}/lib${tf}.la
 
         # fix "directory that this library needs to be installed in" in .la file
 
-        reinplace "/libdir/s|${qt_frameworks_dir}|${qt_libs_dir}|" \
+        reinplace -q "/libdir/s|${qt_frameworks_dir}|${qt_libs_dir}|" \
             ${dr_qt_libs_dir}/lib${tf}.la
 
         # deal with debug files
@@ -1012,15 +1034,15 @@ post-destroot {
 
             # fix TARGET in .prl file
 
-            reinplace "/QMAKE_PRL_TARGET/s|Qt\\(\[^ \]*\\)|libQt\\1.${qt_major}.${t_minor}.${qt_patch}.dylib|" ${dr_qt_libs_dir}/lib${tf}_debug.prl
+            reinplace -q "/QMAKE_PRL_TARGET/s|Qt\\(\[^ \]*\\)|libQt\\1.${qt_major}.${t_minor}.${qt_patch}.dylib|" ${dr_qt_libs_dir}/lib${tf}_debug.prl
 
             # fix PRL_LIBS -F -> -L in .prl file
 
-            reinplace "/QMAKE_PRL_LIBS/s|-F${qt_frameworks_dir}|-L${qt_libs_dir}|" ${dr_qt_libs_dir}/lib${tf}_debug.prl
+            reinplace -q "/QMAKE_PRL_LIBS/s|-F${qt_frameworks_dir}|-L${qt_libs_dir}|" ${dr_qt_libs_dir}/lib${tf}_debug.prl
 
             # fix "-framework Qt*" -> "-lQt*_debug" in .prl file
 
-            reinplace "/QMAKE_PRL_LIBS/s|-framework Qt\\(\[^ \]*\\)|-lQt\\1_debug|g" ${dr_qt_libs_dir}/lib${tf}_debug.prl
+            reinplace -q "/QMAKE_PRL_LIBS/s|-framework Qt\\(\[^ \]*\\)|-lQt\\1_debug|g" ${dr_qt_libs_dir}/lib${tf}_debug.prl
 
             # fix up .la files to work with ${prefix}/lib entries
 
@@ -1031,32 +1053,32 @@ post-destroot {
 
             # fix "name that we can dlopen" in .la file
 
-            reinplace "s|dlname=''|dlname='lib${tf}_debug.${qt_major}.${t_minor}.${qt_patch}.dylib'|" ${dr_qt_libs_dir}/lib${tf}_debug.la
+            reinplace -q "s|dlname=''|dlname='lib${tf}_debug.${qt_major}.${t_minor}.${qt_patch}.dylib'|" ${dr_qt_libs_dir}/lib${tf}_debug.la
 
             # fix "names of this library" in .la file
 
-            reinplace "s|library_names='\[^'\]*'|library_names='lib${tf}_debug.${qt_major}.${t_minor}.${qt_patch}.dylib lib${tf}_debug.${qt_major}.${t_minor}.dylib lib${tf}_debug.${qt_major}.dylib lib${tf}_debug.dylib'|" \
+            reinplace -q "s|library_names='\[^'\]*'|library_names='lib${tf}_debug.${qt_major}.${t_minor}.${qt_patch}.dylib lib${tf}_debug.${qt_major}.${t_minor}.dylib lib${tf}_debug.${qt_major}.dylib lib${tf}_debug.dylib'|" \
                 ${dr_qt_libs_dir}/lib${tf}_debug.la
 
             # fix "name of the static archive"; there is none in .la file
 
-            reinplace "s|old_library='\[^'\]*'|old_library=''|" \
+            reinplace -q "s|old_library='\[^'\]*'|old_library=''|" \
                 ${dr_qt_libs_dir}/lib${tf}_debug.la
 
             # fix "libraries that this one depends upon" in .la file
 
-            reinplace "/dependency_libs/s|-F${qt_frameworks_dir}|-L${qt_libs_dir}|" ${dr_qt_libs_dir}/lib${tf}_debug.la
-            reinplace "/dependency_libs/s|-framework Qt\\(\[^ \]*\\)|-lQt\\1_debug|g" ${dr_qt_libs_dir}/lib${tf}_debug.la
-            reinplace "/dependency_libs/s| ${worksrcpath}\[^ \]*||g" \
+            reinplace -q "/dependency_libs/s|-F${qt_frameworks_dir}|-L${qt_libs_dir}|" ${dr_qt_libs_dir}/lib${tf}_debug.la
+            reinplace -q "/dependency_libs/s|-framework Qt\\(\[^ \]*\\)|-lQt\\1_debug|g" ${dr_qt_libs_dir}/lib${tf}_debug.la
+            reinplace -q "/dependency_libs/s| ${worksrcpath}\[^ \]*||g" \
                 ${dr_qt_libs_dir}/lib${tf}_debug.la
-            reinplace "/dependency_libs/s| -lwebcored||" \
+            reinplace -q "/dependency_libs/s| -lwebcored||" \
                 ${dr_qt_libs_dir}/lib${tf}_debug.la
-            reinplace "/dependency_libs/s| -ljscored||" \
+            reinplace -q "/dependency_libs/s| -ljscored||" \
                 ${dr_qt_libs_dir}/lib${tf}_debug.la
 
             # fix "directory that this library needs to be installed in" in .la file
 
-            reinplace "/libdir/s|${qt_frameworks_dir}|${qt_libs_dir}|" \
+            reinplace -q "/libdir/s|${qt_frameworks_dir}|${qt_libs_dir}|" \
                 ${dr_qt_libs_dir}/lib${tf}_debug.la
 
         }
@@ -1179,12 +1201,7 @@ variant openvg description {Build with support for OpenVG} {
 
 variant cxx11 description {Add library support for C++11 (EXPERIMENTAL; does not work with libc++)} {
 
-    # Block compilers that do not support C++11. This variant seems to
-    # work with MacPorts' clang 3.0 or newer and Apple clang newer
-    # than 318.0.58 (but, not that version, which is already blocked).
-
-    compiler.blacklist-append \
-        apple-gcc-4.2 gcc-4.2 llvm-gcc-4.2
+    compiler.cxx_standard 2011
 
     pre-fetch {
 
@@ -1222,10 +1239,10 @@ post-activate {
 }
 
 notes-append \
-"Users experiencing graphics glitches on newer OS versions (10.13 and up) can \
-experiment with different graphics drawing systems that can be set in the \
-Interface tab of the ${qt_apps_dir}/qtconfig.app utility. Raster mode is
-the preferred mode but is not compatible with all non-standard widget styles.
+"Users experiencing graphics glitches on newer OS versions (10.13 and up) can\
+experiment with different graphics drawing systems that can be set in the\
+Interface tab of the ${qt_apps_dir}/qtconfig.app utility. Raster mode is\
+the preferred mode but is not compatible with all non-standard widget styles.\
 Keep an eye on the Fonts setting before saving!"
 
 livecheck.type       none

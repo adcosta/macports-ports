@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-lmdb
-version             0.99
+version             1.2.1
 platforms           darwin
 license             BSD
 maintainers         {gmail.com:herby.gillot @herbygillot} \
@@ -13,15 +13,20 @@ maintainers         {gmail.com:herby.gillot @herbygillot} \
 description         Universal Python binding for the LMDB Lightning Database
 long_description    {*}${description}
 
-homepage            https://lmdb.readthedocs.io/en/release/
+homepage            https://lmdb.readthedocs.io/en/release
 
-checksums           rmd160  5de4b0681066d0caa42923225678fe57be6869c2 \
-                    sha256  f9eb844aaaacc8a4bc175e1c1f8a8fb538c330e378fd9eb40e8708d4dca7dc89 \
-                    size    995175
+checksums           rmd160  64135b7a3c5b11fd5ffcf672e4ff108f523b5fc7 \
+                    sha256  5f76a90ebd08922acca11948779b5055f7a262687178e9e94f4e804b9f8465bc \
+                    size    881515
 
-python.versions     38
+python.versions     37 38 39
 
 if {${name} ne ${subport}} {
     depends_build-append \
                     port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-cffi
+
+    livecheck.type  none
 }
