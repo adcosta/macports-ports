@@ -4,23 +4,21 @@ PortSystem  1.0
 PortGroup           muniversal 1.0
 
 name                nspr
-version             4.31
-revision            0
+version             4.33
+revision            1
 categories          devel
 maintainers         nomaintainer
 license             {MPL-1.1 GPL-2+ LGPL-2.1+}
-platforms           darwin
 
 description         A platform-neutral API for system level and libc like functions.
 long_description    {*}${description}
 
-homepage            http://www.mozilla.org/projects/nspr
-master_sites        http://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v${version}/src/ \
-                    ftp://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v${version}/src/
+homepage            https://www.mozilla.org/projects/nspr
+master_sites        https://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v${version}/src/
 
-checksums           rmd160  0e3f74690de98a45d2efc8f6172488667c1c99e8 \
-                    sha256  5729da87d5fbf1584b72840751e0c6f329b5d541850cacd1b61652c95015abc8 \
-                    size    1078163
+checksums           rmd160  83edfbdda00e42254da1eec9f6d02d3dab942c4e \
+                    sha256  b23ee315be0e50c2fb1aa374d17f2d2d9146a835b1a79c1918ea15d075a693d7 \
+                    size    1078948
 
 worksrcdir          ${worksrcdir}/nspr
 
@@ -36,9 +34,16 @@ configure.args \
     --enable-optimize='${configure.optflags}' \
     --libdir=${prefix}/lib/nspr
 
-if {![info exists universal_possible]} {
-    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+platform darwin 9 {
+    if {${build_arch} eq "ppc" || ${build_arch} eq "ppc64"} {
+    # We need to enable missing ppc64 atomics
+    post-extract {
+        copy ${worksrcpath}/pr/src/md/unix/os_Darwin_ppc.s ${worksrcpath}/pr/src/md/unix/os_Darwin_ppc64.s
+        }
+    patchfiles-append      patch-darwin-ppc64.diff
+    }
 }
+
 if {(!${universal_possible} || ![variant_isset universal]) && ${configure.build_arch} in [list arm64 ppc64 x86_64]} {
     configure.args-append --enable-64bit
 }
@@ -71,5 +76,5 @@ post-destroot {
 
 livecheck.type      regex
 #livecheck.url   [lindex ${master_sites} 0]
-livecheck.url       http://ftp.mozilla.org/pub/mozilla.org/nspr/releases/
+livecheck.url       https://ftp.mozilla.org/pub/mozilla.org/nspr/releases/
 livecheck.regex     "v(\\d+(?:\\.\\d+)*)"

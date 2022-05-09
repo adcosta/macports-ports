@@ -5,6 +5,7 @@ PortGroup           select                       1.0
 PortGroup           compiler_blacklist_versions  1.0
 PortGroup           active_variants              1.1
 PortGroup           conflicts_build              1.0
+PortGroup           cltversion                   1.0
 
 epoch               5
 name                gcc-devel
@@ -23,33 +24,33 @@ long_description    The GNU compiler collection, including front ends for \
                     This is an !experimental!, !BETA! version \
                     built from GCC snapshots.
 
-if { ${build_arch} eq "arm64" } {
+if {${os.arch} eq "arm"} {
     # Use lead Darwin developer branch for now
     # Eventually Darwin Arm support will be merged with upstream at which point
     # Arm machines can use same snapshots as Intel.
-    PortGroup github 1.0
+    PortGroup       github 1.0
 
-    github.setup    iains gcc-darwin-arm64 a172e8791faf8b1ef795371e24ffa9527e6b4ad8
+    github.setup    iains gcc-darwin-arm64 6fc47bb43adc24bd15e0b87b47f22e4e67e8f69a
 
     # Version must follow same scheme as with GCC snapshots below <version>-<commit-date>
-    version         11-20210418
-    revision        0
+    version         12-20220327
+    revision        1
     subport         libgcc-devel { revision 0 }
 
-    checksums       rmd160  30782c24fc617b65a58c092fe7a77ce5a985c112 \
-                    sha256  dec4ee8e56c154c76bd6725547666569c1ec21ca2e9b6b3e40760fc236e6f450 \
-                    size    125451045
+    checksums       rmd160  76551e6d93d2a0a15afca6d66ed36f5f23b92b0a \
+                    sha256  a21729570ea54460986e0593bef3729356a06d8a9466a7ce5deca7d02948b57b \
+                    size    130697068
 
 } else {
     # Use regular GCC releases and snapshsots
 
-    version         12-20210523
+    version         12-20220417
     revision        0
     subport         libgcc-devel { revision 0 }
 
-    checksums       rmd160  0faa75b51b3e75d84f6f53c25d8dc7d7aceab35f \
-                    sha256  04f0e2ffc3245d6ff596d6beeefb865b8a9e09aa36f79d98a2eaecd645854409 \
-                    size    75523416
+    checksums       rmd160  119855686fb8356ac3b1fca6d2898b686c3396c9 \
+                    sha256  3725ae2f5d3bf6f6e2bcc1360302390d5f46e5aaecc9070d5038774d06238d60 \
+                    size    79042676
 
     # Primary releases
     master_sites    https://ftpmirror.gnu.org/gcc/gcc-${version}/ \
@@ -84,7 +85,8 @@ depends_lib-append  port:cctools \
                     port:libiconv \
                     port:libmpc \
                     port:mpfr \
-                    port:zlib
+                    port:zlib \
+                    port:zstd
 depends_run-append  port:gcc_select \
                     port:libgcc-devel
 
@@ -106,6 +108,12 @@ if {${subport} eq ${name}} {
     lappend gcc_configure_langs jit
 }
 
+proc get_clean_sysroot {} {
+    global configure.sdkroot
+    # if the sdkroot is one of the current, rapidly changing SDKS, use the generic one
+    return [regsub {MacOSX1[1-9]\.[0-9]+\.sdk} ${configure.sdkroot} {MacOSX.sdk}]
+}
+
 configure.dir       ${workpath}/build
 configure.cmd       ${worksrcpath}/configure
 configure.args      --enable-languages=[join ${gcc_configure_langs} ","] \
@@ -123,6 +131,7 @@ configure.args      --enable-languages=[join ${gcc_configure_langs} ","] \
                     --with-mpfr=${prefix} \
                     --with-mpc=${prefix} \
                     --with-isl=${prefix} \
+                    --with-zstd=${prefix} \
                     --enable-stage1-checking \
                     --disable-multilib \
                     --enable-lto \
@@ -134,11 +143,33 @@ configure.args      --enable-languages=[join ${gcc_configure_langs} ","] \
                     --with-bugurl=https://trac.macports.org/newticket \
                     --enable-host-shared
 
-# see https://lists.macports.org/pipermail/macports-dev/2017-August/036209.html
-# --disable-tls does not limit functionality
-# it only determines how std::call_once works
-configure.args-append \
-                    --disable-tls
+if { ${os.major} < 15 } {
+    # see https://lists.macports.org/pipermail/macports-dev/2017-August/036209.html
+    # --disable-tls does not limit functionality
+    # it only determines how std::call_once works
+    configure.args-append  --disable-tls
+}
+
+# Disable ccache
+configure.ccache    no
+
+if { ${os.platform} eq "darwin" } {
+    # gcc has build issues on macOS 11.3 with the use of Xcode 12.5 clang via cctools for ld
+    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100340
+    # https://trac.macports.org/ticket/62775
+    if { ([vercmp ${xcodeversion} 12.5] >= 0 && [vercmp ${xcodeversion} 13] < 0) || \
+         ([vercmp ${cltversion} 12.5] >= 0 && [vercmp ${cltversion} 13] < 0) } \
+    {
+        # Skip bootstrap comparison entirely
+        post-patch {
+            reinplace {s|^do-compare =|do-compare = /usr/bin/true|g} \
+                ${worksrcpath}/Makefile.in \
+                ${worksrcpath}/config/bootstrap-debug.mk \
+                ${worksrcpath}/config/bootstrap-debug-lean.mk \
+                ${worksrcpath}/config/bootstrap-debug-lib.mk
+        }
+    }
+}
 
 configure.env-append \
                     AR_FOR_TARGET=${prefix}/bin/ar \
@@ -166,12 +197,26 @@ pre-configure {
         #
         # https://trac.macports.org/ticket/53726
         # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79885
-
-        # if the sdkroot is one of the current, rapidly changing SDKS, use the generic one
-        configure.args-append --with-sysroot="[regsub {MacOSX1[1-9]\.[0-9]+\.sdk} ${configure.sdkroot} {MacOSX.sdk}]"
+        configure.args-append --with-sysroot="[get_clean_sysroot]"
     }
 
 }
+
+variant enable_stdlib_flag description {Enable stdlib command line flag to select c++ runtime} {
+    # Enables support for specifying the c++ runtime via `-stdlib=` in a similar
+    # way to clang. For more details see the later comments in
+    #   https://www.mail-archive.com/gcc-patches@gcc.gnu.org/msg257385.html
+    # Note : This 'bakes' the libc++ include directory into gcc,
+    # which is then used as the default search location when `-stdlib=libc++`
+    # is given. Therefore to have consistency across various OS versions, and to enable
+    # modern c++ standards, use a recent macports clang port to provide this.
+    set mp_clang_ver       13
+    if {${subport} eq ${name}} {
+        depends_run-append port:clang-${mp_clang_ver}
+    }
+    configure.args-append  --with-gxx-libcxx-include-dir="${prefix}/libexec/llvm-${mp_clang_ver}/include/c++/v1"
+}
+default_variants-append +enable_stdlib_flag
 
 # https://trac.macports.org/ticket/29067
 # https://trac.macports.org/ticket/29104
@@ -188,7 +233,6 @@ configure.cxx_stdlib
 
 build.dir           ${configure.dir}
 build.target        bootstrap-lean
-use_parallel_build  yes
 
 destroot.target     install install-info-host
 
@@ -208,7 +252,7 @@ conflicts_build-append libunwind-headers
 # Note that we really don't want to include libgcc_ext.10.[45].dylib here, but install_name_tool
 # doesn't know how to change the id of stubs, and it's easier than recreating them for each
 # gcc port.
-set dylibs {libgcc_ext.10.4.dylib libgcc_ext.10.5.dylib libgcc_s.1.dylib libgcc_s.2.dylib libgfortran.5.dylib libquadmath.0.dylib libstdc++.6.dylib libobjc-gnu.4.dylib libgomp.1.dylib libitm.1.dylib libssp.0.dylib libasan.6.dylib libubsan.1.dylib libatomic.1.dylib}
+set dylibs {libgcc_ext.10.4.dylib libgcc_ext.10.5.dylib libgcc_s.1.dylib libgcc_s.1.1.dylib libgcc_s.2.dylib libgfortran.5.dylib libquadmath.0.dylib libstdc++.6.dylib libobjc-gnu.4.dylib libgomp.1.dylib libitm.1.dylib libssp.0.dylib libasan.6.dylib libubsan.1.dylib libatomic.1.dylib}
 
 if {${subport} ne ${name}} {
 

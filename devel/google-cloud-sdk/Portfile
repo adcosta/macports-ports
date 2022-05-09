@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                google-cloud-sdk
-version             343.0.0
+version             384.0.0
 revision            0
 categories          devel python
 license             Apache-2
@@ -21,19 +21,19 @@ supported_archs     i386 x86_64 arm64
 
 if { ${configure.build_arch} eq "i386" } {
     distname        ${name}-${version}-darwin-x86
-    checksums       rmd160  09790681917370cabb637b1bdd98a60e566abeef \
-                    sha256  d8995283683942eea299e95b677b43cc5faef0ce7bce6a427a4f62690149f289 \
-                    size    89919228
+    checksums       rmd160  e5f6bd8d572de6d8497ee20fb9a637423eb380b3 \
+                    sha256  cb0d80a70a5fc2d64594267aab3b7a21da0f9eeec8e1ca79fa940c7eb915695d \
+                    size    106733091
 } elseif { ${configure.build_arch} eq "x86_64" } {
     distname        ${name}-${version}-darwin-x86_64
-    checksums       rmd160  7247017ebedaa4fa5c5bb7d60a926e507827009f \
-                    sha256  fbc2b8239ff312b964d39209b6138956acbf7e821c90abd0ac99a2abe5bc06b9 \
-                    size    86161349
+    checksums       rmd160  4abe055edbc13629a13dae4cc4eddfa8e91f6951 \
+                    sha256  a371506ed0bc2cd208dcb9eb27141d32959a9d47bed2775a14d5ef27aba367bb \
+                    size    103326292
 } elseif { ${configure.build_arch} eq "arm64" } {
     distname        ${name}-${version}-darwin-arm
-    checksums       rmd160  a06bda2c5ebe1d319db2d9670ac6c134ea029a7b \
-                    sha256  cec89645ccbf22f9850b6eb3726b1f93d82fd5b589ae89a300b4502213cbf61e \
-                    size    86087902
+    checksums       rmd160  d5224c584fd815a78e2b6638c77819c4ef853814 \
+                    sha256  7fd64baeab4b9cf9d03776419f441704576233d982a3f649aff78e289a8338ec \
+                    size    101914656
 }
 
 homepage            https://cloud.google.com/sdk/
@@ -91,7 +91,8 @@ patch {
         --usage-reporting false \
         --command-completion false \
         --path-update false \
-        --quiet"
+        --quiet \
+        --install-python false"
 
     set additional_components {}
     foreach component_variant [dict keys ${variant_to_component}] {

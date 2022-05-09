@@ -4,9 +4,13 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           legacysupport 1.1
 
-github.setup        htop-dev htop 3.0.5
+github.setup        htop-dev htop 3.2.0
 revision            0
 epoch               1
+
+checksums           rmd160  767259df5ee5cc0f50b30b041a2fd2bc990a03db \
+                    sha256  f01d6dbc0f32e8112030f0c60f5681e67a8fbe59bd89383fb749a85528eb8b52 \
+                    size    393790
 
 categories          sysutils
 platforms           darwin
@@ -17,10 +21,6 @@ description         an interactive text-mode process viewer for Unix
 long_description    ${name} is {*}${description} systems. It aims to be a better 'top'.
 
 homepage            https://htop.dev
-
-checksums           rmd160  ef6a8d1d488395a6d12045f34bc5a0924db2aa0a \
-                    sha256  334dfb860a875a329f98074fc2eab4dbf8a2f1739ed902989f1c2a7582c190a7 \
-                    size    297974
 
 depends_build       port:autoconf \
                     port:automake \

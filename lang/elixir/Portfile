@@ -3,14 +3,14 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        elixir-lang elixir 1.11.2 v
+github.setup        elixir-lang elixir 1.13.4 v
 github.tarball_from archive
 epoch               1
 categories          lang
 platforms           darwin
 supported_archs     noarch
 license             Apache-2
-maintainers         {@milmazz milmazz.uno:me} {ciserlohn @ci42}
+maintainers         {@milmazz milmazz.uno:me} {ciserlohn @ci42} {gmail.com:secsaba @secsaba} openmaintainer
 
 description         The Elixir Programming language
 
@@ -24,9 +24,9 @@ homepage            http://elixir-lang.org/
 
 depends_lib         port:erlang
 
-checksums           rmd160 4e12b0db7e08d97ea2b346596de9c5317a91f03a \
-                    sha256 318f0a6cb372186b0cf45d2e9c9889b4c9e941643fd67ca0ab1ec32710ab6bf5 \
-                    size   2391833
+checksums           rmd160 f2abd85fc3fbbbd68be7ed1488a9ac272ad4fd63 \
+                    sha256 95daf2dd3052e6ca7d4d849457eaaba09de52d65ca38d6933c65bc1cdf6b8579 \
+                    size   2912984
 
 # bin/mix
 conflicts           arb
@@ -39,3 +39,5 @@ destroot.args       PREFIX=${prefix}
 
 # various tests have been removed using above patch
 test.run            yes
+
+github.livecheck.regex  {([0-9.]+)}

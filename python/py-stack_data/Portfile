@@ -5,14 +5,14 @@ PortGroup           python 1.0
 PortGroup           github 1.0
 
 name                py-stack_data
-github.setup        alexmojaki stack_data 0.1.0 v
+github.setup        alexmojaki stack_data 0.2.0 v
 revision            0
 categories-append   devel
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     37 38 39
+python.versions     37 38 39 310
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -21,9 +21,9 @@ long_description    ${description}
 
 homepage            http://github.com/alexmojaki/stack_data
 
-checksums           rmd160  c9baceda6d987bc2c0769bdec60a20f8d27e9f7c \
-                    sha256  c73f50645f98f7910cdcb69947d8588ae0288aad6a6f4c51da55c6accc283115 \
-                    size    26982
+checksums           rmd160  71ea7860d69b4b6c8ac5d870b4d7f7f9d5ad3ebe \
+                    sha256  0df90ca0f48da17a60f5cd6008671d3565916c6db22f5f51db414c49ba427b52 \
+                    size    28862
 
 if {${name} ne ${subport}} {
     depends_build-append \

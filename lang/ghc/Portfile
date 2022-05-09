@@ -9,13 +9,13 @@ PortGroup           legacysupport 1.1
 legacysupport.newest_darwin_requires_legacy 5
 
 name                ghc
-version             8.10.4
-revision            2
+version             9.2.1
+revision            0
 categories          lang haskell
 maintainers         {ieee.org:s.t.smith @essandess} openmaintainer
 license             BSD
 platforms           darwin
-supported_archs     x86_64
+supported_archs     arm64 x86_64
 
 description         The Glorious Glasgow Haskell Compilation System
 long_description    The Glasgow Haskell Compiler is a robust, \
@@ -45,39 +45,71 @@ variant prebuilt \
 # https://gitlab.haskell.org/haskell/ghcup/blob/master/README.md#manual-install
 use_xz              yes
 master_sites        https://downloads.haskell.org/~${name}/${version}
-distfiles           ${distname}-x86_64-apple-darwin${extract.suffix} \
+
+# set build_arch by hand on arm64/x86_64 systems to get x86_64/arm64 checksums
+# run `port clean --all ghc` before commenting out this line
+# set build_arch arm64
+
+platform arm {
+    set ghc_build_arch  aarch64
+}
+platform i386 {
+    set ghc_build_arch  x86_64
+}
+
+if {${os.arch} ni [list arm i386]} {
+    known_fail          yes
+    pre-fetch {
+        ui_error "GHC is only available on macOS \
+            with [join ${supported_archs} " or "] architectures."
+        error {unsupported platform}
+    }
+}
+
+set ghc_distname    ${distname}-${ghc_build_arch}-apple-darwin
+
+set worksrcdir      ${ghc_distname}
+
+distfiles           ${ghc_distname}${extract.suffix} \
                     ${distname}-testsuite${extract.suffix}
 
-checksums           ${distname}-x86_64-apple-darwin${extract.suffix} \
-                    rmd160  740e68e1d3f3fe3b74fd8ed7b5e4d57950a37e2a \
-                    sha256  725ecf6543e63b81a3581fb8c97afd21a08ae11bc0fa4f8ee25d45f0362ef6d5 \
-                    size    193880272 \
-                    ${distname}-testsuite${extract.suffix} \
-                    rmd160  444b1e05cf95665b47b7fddd99bca0e86df3ca17 \
-                    sha256  01cbec3cf5d7e17dcafe98a7645b43205c10d8592e6c0de1f5dcbf0b60a074ca \
-                    size    2236932
+if {${build_arch} eq {arm64}} {
+    checksums       ${ghc_distname}${extract.suffix} \
+                    rmd160  320ff19925143d52047bcc6a09849bd23a800ac5 \
+                    sha256  356b99081ae38ded43b78840d673e8c782e0088e9a2aea0e19faaf677ccb54cf \
+                    size    123959636
+} elseif {${build_arch} eq {x86_64}} {
+    checksums       ${ghc_distname}${extract.suffix} \
+                    rmd160  0e758f28b4bbb581b105e369de2a004f4d0085d2 \
+                    sha256  c527700a210306098ce85d2c956089deea539aefe1d1816701d5c14cf9c113b7 \
+                    size    122462092
+}
+checksums-append    ${distname}-testsuite${extract.suffix} \
+                    rmd160  f37e923d76381cb34da478b8c047d4440d9a4933 \
+                    sha256  0402066000db81781b343976f1a274e54ebb117d599da1a979ccb0b99ab782cd \
+                    size    3170520
 
 gpg_verify.use_gpg_verification \
                     yes
 
 if {[option gpg_verify.use_gpg_verification]} {
     distfiles-append \
-                    ${distname}-x86_64-apple-darwin${extract.suffix}.sig \
+                    ${ghc_distname}${extract.suffix}.sig \
                     ${distname}-testsuite${extract.suffix}.sig
     checksums-append \
-                    ${distname}-x86_64-apple-darwin${extract.suffix}.sig \
+                    ${ghc_distname}${extract.suffix}.sig \
                     size    586 \
                     ${distname}-testsuite${extract.suffix}.sig \
                     size    586
 
     post-checksum {
-        # check GPG signature: https://www.haskell.org/ghc/download_ghc_8_6_5.html
-        set gpg_keyid 97db64ad
+        # https://bgamari.github.io/media/ben@well-typed.com.asc
+        set gpg_keyid ffeb7ce81e16a36b3e2ded6f2de04d4e97db64ad
 
         gpg_verify.verify_gpg_signature \
             ${filespath}/keyid-${gpg_keyid}.txt \
-            ${distpath}/${distname}-x86_64-apple-darwin${extract.suffix}.sig \
-            ${distpath}/${distname}-x86_64-apple-darwin${extract.suffix}
+            ${distpath}/${ghc_distname}${extract.suffix}.sig \
+            ${distpath}/${ghc_distname}${extract.suffix}
 
         gpg_verify.verify_gpg_signature \
             ${filespath}/keyid-${gpg_keyid}.txt \
@@ -86,7 +118,7 @@ if {[option gpg_verify.use_gpg_verification]} {
     }
 }
 
-extract.only        ${distname}-x86_64-apple-darwin${extract.suffix} \
+extract.only        ${ghc_distname}${extract.suffix} \
                     ${distname}-testsuite${extract.suffix}
 
 # If legacy support is active, patch the bootstrap binaries to redirect libSystem.B.dylib
@@ -150,27 +182,15 @@ proc fix_workpath_rpath { binname workpath_destdir_pattern libdir_glob rpath_re 
 # Also during the main build the 'ghc-stage1' processes can use huge amounts
 # of memory, leading to build failures (particularly on the buildbots or VMs
 # with limited resources). So disable parallel builds there as well, at the
-# expense of a longer build time (mitigated by fact most users witll then get
+# expense of a longer build time (mitigated by fact most users will then get
 # the binary installation).
 use_parallel_build  no
-
-# Get the correct number of build jobs. Note the number from portbuild::build_getjobsarg
-# is currently incorrect if parallel builds are disabled, due to a bug in base
-# https://github.com/macports/macports-base/pull/236#issuecomment-826309036
-# This can be removed once the above fix is in a released version of base for a
-# reasonable amount of time.
-proc get_njobs_arg { } {
-    global use_parallel_build
-    if {![tbool use_parallel_build]} {
-        return -j1
-    } else {
-        return [portbuild::build_getjobsarg]
-    }
-}
 
 # Note: ghc has DESTDIR; however, specifying --prefix=${prefix} installs
 # binaries into ${prefix}, not DESTDIR.  Work around this by setting
 # --prefix=${destroot}${prefix} and not setting DESTDIR
+
+depends_lib-append  port:libffi
 
 if { [variant_isset "prebuilt"] } {
     set bootstrap_dir ${destroot}${prefix}
@@ -182,6 +202,16 @@ if { [variant_isset "prebuilt"] } {
     # the PATH environment must provide the bootstrap path
     build.env-append \
                     "PATH=$env(PATH):${bootstrap_dir}/bin"
+
+    post-destroot {
+        # avoid conflicts with libffi
+        foreach f {ffi.h ffitarget.h} {
+            if {[file exists ${prefix}/include/${f}] \
+                && [file exists ${destroot}${prefix}/include/${f}]} {
+                delete ${destroot}${prefix}/include/${f}
+            }
+        }
+    }
 } else {
     set bootstrap_dir ${workpath}/bootstrap
 
@@ -189,9 +219,9 @@ if { [variant_isset "prebuilt"] } {
                     ${distname}-src${extract.suffix}
     checksums-append \
                     ${distname}-src${extract.suffix} \
-                    rmd160  9b7ab19c21229f0c565c19e851323529c4184f4b \
-                    sha256  52af871b4e08550257d720c2944ac85727d0b948407cef1bebfe7508c224910e \
-                    size    19818108
+                    rmd160  93a5bb73ffab85daabeed6b65dc349bda28f4359 \
+                    sha256  f444012f97a136d9940f77cdff03fda48f9475e2ed0fec966c4d35c4df55f746 \
+                    size    23338772
 
     depends_build-append \
                     port:alex \
@@ -211,17 +241,22 @@ if { [variant_isset "prebuilt"] } {
                     port:texlive-latex-extra \
                     port:xz
 
+    # build depends upon these x86_64 binaries
+    depends_skip_archcheck-append \
+                    alex \
+                    happy \
+                    HsColour
+
     # Add these MacPorts dependencies after this issue is fixed:
     # https://gitlab.haskell.org/ghc/ghc/-/issues/18752
     # depends_lib-append \
     #                 port:gmp \
-    #                 port:libffi \
     #                 port:libiconv
 
     post-extract {
         # test: move extracted testsuite directory to src
         xinstall -m 0755 -d ${srcpath}/${distname}
-        move        ${worksrcpath}/testsuite ${srcpath}/${distname}/testsuite
+        move        ${workpath}/${distname}/testsuite ${srcpath}/${distname}/testsuite
     }
 
     # libHSbase shipped with GHC links against system libiconv, which provides the
@@ -249,6 +284,8 @@ if { [variant_isset "prebuilt"] } {
         GHC=${bootstrap_dir}/bin/ghc \
         "PATH=$env(PATH):${bootstrap_dir}/bin:${frameworks_dir}/Python.framework/Versions/${python3_branch}/bin"
 
+    # configure.dir   ${workpath}/${ghc_distname}
+
     pre-configure {
         xinstall -m 0755 -d ${bootstrap_dir}
     }
@@ -257,6 +294,15 @@ if { [variant_isset "prebuilt"] } {
     build.env \
         "PATH=$env(PATH):${bootstrap_dir}/bin:${frameworks_dir}/Python.framework/Versions/${python3_branch}/bin"
 
+    # Remove after this issue is fixed:
+    # https://gitlab.haskell.org/ghc/ghc/-/issues/20592
+    if {${build_arch} eq {arm64}} {
+        build.env-append \
+                        "C_INCLUDE_PATH=${configure.sdkroot}/usr/include/ffi"
+    }
+
+    build.dir           ${configure.dir}
+    
     post-build {
         # bootstrap build/destroot from ${distname}-src${extract.suffix}
 
@@ -266,22 +312,23 @@ if { [variant_isset "prebuilt"] } {
         portextract::extract_main
 
         # fix DejaVu texlive fonts names, e.g. "\setmonofont{DejaVu Sans Mono}"
-        foreach f "\
-            ${srcpath}/${distname}/libraries/Cabal/Cabal/doc/conf.py \
+        foreach f [list \
+            ${srcpath}/${distname}/libraries/Cabal/doc/conf.py \
             ${srcpath}/${distname}/docs/users_guide/conf.py \
-            " {
-            reinplace -E "s|(\{DejaVu\[\[:alnum:\]_\]*)\[\[:space:\]\]+|\\1|g" \
+            ] {
+            reinplace -E "s|(\{DejaVu\[\[:alnum:]_]*)\[\[:space:]]+|\\1|g" \
                 ${f}
-            reinplace -E "s|(\{DejaVu\[\[:alnum:\]_\]*)\[\[:space:\]\]+|\\1|g" \
+            reinplace -E "s|(\{DejaVu\[\[:alnum:]_]*)\[\[:space:]]+|\\1|g" \
                 ${f}
-            reinplace -E "s|\{(DejaVu\[\[:alnum:\]_\]*)\}|\{\\1.ttf\}|g" \
+            reinplace -E "s|\{(DejaVu\[\[:alnum:]_]*)\}|\{\\1.ttf\}|g" \
                 ${f}
         }
+
         # fix python3 executable name
-        foreach f "\
+        foreach f [list \
             ${srcpath}/${distname}/boot \
             ${srcpath}/${distname}/utils/checkUniques/check-uniques.py \
-            " {
+            ] {
             reinplace -E "s|^(#!/usr/bin/env python)3|\\1${python3_branch}|" \
                 ${f}
         }
@@ -291,11 +338,12 @@ if { [variant_isset "prebuilt"] } {
                                 CXX=${configure.cxx}
         build.env-append        CC=${configure.cc} \
                                 CXX=${configure.cxx}
-        # diff -Naur ghc ghc-patched | sed -E -e 's/ghc(-patched)?\//.\//g' > patch-gmp-ghc.mk.diff
-        system -W ${srcpath}/${distname} "patch -p0 < ${filespath}/patch-gmp-ghc.mk.diff"
-        # https://gitlab.haskell.org/ghc/ghc/-/issues/19655
-        # diff -Naur aclocal.m4 aclocal.m4.macports | sed -E -e 's|.macports||' > patch-aclocal.m4.diff
-        system -W ${srcpath}/${distname} "patch -p0 < ${filespath}/patch-aclocal.m4.diff"
+
+        # Remove this patch for version 9.2.2
+        # https://gitlab.haskell.org/ghc/ghc/-/issues/19631
+        # https://gitlab.haskell.org/ghc/ghc/-/commit/71c1bdb0b657667c0bbc805bb7ab83408ffc2784
+        # diff -Naur ghc-orig ghc-new | sed -E -e 's/ghc-(orig|new)\//.\//g' > patch-ghc_mk.diff
+        system -W ${srcpath}/${distname} "patch -p0 < ${filespath}/patch-ghc_mk.diff"
 
         system -W ${srcpath}/${distname} \
                     "export ${configure.env} ;\
@@ -314,7 +362,7 @@ if { [variant_isset "prebuilt"] } {
         # build and destroot the second stage: `make && make install`
         system -W ${srcpath}/${distname} \
             "export ${build.env};\
-            ${build.cmd} [get_njobs_arg]"
+            ${build.cmd} [portbuild::build_getjobsarg]"
         system -W ${srcpath}/${distname} \
             "export ${build.env};\
             ${build.cmd} ${destroot.pre_args}"
@@ -331,9 +379,15 @@ destroot {
 set workpath_destdir_pattern ${workpath}
 post-destroot {
     # fix rpath searches
+    set dylib_list {}
+    fs-traverse f ${destroot}${prefix}/lib/${name}-${version} {
+        if { [file isfile ${f}] && [string match "*.dylib" ${f}] } {
+            lappend dylib_list ${f}
+        }
+    }
     foreach f [concat \
         [glob -type f ${destroot}${prefix}/lib/${name}-${version}/bin/*] \
-        [glob -type f ${destroot}${prefix}/lib/${name}-${version}/*/*.dylib]] {
+        ${dylib_list}] {
         if {[file executable ${f}]
             || [string match *.dylib ${f}]} {
             fix_workpath_rpath ${f} \

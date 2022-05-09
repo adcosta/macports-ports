@@ -1,12 +1,14 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           legacysupport 1.1
 PortGroup           python 1.0
 PortGroup           app 1.0
 
+# clock_gettime
+legacysupport.newest_darwin_requires_legacy 15
+
 name                quisk
-version             4.1.82
-revision            0
 categories          science comms
 platforms           darwin
 license             GPL-2
@@ -16,13 +18,13 @@ long_description    ${description}
 
 homepage            http://james.ahlstrom.name/quisk/
 
-checksums           rmd160  8b583d77dc7481d895ec770e231ff4928122d2b4 \
-                    sha256  f7ff78b7f8a2641f5712315b91b5b3775359cfac8a82841f910a30c1e2b579f7 \
-                    size    3442534
+version             4.1.95
+checksums           rmd160  8cc65621b46130ead694a8af6507bcd3a18f86be \
+                    sha256  157082a71cb3ad2660cd1f03eb64dd393401351805892c93e129017b6bc6a254 \
+                    size    4474550
+revision            0
 
-python.versions     36 37 38 39
-# keep in sync with gnuradio and other SDRs software
-python.default_version 37
+python.default_version 39
 
 patchfiles-append \
     codec2_fix_freedv.c.patch
@@ -36,7 +38,14 @@ depends_lib-append \
     port:portaudio \
     port:SoapySDR \
     port:fftw-3 \
-    port:codec2
+    port:codec2 \
+    port:wdsp
+
+
+post-patch {
+     reinplace "s|@PREFIX_LIB@|${prefix}/lib|g" \
+         ${worksrcpath}/freedv.c
+}
 
 app.create yes
 app.name Quisk

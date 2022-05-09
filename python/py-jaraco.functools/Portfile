@@ -4,10 +4,9 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-jaraco.functools
-version             3.2.1
+version             3.5.0
 revision            0
 
-platforms           darwin
 supported_archs     noarch
 license             MIT
 maintainers         {khindenburg @kurthindenburg} openmaintainer
@@ -16,14 +15,12 @@ description         Additional functools in the spirit of stdlib's functools.
 long_description    ${description}
 
 homepage            https://pypi.python.org/pypi/${python.rootname}/
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
-distname            ${python.rootname}-${version}
 
-checksums           rmd160  ed294274e78a6e849e4526a5c31cf052a2fdaee2 \
-                    sha256  97cf88b46ab544c266e2d81fa17bb183622268722a7dd1a3711ea426e9c26f94 \
-                    size    16888
+checksums           rmd160  a0880dad5d4c897b8de1160bd98b8f8759d7f703 \
+                    sha256  31e0e93d1027592b7b0bec6ad468db850338981ebee76ba5e212e235f4c7dda0 \
+                    size    13254
 
-python.versions     27 35 36 37 38 39
+python.versions     37 38 39 310
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -33,35 +30,13 @@ if {${name} ne ${subport}} {
     depends_lib-append \
                     port:py${python.version}-more-itertools
 
-    if {${python.version} eq 27} {
-        depends_lib-append \
-                    port:py${python.version}-backports-functools_lru_cache
+    depends_test-append \
+                port:py${python.version}-pytest \
+                port:py${python.version}-pytest-cov \
+                port:py${python.version}-jaraco.classes
 
-        test.run            no
-    }
-    if {${python.version} < 36} {
-        version             2.0
-        revision            1
-
-        # Below distname is required for this to work
-        distname            ${python.rootname}-${version}
-
-        checksums           rmd160  a345fd401aafd4774c84acf5dfe79a90f3b42409 \
-                            sha256  35ba944f52b1a7beee8843a5aa6752d1d5b79893eeb7770ea98be6b637bf9345 \
-                            size    14340
-    }
-    if {${python.version} > 35} {
-
-        # Missing jaraco.classes so there are a few failures
-        depends_test-append \
-                    port:py${python.version}-pytest \
-                    port:py${python.version}-pytest-cov
-
-        test.run        yes
-        test.cmd        py.test-${python.branch}
-        test.target
-        test.env        PYTHONPATH=${worksrcpath}/build/lib
-    }
-
-    livecheck.type  none
+    test.run        yes
+    test.cmd        py.test-${python.branch}
+    test.target
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
 }

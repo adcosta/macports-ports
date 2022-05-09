@@ -1,0 +1,123 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                openjdk8
+# use format based on macports:
+# https://guide.macports.org/chunked/reference.portgroup.html#reference.portgroup.java
+# https://github.com/openjdk/jdk8u/tags
+set u 322
+version             1.8.0_${u}
+revision            2
+categories          java devel
+platforms           darwin
+supported_archs     x86_64
+license             GPL-2+
+maintainers         {outlook.com:usersword123 @usersxx} openmaintainer
+description         Openjdk 8
+long_description    JDK 8 and JRE 8 builds of Openjdk, the Open-Source implementation \
+                    of the Java Platform, Standard Edition, and related projects.
+homepage            https://openjdk.java.net/
+fetch.type          git
+git.url             https://github.com/openjdk/jdk8u
+git.branch             jdk8u${u}-ga
+patchfiles          patch-openjdk8-xcode1.diff \
+                    patch-openjdk8-xcode2.diff
+depends_lib         port:freetype
+depends_build       port:autoconf \
+                    port:gmake \
+                    port:bash \
+                    port:openjdk8-bootstrap
+
+set tpath /Library/Java
+use_xcode           yes
+use_configure    yes
+configure.cmd       ${prefix}/bin/bash ./configure
+configure.pre_args  --prefix=${tpath}
+set extrachflags "-isysroot `xcrun --sdk macosx --show-sdk-path` -arch ${configure.build_arch}"
+set extracxxflags "-isysroot `xcrun --sdk macosx --show-sdk-path` -arch ${configure.build_arch}"
+set extraldflags "-Wl,-syslibroot,`xcrun --sdk macosx --show-sdk-path` -arch ${configure.build_arch}"
+set jchflags "-Wno-implicit-function-declaration -Wno-unused-parameter"
+set jcxxflags "-Wno-implicit-function-declaration -Wno-unused-parameter"
+set jldflags "-L`xcrun --sdk macosx --show-sdk-path`/usr/lib -L`xcrun --sdk macosx --show-sdk-path`/usr/lib/system"
+set bug_url "https://trac.macports.org/newticket?port=${name}"
+# default configure args
+configure.args      --with-boot-jdk=/Library/Java/JavaVirtualMachines/openjdk8-bootstrap/Contents/Home \
+                    --with-debug-level=release \
+                    --with-freetype-include=${prefix}/include/freetype2 \
+                    --with-freetype-lib=${prefix}/lib \
+                    --with-jvm-variants=server \
+                    --with-extra-cflags="${configure.cflags} ${extrachflags} ${jchflags}" \
+                    --with-extra-cxxflags="${configure.cxxflags} ${extracxxflags} ${jcxxflags}" \
+                    --with-extra-ldflags="${configure.ldflags} ${extraldflags} ${jldflags}" \
+                    --with-milestone=fcs \
+                    --with-vendor-name="OpenJDK Porters Group" \
+                    --with-vendor-url="${homepage}" \
+                    --with-vendor-bug-url="${bug_url}" \
+                    --with-vendor-vm-bug-url="${bug_url}" \
+                    --with-update-version=${u} \
+                    --with-conf-name=release
+
+variant server \
+    conflicts core \
+    description {JVM with normal interpreter and a tiered C1/C2 compiler} {}
+
+variant release \
+    conflicts debug \
+    description {OpenJDK with no debug information, all optimizations and no asserts} {}
+
+variant debug \
+    conflicts release \
+    description {OpenJDK with debug information, all optimizations and all asserts} {
+    configure.args-replace  --with-debug-level=release --with-debug-level=fastdebug
+    configure.args-delete   --with-native-debug-symbols=none
+}
+
+variant core \
+    conflicts server \
+    description {JVM with interpreter only and no compiler} {
+    configure.args-replace   --with-jvm-variants=server --with-jvm-variants=core
+}
+
+if {![variant_isset debug] && ![variant_isset release]} {
+    default_variants-append +release
+}
+
+if {![variant_isset core] && ![variant_isset server]} {
+    default_variants-append +server
+}
+
+build.type          gnu
+build.target        images
+use_parallel_build  no
+worksrcdir          openjdk8
+set jdkn jdk${version}.jdk
+set jren jre${version}.jre
+set jdk_bundle_dir build/release/images/j2sdk-bundle/${jdkn}/Contents
+set jre_bundle_dir build/release/images/j2re-bundle/${jren}/Contents
+set jdk_path ${tpath}/JavaVirtualMachines/${name}
+set jre_path ${tpath}/JavaVirtualMachines/${name}-jre
+
+test.run            yes
+test.cmd            ${jdk_bundle_dir}/Home/bin/java
+test.target         --version
+
+destroot {
+    xinstall -m 755 -d ${destroot}${jdk_path}
+    xinstall -m 755 -d ${destroot}${jre_path}
+    copy ${worksrcpath}/${jdk_bundle_dir} ${destroot}${jdk_path}
+    copy ${worksrcpath}/${jre_bundle_dir} ${destroot}${jre_path}
+}
+destroot.violate_mtree      yes
+
+post-destroot {
+    delete ${worksrcpath}
+}
+
+notes "
+If you want to make ${name} the default JDK, add this to shell profile:
+export JAVA_HOME=${jdk_path}/Contents/Home
+If you want to make the JRE installed by the ${name} the default JRE, add this to shell profile:
+export JAVA_HOME=${jre_path}/Contents/Home
+"
+    

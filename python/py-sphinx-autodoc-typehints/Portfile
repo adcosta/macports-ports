@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-sphinx-autodoc-typehints
+version             1.18.1
+revision            0
+
+categories-append   textproc devel
+supported_archs     noarch
+license             MIT
+maintainers         {judaew @judaew} openmaintainer
+
+description         Type hints (PEP 484) support for the Sphinx autodoc extension
+long_description    \
+    This extension allows you to use Python 3 annotations for documenting \
+    acceptable argument types and return value types of functions.
+homepage            https://github.com/agronholm/sphinx-autodoc-typehints
+
+distname            sphinx_autodoc_typehints-${version}
+
+checksums           rmd160  b39f26a651ffe7e4c32652aac4b5652e23c64f2e \
+                    sha256  07631c5f0c6641e5ba27143494aefc657e029bed3982138d659250e617f6f929 \
+                    size    31198
+
+python.versions     37 38 39 310
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-setuptools \
+                        port:py${python.version}-setuptools_scm
+    depends_run-append \
+                        port:py${python.version}-sphinx
+
+    livecheck.type      none
+}

@@ -3,12 +3,10 @@
 PortSystem          1.0
 
 name                android-platform-tools
-version             31.0.2
-set ver_hash        42b081e1e068bb936179551684cdcb30315e245c
-# Starting from 30.0.1 there's this long string in the file name. Probably commit hash.
-# Can be found in https://dl-ssl.google.com/android/repository/repository2-1.xml
+version             33.0.1
 categories          java devel
-maintainers         nomaintainer
+installs_libs       no
+maintainers         {judaew @judaew} openmaintainer
 
 homepage            https://developer.android.com/studio/
 description         Platform-Tools for Google Android SDK (adb and fastboot)
@@ -17,16 +15,15 @@ long_description    ${description}
 # platform-tools/NOTICE.txt for details
 license             BSD MIT NCSA Apache-2 GPL-2 LGPL-2.1
 
-platforms           darwin
 supported_archs     x86_64
 
 master_sites        https://dl.google.com/android/repository
-distname            ${ver_hash}.platform-tools_r${version}-darwin
+distname            platform-tools_r${version}-darwin
 use_zip             yes
 
-checksums           rmd160  55b814b6ec8f06ee2e7990fa855979894b4f75a2 \
-                    sha256  fd3415495a016d0b25678380a6c48dc909c27e9ab3a7783e4bd572e6fa3a8a9c \
-                    size    13829393
+checksums           rmd160  6a96df73263512c0abd5f09cff0ddc6a369b5ac1 \
+                    sha256  7b2acfb3ae02aff2cd679d9df9c125d46543d0db2e95b6b249c25ec6160fddf0 \
+                    size    13131422
 
 use_configure       no
 

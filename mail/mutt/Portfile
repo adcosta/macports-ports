@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                mutt
-version             2.0.7
+version             2.2.3
 categories          mail
 platforms           darwin
 license             GPL-2+
@@ -19,11 +19,11 @@ long_description    Mutt is a small but very powerful text-based MIME \
 homepage            http://www.mutt.org
 master_sites        https://bitbucket.org/mutt/mutt/downloads/
 
-# Does not conflict with neomutt (without the 'mutt' variant)
+# Does not conflict with neomutt without the 'mutt' variant
 
-checksums           rmd160  b6673d7899e498f96e55df552b77c0c19850cebe \
-                    sha256  957688c6a521561992d4f2f27cf9feb239c7c6c0042c6061c0e474a7dd26cc91 \
-                    size    5299366
+checksums           rmd160  c9951e56c3c5af726e5202cf34101398ca1489d7 \
+                    sha256  978addcdab454f447ed7d1de84b5767e714c30714285bf82e4a1745071d18d89 \
+                    size    5509344
 
 depends_lib         port:gettext \
                     port:libiconv \

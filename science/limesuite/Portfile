@@ -20,12 +20,12 @@ homepage            https://myriadrf.org/projects/lime-suite/
 subport limesuite-devel {}
 if {[string first "-devel" $subport] > 0} {
 
-    github.setup    myriadrf LimeSuite a45e482dad28508d8787e0fdc5168d45ac877ab5
-    version         20210127-[string range ${github.version} 0 7]
-    checksums       rmd160  86a85fbcfc69425b79908fab7a454e83e0bc62ac \
-                    sha256  28e9f7f6b4c1b2379d217e617fca192f9a866dcfdaff14b1fd5fef7f79b5f77f \
-                    size    5422180
-    revision        1
+    github.setup    myriadrf LimeSuite f905989614a967da41e86aad453074eefa60e2f1
+    version         20220411-[string range ${github.version} 0 7]
+    checksums       rmd160  3cebdf7ac54e5931e587e9c312075f265058c005 \
+                    sha256  682b99763d0a3aefdc459c3a70a7a588e0e383e20ea649e3fce51abf848d0241 \
+                    size    5199849
+    revision        0
 
     name            limesuite-devel
     long_description ${long_description} This port is kept up with the LimeSuite \
@@ -38,7 +38,7 @@ if {[string first "-devel" $subport] > 0} {
     checksums       rmd160  060622844755ce2c6dbc4f6a26ef834d01f00c50 \
                     sha256  d7d97474e7a5417f492aacb697f231334eda994cf8130dd420754eeb3a623866 \
                     size    5422362
-    revision        1
+    revision        3
 
     conflicts       limesuite-devel
     configure.args-append -DLIME_SUITE_EXTVER=release
@@ -55,7 +55,7 @@ depends_build-append \
     port:pkgconfig
 
 depends_lib-append \
-    path:lib/libusb.dylib:libusb \
+    path:lib/pkgconfig/libusb-1.0.pc:libusb \
     port:sqlite3
 
 configure.args-append \

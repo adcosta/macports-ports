@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pyviz_comms
-version             2.0.1
-revision            2
+version             2.2.0
+revision            0
 categories-append   devel
 license             BSD
 maintainers         {mps @Schamschula} openmaintainer
@@ -13,14 +13,14 @@ description         Offers a simple bidirectional communication architecture for
                     tools including support for Jupyter comms in both the classic \
                     notebook and Jupyterlab.
 long_description    {*}${description}
-platforms           darwin
+supported_archs     noarch
 homepage            https://github.com/holoviz/pyviz_comms
 
-checksums           rmd160  7f37ae5b2065738501103ed7d39c2bbc4cd0de2e \
-                    sha256  be63957a49772895ddebeac02c697e1675e0bdf1515824f60fcc261914f23624 \
-                    size    125046
+checksums           rmd160  b549f30673e97e2cf739ce31b11aa11c5090f64f \
+                    sha256  b8c9dcbde01f3847843fb4d04c3b3f4de784920c71e44ced9dfbb560f6c92218 \
+                    size    31910
 
-python.versions     36 37 38 39
+python.versions     37 38 39 310
 
 if {${name} ne ${subport}} {
     depends_build-append \

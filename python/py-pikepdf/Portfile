@@ -5,7 +5,7 @@ PortGroup           python 1.0
 PortGroup           compiler_blacklist_versions 1.0
 
 name                py-pikepdf
-version             2.12.2
+version             5.1.2
 revision            0
 categories-append   graphics
 license             MPL-2
@@ -13,15 +13,14 @@ maintainers         {mps @Schamschula} openmaintainer
 description         pikepdf is based on QPDF, a powerful PDF manipulation and repair \
                     library.
 long_description    {*}${description}
-platforms           darwin
 
 homepage            https://github.com/pikepdf/pikepdf
 
-python.versions     37 38 39
+python.versions     37 38 39 310
 
-checksums           rmd160  9dbae9bbf834b7b6170800c6fc06884f05f0559e \
-                    sha256  5ff35499b1ae7b181277f78ce5b1bcc8d3009182bb389917791c5dc811fcc8e4 \
-                    size    2310586
+checksums           rmd160  d75b917d1709a4ed12e65309764aa1c899640f92 \
+                    sha256  dfa89bd86e01413531c1d7d201fb01f0e62b52ea926a8e8ca6f99f86ed761e95 \
+                    size    2364847
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -31,13 +30,14 @@ if {${name} ne ${subport}} {
                     port:py${python.version}-wheel
 
     depends_lib-append  \
+                    port:py${python.version}-lxml \
+                    port:py${python.version}-packaging \
+                    port:py${python.version}-Pillow \
                     port:py${python.version}-pybind11 \
                     port:qpdf
 
     compiler.cxx_standard \
-                    2014
+                    2017
     # error: no matching constructor for initialization of 'match_replace'
     compiler.blacklist-append {clang < 900}
-
-    livecheck.type  none
 }

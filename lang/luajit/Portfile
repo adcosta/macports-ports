@@ -4,27 +4,30 @@ PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           xcode_workaround 1.0
 PortGroup           github 1.0
+PortGroup           legacysupport 1.1
 
-# Restore on new release, see https://github.com/LuaJIT/LuaJIT/issues/563
-github.setup        LuaJIT LuaJIT a119497becdf2894fb7fa737f106464309dd7947
-name                luajit
+# Using the v2.1 branch for Apple Silicon support
+# Revert to master_sites on new release, see https://github.com/LuaJIT/LuaJIT/issues/563
+github.setup        LuaJIT LuaJIT c4fe76d50cda24f3529604448f80ff14754599dd
 version             2.1.0-beta3
-revision            3
-categories          lang
-platforms           darwin
-license             BSD
+revision            6
+checksums           rmd160  ec1dbe9fb0909d3b45aa9059692f0846254abdef \
+                    sha256  9ff3bea98453e4ac5e1d15c26cbc105287ac7b8f15663f6ecde6a308e4842936 \
+                    size    1071348
 
+name                luajit
+categories          lang
+license             BSD
 maintainers         nomaintainer
 
 description         a Just-In-Time Compiler for Lua
 long_description    LuaJIT is a Just-In-Time Compiler for the Lua programming language.
 homepage            https://luajit.org
+github.tarball_from archive
 
 conflicts           luajit-openresty
 
-checksums           rmd160  e37bad7db4e1222445212088fccb4ca559a24e37 \
-                    sha256  a7939a9bd69aea8c699b1ebaec07d59fdf3108f01e76ef7f93b76619f4438fee \
-                    size    1055602
+patchfiles          powerpc.patch
 
 post-patch {
     reinplace "s|/usr/local|${prefix}|" ${worksrcpath}/etc/luajit.pc
@@ -32,7 +35,7 @@ post-patch {
 
 use_configure       no
 
-compiler.blacklist  {clang < 700} macports-clang-3.3 macports-clang-3.4
+compiler.blacklist  {clang < 700} *gcc-4.2 macports-clang-3.3 macports-clang-3.4
 
 # changes to compiler flags must be made before `CFLAGS=...`
 xcode_workaround.type append_to_compiler_flags

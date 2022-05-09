@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        xonsh xonsh 0.9.27
+github.setup        xonsh xonsh 0.12.4
 revision            0
 categories          shells
 platforms           darwin
@@ -21,20 +21,20 @@ long_description    {*}${description} \
                     macOS, and Windows. Xonsh is meant for the daily use of \
                     experts and novices alike.
 
-checksums           rmd160  0c5632e25fbf488c68e578ee9cf15886bbcdca7a \
-                    sha256  80116063bfa732a8649aa9d202324c039002cf3bfba77a445ba8ab0575a22825 \
-                    size    12729166
+checksums           rmd160  a4eb0960b908d3713060085de65c6a2d7e729995 \
+                    sha256  6b2bab5bd3960040f3887060b821cb27292e1ea677089e91e9df5a30da693e99 \
+                    size    12672749
 
-variant python36 conflicts python37 python38 python39 description {Use Python 3.6} {}
-variant python37 conflicts python36 python38 python39 description {Use Python 3.7} {}
-variant python38 conflicts python36 python37 python39 description {Use Python 3.8} {}
-variant python39 conflicts python36 python37 python38 description {Use Python 3.9} {}
+variant python37 conflicts python38 python39 python310 description {Use Python 3.7} {}
+variant python38 conflicts python37 python39 python310 description {Use Python 3.8} {}
+variant python39 conflicts python37 python38 python310 description {Use Python 3.9} {}
+variant python310 conflicts python37 python38 python39 description {Use Python 3.10} {}
 
-if {![variant_isset python36] && ![variant_isset python37] && ![variant_isset python39]} {
-    default_variants +python38
+if {![variant_isset python37] && ![variant_isset python38] && ![variant_isset python39]} {
+        default_variants +python310
 }
 
-foreach pv {39 38 37 36} {
+foreach pv {310 39 38 37} {
     if {[variant_isset python${pv}]} {
         python.default_version ${pv}
         break

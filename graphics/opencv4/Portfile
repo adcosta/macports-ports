@@ -23,14 +23,15 @@ PortGroup           github 1.0
 #==============================================================================
 
 name                opencv4
+conflicts           opencv4-devel
+set my_name         opencv4
 categories          graphics science
 platforms           darwin
 license             BSD
 
 maintainers         \
                     {stromnov @stromnov} \
-                    {@mascguy} \
-                    openmaintainer
+                    {mascguy @mascguy}
 
 description         Open Source Computer Vision Library
 
@@ -49,28 +50,42 @@ homepage            https://opencv.org
 # So for now, revert to 4.5.0 for older MacOS releases, until we can
 # determine a formal fix.
 if {${os.major} > 12} {
-    github.setup    opencv opencv 4.5.2
-    revision        1
+    set opencv_latest yes
+} else {
+    set opencv_latest no
+}
+
+if {${opencv_latest}} {
+    github.setup    opencv opencv 4.5.5
+    revision        0
+    epoch           1
 
     checksums-append \
                     ${distname}${extract.suffix} \
-                    rmd160  bd0cdb07ef5fe5c16c31cdd448b3286c3e28ff5a \
-                    sha256  926387dff78bed95997baa9378b62151c34b86e6dfd3e8136b3e4e1fdb075114 \
-                    size    88931021
+                    rmd160  db4c9342191d54ecf60bab5a7fb2ce7885da14e0 \
+                    sha256  bb6285044f97bf0a392d4e45f27ecf4fefcd6bf7a94e81cae4314dd24bcf3103 \
+                    size    89882813
+
+    livecheck.type  regex
+    livecheck.url   https://opencv.org/releases.html
+    livecheck.regex {/archive/([0-9.]+)[a-z]?\.[tz]}
 } else {
     github.setup    opencv opencv 4.5.0
-    revision        6
+    revision        9
 
     checksums-append \
                     ${distname}${extract.suffix} \
                     rmd160  fadb405b7d38f829775da60a62d29368b2159ce4 \
                     sha256  03d9f7d777d8a62a5481934dbba2fd692b6cb43f1690a8546e45f9bdb1ee0863 \
                     size    90119002
+
+    livecheck.type  none
 }
 
 master_sites        ${github.master_sites}:${github.project}
-
 distfiles           [lindex ${distfiles} 0]:${github.project}
+distname            ${my_name}-${version}
+dist_subdir         ${my_name}
 
 #------------------------------------------------------------------------------
 # Subport name used for staging files, etc.
@@ -82,7 +97,7 @@ distfiles           [lindex ${distfiles} 0]:${github.project}
 #   change once the various OpenCV-related ports are merged.
 #------------------------------------------------------------------------------
 set parent_subport_name \
-                    ${name}
+                    ${my_name}
 
 # recognize dylib as a valid library suffix
 patchfiles-append   patch-dylib_suffix.diff
@@ -106,7 +121,7 @@ depends_build-append \
                     port:pkgconfig
 
 depends_lib-append  \
-                    port:ffmpeg \
+                    path:lib/libavcodec.dylib:ffmpeg \
                     port:zlib \
                     port:libpng \
                     path:include/turbojpeg.h:libjpeg-turbo \
@@ -251,10 +266,10 @@ configure.args-append \
                     -DWITH_GPHOTO2:BOOL=OFF \
                     -DWITH_ITT:BOOL=OFF \
                     -DWITH_PROTOBUF:BOOL=OFF \
-                    -DWITH_IMGCODEC_HDR:BOOL=OFF \
-                    -DWITH_IMGCODEC_SUNRASTER:BOOL=OFF \
-                    -DWITH_IMGCODEC_PXM:BOOL=OFF \
-                    -DWITH_IMGCODEC_PFM:BOOL=OFF \
+                    -DWITH_IMGCODEC_HDR:BOOL=ON \
+                    -DWITH_IMGCODEC_SUNRASTER:BOOL=ON \
+                    -DWITH_IMGCODEC_PXM:BOOL=ON \
+                    -DWITH_IMGCODEC_PFM:BOOL=ON \
                     -DWITH_QUIRC:BOOL=OFF \
                     \
                     -DHAVE_COCOA:BOOL=ON \
@@ -324,9 +339,9 @@ platform darwin {
 set python_branches {3.5 3.6 3.7 3.8 3.9}
 foreach python_branch ${python_branches} {
     set python_version [join [lrange [split ${python_branch} .] 0 1] ""]
-    subport py${python_version}-${parent_subport_name} {
+    subport py${python_version}-${name} {
         depends_lib-append \
-                    port:${parent_subport_name} \
+                    port:${name} \
                     port:python${python_version} \
                     port:py${python_version}-numpy
         configure.args-replace \
@@ -347,7 +362,7 @@ foreach python_branch ${python_branches} {
         # Deconflict with parent port contents
         post-destroot {
             ui_debug "${subport}: python subport: removing files unrelated to Python bindings"
-            foreach f [exec port contents ${parent_subport_name}] {
+            foreach f [exec port contents ${name}] {
                 delete ${destroot}${f}
             }
         }
@@ -356,7 +371,7 @@ foreach python_branch ${python_branches} {
 
 if {${name} eq ${subport}} {
     notes \
-        "* ${subport} binaries are now prefixed with '${subport}_', to prevent conflicts\
+        "* ${subport} binaries are now prefixed with '${my_name}_', to prevent conflicts\
         with other OpenCV-related ports." \
         "* Python bindings are now implemented via subports 'pyXX-${subport}',\
         to support multiple Python versions side-by-side."
@@ -430,12 +445,13 @@ if {${name} eq ${subport}} {
         distfiles-append \
                     ${github.project}_contrib-${version}${extract.suffix}:${github.project}_contrib
 
-        if {${os.major} > 12} {
+        if {${opencv_latest}} {
             checksums-append \
                     ${github.project}_contrib-${version}${extract.suffix} \
-                    rmd160  0570fcc9877360657254358864852ea009090a64 \
-                    sha256  2005a3accacb01b672fee5666cd9033de7bbe8909eedc3704b9e9892434de613 \
-                    size    60801888
+                    rmd160  6ef9bfd367d221febb40de67b40ec599db3b16fa \
+                    sha256  519b88933c59498648b22c56f41c272b3622252f07b9a80872e6fde55c095f55 \
+                    size    60565191
+
         } else {
             checksums-append \
                     ${github.project}_contrib-${version}${extract.suffix} \
@@ -445,6 +461,7 @@ if {${name} eq ${subport}} {
         }
 
         depends_lib-append \
+                    port:double-conversion \
                     port:protobuf3-cpp \
                     port:google-glog \
                     port:gflags \
@@ -659,8 +676,4 @@ post-destroot {
 
 if {[string match "py*" ${subport}]} {
     livecheck.type  none
-} else {
-    livecheck.type  regex
-    livecheck.url   https://opencv.org/releases.html
-    livecheck.regex {/archive/([0-9.]+)[a-z]?\.[tz]}
 }

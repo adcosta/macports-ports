@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                borgbackup
-version             1.1.16
-revision            1
-checksums           rmd160  87571df87b2120e7a652da0cb951f4555c2f6ebb \
-                    sha256  bc569224d6320483e508c36ff2a651d01bbd0aaebf32305e2683a696b9c32d50 \
-                    size    3777030
+version             1.2.0
+revision            0
+
+checksums           rmd160  8d5aaf269b4085519cb963a4b65d555d5293888e \
+                    sha256  e39a5547902ef456101aa4c779fa66b345bda70d16788e8bd18e458f93af7f67 \
+                    size    4020793
 
 categories          sysutils
-platforms           darwin
 license             BSD
 maintainers         nomaintainer
 
@@ -25,17 +25,24 @@ long_description    BorgBackup (short: Borg) is a deduplicating backup \
                     authenticated encryption technique makes it suitable for \
                     backups to not fully trusted targets.
 
-homepage            https://borgbackup.github.io/
+homepage            https://www.borgbackup.org/
 
-python.default_version  39
+python.default_version  310
 
-depends_build-append    port:py${python.version}-setuptools_scm \
-                        port:py${python.version}-sphinx \
-                        port:py${python.version}-sphinx_rtd_theme
-depends_lib-append      path:lib/libssl.dylib:openssl \
-                        port:lz4 \
-                        port:py${python.version}-msgpack \
-                        port:py${python.version}-setuptools
+depends_build-append \
+                    port:py${python.version}-pkgconfig \
+                    port:py${python.version}-setuptools_scm \
+                    port:py${python.version}-sphinx \
+                    port:py${python.version}-sphinx_rtd_theme
+
+depends_lib-append  path:lib/libssl.dylib:openssl \
+                    port:lz4 \
+                    port:libb2 \
+                    port:xxhash \
+                    port:zstd
+
+depends_run-append  port:py${python.version}-msgpack \
+                    port:py${python.version}-packaging
 
 post-build {
     reinplace "s|sphinx-build|sphinx-build-${python.branch}|g" \

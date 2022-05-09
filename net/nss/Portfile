@@ -2,9 +2,10 @@
 
 PortSystem          1.0
 PortGroup           muniversal 1.0
+PortGroup           compiler_blacklist_versions 1.0
 
 name                nss
-version             3.66
+version             3.78
 revision            0
 set NSS_VMAJOR      [lindex [split ${version} .] 0]
 set NSS_VMINOR      [lindex [split ${version} .] 1]
@@ -21,16 +22,15 @@ description         Network Security Service libraries.
 long_description    {*}${description}
 use_configure       no
 homepage            https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
-platforms           darwin
 
 set my_release      NSS_[strsed ${version} {g/\./_/}]_RTM
 
 master_sites        https://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${my_release}/src/ \
                     ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/releases/${my_release}/src/
 
-checksums           rmd160  f7e821dfd8767e2064e8071116b582972295b026 \
-                    sha256  89a79e3a756cf0ac9ba645f4d4c0fc58d4133134401fb0b6c8a74c420bb4cdc9 \
-                    size    82401896
+checksums           rmd160  5147da7f09cfa3ae2f1a9937a0b6235c98b52692 \
+                    sha256  f455f341e787c1167328e80a84f77b9a557d595066dda6486a1874d72da68800 \
+                    size    84815720
 
 # build fails with gcc-4.2 on Intel, but succeeds with gcc-4.2 on PPC
 # cc1: error: unrecognized command line option "-mpclmul"
@@ -38,6 +38,9 @@ checksums           rmd160  f7e821dfd8767e2064e8071116b582972295b026 \
 if {${configure.build_arch} in [list i386 x86_64]} {
     compiler.blacklist-append *gcc-4.* *gcc-3.*
 }
+
+# fails with clang-425 https://trac.macports.org/ticket/63245
+compiler.blacklist-append {clang < 426}
 
 depends_lib     port:nspr \
                 port:zlib \
@@ -113,9 +116,6 @@ array set cpu_arch_map [list \
     i386    x86 \
     x86_64  x86_64]
 
-if {![info exists universal_possible]} {
-    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
-}
 if {!${universal_possible} || ![variant_isset universal]} {
     if {${configure.build_arch} in [list arm64 ppc64 x86_64]} {
         build.args-append USE_64=1

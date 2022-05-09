@@ -7,8 +7,8 @@ PortGroup active_variants 1.1
 
 name                        R
 # Remember to set revision to 0 when bumping version
-version                     4.1.0
-revision                    0
+version                     4.2.0
+revision                    1
 
 set branch                  [join [lrange [split ${version} .] 0 1] .]
 categories                  math science
@@ -30,9 +30,9 @@ homepage                    https://www.r-project.org/
 master_sites                https://cran.rstudio.com/src/base/R-4/ \
                             https://cran.r-project.org/src/base/R-4/
 
-checksums                   rmd160  fe7de80b43c678ed20fada00b4cad89d8df56d10 \
-                            sha256  e8e68959d7282ca147360fc9644ada9bd161bab781bab14d33b8999a95182781 \
-                            size    33714683
+checksums                   rmd160  6cd8734ed495bf6c3fdf8d9c5a57c164ee690570 \
+                            sha256  38eab7719b7ad095388f06aa090c5a2b202791945de60d3e2bb0eab1f5097488 \
+                            size    37585694
 
 # Fails to configure with Xcode clang 4.6.3
 compiler.blacklist-append   {clang < 500}
@@ -62,8 +62,8 @@ depends_lib                 port:readline \
                             port:xz
 
 # avoid finding ${prefix}/bin/xdg-open first
-configure.env-append R_PDFVIEWER=/usr/bin/open \
-                     R_BROWSER=/usr/bin/open
+configure.env-append        R_PDFVIEWER=/usr/bin/open \
+                            R_BROWSER=/usr/bin/open
 
 universal_variant           no
 
@@ -72,8 +72,15 @@ set resources               ${frameworks_dir}/R.framework/Versions/${branch}/Res
 post-patch {
     reinplace "s|R_HOME|\"${resources}\"|" "${worksrcpath}/src/unix/Rscript.c"
 
-    ## Check to see if this is fixed post 3.3.0
+    # Check to see if this is fixed post 3.3.0
     reinplace "s|<libintl.h>|\"libintl.h\"|" "${worksrcpath}/src/include/Defn.h"
+
+    if {${os.platform} eq "darwin" && ${os.major} < 17} {
+        reinplace "s|/var/db/timezone/zoneinfo|/usr/share/zoneinfo|g" \
+            "${worksrcpath}/src/extra/tzone/localtime.c" \
+            "${worksrcpath}/src/library/base/man/timezones.Rd" \
+            "${worksrcpath}/src/library/base/R/datetime.R"
+    }
 }
 
 # Note: gcc cannot be used for the C compiler. It will give:
@@ -102,6 +109,11 @@ configure.args              --disable-openmp \
                             --without-recommended-packages \
                             --without-x \
                             --with-included-gettext
+
+# disable tex/latex the hard way as there's no configure args for these
+configure.env-append        ac_cv_path_TEX= \
+                            ac_cv_path_PDFTEX= \
+                            ac_cv_path_PDFLATEX=
 
 if {${os.platform} eq "darwin" && ${os.major} < 13} {
     configure.args-append --disable-openmp
@@ -147,7 +159,7 @@ variant cairo description {use cairo and pango} {
                             path:lib/pkgconfig/glib-2.0.pc:glib2 \
                             port:freetype \
                             port:fontconfig \
-                            port:gettext
+                            port:gettext-runtime
     configure.args-replace  --without-cairo \
                             --with-cairo
 }
@@ -159,6 +171,15 @@ variant debug description {build with debug symbols} {
 variant recommended description {install recommended R packages} {
     configure.args-delete   --without-recommended-packages
     configure.args-append   --with-recommended-packages
+}
+
+variant latex description {build with LaTeX support and docs in PDF} {
+    depends_build-append    port:texlive-basic \
+                            port:texlive-latex \
+                            port:texlive-latex-recommended
+    configure.env-delete    ac_cv_path_TEX= \
+                            ac_cv_path_PDFTEX= \
+                            ac_cv_path_PDFLATEX=
 }
 
 variant tcltk description {enable use of tcltk} {

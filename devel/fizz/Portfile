@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           github 1.0
+PortGroup           boost 1.0
+PortGroup           openssl 1.0
+
+github.setup        facebookincubator fizz 2022.01.17.00 v
+revision            1
+checksums           rmd160  9767cf584f96fbc4a937e722b7a2850f1bcdcc38 \
+                    sha256  b5eb358d49ae38ba841a662e9f93c91cadbdd20d2776a1c28abc8e8e95fc3c80 \
+                    size    568793
+
+categories          devel
+license             BSD
+maintainers         nomaintainer
+
+description         Fizz is a TLS 1.3 implementation
+long_description    {*}${description}
+
+github.tarball_from releases
+distname            ${name}-v${version}
+extract.mkdir       yes
+
+depends_lib-append  port:folly \
+                    port:libsodium \
+                    port:libevent \
+                    port:google-glog \
+                    port:double-conversion \
+                    port:zlib \
+                    port:lz4 \
+                    port:bzip2 \
+                    port:zstd \
+                    port:gflags \
+                    port:libunwind \
+                    port:libfmt
+
+cmake.source_dir    ${worksrcpath}/${name}
+
+compiler.cxx_standard   2017
+cmake.generator     Ninja
+
+configure.args-append \
+                    -DBUILD_TESTS=OFF \
+                    -DBUILD_SHARED_LIBS=ON

@@ -4,18 +4,18 @@ PortSystem                  1.0
 PortGroup                   compiler_blacklist_versions 1.0
 
 name                        kerberos5
-version                     1.19.1
+version                     1.19.3
 revision                    0
-checksums                   rmd160  e4e826c6c8d08bb6179358fb2cdac5c55c1e057c \
-                            sha256  fa16f87eb7e3ec3586143c800d7eaff98b5e0dcdf0772af7d98612e49dbeb20b \
-                            size    8738142
+
+checksums                   rmd160  dde47197b240c4d11f7f6f17f40d6479c84d622d \
+                            sha256  56d04863cfddc9d9eb7af17556e043e3537d41c6e545610778676cf551b9dcd0 \
+                            size    8741343
 
 set branch                  [join [lrange [split ${version} .] 0 1] .]
 conflicts                   fbopenssl
 categories                  net security
 maintainers                 {ryandesign @ryandesign} openmaintainer
 license                     MIT BSD ISC OpenLDAP-2.8+
-platforms                   darwin
 
 description                 Kerberos is a network authentication protocol.
 
@@ -31,10 +31,11 @@ homepage                    http://web.mit.edu/kerberos/
 master_sites                ${homepage}dist/krb5/${branch}/
 distname                    krb5-${version}
 
-depends_build               port:pkgconfig \
-                            port:python38
+depends_build               port:gettext \
+                            port:pkgconfig \
+                            port:python39
 
-depends_lib                 port:gettext \
+depends_lib                 port:gettext-runtime \
                             port:libcomerr \
                             port:libedit \
                             port:lmdb \
@@ -55,19 +56,19 @@ if {${os.major} < 10} {
 }
 
 use_autoreconf              yes
+configure.checks.implicit_function_declaration.whitelist-append strchr
+
 # kerberos5 fails to build in its own presence, see #23769, #37944
 # remove ${prefix}/lib from configure.ldflags to allow linking against its own libs first
 # adding ${worksrcpath}/lib is not necessary and pollutes krb5-config --libs and pkg-config files
 configure.ldflags-delete    -L${prefix}/lib
-configure.python            ${prefix}/bin/python3.8
-configure.args              --mandir=${prefix}/share/man \
-                            --with-system-et \
+configure.python            ${prefix}/bin/python3.9
+configure.args              --with-system-et \
                             --without-system-db \
                             --without-hesiod \
                             --without-ldap \
                             --without-tcl \
                             --with-crypto-impl=openssl \
-                            --with-pkinit-crypto-impl=openssl \
                             --with-libedit \
                             --without-readline \
                             --without-system-verto \

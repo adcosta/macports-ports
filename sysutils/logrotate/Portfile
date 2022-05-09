@@ -7,13 +7,13 @@ PortGroup           github 1.0
 PortGroup           legacysupport 1.0
 legacysupport.newest_darwin_requires_legacy 10
 
-github.setup        logrotate logrotate 3.18.0
+github.setup        logrotate logrotate 3.19.0
 
 github.tarball_from releases
 use_xz              yes
-checksums           rmd160  7751c4094abc2fb1e4fa1e956394d434caf5d4fa \
-                    sha256  841f81bf09d0014e4a2e11af166bb33fcd8429cc0c2d4a7d3d9ceb3858cfccc5 \
-                    size    161888
+checksums           rmd160  5e594e5cc90ce8ddef22756321076f53b912d570 \
+                    sha256  ddd5274d684c5c99ca724e8069329f343ebe376e07493d537d9effdc501214ba \
+                    size    166276
 
 categories          sysutils
 platforms           darwin

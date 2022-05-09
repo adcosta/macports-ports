@@ -3,17 +3,18 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26 5.28 5.30 5.32
-perl5.setup         Scalar-List-Utils 1.56
+perl5.branches      5.28 5.30 5.32 5.34
+perl5.setup         Scalar-List-Utils 1.62
+revision            0
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Perl subroutines that would be nice to have in the perl core
-long_description    ${description}
+long_description    {*}${description}
 
 platforms           darwin
 
 homepage            https://metacpan.org/release/${perl5.module}
 
-checksums           rmd160  80da8701ddcdf76d839496039532d6390985f989 \
-                    sha256  15b8537d40fb3e6dae64b2e7e983c47a99b2c20816a180bb9c868b787a12ab5b \
-                    size    173248
+checksums           rmd160  0cf91efdcf9a16cd110c03783def1218bb7c425c \
+                    sha256  7279c4ec7df0cf2c0acb874abdfe86956f5028d2414974db56edfbed8a4d339f \
+                    size    177794

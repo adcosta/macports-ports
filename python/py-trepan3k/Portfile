@@ -3,11 +3,9 @@
 PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           select 1.0
-PortGroup           github 1.0
 
-github.setup        rocky python3-trepan 1.2.3
-github.tarball_from archive
 name                py-trepan3k
+version             1.2.7
 revision            0
 
 categories-append   devel
@@ -21,9 +19,11 @@ long_description    This is a gdb-like debugger for Python. It is a rewrite of p
                     from the ground up. A command-line interface (CLI) is provided \
                     as well as an remote access interface over TCP/IP.
 
-checksums           rmd160  ff7ce791dbb1228a0f62b3c9fe4e7ef9adf2c176 \
-                    sha256  935dc33094622c97b9928a842ae70797a5b72efe58d30e8f2f6be1a0147ce5f4 \
-                    size    280282
+homepage            https://github.com/rocky/python3-trepan
+
+checksums           rmd160  7b7fc27134b1b37fc9c853bc9e2203b14358e3ab \
+                    sha256  2d0b49f82ac50581e0bfa3e80bee57906587f7276b06fd91acd5ffd3b1081543 \
+                    size    516119
 
 python.versions     37 38 39
 

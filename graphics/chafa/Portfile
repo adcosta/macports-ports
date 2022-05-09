@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        hpjansson chafa 1.6.0
+github.setup        hpjansson chafa 1.10.3
+github.tarball_from archive
 revision            0
 
 homepage            https://hpjansson.org/chafa
@@ -20,30 +21,22 @@ long_description    {*}${description}. Chafa is a command-line utility that \
 
 categories          graphics
 license             LGPL-3
-platforms           darwin linux
-
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
+platforms           darwin linux
 
-checksums           rmd160  b696193abaaa151b0bad4ae27030e3c7459f5c27 \
-                    sha256  7e49c3d76819e2b27f26df3bc564f008de39813f7f0e0cf54ba46de03c5c1eac \
-                    size    1237375
+checksums           rmd160  2e536b7b9fe9cd42cd6017ca5504828d9aef13df \
+                    sha256  ae65a95a3f5ad1d039908b1a4c7c4d45742f9b1e7f1686617e8bd2ef636024f5 \
+                    size    1355863
 
 depends_build-append \
                     port:autoconf   \
                     port:automake   \
+                    port:gtk-doc    \
                     port:libtool    \
                     port:pkgconfig
 
 depends_lib-append  path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     port:ImageMagick
 
-configure.cmd       ./autogen.sh
-configure.args      --disable-gtk-doc \
-                    --disable-man
-
-platform darwin {
-    post-patch {
-        reinplace "s|libtoolize|glibtoolize|g" ${worksrcpath}/autogen.sh
-    }
-}
+use_autoreconf      yes

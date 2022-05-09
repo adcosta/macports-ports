@@ -4,22 +4,21 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        miguelgrinberg python-socketio 5.3.0 v
+github.setup        miguelgrinberg python-socketio 5.6.0 v
 name                py-socketio
 revision            0
 
-platforms           darwin
 supported_archs     noarch
 license             MIT
-maintainers         {outlook.de:judaew @judaew} openmaintainers
+maintainers         {judaew @judaew} openmaintainer
 
 description         Python Socket.IO server and client
 long_description    \
     Python implementation of the Socket.IO realtime client and server.
 
-checksums           rmd160  6752229ca3c935fbdda2567e87c7c591a0a31055 \
-                    sha256  7f5848f8340e763d136061d4b5980e26ec11b16c953caad672b688d0fa3cbc62 \
-                    size    136983
+checksums           rmd160  e0f6a7627a5e137e598940e4b71d9d9b912e1f96 \
+                    sha256  932f888bfe6b2ffa293f614ea8e3d9abfc239085a99e6c1f74cc3bea53b038ef \
+                    size    142385
 
 python.versions     37 38 39
 

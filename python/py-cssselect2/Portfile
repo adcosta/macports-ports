@@ -4,11 +4,10 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-cssselect2
-version             0.4.1
+version             0.6.0
 revision            0
 
 categories-append   devel
-platforms           darwin
 supported_archs     noarch
 license             BSD
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -18,11 +17,14 @@ long_description    ${description}
 
 homepage            https://doc.courtbouillon.org/cssselect2/
 
-checksums           rmd160  530efcdcd5c6ca5ebe359807557a9f1ca496aef7 \
-                    sha256  93fbb9af860e95dd40bf18c3b2b6ed99189a07c0f29ba76f9c5be71344664ec8 \
-                    size    32756
+checksums           rmd160  6c81cb2ba7913e2a18b8d964f8ca7fd42dfd2287 \
+                    sha256  5b5d6dea81a5eb0c9ca39f116c8578dd413778060c94c1f51196371618909325 \
+                    size    35442
 
-python.versions     37 38 39
+python.versions     37 38 39 310
+
+python.pep517       yes
+python.pep517_backend   flit
 
 if {${name} ne ${subport}} {
     depends_lib-append \
@@ -37,6 +39,4 @@ if {${name} ne ${subport}} {
     test.args       -o addopts=''
     test.target
     test.env        PYTHONPATH=${worksrcpath}/build/lib
-
-    livecheck.type  none
 }

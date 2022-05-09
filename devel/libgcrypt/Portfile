@@ -6,7 +6,7 @@ PortGroup       legacysupport 1.1
 PortGroup       muniversal 1.0
 
 name            libgcrypt
-version         1.9.3
+version         1.10.1
 revision        0
 categories      devel security
 # libs are LGPL, executables and docs are GPL
@@ -19,20 +19,16 @@ long_description \
     cryptographic building blocks: symmetric cipher algorithms and \
     modes, hash algorithms, MACs, public key algorithms, large integer \
     functions, random numbers and a lot of supporting functions.
-platforms       darwin
 
 homepage        https://www.gnupg.org/
 master_sites    gnupg
 use_bzip2       yes
 
-checksums       rmd160  5f0e3bf03ee5d5f80628136a592a24e23fa68b5f \
-                sha256  97ebe4f94e2f7e35b752194ce15a0f3c66324e0ff6af26659bbfb5ff2ec328fd \
-                size    3219061
+checksums       rmd160  ceb52963dd4695eef261985b31fd397b809d472e \
+                sha256  ef14ae546b0084cd84259f61a55e07a38c3b53afc0f546bffcef2f01baffe9de \
+                size    3778457
 
 depends_lib     port:libgpg-error
-
-patchfiles      patch-configure.diff \
-                patch-random-rndlinux.c.diff
 
 configure.args  --disable-asm
 

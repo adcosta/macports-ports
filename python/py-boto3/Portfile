@@ -4,13 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-boto3
-version             1.17.88
+version             1.22.9
 revision            0
 
-platforms           darwin
 supported_archs     noarch
 license             Apache-2
-maintainers         {emcrisostomo @emcrisostomo} openmaintainer
+maintainers         {emcrisostomo @emcrisostomo} \
+                    {judaew @judaew} openmaintainer
 
 description         The AWS SDK for Python
 long_description    Boto3 is the Amazon Web Services (AWS) Software \
@@ -20,11 +20,11 @@ long_description    Boto3 is the Amazon Web Services (AWS) Software \
 
 homepage            https://github.com/boto/boto3
 
-checksums           rmd160  41b03f9e9ac9a470b09209eb0ee8e8fcb2c94f8b \
-                    sha256  a715ca6c4457d56ea3e3efde9bdc8be41c29b2f2a904fbd12befdb9cb5e289e4 \
-                    size    98318
+checksums           rmd160  a5a73a7fe86494703ce339e8cf91e34ff5c7fa69 \
+                    sha256  441b619067cb205bfcd0e66fe085c16989ab65bd348823013e11bef991c00a5c \
+                    size    104059
 
-python.versions     27 36 37 38 39
+python.versions     37 38 39 310
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools

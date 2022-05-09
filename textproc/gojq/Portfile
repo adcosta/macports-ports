@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/itchyny/gojq 0.12.4 v
+go.setup            github.com/itchyny/gojq 0.12.7 v
+github.tarball_from archive
 revision            0
 
 description         Pure Go implementation of jq
@@ -13,10 +14,10 @@ long_description    This is an implementation of jq command written in Go \
                     in jq.
 
 categories          textproc
+installs_libs       no
+license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
-license             MIT
-installs_libs       no
 
 build.cmd           make
 build.target        build
@@ -29,12 +30,10 @@ destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
 }
 
-github.tarball_from archive
-
 checksums           ${distname}${extract.suffix} \
-                        rmd160  bb444726c35afaea49d79efffbcd4c4c5b1535a3 \
-                        sha256  64e3d100f1796ced4720272d8230b60b5d687c9c2913199fd0b5dd4626c79978 \
-                        size    112889
+                        rmd160  ed5c25da0108485efb20a4ec56b17a9bb312f9d9 \
+                        sha256  1fee977bbd8d7f2ffd811b00eba008ee15d3ad0bb90e475d384347bf30cfd4cc \
+                        size    121406
 
 go.vendors          gopkg.in/yaml.v3 \
                         lock    496545a6307b \
@@ -52,30 +51,25 @@ go.vendors          gopkg.in/yaml.v3 \
                         sha256  dc1be1d7efb43643507e87352ae7161883c48cb5116a20a1739ab93ab558bccf \
                         size    13661 \
                     golang.org/x/sys \
-                        lock    7ecdf8ef093b \
-                        rmd160  07fc3181b8f1a09d4ba3a1b4c73184d92e5680bd \
-                        sha256  2604616cae83f5d312e1ffa9bc93c3ef935e76702a225af4641134b0a0f3e92c \
-                        size    1197630 \
+                        lock    4e6760a101f9 \
+                        rmd160  18ecd791a4a56ceb8caa2c63eee50cca563c4762 \
+                        sha256  2cd9131c1c67300fb9a70f04f08313ba954a4df49f89bd60fdfecd76a798162a \
+                        size    1259349 \
                     github.com/mattn/go-runewidth \
                         lock    v0.0.9 \
                         rmd160  412c0e508e55f4fe437be0f71d7d22eca2b4366f \
                         sha256  4f0f4a22257ccecfb6beae88052d850380ecc0e806d6bcc92d3656ebcac3b638 \
                         size    16716 \
                     github.com/mattn/go-isatty \
-                        lock    v0.0.13 \
-                        rmd160  91c4e10ae78db94432a94bc7f9816df4093ec8d7 \
-                        sha256  6a6b35588efb0abec5a951246775a4cb47fab11ff161715875de4c02c9cdf309 \
-                        size    4445 \
+                        lock    v0.0.14 \
+                        rmd160  8ebfd3a6f2898a729e41dff6b5359e88959c46e1 \
+                        sha256  dc141c207a7f4eb83992df90ca087841a0a3aab5a4f2b528bf81d42a186bcc1e \
+                        size    4705 \
                     github.com/itchyny/timefmt-go \
                         lock    v0.1.3 \
                         rmd160  4dd1de3c9370e88eba6fe3ade9048d0215a6184c \
                         sha256  fa7d0e1fba7cc734d387d791fb4487c26e42a561d0945eb065f7453ea60a0424 \
                         size    12817 \
-                    github.com/itchyny/go-flags \
-                        lock    v1.5.0 \
-                        rmd160  b976cc1320a588b24b60c4704375090b421aee34 \
-                        sha256  cb62f4eccf762403335e79519e9ba60478577a27f8393e1eb19123a4fd39d6bb \
-                        size    58827 \
                     github.com/google/go-cmp \
                         lock    v0.5.4 \
                         rmd160  e53e85e2f7651ce4e0dd20f8621380a60d9d5cc0 \

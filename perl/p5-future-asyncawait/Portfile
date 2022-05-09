@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26 5.28 5.30
-perl5.setup         Future-AsyncAwait 0.47 ../../authors/id/P/PE/PEVANS
+perl5.branches      5.28 5.30 5.32 5.34
+perl5.setup         Future-AsyncAwait 0.58 ../../authors/id/P/PE/PEVANS
 revision            0
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
@@ -13,17 +13,19 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  ea8147f34ac9f792f930c062ef23f8ef1432951b \
-                    sha256  23b60a293b9cd612fff53786acb3f7c2055289c7722bcf6694da0cfa3f2c48c9 \
-                    size    75464
+checksums           rmd160  f9d5fda152fd73cfc1c9e71553979aa3127e3521 \
+                    sha256  38bb49f6369b054ac052e68da2647fe22d08a3ad39ae036e27a29110bb4e422e \
+                    size    81591
 
 if {${perl5.major} != ""} {
     depends_build-append \
-                    port:p${perl5.major}-test-refcount \
-                    port:p${perl5.major}-xs-parse-sublike
+                    port:p${perl5.major}-test-fatal \
+                    port:p${perl5.major}-test-refcount
 
     depends_lib-append \
-                    port:p${perl5.major}-future
+                    port:p${perl5.major}-future \
+                    port:p${perl5.major}-xs-parse-keyword \
+                    port:p${perl5.major}-xs-parse-sublike
 
     perl5.use_module_build
 }

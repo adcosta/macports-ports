@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                dart-sdk
-version             2.13.1
+version             2.16.2
 categories          lang
 license             BSD
 maintainers         {amake @amake} openmaintainer
@@ -23,9 +23,9 @@ use_zip             yes
 dist_subdir         ${name}/${version}
 worksrcdir          ${name}
 
-checksums           rmd160  549dae441765972580a826e4edf1676f7f6cb47c \
-                    sha256  caff3814a7653b5c733a13392215469cbf357d756778ff36d4a0955bb3c8664d \
-                    size    192172250
+checksums           rmd160  1a45a3450157c153a81debc0c52aaea8fa73e350 \
+                    sha256  018bc1a063dccd5a1f7c86bf06ce4660aad6a7dc441c10d8271eab1afa48746d \
+                    size    196873312
 
 use_configure       no
 build               {}

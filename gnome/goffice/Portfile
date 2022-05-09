@@ -19,14 +19,14 @@ use_xz                  yes
 
 if {${name} eq ${subport}} {
     epoch               1
-    version             0.10.48
-    revision            1
+    version             0.10.51
+    revision            0
 
     license             {GPL-2 GPL-3}
 
-    checksums           rmd160  65362cd8dbeb4441e976e76a1aece35bd586ad46 \
-                        sha256  a439162fa26a0e58117e07b82b37000a7f421088ad379eb1f6a1cdee101ecefc \
-                        size    2413400
+    checksums           rmd160  23f65a775bacbcd6884770854d149dcc48a6d9aa \
+                        sha256  2e8410884d6a51ae00c9420928abfa73f7a552c1aa222371df4f2dc5acc3cd23 \
+                        size    2432992
 
     depends_build       port:pkgconfig \
                         port:intltool \
@@ -35,10 +35,10 @@ if {${name} eq ${subport}} {
                         port:automake \
                         port:libtool
 
-    depends_lib         port:gtk3 \
+    depends_lib         path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
                         port:icu \
                         port:libgsf \
-                        port:librsvg \
+                        path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
                         port:libspectre \
                         port:libxslt \
                         port:ghostscript \
@@ -97,7 +97,7 @@ subport goffice08 {
                         port:automake \
                         port:libtool
 
-    depends_lib         port:gtk2 \
+    depends_lib         path:lib/pkgconfig/gtk+-2.0.pc:gtk2 \
                         port:gconf \
                         port:libgsf \
                         port:libxml2 \

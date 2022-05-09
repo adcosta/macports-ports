@@ -4,25 +4,25 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-jsonschema
-version             3.2.0
+version             4.5.1
 revision            0
 categories-append   devel
-platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 35 36 37 38 39
+python.versions     27 35 36 37 38 39 310
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         An implementation of JSON Schema validation for Python.
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://github.com/Julian/jsonschema
 
-checksums           rmd160  fb79174fba8955cf5433fa0e79d3ad3a48c590fb \
-                    sha256  c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a \
-                    size    167226
+checksums           rmd160  4b5da10a69bec2823428f215fa31cb3e14f322d8 \
+                    sha256  7c6d882619340c3347a1bf7315e147e6d3dae439033ae6383d6acb908c101dfc \
+                    size    282414
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -31,17 +31,30 @@ if {${name} ne ${subport}} {
     # CLI depends on pkg_resources.py from setuptools
     depends_lib-append  port:py${python.version}-attrs \
                         port:py${python.version}-pyrsistent \
-                        port:py${python.version}-setuptools \
-                        port:py${python.version}-six
+                        port:py${python.version}-setuptools
+
+    if {${python.version} < 37} {
+        version             3.2.0
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  fb79174fba8955cf5433fa0e79d3ad3a48c590fb \
+                            sha256  c8a85b28d377cc7737e46e2d9f2b4f44ee3c0e1deac6bf46ddefc7187d30797a \
+                            size    167226
+        python.pep517       no
+        if {${python.version} eq 27} {
+            depends_lib-append  port:py${python.version}-functools32
+        }
+        depends_lib-append  port:py${python.version}-six
+    } else {
+        patchfiles-append   patch-setup.py.diff
+        if {${python.version} < 39} {
+            depends_lib-append  port:py${python.version}-importlib-resources
+        }
+    }
 
     if {${python.version} < 38} {
         depends_lib-append  port:py${python.version}-importlib-metadata
     }
-
-    if {${python.version} eq 27} {
-        depends_lib-append  port:py${python.version}-functools32
-    }
-
 
     livecheck.type      none
 }

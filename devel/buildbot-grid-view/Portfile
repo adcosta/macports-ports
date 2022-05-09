@@ -4,15 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                buildbot-grid-view
-version             3.1.0
+version             3.5.0
 revision            0
-checksums           rmd160  0ec32fc3a849a68c78a44d3b17b6626bc2ed98f1 \
-                    sha256  2c3966f46b656edbd1b981d79e7c7b83cfaaa5208d73879e998c5145a0a80ee0 \
-                    size    13693
+checksums           rmd160  26c1e001f889fb513823b28fb3c1f05f1489d724 \
+                    sha256  41c4bc409d7bbb30ef9329d37338f4e4ba23b884fa7de1a240d0b008449b54bc \
+                    size    13704
 
 categories          devel
-platforms           darwin
-maintainers         {ryandesign @ryandesign} {rajdeep @rajdeepbharati} {mojca @mojca} openmaintainer
+maintainers         {ryandesign @ryandesign} {rajdeep @rajdeepbh} {mojca @mojca} openmaintainer
 license             GPL-2
 supported_archs     noarch
 
@@ -22,25 +21,9 @@ long_description    {*}${description}
 homepage            https://buildbot.net
 
 python.default_version \
-                    39
+                    310
 
 depends_build-append \
                     port:buildbot-pkg
 
 depends_run-append  port:buildbot-www
-
-# These obsolete subports can be removed after August 2021.
-set old_subports [list py-${name} py38-${name}]
-foreach old_subport ${old_subports} {
-    subport ${old_subport} {
-        PortGroup   obsolete 1.0
-        replaced_by ${name}
-    }
-}
-pre-activate {
-    foreach old_subport ${old_subports} {
-        if {![catch {set installed [lindex [registry_active ${old_subport}] 0]}]} {
-            registry_deactivate_composite ${old_subport} {} [list ports_nodepcheck 1]
-        }
-    }
-}

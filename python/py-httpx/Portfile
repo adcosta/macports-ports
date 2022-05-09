@@ -4,32 +4,34 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-httpx
-version             0.18.1
+version             0.22.0
 revision            0
 platforms           darwin
 license             BSD
-maintainers         nomaintainer
+
+maintainers         {@catap korins.ky:kirill} openmaintainer
 
 description         The next generation HTTP client.
 long_description    {*}${description}
-
+supported_archs     noarch
 homepage            https://github.com/encode/httpx
 
-checksums           rmd160  07e185563e8531966516f27e483be1fa72b4c256 \
-                    sha256  0a2651dd2b9d7662c70d12ada5c290abcf57373b9633515fe4baa9f62566086f \
-                    size    95219
+checksums           rmd160  0c8317c4395ca035bd4a8d8f3ce481ea37c38a5f \
+                    sha256  d8e778f76d9bbd46af49e7f062467e3157a5a3d2ae4876a4bbfd8a51ed9c9cb4 \
+                    size    107324
 
-python.versions     37 38 39
+python.versions     37 38 39 310
 
 if {${name} ne ${subport}} {
     depends_build-append \
                     port:py${python.version}-setuptools
 
     depends_lib-append \
-                    port:py${python.version}-certifi  \
-                    port:py${python.version}-sniffio  \
-                    port:py${python.version}-rfc3986  \
-                    port:py${python.version}-httpcore
+                    port:py${python.version}-certifi \
+                    port:py${python.version}-charset-normalizer  \
+                    port:py${python.version}-httpcore \
+                    port:py${python.version}-rfc3986 \
+                    port:py${python.version}-sniffio
 
     livecheck.type  none
 }

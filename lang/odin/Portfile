@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+set ver             2022-03
+github.setup        odin-lang odin ${ver} dev-
+version             0.[string map {- .} ${ver}]
+revision            0
+
+categories          lang
+license             BSD
+maintainers         {outlook.com:mohd.akram @mohd-akram} openmaintainer
+
+description         Odin programming language
+
+long_description    Odin is a general-purpose programming language with \
+                    distinct typing, built for high performance, modern \
+                    systems, and built-in data-oriented data types.
+
+homepage            https://odin-lang.org/
+
+set llvm_version    13
+
+depends_build       port:llvm-${llvm_version}
+
+checksums           rmd160  fe824ccf94388687016ccbb1d45b31eb01be1143 \
+                    sha256  922ffbbf21223d15bc3fca7daa1562fac05e6f53ed24326e76084a4b7d64a231 \
+                    size    39992652
+
+patchfiles          patch-makefile.diff
+
+compiler.cxx_standard 2014
+
+use_configure       no
+build.pre_args      release
+build.args          CC=${configure.cc} LLVM_CONFIG=llvm-config-mp-${llvm_version}
+
+destroot {
+    xinstall -d ${destroot}${prefix}/libexec/${name}
+    copy ${worksrcpath}/${name} ${worksrcpath}/core ${worksrcpath}/vendor \
+        ${destroot}${prefix}/libexec/${name}
+    ln -s ../libexec/${name}/${name} ${destroot}${prefix}/bin
+}

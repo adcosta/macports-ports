@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           golang 1.0
+
+go.setup            github.com/ffuf/ffuf 1.4.1 v
+github.tarball_from archive
+revision            0
+
+description         Fast web fuzzer written in Go
+
+long_description    \
+    {*}${description}. Supports virtual host discovery, directory discovery, \
+    GET & POST parameter fuzzing, and more.
+
+categories          security www
+installs_libs       no
+license             MIT
+maintainers         {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
+
+build.pre_args-append \
+    -ldflags \"-X ${go.package}/pkg/ffuf.VERSION_APPENDIX= \"
+
+checksums           ${distname}${extract.suffix} \
+                        rmd160  e8acb0d43e41e472714a56119794a3385a56fc0c \
+                        sha256  89b4bd4b3bbad7402d9c81d0d9f21b679c80d0a19bb9a190e45e395736058889 \
+                        size    260308
+
+go.vendors          github.com/pelletier/go-toml \
+                        lock    v1.8.1 \
+                        rmd160  f217f227783a53335e26133c21989ae17168f5ad \
+                        sha256  6284580cffabb9b00f42a28465760b33d10457172237be89e70c68a2da4695b2 \
+                        size    98857
+
+destroot {
+    xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+}

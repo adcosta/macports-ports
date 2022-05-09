@@ -8,7 +8,7 @@ PortGroup           python 1.0
 
 name                py-pytorch
 version             1.8.1
-revision            1
+revision            4
 github.setup        pytorch pytorch ${version} v
 fetch.type          git
 
@@ -68,7 +68,7 @@ if {${name} ne ${subport}} {
         port:gmp \
         port:mpfr \
         port:OpenBLAS \
-        port:opencv4 \
+        path:lib/opencv4/libopencv_core.dylib:opencv4 \
         port:zmq \
         port:zstd \
         port:tbb \
@@ -84,7 +84,7 @@ if {${name} ne ${subport}} {
         port:py${python.version}-numpy \
         port:py${python.version}-pybind11 \
         port:py${python.version}-typing_extensions \
-        port:py${python.version}-yaml 
+        port:py${python.version}-yaml
 
     if { ${python.version} < 37 } {
         depends_lib-append  port:py${python.version}-dataclasses
@@ -96,6 +96,16 @@ if {${name} ne ${subport}} {
     post-fetch {
         system -W ${worksrcpath} "git submodule update --init --recursive"
     }
+
+    # Patch to fix init issue with google-glog 0.5.0, caused by breaking API change.
+    # Refer to patch header for detailed background.
+    # Upstream PyTorch issue: https://github.com/pytorch/pytorch/issues/58054
+    patchfiles-append        patch-glog-init-check.diff
+
+    # Patch to fix Clang -Wunused-but-set-variable errors
+    # - https://github.com/google/benchmark/issues/1172
+    # - https://github.com/google/benchmark/commit/e991355c02b93fe17713efe04cbc2e278e00fdbd
+    patchfiles-append        patch-benchmark-unused_local_variable.diff
 
     # Use Intel Math kernel Library
     if {[variant_isset mkl]} {

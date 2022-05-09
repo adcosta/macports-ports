@@ -5,11 +5,11 @@ PortGroup           app 1.0
 PortGroup           active_variants 1.1
 
 name                pspp-devel
-set buildstamp      20210509231725
-set buildhash       g1d424c
+set buildstamp      20220410085221
+set buildhash       g435b06
 epoch               1
-version             1.5.3
-revision            5
+version             1.5.4
+revision            1
 categories          math
 license             GPL-3+
 maintainers         {snc @nerdling}
@@ -30,28 +30,32 @@ distname            pspp-${version}-${buildhash}
 depends_lib-append  path:lib/pkgconfig/cairo.pc:cairo \
                     port:fontconfig \
                     port:freetype \
-                    port:gettext \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                    port:gettext-runtime \
                     port:gsl \
+                    path:lib/pkgconfig/harfbuzz.pc:harfbuzz \
                     port:libiconv \
                     port:libxml2 \
-                    port:librsvg \
+                    path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
                     port:ncurses \
-                    port:perl5.28 \
+                    port:perl5.30 \
                     path:lib/pkgconfig/pango.pc:pango \
-                    port:python39 \
+                    port:python310 \
                     port:readline \
                     port:spread-sheet-widget \
                     port:texinfo \
                     port:zlib
 
-depends_build-append    port:pkgconfig port:p5.28-text-diff port:coreutils
+depends_build-append    \
+                        port:pkgconfig \
+                        port:p5.30-text-diff \
+                        path:libexec/coreutils/libstdbuf.so:coreutils
 
-depends_test-append port:p5.28-text-diff port:coreutils
+depends_test-append port:p5.30-text-diff path:libexec/coreutils/libstdbuf.so:coreutils
 
-checksums           rmd160  c3beebb355f468ef00530b6ff65979e07404eb07 \
-                    sha256  7c36f7239c6178021691fff7f98860bc9f90f022f8c04a93152371f27a431c1c \
-                    size    8663244
+checksums           rmd160  35c4c3a3038fea3177bcdcd5d5c1486f51b23e30 \
+                    sha256  a7a223d9e071445bef3c08184a3b910e8c5cc2e28ec3ad8c24389ad5b02cd450 \
+                    size    9226769
 
 post-extract {
     if {[variant_isset gui]} {
@@ -60,18 +64,30 @@ post-extract {
     }
 }
 
+patchfiles          dynamic_lookup-11.patch
 post-patch {
     if {[variant_isset gui]} {
         reinplace s|@@PREFIX@@|${prefix}| ${worksrcpath}/PSPP
     }
 }
 
-# error: type name requires a specifier or qualifier
-compiler.c_standard  2011
+# error: unknown field 'text' specified in initializer
+compiler.blacklist *gcc-3.* *gcc-4.*
+compiler.c_standard 1999
+
+# Code uses 'asm' instead of '__asm__', so we need a GNU standard
+configure.cflags-append -std=gnu99
+
+platform darwin 8 {
+    # ./libc-config.h:87:21: error: operator '%' has no left operand
+    # (Defined value doesn't matter, just used to prevent an include in gnulib)
+    configure.cflags-append -D__WORDSIZE=32
+}
 
 #configure.cflags-append -g
-configure.python    ${prefix}/bin/python3.9
-configure.perl      ${prefix}/bin/perl5.28
+configure.python    ${prefix}/bin/python3.10
+configure.perl      ${prefix}/bin/perl5.30
+configure.env-append    PYTHON3=${configure.python}
 configure.args-append   --disable-rpath \
                         --without-libpq \
                         --without-gui \
@@ -104,8 +120,8 @@ variant postgres description {Enables reading of postgresql databases} {
 
 variant gui description {Build PSPPIRE, the graphical interface} {
     depends_lib-append      port:atk \
-                            port:gdk-pixbuf2 \
-                            port:gtk3 \
+                            path:lib/pkgconfig/gdk-pixbuf-2.0.pc:gdk-pixbuf2 \
+                            path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
                             port:gtksourceview3
 
     configure.args-delete   --without-gui

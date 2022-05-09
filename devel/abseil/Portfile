@@ -4,11 +4,11 @@ PortSystem          1.0
 PortGroup           cmake 1.1
 PortGroup           github 1.0
 
-github.setup        abseil abseil-cpp 20210324.2
+github.setup        abseil abseil-cpp 20211102.0
 name                abseil
 revision            0
 categories          devel
-maintainers         {outlook.de:judaew @judaew} openmaintainer
+maintainers         {judaew @judaew} openmaintainer
 license             Apache-2
 
 description         Abseil - C++ Common Libraries
@@ -18,11 +18,22 @@ long_description    Abseil is an open-source collection of C++ library \
                     Google's own C++ code base, has been extensively \
                     tested and used in production.
 
-platforms           darwin
+if {${os.major} < 11} {
 
-checksums           rmd160  a0dcd7d6d432a9d87971bacbc86f750b98454666 \
-                    sha256  797ec019a70699178accf635843e61eedf4c01675f7ef8af22f35f50ab1dd026 \
-                    size    1774079
+    # NB this port builds with < darwin 11 if libcxx is installed
+    # with the emulated_tls variant to enable thread_local_storage
+
+    # https://abseil.io/docs/cpp/platforms/platforms
+    known_fail      yes
+    pre-fetch {
+        ui_error "${name} @${version} requires macOS 10.7 or later."
+        return -code error "incompatible OS X version"
+    }
+}
+
+checksums           rmd160  59c40a461598c426cffcbb6b8a9f5bac3811de92 \
+                    sha256  2cf1c118890ac20623a558d2974d5f0d4a248566281fc7be9c6dfe73d80c0fea \
+                    size    1884039
 
 # ignore pre releases
 github.livecheck.regex  {([0-9.]+)}

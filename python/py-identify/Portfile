@@ -4,11 +4,10 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-identify
-version             2.2.8
+version             2.5.0
 revision            0
 
 categories-append   devel
-platforms           darwin
 supported_archs     noarch
 license             MIT
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -18,11 +17,11 @@ long_description    ${description}
 
 homepage            https://github.com/pre-commit/identify
 
-checksums           rmd160  3d22a987716822c269855aadcebbb258a6113fcb \
-                    sha256  7d4a73d58869a484d4ba8892793c80e30aa699e77707f26c1049486ef9be415f \
-                    size    98866
+checksums           rmd160  bc5ae2c2eef50ec63a1c0c9deb4dffaa1f2652f6 \
+                    sha256  c83af514ea50bf2be2c4a3f2fb349442b59dc87284558ae9ff54191bff3541d2 \
+                    size    98852
 
-python.versions     39
+python.versions     39 310
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -34,6 +33,4 @@ if {${name} ne ${subport}} {
         xinstall -m 0644 -W ${worksrcpath} README.md LICENSE \
             ${destroot}${docdir}
     }
-
-    livecheck.type  none
 }

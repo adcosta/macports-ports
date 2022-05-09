@@ -1,22 +1,27 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
+# `haproxy` currently does not support OpenSSL 3. Therefore, now this port is
+# using OpenSSL 1.1.
+#
+# See https://trac.macports.org/ticket/63958
 PortSystem          1.0
+PortGroup           openssl 1.0
 PortGroup           legacysupport 1.1
 PortGroup           makefile 1.0
 
 name                haproxy
-version             2.4.0
+version             2.5.6
 revision            0
 
 set branch          [join [lrange [split ${version} .] 0 1] .]
 
 categories          net
-platforms           darwin
-maintainers         {gmail.com:jeremy.mcmillan @aphor} openmaintainer
+maintainers         {gmail.com:jeremy.mcmillan @aphor} \
+                    {judaew @judaew} \
+                    openmaintainer
 license             {GPL-2+ OpenSSLException}
 
 description         The Reliable, High Performance TCP/HTTP Load Balancer
-
 long_description    HAproxy is a high-performance and highly-robust TCP/HTTP \
                     load balancer which provides cookie-based persistence, \
                     automatic failover, header insertion, deletion, \
@@ -25,18 +30,16 @@ long_description    HAproxy is a high-performance and highly-robust TCP/HTTP \
                     and a few other features. It uses its own state machine \
                     to achieve up to ten thousands hits per second on modern \
                     hardware, even with thousands simultaneous connections.
-
 homepage            https://www.haproxy.org/
 master_sites        ${homepage}download/${branch}/src/ \
                     https://sources.openwrt.org/
 
-checksums           rmd160  3395bfd3d1b5e112759670da9e8c9245e8d2f8b1 \
-                    sha256  0a6962adaf5a1291db87e3eb4ddf906a72fed535dbd2255b164b7d8394a53640 \
-                    size    3570069
+checksums           rmd160  23b945cc71aa8ec2a6cbb4e10e61d177523ba268 \
+                    sha256  be4c71753f01af748531139bff3ade5450a328e7a5468c45367e021e91ec6228 \
+                    size    3826838
 
-depends_lib         path:lib/libssl.dylib:openssl \
-                    port:pcre \
-                    port:zlib
+openssl.branch      1.1
+depends_lib         port:pcre port:zlib
 
 use_configure       no
 
@@ -50,7 +53,8 @@ build.target        TARGET=osx
 pre-build {
     build.args      LD="${configure.cc}"\
                     LDFLAGS="${configure.ldflags}" \
-                    V=1 \
+                    SSL_INC=[openssl::include_dir] \
+                    SSL_LIB=[openssl::lib_dir] \
                     USE_LIBCRYPT=1 \
                     USE_OPENSSL=1 \
                     USE_PCRE=1 \
@@ -70,10 +74,6 @@ if {${os.platform} eq "darwin" && ${os.major} < 11} {
 
 destroot.args       DOCDIR=${prefix}/share/doc/${name} \
                     PREFIX=${prefix}
-
-platform i386 {
-    build.args-append USE_REGPARM=1
-}
 
 destroot.keepdirs       ${destroot}${prefix}/etc/haproxy
 

@@ -20,13 +20,13 @@ PortGroup           mpiutil 1.0
 #===============================================================================
 
 name                openmpi
-version             4.1.1
+version             4.1.3
 revision            0
 
 license             BSD
 categories          science parallel net
 platforms           darwin
-maintainers         {@mascguy}
+maintainers         {mascguy @mascguy}
 
 description         Message Passing Interface (MPI) Library
 
@@ -42,9 +42,9 @@ set branch          [join [lrange [split ${version} .] 0 1] .]
 set subdir          ompi/v${branch}/downloads/
 master_sites        https://www.open-mpi.org/software/${subdir}
 
-checksums           rmd160  60fff94c4c7a4bfaaa11285f35d76265516ed8b0 \
-                    sha256  e24f7a778bd11a71ad0c14587a7f5b00e68a71aa5623e2157bafee3d44c07cda \
-                    size    10052770
+checksums           rmd160  5396172406b59ce33135cf461a2dbc4d91e7f504 \
+                    sha256  3d81d04c54efb55d3871a465ffb098d8d72c1f48ff1cbaf2580eb058567c0a3b \
+                    size    10090657
 
 use_bzip2           yes
 
@@ -66,17 +66,12 @@ set clist [dict create]
 set clist_unsupported [list]
 set clist_obsolete [list]
 
-# TODO: Remove these obsolete subports on or after January 2022, along with all
-# traces of -devel. For the latter, also remember to update proc
-# 'mpiutil_add_subport', in portgroup 'mpiutil'.
-lappend clist_obsolete \
-    clang33 clang34 clang37 \
-    clang50 clang60 clang70 clang80 \
-    gcc49 gcc5 gcc6 gcc8
-
 # Compilers supported across-the-board
 dict set clist default {}
 dict set clist gcc7    {macports-gcc-7}
+dict set clist clang11 {macports-clang-11}
+dict set clist clang12 {macports-clang-12}
+dict set clist clang13 {macports-clang-13}
 
 # Only enable Xcode clang builds for MacOS 10.7 and later
 if { ${os.major} >= 11 } {
@@ -88,13 +83,11 @@ if { ${os.major} >= 11 } {
 
 if { ${os.arch} eq "arm" } {
     # disable unreliable clang versions for ARM
-    dict set clist clang11 {macports-clang-11}
     lappend clist_unsupported \
         clang90 clang10
 } else {
     dict set clist clang90 {macports-clang-9.0}
     dict set clist clang10 {macports-clang-10}
-    dict set clist clang11 {macports-clang-11}
 }
 
 # gcc 9+ only available on macOS10.7 (Darwin11) and newer
@@ -103,7 +96,7 @@ if { ${os.arch} eq "arm" } {
     dict set clist gcc11 {macports-gcc-11}
     lappend clist_unsupported \
         gcc9 gcc10
-} elseif { ${os.major} >= 12 } {
+} elseif { ${os.major} >= 10 } {
     dict set clist gcc9  {macports-gcc-9}
     dict set clist gcc10 {macports-gcc-10}
     dict set clist gcc11 {macports-gcc-11}
@@ -112,12 +105,17 @@ if { ${os.arch} eq "arm" } {
         gcc9 gcc10 gcc11
 }
 
+#-------------------------------------------------------------------------------
+# Subport Creation/Validation
+#-------------------------------------------------------------------------------
+
+set cname \
+    [lindex [split ${subport} -] end]
+
 mpiutil_add_subports \
     ${name} ${subport} \
     ${clist} ${clist_unsupported} ${clist_obsolete}
 
-set cname \
-    [lindex [split ${subport} -] end]
 set subport_enabled \
     [mpiutil_validate_subport \
         ${name} ${subport} ${cname} \
@@ -383,15 +381,7 @@ if {${subport_enabled}} {
         ${name} ${subport} ${cname} ${select.file}
 
 } elseif {${subport} eq ${name}} {
+    PortGroup               stub 1.0
+
     depends_lib-append      port:${name}-default
-    distfiles
-    patchfiles
-    supported_archs         noarch
-    use_configure           no
-    build {}
-    destroot {
-        set docdir          ${destroot}${prefix}/share/doc/${subport}
-        xinstall -d ${docdir}
-        system "echo $subport is a stub port > ${docdir}/README"
-    }
 }

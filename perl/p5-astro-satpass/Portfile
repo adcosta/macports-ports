@@ -3,8 +3,9 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26 5.28 5.30
-perl5.setup         Astro-satpass 0.116 ../../authors/id/W/WY/WYANT
+perl5.branches      5.28 5.30 5.32 5.34
+perl5.setup         Astro-satpass 0.123 ../../authors/id/W/WY/WYANT
+revision            0
 maintainers         nomaintainer
 platforms           darwin
 license             {Artistic-1 GPL}
@@ -17,17 +18,19 @@ long_description    This package contains classes needed to predict \
 
 homepage            https://metacpan.org/release/${perl5.module}
 
-checksums           rmd160  b9dce6ed9f2fd9341795ccb6dcc670ddcf9c6d71 \
-                    sha256  6ac2540de57b5ea86c9c92da0cf2f14b572b2c18cb2d673a09947aaec6364ae9 \
-                    size    522017
+checksums           rmd160  49299e1f12cabb8f5b971dd75f3c1ef977f20294 \
+                    sha256  4920378805ca295822e91eff9f860666048177b777b315ae47dca13d959ce404 \
+                    size    529532
 
 variant script description {Install the deprecated satpass script and optional dependencies} {}
 
 if {${perl5.major} != ""} {
     depends_lib-append \
+                    port:p${perl5.major}-clone \
                     port:p${perl5.major}-datetime \
                     port:p${perl5.major}-datetime-timezone \
-                    port:p${perl5.major}-json
+                    port:p${perl5.major}-json \
+                    port:p${perl5.major}-time-local
 
     if {[variant_isset script]} {
 #       requires Makefile.PL -y to install deprecated satpass script

@@ -3,9 +3,13 @@
 PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           cmake 1.1
+PortGroup           legacysupport 1.1
 
-github.setup        Yubico libfido2 1.6.0
-revision            0
+# clock_gettime
+legacysupport.newest_darwin_requires_legacy 15
+
+github.setup        Yubico libfido2 1.9.0
+revision            1
 
 categories          security crypto
 platforms           darwin
@@ -15,9 +19,9 @@ license             bsd
 description         library to communicate with a FIDO device over USB
 long_description    provides library functionality and command-line tools to communicate with a FIDO device over USB, and to verify attestation and assertion signatures.
 
-checksums           rmd160  8f58ba379c26d550531a5fa5b949cbdd8370809f \
-                    sha256  5969bfbdd3f5c5e3252c927c15ab28b1c4c4f60a51d1408b3d15cc556ec78835 \
-                    size    413939
+checksums           rmd160  e7972f1092cfcb1cb07dcdc5e0d28d6d4685e978 \
+                    sha256  efab43a401a062d6c99ed1b5c6e528589738efcc08aaccdf921d1186640333f1 \
+                    size    576018
 
 depends_build-append \
                     port:mandoc \

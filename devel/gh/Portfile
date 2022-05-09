@@ -1,53 +1,109 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           github 1.0
-PortGroup           legacysupport 1.1
 
-github.setup        cli cli 1.11.0 v
-revision            0
+version             2.9.0
+revision            1
+
+# Github CLI is failing to build on 10.12 and below.
+# So in that case, use the pre-built binary tarball.
+if {${os.major} >= 17} {
+    set source_build yes
+} else {
+    set source_build no
+}
+
+if ${source_build} {
+    PortGroup       golang 1.0
+
+    go.setup        github.com/cli/cli ${version} v
+    go.package      github.com/cli/cli/v2
+} else {
+    PortGroup       github 1.0
+    PortGroup       legacysupport 1.1
+
+    github.setup    cli cli ${version} v
+
+    supported_archs x86_64
+}
+
 name                gh
-categories          devel
-platforms           darwin
-supported_archs     x86_64
-license             MIT
-maintainers         {l2dy @l2dy} \
-                    {gmail.com:herby.gillot @herbygillot} \
-                    openmaintainer
-
-description         The GitHub CLI
-long_description    gh is GitHub on the command line, and it's now available in beta.
 
 homepage            https://cli.github.com
 
-# oauthClientID in the repository is meant for development
-# https://github.com/cli/cli/blob/v0.5.4/context/config_setup.go#L21
-github.tarball_from releases
-distname            gh_${version}_macOS_amd64
+description         GitHub’s official command line tool
 
-checksums           rmd160  7dbe2bd9214209dc3ca1978218eb257a419d1d05 \
-                    sha256  cfd57a26f33e535a02cb014b9ee605b44b615a4bc9c0ec308e704fc33fa3b3a0 \
-                    size    7086979
+long_description    ${name} is GitHub on the command line. It brings pull \
+                    requests, issues, and other GitHub concepts to the \
+                    terminal next to where you are already working with git \
+                    and your code.
 
-use_configure       no
+categories          devel
 installs_libs       no
+license             MIT
+maintainers         {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
 
-build {}
+if ${source_build} {
+    # Allow Go to fetch dependencies at build time
+    build.env-delete    GO111MODULE=off GOPROXY=off
+    build.cmd           make
+    build.pre_args-append \
+                        GH_VERSION=${version}
+    build.args          bin/${name} manpages
+
+    use_parallel_build  no
+
+    checksums       rmd160  5da23010615c0fc49b8d936fee493dbcc1361c53 \
+                    sha256  730b600d33afb67d84af4dca1af80cb1fbff79d302ac4f840fc8e9e4c25fceb7 \
+                    size    705077
+
+    github.tarball_from archive
+
+    dist_subdir     ${name}
+
+    patch {
+        # Do not override GOOS, GOARCH, GOARM and other environment variables
+        reinplace -E \
+            {s|GOOS= GOARCH= GOARM= GOFLAGS= CGO_ENABLED= go build|go build|g} \
+            ${worksrcpath}/Makefile
+    }
+
+} else {
+    build {}
+
+    distname        gh_${version}_macOS_amd64
+
+    checksums       rmd160  d094d3355609a557d598ad1b5b79f78f0fb4c0a2 \
+                    sha256  868355c87793f07b8a189062f5853b2aa7fb0a9cce423d1d0d4326566628460a \
+                    size    7883546
+
+    github.tarball_from releases
+
+    use_configure   no
+}
 
 destroot {
     xinstall -m 0755 -W ${worksrcpath} bin/gh ${destroot}${prefix}/bin
 
-    # gh works on 10.10 and newer without legacysupport. standard
-    # legacysupport tweaks don't work, since the install here is from
-    # a binary tarball ... have to tweak the binary to use the legacy
-    # support library, which in turn uses the System.B library.
-    if {${os.major} <= 13} {
-        system -W ${destroot}${prefix}/bin "install_name_tool -change /usr/lib/libSystem.B.dylib ${prefix}/lib/libMacportsLegacySupport.dylib gh"
+    if {!$source_build} {
+        # standard legacysupport tweaks don't work, since the install here is
+        # from a binary tarball ... have to tweak the binary to use the legacy
+        # support library, which in turn uses the System.B library.
+        # Add legacysupport for 10.11 and older for clock_gettime support
+        if {${os.major} <= 15} {
+            system -W ${destroot}${prefix}/bin "install_name_tool -change /usr/lib/libSystem.B.dylib ${prefix}/lib/libMacportsLegacySupport.dylib gh"
+        }
     }
 
     set docdir ${prefix}/share/doc/${name}
     xinstall -d ${destroot}${docdir}
     xinstall -m 0644 -W ${worksrcpath} LICENSE ${destroot}${docdir}
+
+    # Man pages
+    xinstall -d ${destroot}${prefix}/share/man/man1
+    xinstall -m 0644 {*}[glob ${worksrcpath}/share/man/man1/*] \
+        ${destroot}${prefix}/share/man/man1
 
     # Shell completions
     xinstall -d ${destroot}${prefix}/share/bash-completion/completions

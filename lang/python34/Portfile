@@ -2,6 +2,7 @@
 
 PortSystem 1.0
 PortGroup select 1.0
+PortGroup openssl 1.0
 PortGroup deprecated 1.0
 
 name                python34
@@ -9,7 +10,7 @@ name                python34
 epoch               20170810
 # Remember to keep py34-tkinter and py34-gdbm's versions sync'd with this
 version             3.4.10
-revision            5
+revision            8
 
 deprecated.eol_version  yes
 
@@ -51,16 +52,17 @@ patchfiles          patch-setup.py.diff \
 depends_build       port:pkgconfig
 depends_lib         port:bzip2 \
                     port:expat \
-                    port:gettext \
+                    port:gettext-runtime \
                     port:libedit \
                     port:libffi \
                     port:ncurses \
-                    path:lib/libssl.dylib:openssl \
                     port:sqlite3 \
                     port:xz \
                     port:zlib
 depends_run         port:python_select \
                     port:python3_select
+
+openssl.branch      1.1
 
 platform darwin arm {
     known_fail  yes
@@ -127,7 +129,9 @@ platform darwin {
 
     post-configure {
         # See https://trac.macports.org/ticket/18376
+        set oldmtime [file mtime ${worksrcpath}/pyconfig.h]
         system -W ${worksrcpath} "ed - pyconfig.h < ${filespath}/pyconfig.ed"
+        file mtime ${worksrcpath}/pyconfig.h $oldmtime
     }
     post-build {
         set buildlibdir [lindex [glob -directory ${worksrcpath}/build lib.*-*-*-${branch}] 0]
@@ -207,7 +211,9 @@ variant universal {
         configure.args-append   --enable-universalsdk=/
     }
     post-configure {
+        set oldmtime [file mtime ${worksrcpath}/pyconfig.h]
         system -W ${worksrcpath} "ed - pyconfig.h < ${filespath}/pyconfig.h-universal.ed"
+        file mtime ${worksrcpath}/pyconfig.h $oldmtime
     }
 
     post-destroot {

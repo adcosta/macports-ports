@@ -2,8 +2,9 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
+PortGroup           legacysupport 1.1
 
-github.setup        universal-ctags ctags 5.9.20201227.0 p
+github.setup        universal-ctags ctags 5.9.20220417.0 p
 name                universal-ctags
 epoch               1
 revision            0
@@ -11,7 +12,9 @@ revision            0
 categories          devel
 platforms           darwin
 license             GPL-2+
-maintainers         {@kaimingguo gmail.com:augustin.guo} openmaintainer
+maintainers         {@kaimingguo gmail.com:augustin.guo} \
+                    {@catap korins.ky:kirill} \
+                    openmaintainer
 
 description         A maintained ctags implementation
 long_description \
@@ -21,9 +24,9 @@ long_description \
 
 homepage            https://ctags.io
 
-checksums           rmd160  1020ed7bd8f86ccf97f0108c4b155aa76c04fe47 \
-                    sha256  140904a75405df063b0e201aaf7e9147a92cee2b492d6a507c9984cf60bf5ba0 \
-                    size    2030069
+checksums           rmd160  0f54475ff9de451a92eaeddb040286917ea35925 \
+                    sha256  65cd5d8f6f8de0b3d202f54ce9b71dc120dd364193577e0f90e1f59ab5163eaa \
+                    size    2879691
 
 pre-patch {
     if {![file exists ${prefix}/bin/rst2man.py]} {
@@ -36,6 +39,9 @@ pre-patch {
         }
     }
 }
+
+# LegacySupport is needed for strnlen before 10.7
+legacysupport.newest_darwin_requires_legacy 10
 
 use_autoconf        yes
 autoconf.cmd        ./autogen.sh

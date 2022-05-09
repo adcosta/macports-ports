@@ -3,12 +3,12 @@
 PortSystem          1.0
 
 name                openvpn2
-version             2.5.0
+version             2.5.5
 revision            0
 distname            openvpn-${version}
 categories          net security
 platforms           darwin
-maintainers         nomaintainer
+maintainers         {i0ntempest @i0ntempest} openmaintainer
 license             {GPL-2 OpenSSLException}
 
 description         easy-to-use, robust, and highly configurable VPN
@@ -22,9 +22,9 @@ master_sites        https://swupdate.openvpn.net/community/releases/
 
 use_xz              yes
 
-checksums           rmd160  8afd3518cee352331aa3a861e6eefd440d3031eb \
-                    sha256  029a426e44d656cb4e1189319c95fe6fc9864247724f5599d99df9c4c3478fbd \
-                    size    1126928
+checksums           rmd160  c3d378c91df5f8a4b968168ad4844c49ecaf767b \
+                    sha256  119bd69fa0210838f6cdaa273696dc738efa200f454dbe11eb6dfb75dfb6003b \
+                    size    1147184
 
 depends_build       port:pkgconfig
 depends_lib         port:lzo2 \

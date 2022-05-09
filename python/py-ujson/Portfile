@@ -4,11 +4,10 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-ujson
-version             4.0.2
+version             5.2.0
 revision            0
 
 categories-append   devel
-platforms           darwin
 license             BSD
 maintainers         {reneeotten @reneeotten} openmaintainer
 
@@ -17,40 +16,16 @@ long_description    ${description}
 
 homepage            https://github.com/ultrajson/ultrajson
 
-checksums           rmd160  e51e57803d870971453f47adb93b18027da5b03f \
-                    sha256  c615a9e9e378a7383b756b7e7a73c38b22aeb8967a8bfbffd4741f7ffd043c4d \
-                    size    7129106
+checksums           rmd160  8873d213f3231fb16078d7947d060e0462fe90cf \
+                    sha256  163191b88842d874e081707d35de2e205e0e396e70fd068d1038879bca8b17ad \
+                    size    7135591
 
-python.versions     27 35 36 37 38 39
+python.versions     37 38 39 310
+python.pep517       yes
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                    port:py${python.version}-setuptools \
                     port:py${python.version}-setuptools_scm
-
-    depends_test-append \
-                    port:py${python.version}-six \
-                    port:py${python.version}-tz
-
-    if {${python.version} eq 27} {
-        version     2.0.3
-        revision    0
-
-        checksums   rmd160  7ebac441237750ddac9d9164139ee37bebfbc24a \
-                    sha256  bd2deffc983827510e5145fb66e4cc0f577480c62fe0b4882139f8f7d27ae9a3 \
-                    size    7127432
-    }
-
-    if {${python.version} eq 35} {
-        version     3.2.0
-        revision    0
-
-        checksums   rmd160  83886a8f53cd70eed2949ba3dc0a489e4612da9a \
-                    sha256  abb1996ba1c1d2faf5b1e38efa97da7f64e5373a31f705b96fe0587f5f778db4 \
-                    size    7128952
-    }
-
-    distname        ${python.rootname}-${version}
 
     depends_test-append \
                     port:py${python.version}-pytest
@@ -66,9 +41,7 @@ if {${name} ne ${subport}} {
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}
         xinstall -d ${destroot}${docdir}
-        xinstall -m 0644 -W ${worksrcpath} README.rst \
+        xinstall -m 0644 {*}[glob ${worksrcpath}/README.*] \
             ${destroot}${docdir}
     }
-
-    livecheck.type  none
 }

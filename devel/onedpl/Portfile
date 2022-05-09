@@ -1,0 +1,37 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           cmake 1.1
+
+github.setup        oneapi-src oneDPL 2021.6.1 oneDPL- -release
+name                onedpl
+revision            0
+
+categories          devel parallel
+platforms           darwin
+license             Apache-2
+supported_archs     noarch
+
+maintainers         {outlook.com:mohd.akram @mohd-akram} openmaintainer
+
+description         oneAPI DPC++ Library
+long_description    oneAPI DPC++ Library (oneDPL) provides high-productivity \
+                    APIs to developers, which can minimize Data Parallel C++ \
+                    (DPC++) programming efforts across devices for high \
+                    performance parallel applications.
+
+github.tarball_from archive
+
+checksums           rmd160  d13dff4b3d788e6d5a7dee2456021c6558704ca3 \
+                    sha256  4995fe2ed2724b89cdb52c4b6c9af22e146b48d2561abdafdaaa06262dbd67c4 \
+                    size    3682780
+
+depends_lib-append  port:onetbb
+
+post-patch {
+    reinplace "s|\${OUTPUT_DIR}|\$ENV{DESTDIR}\${OUTPUT_DIR}|g" \
+        ${worksrcpath}/cmake/scripts/generate_config.cmake
+}
+
+build {}

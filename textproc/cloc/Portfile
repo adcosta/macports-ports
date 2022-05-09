@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           perl5 1.0
 
-github.setup        AlDanial cloc 1.88
+github.setup        AlDanial cloc 1.92 v
 revision            0
 perl5.branches      5.28
 categories          textproc devel
@@ -18,9 +18,9 @@ long_description    cloc counts blank lines, comment lines, and physical \
                     Given two versions of a code base, cloc can compute \
                     differences in blank, comment, and source lines.
 
-checksums           rmd160  e07f68e57e1920f5fd2ea6b0207859471e5b2ab2 \
-                    sha256  e81e311cd75f296b6e00a2d9083f3eb18e85b4b53f9ae06e80b52f29e8788eee \
-                    size    548431
+checksums           rmd160  98a973182d78278f6a512f3594e613ef94bf4c17 \
+                    sha256  ed0ad995db27223c4e011e4d73fb82c5f3d609b023f6b4ed9f4752f28a4eadb7 \
+                    size    608775
 
 depends_run-append  port:perl${perl5.major} \
                     port:p${perl5.major}-algorithm-diff \

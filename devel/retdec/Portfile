@@ -1,0 +1,113 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.0
+PortGroup           github 1.0
+PortGroup           openssl 1.0
+PortGroup           compiler_blacklist_versions 1.0
+
+github.setup        avast retdec 4.0 v
+revision            5
+conflicts           ${name}-devel
+
+categories          devel
+license             MIT
+platforms           darwin
+maintainers         {@catap korins.ky:kirill} openmaintainer
+
+description         RetDec is a retargetable machine-code decompiler based on LLVM
+long_description    {*}${description}. The decompiler is not limited to any particular \
+                    target architecture, operating system, or executable file format.
+
+checksums           rmd160  305e901b37441337d5c0dada1ccc5e737831ef1e \
+                    sha256  b0e3172d9d232899b71dac41446592c03abe089b8e9c7c1a9c8e8bfe92cf8b49 \
+                    size    8732003
+
+post-patch {
+    reinplace "s|\${CMAKE_INSTALL_PREFIX}|${destroot}\${CMAKE_INSTALL_PREFIX}|" ${worksrcpath}/CMakeLists.txt
+    reinplace "s|\${CMAKE_INSTALL_PREFIX}|${destroot}\${CMAKE_INSTALL_PREFIX}|" ${worksrcpath}/support/CMakeLists.txt
+    reinplace "s|DESTINATION \${SUPPORT_TARGET_DIR}/|DESTINATION \${RETDEC_INSTALL_SUPPORT_DIR}|" ${worksrcpath}/support/CMakeLists.txt
+}
+
+if {${name} eq ${subport}} {
+    patch.pre_args  -p1
+    patchfiles      patch-hardcoded-make-v40.diff \
+                    patch-python3.diff \
+                    patch-system-openssl.diff \
+                    patch-yara-syntax-error.diff
+
+    # 4.0's yara uses std::variant<>, which is broken on macOS <= 10.12
+    if {${os.platform} eq "darwin" && ${os.major} <= 16} {
+        depends_lib-append          port:macports-libcxx
+        configure.cxxflags-append   -nostdinc++ -I${prefix}/include/libcxx/v1
+        configure.ldflags-append    -L${prefix}/lib/libcxx
+    }
+}
+
+compiler.cxx_standard \
+                    2017
+
+# Extend blacklist to cover macOS10.13
+compiler.blacklist-append \
+                    {clang < 1100} {macports-clang-[4-9].0}
+
+build.args-append   CC=${configure.cc} \
+                    CXX=${configure.cxx}
+
+build.env-append    CC=${configure.cc} \
+                    CXX=${configure.cxx}
+
+depends_build-append \
+                    port:autoconf \
+                    port:automake \
+                    port:git \
+                    port:gmake \
+                    port:libtool
+
+depends_lib-append  port:python39 \
+                    port:zlib
+
+depends_run-append  path:bin/dot:graphviz \
+                    path:bin/upx:upx
+
+# error: /usr/bin/ranlib: unknown option character `n' in: -no_warning_for_no_symbols
+if {${os.platform} eq "darwin" && ${os.major} < 13} {
+    depends_build-append \
+                    port:cctools
+    configure.args-append \
+                    -DCMAKE_RANLIB=${prefix}/bin/ranlib
+}
+
+# NOTE: Force use of gmake; otherwise, macOS' make will be used for top-level
+# subprocesses, while gmake will be used for lower-level ones. And jobserver
+# coordination doesn't work between them, preventing proper limiting of parallel
+# jobs!
+# See: https://trac.macports.org/ticket/63999
+build.cmd           ${prefix}/bin/gmake
+build.args-append   MAKE=${prefix}/bin/gmake
+build.env-append    MAKE=${prefix}/bin/gmake
+
+subport retdec-devel {
+    conflicts       $name
+
+    github.setup    avast retdec 05c9b11351d3e82012d823fa3709f940033768cf
+    version         20220323
+    revision        0
+    epoch           1
+
+    checksums       rmd160  a0aa843afee6de21ca6e6c4f2995034bda3d3a8b \
+                    sha256  35100ba844cece406f68046569681ededca608b9f6210769a6563dda551db86a \
+                    size    27120697
+
+    patch.pre_args  -p1
+    patchfiles      patch-hardcoded-make-devel.diff
+
+    # Before Catalina it also requires macports-libcxx
+    if {${os.platform} eq "darwin" && ${os.major} < 19} {
+        depends_lib-append          port:macports-libcxx
+        configure.cxxflags-append   -nostdinc++ -I${prefix}/include/libcxx/v1
+        configure.ldflags-append    -L${prefix}/lib/libcxx
+    }
+}
+
+github.livecheck.regex  {([^"v]+)}

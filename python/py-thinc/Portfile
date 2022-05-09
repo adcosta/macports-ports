@@ -6,16 +6,15 @@ PortGroup           github                      1.0
 PortGroup           compiler_blacklist_versions 1.0
 
 name                py-thinc
-# Don't upgrade past py-spaCy's highest supported version.
-version             8.0.3
+# Don't upgrade past py-spaCy's highest supported version (currently 8.1.0).
+version             8.0.15
 revision            0
 github.setup        explosion thinc ${version} v
 
-checksums           rmd160  7cd4e5e3c1de3b182d90b06ee981ebd0ef1561ff \
-                    sha256  2bec592f7af923a81a83709cdf319c8d778fe1e8a3da77c97f23c2cfd3079a87 \
-                    size    1326637
+checksums           rmd160  a76d19b7604e3d11ea30d59f22f197fbdccb9922 \
+                    sha256  024474cfa4f92479c0e1caa0cf843aa804f643ffb073e8565dac0f32d3542d8d \
+                    size    1436858
 
-platforms           darwin
 supported_archs     x86_64
 
 license             MIT
@@ -23,13 +22,13 @@ license             MIT
 maintainers         {jonesc @cjones051073} openmaintainer
 
 description         spaCy's Machine Learning library for NLP in Python
-long_description    ${description}
+long_description    {*}${description}
 
 # Exclude anything with non-numbers
 github.livecheck.regex {([0-9.]+)}
 
 # Support python versions
-python.versions     36 37 38 39
+python.versions     37 38 39 310
 
 # Compiler selection
 compiler.cxx_standard 2011
@@ -55,8 +54,8 @@ if {${name} ne ${subport}} {
 
     depends_test-append \
         port:py${python.version}-hypothesis \
-        port:py${python.version}-flake8 
-        
+        port:py${python.version}-flake8
+
     post-extract {
         # Set cython version
         set PythonVersionWithDot [join [split ${python.version} ""] "."]
@@ -64,7 +63,4 @@ if {${name} ne ${subport}} {
             reinplace -q "s|\'cython\'|\'cython-${PythonVersionWithDot}\'|g" ${f}
         }
     }
-
-    livecheck.type none 
-
 }

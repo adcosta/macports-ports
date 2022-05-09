@@ -5,6 +5,7 @@ PortGroup             github 1.0
 PortGroup             cmake 1.1
 PortGroup             qt5 1.0
 PortGroup             app 1.0
+PortGroup             boost 1.0
 
 name                  SDRangel
 platforms             darwin macosx
@@ -16,14 +17,19 @@ description           SDRangel is an Open Source Qt5 / OpenGL 3.0+ SDR \
     and signal analyzer frontend to various hardware.
 long_description    ${description}
 
-github.setup          f4exb sdrangel 6.13.0 v
-checksums             rmd160  74d88d893dfa07d462a4e371d3ce9016c8c745d8 \
-                      sha256  122a4478d21e97198f62bf020d115fc065b2a48de7867c3f73152f219aa5c0ef \
-                      size    48232305
+github.setup          f4exb sdrangel 6.20.3 v
+checksums             rmd160  cf472db511f1e3ffd1a21dff45181e2fb43a16b3 \
+                      sha256  c5502dd2bd8c54f92748e9d6290d58769ca26a4abe6be3345ed0e4bdd9d4c650 \
+                      size    68761283
 revision              0
 
 # check just the version 6 branch for now
 github.livecheck.regex (6\[0-9.]*)
+
+# not linked directly to openssl
+license_noconflict-append \
+    openssl \
+    openssl11
 
 compiler.c_standard   2011
 # error: call to 'abs' is ambiguous
@@ -31,6 +37,9 @@ compiler.c_standard   2011
 # std::abs was only introduced in c++17 so whilst the port claims to only
 # require c++14 it actually needs c++17
 compiler.cxx_standard 2017
+
+# use C++17 for the build itself
+patchfiles-append     use-cxx17.patch
 
 # TEMPORARY
 # https://trac.macports.org/ticket/60012
@@ -40,20 +49,32 @@ patchfiles-append     disable-remotetx.patch
 # revert https://github.com/f4exb/sdrangel/issues/492
 patchfiles-append     revert_cm256cc.patch
 
+# disable because macOS < 10.12 since it has a too old Qt version
+if {${os.platform} eq "darwin" && ${os.major} <= 16} {
+    known_fail yes
+    pre-fetch {
+        ui_error "${name} @${version} requires Mac OS X 10.13 or later"
+        return -code error "Unsupported Mac OS X version"
+    }
+}
+
 set opencv_ver        3
 
 depends_lib-append \
-    port:boost \
     port:codec2 \
     port:cm256cc \
     port:dsdcc \
-    port:ffmpeg \
+    path:lib/libavcodec.dylib:ffmpeg \
     port:fftw-3-single \
-    path:lib/libusb.dylib:libusb \
+    path:lib/pkgconfig/libusb-1.0.pc:libusb \
     port:libiconv \
     port:libopus \
-    port:opencv${opencv_ver} \
-    port:serialDV
+    path:lib/opencv${opencv_ver}/libopencv_core.dylib:opencv${opencv_ver} \
+    port:serialDV \
+    port:aptdec \
+    port:sgp4 \
+    port:libsigmf \
+    port:dab-cmdline
 
 qt5.depends_component \
     qtmultimedia \
@@ -61,7 +82,8 @@ qt5.depends_component \
     qtwebsockets \
     qtlocation \
     qtcharts \
-    qtspeech
+    qtspeech \
+    qtwebengine
 
 configure.args-append \
     -DBUILD_GUI=OFF \
@@ -163,6 +185,7 @@ variant xtrx description {Enable xtrx hardware} {
 variant soapysdr description {Enable SoapySDR support} {
     depends_lib-append      port:SoapySDR
     configure.args-replace  -DENABLE_SOAPYSDR=OFF -DENABLE_SOAPYSDR=ON
+    configure.args-append   -DSOAPYSDR_DIR=${prefix}
 }
 
 variant sdrplay description {Enable SDRplay support} {
@@ -170,7 +193,7 @@ variant sdrplay description {Enable SDRplay support} {
     configure.args-replace  -DENABLE_SDRPLAY=OFF -DENABLE_SDRPLAY=ON
 }
 
-default_variants +soapysdr +airspy +airspyhf +limesuite +rtlsdr +funcube +server +gui +sdrplay
+default_variants +soapysdr +airspy +airspyhf +limesuite +rtlsdr +funcube +server +gui
 
 test.run     yes
 test.cmd     ./sdrangelbench

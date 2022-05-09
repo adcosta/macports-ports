@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           github 1.0
+
+github.setup        BelledonneCommunications bzrtp 5.1.12
+github.tarball_from archive
+revision            0
+
+categories          devel
+license             {GPL-3 Commercial}
+maintainers         {judaew @judaew} openmaintainer
+
+description         Open source implementation of ZRTP keys exchange protocol
+long_description    \
+    BZRTP is an opensource implementation of ZRTP keys exchange protocol. The \
+    library written in C89 is fully portable and can be executed on many \
+    platforms including both ARM processor and x86.
+
+checksums           rmd160 c2361c3bb598d95740cb49828b154b76d66f19aa \
+                    sha256 c1b44db05ab6d4df7a29d53c6aaff9a6cd79ce73d46d406f01d737e3c4cfb01e \
+                    size 180110
+
+depends_build-append \
+                    port:bcunit
+depends_lib         port:bctoolbox \
+                    port:libxml2 \
+                    port:sqlite3
+
+configure.args-append \
+                    -DENABLE_STATIC=NO
+
+variant docs description {Build and install documentation in HTML format} {
+    depends_build-append \
+                    port:doxygen
+
+    configure.args-append \
+                    -DENABLE_DOC=YES
+}
+
+github.livecheck.regex  {([0-9.]+)}

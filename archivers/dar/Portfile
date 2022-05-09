@@ -3,14 +3,13 @@
 PortSystem          1.0
 
 name                dar
-version             2.7.1
+version             2.7.5
 revision            0
-checksums           rmd160  0fe25e0151747345f1798f0f00b364d018005c86 \
-                    sha256  76dade8adbeb817ffc78bf592c8200487ab5650234cf539539a9cbc5d346beef \
-                    size    2290659
+checksums           rmd160  ed80006d6c0621c74ba90665295677218299937d \
+                    sha256  95fa493a899a755fe84c9b0e9681f5ad81795b2de456bf84054bea67ec5a0966 \
+                    size    2404076
 
 categories          archivers
-platforms           darwin
 maintainers         {ryandesign @ryandesign} openmaintainer
 license             GPL-2+
 
@@ -41,9 +40,6 @@ patchfiles          dynamic_lookup-11.patch
 
 compiler.cxx_standard 2014
 compiler.thread_local_storage yes
-
-# https://github.com/Edrusb/DAR/issues/29
-configure.cxxflags-append -std=c++14
 
 universal_variant   no
 

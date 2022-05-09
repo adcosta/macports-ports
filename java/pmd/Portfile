@@ -4,14 +4,13 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           java 1.0
 
-github.setup        pmd pmd 6.35.0 pmd_releases/
+github.setup        pmd pmd 6.45.0 pmd_releases/
 github.tarball_from releases
 revision            0
 
 categories          java lang
-platforms           darwin
 license             {BSD Apache-2}
-maintainers         {outlook.de:judaew @judaew} openmaintainer
+maintainers         {judaew @judaew} openmaintainer
 
 description         PMD is a Java source code analyzer
 long_description    PMD is a Java source code analyzer. It finds unused \
@@ -22,9 +21,9 @@ homepage            https://pmd.github.io
 use_zip             yes
 distname            ${name}-bin-${version}
 checksums           ${distname}${extract.suffix} \
-                    rmd160  b9973f298ecfebcab864670f304cc590d816568c \
-                    sha256  2beee89f0c6cb7044962d825b788ce0f856f6a5beba66b0d6f2ab0e6d36e5412 \
-                    size    44516934
+                    rmd160  f117914c5f7767c69e1c0ba277312d219202fb3b \
+                    sha256  ee23c659011f1458714d43b92e4a251683910adfc6ebbf55e008402c7b4531b8 \
+                    size    43170657
 
 java.version        1.8+
 java.fallback       openjdk11
@@ -36,9 +35,9 @@ variant doc description "Include offline documentation" {
     distfiles-append    ${name}-doc-${version}${extract.suffix}:doc
 
     checksums-append    ${name}-doc-${version}${extract.suffix} \
-                        rmd160  9252dc75d103b16142581d156c3b4fdaf97920ec \
-                        sha256  c8c5b9fb5a65aa0c89e7d17c85eeada0c1dea08accb70befa5a43cfaa3bcb2a9 \
-                        size    4648243
+                        rmd160  ed32b09e522dbdfaee9ff27078481d297900de0a \
+                        sha256  e662a97ddc2a04f9ed97e8091a1f58d18959c9bcaf1a4062650e0ee9e1757cfd \
+                        size    5708365
 }
 
 pre-destroot {

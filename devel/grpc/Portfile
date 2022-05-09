@@ -6,8 +6,9 @@ PortGroup           github 1.0
 PortGroup           legacysupport 1.1
 PortGroup           compiler_blacklist_versions 1.0
 
-github.setup        grpc grpc 1.38.0 v
-revision            0
+# NOTE: Also rev-bump 'apache-arrow' when updating this port
+github.setup        grpc grpc 1.42.0 v
+revision            1
 categories          devel
 maintainers         nomaintainer
 license             Apache-2
@@ -61,7 +62,7 @@ set grpc_submodules [list \
     googleapis \
     googletest \
     protoc-gen-validate \
-    udpa \
+    xds
 ]
 
 post-fetch {
@@ -70,7 +71,6 @@ post-fetch {
 
 configure.args-append \
                     -DBUILD_SHARED_LIBS:BOOL=ON \
-                    -DCMAKE_CXX_STANDARD=11 \
                     -DgRPC_ABSL_PROVIDER=package \
                     -DgRPC_CARES_PROVIDER=package \
                     -DgRPC_PROTOBUF_PROVIDER=package \
@@ -135,7 +135,7 @@ if {${name} eq ${subport}} {
 }
 
 # create Python subports
-set python_versions {37 38 39}
+set python_versions {37 38 39 310}
 
 # Python modules grpcio and grpcio-tools
 foreach v ${python_versions} {
@@ -159,6 +159,9 @@ foreach v ${python_versions} {
 
         maintainers nomaintainer
         platforms   darwin
+
+        # https://github.com/macports/macports-ports/commit/9f4926a2ada59c0f2d54b5e923e4a7d99a7e67b6#commitcomment-53546190
+        compwrap.add_compiler_flags no
 
         description Protobuf code generator for gRPC
         long_description \

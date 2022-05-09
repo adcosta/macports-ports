@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-py7zr
+version             0.18.5
+revision            0
+
+platforms           darwin
+supported_archs     noarch
+license             LGPL-2.1+
+maintainers         {@catap korins.ky:kirill} openmaintainer
+description         Pure python 7-zip library
+long_description    ${description}
+
+homepage            https://github.com/miurahr/py7zr
+
+checksums           rmd160  e71df6f0fd74398f9547ad28a0a1fad93fa9497b \
+                    sha256  81ebb10619739764c2d80ef222e5845373ce84523183371ae9cd88e0df908929 \
+                    size    4260349
+
+python.pep517       yes
+
+python.versions     38 39 310
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools_scm
+
+    depends_lib-append \
+                    port:py${python.version}-brotli \
+                    port:py${python.version}-multivolumefile \
+                    port:py${python.version}-psutil\
+                    port:py${python.version}-pycryptodomex \
+                    port:py${python.version}-pyppmd \
+                    port:py${python.version}-pyzstd \
+                    port:py${python.version}-texttable \
+                    port:py${python.version}-zipfile-deflate64
+
+    depends_test-append \
+                    port:py${python.version}-cpuinfo \
+                    port:py${python.version}-pyannotate \
+                    port:py${python.version}-pytest \
+                    port:py${python.version}-pytest-benchmark \
+                    port:py${python.version}-pytest-timeout \
+                    port:py${python.version}-pytest-remotedata
+
+    test.run        yes
+    test.cmd        py.test-${python.branch}
+    test.target     tests
+    test.env        PYTHONPATH=${build.dir}/build/lib
+
+    livecheck.type  none
+}

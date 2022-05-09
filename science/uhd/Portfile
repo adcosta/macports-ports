@@ -60,8 +60,9 @@ Provides the release version, which is typically updated every month or so.
 
 subport uhd-39lts {
 
-    long_description ${description}: \
-Provides UHD 3.9 Long-Term Service \(LTS\) branch. This branch is not updated except for compatibility with OSs released after it was finalized.
+    long_description ${description}: Provides UHD 3.9 Long-Term Service \(LTS\) branch. \
+                     This branch is not updated except for compatibility with OSs released \
+                     after it was finalized.
 
     name         uhd-39lts
     conflicts    uhd uhd-devel
@@ -113,15 +114,15 @@ Provides UHD 3.9 Long-Term Service \(LTS\) branch. This branch is not updated ex
 
 subport uhd-devel {
 
-    long_description ${description}: \
-Provides the UHD GIT maint or master branch, depending on which is more advanced, and is typically updated every few days to week.
+    long_description ${description}: Provides the UHD GIT maint or master branch, depending \
+                     on which is more advanced, and is typically updated every few days to week.
 
-    github.setup    EttusResearch uhd b54fb54b72269ca842ef5b42af30d3d7a22ee236
-    version         20210514-[string range ${github.version} 0 7]
-    checksums       rmd160  1ce87663c8a0f10a37de9bd479c487b79f777228 \
-                    sha256  d5b4f484674886d822f1f87583f2641508f389b2a07920149ce6c287197ebb12 \
-                    size    34073628
-    revision        1
+    github.setup    EttusResearch uhd 46a70d853267c40205a8cfea472056bd1aa7c04e
+    version         20220419-4.2.0.0-[string range ${github.version} 0 7]
+    checksums       rmd160  323ee8c9128013b33ed49edf23470b7ae8932dba \
+                    sha256  354b086ff52eb344715237370f4cbe0988836a075950b5ac5d1962a652e73252 \
+                    size    38112878
+    revision        0
 
     conflicts       uhd uhd-39lts
 
@@ -254,23 +255,24 @@ default_variants +docs +examples +libusb +manual +test +manpages
 # specify the Python dependencies; these are checked for at configure,
 # then used for building, but not at runtime.
 
-set pythons_suffixes {27 35 36 37 38}
+set pythons_versions {2.7 3.5 3.6 3.7 3.8 3.9}
 
 set pythons_ports {}
-foreach s ${pythons_suffixes} {
-    lappend pythons_ports python${s}
+foreach s ${pythons_versions} {
+    lappend pythons_ports python[string map {. {}} ${s}]
 }
 
-foreach s ${pythons_suffixes} {
+foreach v ${pythons_versions} {
+    set s [string map {. {}} ${v}]
     set p python${s}
-    set v [string index ${s} 0].[string index ${s} 1]
     set i [lsearch -exact ${pythons_ports} ${p}]
     set c [lreplace ${pythons_ports} ${i} ${i}]
     variant ${p} description "Build ${name} using Python ${v}" conflicts {*}${c} ""
 }
 
-set selected_python_no_dot 38
-foreach s ${pythons_suffixes} {
+set selected_python_no_dot 39
+foreach v ${pythons_versions} {
+    set s [string map {. {}} ${v}]
     if {[variant_isset python${s}]} {
         set selected_python_no_dot ${s}
     }
@@ -280,7 +282,8 @@ default_variants +python${selected_python_no_dot}
 # make sure the default python variant wasn't
 # deselected without selecting another one
 set selected_python_no_dot ""
-foreach s ${pythons_suffixes} {
+foreach v ${pythons_versions} {
+    set s [string map {. {}} ${v}]
     if {[variant_isset python${s}]} {
         set selected_python_no_dot ${s}
     }
@@ -288,7 +291,7 @@ foreach s ${pythons_suffixes} {
 
 if {${selected_python_no_dot} eq ""} {
     set py_vars ""
-    set final_s [lindex ${pythons_suffixes} end]
+    set final_s [string map {. {}} [lindex ${pythons_versions} end]]
     foreach s ${pythons_suffixes} {
         if {${s} eq ${final_s}} {
             set py_vars "${py_vars}or "
@@ -360,7 +363,7 @@ if {![variant_isset examples]} {
 }
 
 variant libusb description {enable USB support via libusb version 1.0} {
-    depends_lib-append path:lib/libusb-1.0.dylib:libusb
+    depends_lib-append path:lib/pkgconfig/libusb-1.0.pc:libusb
     configure.args-append \
         -DENABLE_USB=ON \
         -DLIBUSB_INCLUDE_DIRS=${prefix}/include/libusb-1.0

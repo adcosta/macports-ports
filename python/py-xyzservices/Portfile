@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim: fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-xyzservices
+version             2022.4.0
+revision            0
+categories-append   devel
+license             BSD
+supported_archs     noarch
+
+python.versions     37 38 39 310
+python.pep517       yes
+
+maintainers         {stromnov @stromnov} openmaintainer
+
+description         Source of XYZ tiles provider
+long_description    ${description}
+
+homepage            https://github.com/geopandas/xyzservices
+
+checksums           rmd160  6483700950e5ed56965c3dd732dde35da3ac6cbe \
+                    sha256  cfebb5e3d0339899b5ed19f52ad2817d500990bb676b765a2d48f30622d95ddd \
+                    size    41385

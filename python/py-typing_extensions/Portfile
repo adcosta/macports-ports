@@ -4,9 +4,9 @@ PortSystem 1.0
 PortGroup python 1.0
 
 name                py-typing_extensions
-version             3.10.0.0
+version             4.2.0
 license             PSF
-platforms           darwin
+supported_archs     noarch
 maintainers         {toby @tobypeterson} openmaintainer
 description         Backported and Experimental Type Hints for Python
 long_description    The typing module was added to the standard library in Python 3.5 \
@@ -18,20 +18,25 @@ long_description    The typing module was added to the standard library in Pytho
                     changes as well as experimental types that will eventually be \
                     added to the typing module, such as Protocol or TypedDict.
 
-homepage            https://github.com/python/typing/blob/master/typing_extensions/README.rst
-master_sites        pypi:t/typing_extensions
-distname            typing_extensions-${version}
+homepage            https://github.com/python/typing/tree/master/typing_extensions
 
-checksums           rmd160  ca9683d6b70fb18b4d5a4ff8a2e59b4f22384eaf \
-                    sha256  50b6f157849174217d0656f99dc82fe932884fb250826c18350e159ec6cdf342 \
-                    size    45509
+checksums           rmd160  e2d5ac21cb6e139c0f0bd2d5790d3f66beeb3b06 \
+                    sha256  f1c24655a0da0d1b67f07e17a5e6b2a105894e6824b92096378bb3668ef02376 \
+                    size    42982
 
-python.versions     36 37 38 39
+python.versions     36 37 38 39 310
+
+python.pep517       yes
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools
+    # break circular dependency with py-python-install
+    python.add_dependencies no
+    depends_build-append   port:py-bootstrap-modules
+    depends_lib-append     port:python${python.version}
+    build.env-append    PYTHONPATH=${prefix}/share/py-bootstrap-modules
+    build.args      --skip-dependency-check
+    destroot.env-append PYTHONPATH=${prefix}/share/py-bootstrap-modules
 
     livecheck.type          none
-} else {
-    livecheck.type          pypi
 }

@@ -4,29 +4,27 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-traitlets
-version             5.0.5
+version             5.1.1
 revision            0
 categories-append   devel
 platforms           darwin
 license             BSD
 supported_archs     noarch
 
-python.versions     27 35 36 37 38 39
+python.versions     27 35 36 37 38 39 310
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         Traitlets Python config system.
-long_description    ${description}
+long_description    {*}${description}
 
-homepage            https://ipython.org
+homepage            https://github.com/ipython/traitlets
 
-checksums           rmd160  c05c57d127657558bad68ffebc2e91ae5ed9b92b \
-                    sha256  178f4ce988f69189f7e523337a3e11d91c786ded9360174a3d9ca83e79bc5396 \
-                    size    128856
+checksums           rmd160  a3d503f0531c93cacb7bac62584db9656c8f6f84 \
+                    sha256  059f456c5a7c1c82b98c2e8c799f39c9b8128f6d0d46941ee118daace9eb70c7 \
+                    size    130629
 
 if {${name} ne ${subport}} {
-    depends_lib-append  port:py${python.version}-ipython_genutils
-
     if {${python.version} <= 36} {
         version             4.3.3
         revision            0
@@ -36,6 +34,7 @@ if {${name} ne ${subport}} {
                             size    89838
 
         depends_lib-append  port:py${python.version}-decorator \
+                            port:py${python.version}-ipython_genutils \
                             port:py${python.version}-six
 
         if {${python.version} == 27} {

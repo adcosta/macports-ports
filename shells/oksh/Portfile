@@ -3,11 +3,11 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        ibara oksh 6.8.1 oksh-
+github.setup        ibara oksh 7.0 oksh-
 revision            0
-checksums           rmd160  3eb7b48b508eeb69826e062f2e104a9f0f94ed84 \
-                    sha256  ddd2b27b99009a4ee58ddf58da73edf83962018066ccf33b2fe1f570a00917b0 \
-                    size    303079
+checksums           rmd160  da4b65d307160796d42ccf18cabd242fd63667d6 \
+                    sha256  21d5891f38ffea3a5d1aa8c494f0a5579c93778535e0a92275b102dec3221da1 \
+                    size    308707
 
 homepage            https://devio.us/~bcallah/oksh/
 github.tarball_from releases

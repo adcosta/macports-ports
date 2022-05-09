@@ -5,13 +5,14 @@ PortGroup           github 1.0
 PortGroup           legacysupport 1.0
 PortGroup           app 1.0
 PortGroup           compiler_blacklist_versions 1.0
+PortGroup           muniversal 1.0
 
-github.setup        joncampbell123 dosbox-x 0.83.7 dosbox-x-v
+github.setup        joncampbell123 dosbox-x 0.83.25 dosbox-x-v
 revision            0
 
-checksums           rmd160  cd4edafe72c77e00166151c1fcc7d2e772d99db7 \
-                    sha256  9cdfa3267c340a869255d8eb1c4ebf4adde47c22854e1d013da22190350bfbb3 \
-                    size    47403831
+checksums           rmd160  e0be1bf05599ef8bd76ee7d19c3d942fa783983f \
+                    sha256  f9691acf81f953371a166b1ccc9c8b3e58b984216f0145edf2d6f5a05e794ede \
+                    size    64715876
 
 categories          emulators
 platforms           darwin
@@ -31,11 +32,9 @@ homepage            https://dosbox-x.com
 github.tarball_from archive
 
 patchfiles          patch-futimens.diff \
-                    patch-mactypes.diff \
-                    patch-convertbasetorect.diff \
-                    patch-menu-osx-cgpointfix.diff
+                    patch-mactypes.diff
 
-supported_archs     i386 x86_64
+supported_archs     i386 x86_64 arm64
 
 # build also looks for nasm, but doesn't use it even if it is found
 depends_build-append \
@@ -55,6 +54,27 @@ use_autoreconf      yes
 autoreconf.args     -fvi
 
 configure.args-append --enable-sdl2
+
+# add a SDL v1.x variant because when SDL2 is used dosbox-x
+# may have display issues in high color and true color modes:
+# https://github.com/joncampbell123/dosbox-x/issues/1431
+
+variant sdl1 description {Use the SDL v1.x library} {
+    configure.args-replace --enable-sdl2 --disable-sdl2
+    configure.args-append --enable-sdl
+    depends_lib-delete port:libsdl2
+    depends_lib-delete port:libsdl2_net
+    patchfiles-append patch-build-macosx.diff
+    use_configure no
+    use_autoreconf no
+}
+
+if {[variant_isset sdl1]} {
+   build {
+      system -W "${workpath}/${name}-${version}/" \
+                "PREFIX=${prefix} ./build-macosx"
+   }
+}
 
 # needs "___cpu_model" in compiler.rt
 compiler.blacklist-append {clang < 900}

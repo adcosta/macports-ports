@@ -4,8 +4,6 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           muniversal 1.0
 PortGroup           compilers 1.0
-PortGroup           xcodeversion 1.0
-PortGroup           compiler_blacklist_versions 1.0
 PortGroup           xcode_workaround 1.0
 PortGroup           makefile 1.0
 
@@ -15,41 +13,46 @@ license             BSD
 maintainers         {nicos @NicosPavlov} {michaelld @michaelld} openmaintainer
 description         OpenBLAS is an optimized BLAS library based on GotoBLAS2
 long_description    ${description}
-platforms           darwin
 
 # block compilers that do not support thread-local storage.
 compiler.cxx_standard 2011
 compiler.c_standard   2011
 compiler.thread_local_storage yes
 
+# 10.6 supports down to Intel Core (32-bit) and Core 2 (64-bit)
 #OS 10.7-10.11 supports down to iMac 7,1, with Intel Core 2 Duo architecture
 #OS 10.12-13 supports down to iMac 10,1, with Intel Core 2 Duo architecture
-if {${os.major} >= 11 && ${os.major} <= 17} { 
+if {${os.major} == 10} {
+    if {$build_arch eq "x86_64"} {
+        set blas_arch "CORE2"
+    } elseif {$build_arch eq "i386"} {
+        set blas_arch "YONAH"
+    }
+} elseif {${os.major} >= 11 && ${os.major} <= 17} {
     set blas_arch "CORE2"
-} 
+}
 #OS 10.14 supports down to Mac Pro 5,1 that has Nehalem architecture
 if {${os.major} >= 18} {
     if {${os.arch} eq "arm"} {
-        # FIXME use correct arch name
-        #set blas_arch "???"
+        set blas_arch "ARMV8"
     } else {
         set blas_arch "NEHALEM"
     }
 }
 if {![info exists blas_arch]} {
-    #For older versions, and currently arm, we force native variant as there is no PPCG3 target in OpenBLAS
+    #For older versions, we force native variant as there is no PPCG3 target in OpenBLAS
     default_variants-append +native
 }
 
 subport OpenBLAS-devel {}
 if {[string first "-devel" $subport] > 0} {
 
-    github.setup    xianyi OpenBLAS 4ecf631f95a6d21f6c5c1e54cb604264d74407b0
-    version         20210515-[string range ${github.version} 0 7]
-    checksums       rmd160  2d03e849cdd49ec6a2e35a6ad5aa4a462e850ebb \
-                    sha256  001ee0cd7a3ed43ae7c8f920b4e637f2bf0c17cb0c75c4005a2ffc860b93adde \
-                    size    12501920
-    revision        3
+    github.setup    xianyi  OpenBLAS 06d1dd6ba88d58ca588f8bed36dfc1a4cd78eabf
+    version         20220501-[string range ${github.version} 0 7]
+    checksums       rmd160  e9c3b68be8b6958538d3a892bf35ce3ca622c929 \
+                    sha256  412c8c67796221c4e7124cdb95094fb8723d10ffeb68f24377c33a9805e58933 \
+                    size    23466682
+    revision        0
 
     name            ${github.project}-devel
     conflicts       OpenBLAS
@@ -64,25 +67,21 @@ if {[string first "-devel" $subport] > 0} {
 
 } else {
 
-    github.setup    xianyi OpenBLAS 0.3.15 v
-    checksums       rmd160  8803a1bf4ab61176080a129fd2e8cded8dd90ee6 \
-                    sha256  7a35dd2eb486cae48237c06de04a7794a97fc7fd65b08f60f70e1b2664829efa \
-                    size    12502058
-    revision        5
+    github.setup    xianyi  OpenBLAS 0.3.20 v
+    checksums       rmd160  d23aa98a2d15d7f3e8c1ed9de1ef59c6c30173a7 \
+                    sha256  1b889733180df61cfbe636dd7682747a630b9d3a4c2757c4292ccc36143ec92e \
+                    size    12749006
+    revision        0
 
     conflicts       OpenBLAS-devel
 
     patchfiles      patch-libnoarch.release.diff \
                     patch-OpenBLAS-i386-Apple.diff
 
-    # https://github.com/xianyi/OpenBLAS/issues/3222
-    # https://github.com/xianyi/OpenBLAS/pull/3223
-    patchfiles-append 0001-Use-percent-instead-of-ampersand-as-placeholder-for-.patch
-
     if {![variant_isset native]} {
         notes "
-        This version is built based on a base architecture for convenience, 
-        which may not be optimized for your system. To build a version 
+        This version is built based on a base architecture for convenience,
+        which may not be optimized for your system. To build a version
         customized for your machine, use the +native variant"
     }
 }
@@ -141,7 +140,7 @@ pre-build {
                 puts $makeINC "NO_LAPACK = 1"
             }
 
-            if {![variant_isset native]} { 
+            if {![variant_isset native]} {
                 #We set a minimal target in case native variant is not set
                 if {${build_arch} eq "ppc" || ${build_arch} eq "ppc64"} {
                     puts $makeINC "TARGET = PPCG4"
@@ -242,7 +241,6 @@ pre-build {
     }
 }
 
-depends_build-append port:cctools
 build.args          "AR=${prefix}/bin/ar RANLIB=${prefix}/bin/ranlib"
 
 platform darwin 8 {

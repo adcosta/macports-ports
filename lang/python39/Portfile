@@ -6,7 +6,7 @@ PortGroup select 1.0
 name                python39
 
 # Remember to keep py39-tkinter and py39-gdbm's versions sync'd with this
-version             3.9.5
+version             3.9.12
 
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          lang
@@ -23,9 +23,9 @@ master_sites        ${homepage}ftp/python/${version}/
 
 distname            Python-${version}
 use_xz              yes
-checksums           md5 71f7ada6bec9cdbf4538adc326120cfd \
-                    rmd160 3c7bf2d7bcea98a8a749ef19ce7da429a7ca2c08 \
-                    sha256 0c5a140665436ec3dbfbb79e2dfb6d192655f26ef4a29aeffcb6d1820d716d83
+checksums           md5 4b5fda03e3fbfceca833c997d501bcca \
+                    rmd160 3545215dae0d60545d5ad4f25aa1634098f91b50 \
+                    sha256 2cd94b20670e4159c6d9ab57f91dbf255b97d8c1a1451d1c35f4ec1968adf971
 
 patchfiles          patch-setup.py.diff \
                     patch-Lib-cgi.py.diff \
@@ -33,8 +33,7 @@ patchfiles          patch-setup.py.diff \
                     patch-Lib-ctypes-macholib-dyld.py.diff \
                     patch-libedit.diff \
                     patch-configure-xcode4bug.diff \
-                    sysconfig.py.diff \
-                    distutils_spawn.py.patch
+                    sysconfig.py.diff
 
 if {${os.platform} eq "darwin" && ${os.major} < 10} {
     # work around no copyfile and/or pthread_threadid_np on older systems
@@ -45,7 +44,7 @@ if {${os.platform} eq "darwin" && ${os.major} < 10} {
 depends_build       port:pkgconfig
 depends_lib         port:bzip2 \
                     port:expat \
-                    port:gettext \
+                    port:gettext-runtime \
                     port:libedit \
                     port:libffi \
                     port:ncurses \
@@ -57,7 +56,7 @@ depends_run         port:python_select \
                     port:python3_select
 
 # blacklist llvm-gcc-4.2 compiler known to produce bad code
-compiler.blacklist-append *llvm-gcc-4.2
+compiler.blacklist  *llvm-gcc-4.2
 
 # ensurepip arg may be removed later, now conflicts with pip and setuptools
 # packages
@@ -71,7 +70,10 @@ configure.args      --enable-framework=${frameworks_dir} \
 
 configure.ccache    no
 # pkg-config removes -I flags for paths in CPATH, which confuses python.
-configure.env       PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1
+configure.env       PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 \
+                    SETUPTOOLS_USE_DISTUTILS=stdlib
+build.env           SETUPTOOLS_USE_DISTUTILS=stdlib
+destroot.env        SETUPTOOLS_USE_DISTUTILS=stdlib
 
 post-patch {
     reinplace "s|@@PREFIX@@|${prefix}|g" \
@@ -105,7 +107,9 @@ platform darwin {
         # poll() misbehaves on 10.8 and older
         # See https://trac.macports.org/ticket/18376
         if {${os.major} <= 12} {
+            set oldmtime [file mtime ${worksrcpath}/pyconfig.h]
             system -W ${worksrcpath} "ed - pyconfig.h < ${filespath}/pyconfig.ed"
+            file mtime ${worksrcpath}/pyconfig.h $oldmtime
         }
     }
 
@@ -176,8 +180,9 @@ variant universal {
         set universal_arch_flags {}
         set arch_run_32bit {}
         set lipo_32bit_flags {}
+        set lipo_intel64_flags {}
         set any64 no
-        foreach arch ${universal_archs} {
+        foreach arch ${configure.universal_archs} {
             lappend universal_arch_flags -arch ${arch}
             if {${arch} in {i386 ppc}} {
                 lappend arch_run_32bit -${arch}
@@ -194,6 +199,9 @@ variant universal {
                 set arch_run_32bit "/usr/bin/arch $arch_run_32bit"
                 #lipo_32bit_flags already correct
             }
+            if {"arm64" in ${configure.universal_archs} && "x86_64" in ${configure.universal_archs}} {
+                set lipo_intel64_flags "-extract x86_64"
+            }
         } else {
             set arch_run_32bit ""
             set lipo_32bit_flags ""
@@ -205,27 +213,46 @@ variant universal {
             "s|@@LIPO_32BIT_FLAGS@@|${lipo_32bit_flags}|" \
             ${worksrcpath}/configure
         reinplace \
+            "s|@@LIPO_INTEL64_FLAGS@@|${lipo_intel64_flags}|" \
+            ${worksrcpath}/configure
+        reinplace \
             "s|@@ARCH_RUN_32BIT@@|${arch_run_32bit}|" \
             ${worksrcpath}/configure
     }
-    if {${configure.sdkroot} ne ""} {
-        configure.args-append   --enable-universalsdk=${configure.sdkroot}
-    } else {
-        configure.args-append   --enable-universalsdk=/
-    }
+    configure.args-append   --enable-universalsdk=${configure.sysroot}
     post-configure {
+        set oldmtime [file mtime ${worksrcpath}/pyconfig.h]
         system -W ${worksrcpath} "ed - pyconfig.h < ${filespath}/pyconfig.h-universal.ed"
+        file mtime ${worksrcpath}/pyconfig.h $oldmtime
     }
 
     post-destroot {
-        foreach unversioned {python3-32} {
+        foreach unversioned {python3-32 python3-intel64} {
             delete ${destroot}${prefix}/bin/${unversioned}
         }
     }
 }
 
-variant optimizations description {Compile with LTO and PGO. Build time greatly increased} {
+variant optimizations description {enable expensive, stable optimizations (including PGO)} {
     configure.args-append   --enable-optimizations
+}
+
+variant lto description {enable Link-Time Optimization} {
+    configure.args-append   --with-lto
+}
+
+platform darwin {
+    # Build failures on 10.9 and older
+    if {${os.major} > 11} {
+        default_variants +lto
+        if {${os.major} > 13} {
+            default_variants-append +optimizations
+        }
+    }
+}
+
+variant dtrace description {enable DTrace support} {
+    configure.args-append   --with-dtrace
 }
 
 livecheck.type      regex

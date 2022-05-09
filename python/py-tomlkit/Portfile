@@ -4,34 +4,35 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-tomlkit
-version             0.7.2
+version             0.10.2
 revision            0
 categories-append   devel
 platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     36 37 38 39
+python.versions     36 37 38 39 310
 
-maintainers         {gmail.com:davidgilman1 @dgilman} openmaintainer
+maintainers         {gmail.com:davidgilman1 @dgilman} {judaew @judaew} \
+                    openmaintainer
 
 description         Style preserving TOML library
-long_description    ${description}
-
+long_description    {*}${description}
 homepage            https://github.com/sdispater/tomlkit
 
-checksums           rmd160  c0d4a0e17bd71255d1e5bc7590c5ed0be88ff2fe \
-                    sha256  d7a454f319a7e9bd2e249f239168729327e4dd2d27b17dc68be264ad1ce36754 \
-                    size    159643
+checksums           rmd160  82276d4cc17b3d10d7669841974ce8cc7be8a62f \
+                    sha256  30d54c0b914e595f3d10a87888599eab5321a2a69abc773bbefff51599b72db6 \
+                    size    184537
 
 if {${name} ne ${subport}} {
     depends_build-append \
                     port:py${python.version}-setuptools
+    depends_test-append \
+                    port:py${python.version}-pytest \
+                    port:py${python.version}-yaml
 
-    post-destroot {
-        # https://github.com/sdispater/tomlkit/issues/69
-        delete      ${destroot}${python.pkgd}/tests
-    }
+    test.run        yes
+    test.env        PYTHONPATH=${worksrcpath}/build/lib
 
     livecheck.type  none
 }

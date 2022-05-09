@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        rakudo rakudo 2021.03
+github.setup        rakudo rakudo 2022.02
+revision            0
 description         Perl6 compiler
 long_description    Rakudo is a compiler for the Perl 6 language (version 6.d) \
                     Rakudo is built using NQP (Not Quite Perl 6), which in \
@@ -19,9 +20,9 @@ homepage            https://rakudo.org/
 github.tarball_from \
                     releases
 
-checksums           rmd160  8777e22c91a2d1298412e5f04ddb4c0c547025fd \
-                    sha256  98eb57fa0f4953aa6617111f36a2706799d8082b42e22c37cf104a918d914ec2 \
-                    size    5713393
+checksums           rmd160  a6de8c82f087403fa56886016f87d4228093e8f5 \
+                    sha256  6a6e9dbcc6d9a1610a34c6ec67e2d3f694d7b33e9e0a0f224543089fa7f71332 \
+                    size    6140289
 
 depends_build       port:perl5
 

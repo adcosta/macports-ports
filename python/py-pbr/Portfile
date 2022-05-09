@@ -4,11 +4,10 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pbr
-version             5.6.0
+version             5.8.1
 revision            0
 
 categories-append   devel
-platforms           darwin
 supported_archs     noarch
 license             Apache-2
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -25,11 +24,11 @@ long_description    A library for managing setuptools packaging needs \
 
 homepage            https://docs.openstack.org/pbr/latest/
 
-checksums           rmd160  91b0758fe8e206140ca809c927d085abb31259ec \
-                    sha256  42df03e7797b796625b1029c0400279c7c34fd7df24a7d7818a1abb5b38710dd \
-                    size    125220
+checksums           rmd160  8c0c505de7151828017a6900a42f331b4766c371 \
+                    sha256  66bc5a34912f408bb3925bf21231cb6f59206267b7f63f3503ef865c1a292e25 \
+                    size    127537
 
-python.versions     27 35 36 37 38 39
+python.versions     27 35 36 37 38 39 310
 
 if {${subport} ne ${name}} {
     depends_lib-append \

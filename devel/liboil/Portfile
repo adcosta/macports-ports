@@ -30,12 +30,13 @@ patchfiles          patch-liboil_liboilcpu-x86.c.diff automake.patch
 #    configure.args-append  --enable-gtk-doc
 #}
 
-use_autoreconf  yes
-autoreconf.args -fvi
+use_autoreconf      yes
+autoreconf.args     -fvi
 
-if {![info exists universal_possible]} {
-    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
-}
+# needs gtkdocize, even without the docs enabled...
+# autoreconf: running: /opt/local/bin/gtkdocize --copy
+depends_build-append  port:gtk-doc
+
 if {${universal_possible} && [variant_isset universal]} {
     set merger_host(i386) i686-apple-${os.platform}${os.major}
     set merger_host(x86_64) x86_64-apple-${os.platform}${os.major}

@@ -5,14 +5,14 @@ PortGroup           python 1.0
 
 name                py-werkzeug
 python.rootname     Werkzeug
-version             1.0.1
+version             2.1.2
 revision            0
 categories-append   www
-platforms           darwin
 license             BSD
 supported_archs     noarch
 
-python.versions     27 35 36 37 38 39
+python.versions     27 37 38 39 310
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -27,12 +27,22 @@ long_description    Werkzeug is a one of the most advanced WSGI utility \
 
 homepage            https://palletsprojects.com/p/werkzeug/
 
-checksums           rmd160  9dc625e19c6cb90783972a8d467bd5270aafe30c \
-                    sha256  6c80b1e5ad3665290ea39320b91e1be1e0d5f60652b964a3070216de83d2e47c \
-                    size    904455
+checksums           rmd160  8be8da54fe5007a53b81d2696bee0f9ec2c36bb9 \
+                    sha256  1ce08e8093ed67d638d63879fd1ba3735817f7a80de3674d293f5984f25fb6e6 \
+                    size    835169
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-setuptools
+
+    if {${python.version} eq 27} {
+        python.pep517       no
+        version             1.0.1
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  9dc625e19c6cb90783972a8d467bd5270aafe30c \
+                            sha256  6c80b1e5ad3665290ea39320b91e1be1e0d5f60652b964a3070216de83d2e47c \
+                            size    904455
+    }
 
     post-destroot {
         set docdir ${destroot}${prefix}/share/doc/${subport}

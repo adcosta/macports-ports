@@ -6,8 +6,11 @@ PortGroup           github  1.0
 
 name                detekt-cli
 
-github.setup        detekt detekt 1.17.1 v
+github.setup        detekt detekt 1.20.0 v
 revision            0
+
+# Set the version of the resulting jar. This might be, but is not necessarily identical to ${version}.
+set buildversion    ${version}
 
 categories          java devel
 license             Apache-2
@@ -18,12 +21,17 @@ description         CLI tool for detekt
 long_description    Detekt is a static code analysis tool for Kotlin.
 homepage            https://detekt.github.io
 
+variant formatting description {Include the formatting plugin} {
+    build.target-append \
+        detekt-formatting:jar
+}
+
 github.tarball_from archive
 
 distname            v${version}
-checksums           sha256  61d6c0fe68a5510b77b3212e73bd612ddb3be8842e6ecf97c8eaf5316d2d0ede \
-                    rmd160  4ffe331edb7c65be252dd2966304343833207c25 \
-                    size    2600608
+checksums           sha256  9ca2a5e19eccfa30772674f27b40a721146627254a1f971b7c1bcd871bbdb485 \
+                    rmd160  294c24d3f0411bba5f1db947a1d8f67675be29f5 \
+                    size    2700049
 
 java.fallback       openjdk11
 java.version        1.8+
@@ -37,7 +45,11 @@ build.target        ${name}:shadowJar
 destroot {
     set javadir ${destroot}${prefix}/share/java
     xinstall -m 755 -d ${javadir}/${name}
-    xinstall -m 644 ${worksrcpath}/${name}/build/libs/${name}-${version}-all.jar ${javadir}/${name}/${name}.jar
+    xinstall -m 644 ${worksrcpath}/${name}/build/libs/${name}-${buildversion}-all.jar ${javadir}/${name}/${name}.jar
+
+    if {[variant_isset formatting]} {
+        xinstall -m 644 ${worksrcpath}/detekt-formatting/build/libs/detekt-formatting-${buildversion}.jar ${javadir}/${name}/detekt-formatting.jar
+    }
 
     # Install the wrapper script
     xinstall -m 755 ${filespath}/detekt ${destroot}${prefix}/bin

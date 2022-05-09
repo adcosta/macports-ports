@@ -5,7 +5,7 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-sphinx
-version             4.0.2
+version             4.5.0
 categories-append   textproc devel
 license             BSD
 maintainers         {jmr @jmroot} openmaintainer
@@ -17,21 +17,19 @@ long_description \
     originally created to translate the new Python documentation, but has now \
     been cleaned up in the hope that it will be useful to many other projects.
 
-platforms           darwin
 supported_archs     noarch
 
 homepage            https://www.sphinx-doc.org/
 python.rootname     Sphinx
 
-checksums           md5 025cf3c9c173872924f7c4d96a878b65 \
-                    rmd160 77cde2333b76f123a2c80680a0d6d943d35a115e \
-                    sha256 b5c2ae4120bf00c799ba9b3699bc895816d272d120080fbc967292f29b52b48c
+checksums           md5 ed63e60d798d212c1afdecf8acda690e \
+                    rmd160 872e10aa5a8dd44f00a45fed7ebd5f9f8de32437 \
+                    sha256 7bf8ca9637a4ee15af412d1a1d9689fec70523a68ca9bb9127c2f3eeb344e2e6
 
-python.versions     27 35 36 37 38 39
+python.versions     27 35 36 37 38 39 310
 
 if {$subport ne $name} {
-    depends_lib     port:py${python.version}-docutils \
-                    port:py${python.version}-setuptools
+    depends_lib     port:py${python.version}-docutils
     depends_run     port:py${python.version}-alabaster \
                     port:py${python.version}-babel \
                     port:py${python.version}-imagesize \
@@ -43,13 +41,24 @@ if {$subport ne $name} {
                     port:sphinx_select
     if {${python.version} > 35} {
         patchfiles-append   setup.py.patch
+        python.pep517   yes
+        if {${python.version} <= 39} {
+            depends_lib-append  port:py${python.version}-importlib-metadata
+        }
+    } else {
+        depends_lib-append  port:py${python.version}-setuptools
     }
     if {${python.version} == 35} {
-        version     3.5.2
+        version     3.5.4
         revision    0
-        checksums   md5 87f26fa3d3cf3ab8c05d1c2c62a0229e \
-                    rmd160 bc2b9ba340f2af963bc0b7acfae002cd32bfbd80 \
-                    sha256 672cfcc24b6b69235c97c750cb190a44ecd72696b4452acaf75c2d9cc78ca5ff
+        checksums   md5 dd46088ebc01f6f721ee7618df680d68 \
+                    rmd160 70102258335337eff3cc16526e84e9a95c625018 \
+                    sha256 19010b7b9fa0dc7756a6e105b2aacd3a80f798af3c25c273be64d7beeb482cb1 \
+                    size 5911093
+
+        patch.pre_args      -p1
+        # Source of patch: https://github.com/catap/sphinx/tree/docutils-1.8-v354
+        patchfiles-append   docutils-0.18-v345.patch
     }
     if {${python.version} == 27} {
         version     1.8.5

@@ -18,7 +18,9 @@ options                             cmake.build_dir \
                                     cmake.module_path \
                                     cmake_share_module_dir \
                                     cmake.out_of_source \
-                                    cmake.set_osx_architectures
+                                    cmake.set_osx_architectures \
+                                    cmake.set_c_standard \
+                                    cmake.set_cxx_standard
 
 ## Explanation of and default values for the options defined above ##
 
@@ -52,6 +54,10 @@ default cmake_share_module_dir      {${prefix}/share/cmake/Modules}
 # extra locations to search for modules can be specified with
 # cmake.module_path; they come after ${cmake_share_module_dir}
 default cmake.module_path           {}
+
+# Propagate c/c++ standards to the build
+default cmake.set_c_standard        no
+default cmake.set_cxx_standard      no
 
 # CMake provides several different generators corresponding to different utilities
 # (and IDEs) used for building the sources. We support "Unix Makefiles" (the default)
@@ -284,8 +290,8 @@ pre-configure {
     }
 
     # The environment variable CPPFLAGS is not considered by CMake.
-    # (CMake upstream ticket #12928 "CMake silently ignores CPPFLAGS"
-    # <https://www.cmake.org/Bug/view.php?id=12928>).
+    # (CMake upstream ticket #12928 "Add support for CPPFLAGS environment variable"
+    # <https://gitlab.kitware.com/cmake/cmake/-/issues/12928>).
     #
     # But adding -I${prefix}/include to CFLAGS/CXXFLAGS is a bad idea.
     # If any other flags are needed, we need to add them.
@@ -427,6 +433,24 @@ platform darwin {
         } elseif {${cmake.set_osx_architectures}} {
             configure.args-append \
                 -DCMAKE_OSX_ARCHITECTURES="${configure.build_arch}"
+        }
+
+        # C/C++ standard
+        if {[option cmake.set_cxx_standard] && ${compiler.cxx_standard} ne ""} {
+            # https://cmake.org/cmake/help/latest/prop_tgt/CXX_STANDARD.html
+            if {${compiler.cxx_standard} < 1998} {
+                compiler.cxx_standard 1998
+            }
+            configure.args-append -DCMAKE_CXX_STANDARD=[string range ${compiler.cxx_standard} end-1 end]
+        }
+        if {[option cmake.set_c_standard] && ${compiler.c_standard} ne ""} {
+            # Base defaults to 1989 which is not valid as a C standard
+            # (at least as far as CMake is concerned)
+            # https://cmake.org/cmake/help/latest/prop_tgt/C_STANDARD.html#prop_tgt:C_STANDARD
+            if {${compiler.c_standard} < 1990} {
+                compiler.c_standard 1990
+            }
+            configure.args-append -DCMAKE_C_STANDARD=[string range ${compiler.c_standard} end-1 end]
         }
 
         # Setting our own -arch flags is unnecessary (in the case of a non-universal build) or even

@@ -10,14 +10,13 @@ PortGroup       muniversal 1.0
 
 name            gnutls
 version         3.6.16
-revision        0
+revision        3
 set branch      [join [lrange [split ${version} .] 0 1] .]
 set major       [join [lrange [split ${version} .] 0 2] .]
 categories      devel security
 # yes, some of the libs are GPL only
 license         LGPL-2.1+ GPL-3+
 maintainers     {mps @Schamschula} openmaintainer
-platforms       darwin
 description     GNU Transport Layer Security Library
 long_description \
                 GnuTLS is a portable ANSI C based library which implements the TLS 1.2, \
@@ -43,9 +42,11 @@ conflicts_build autogen
 
 depends_build-append \
                 port:gettext \
+                port:gtk-doc \
                 port:pkgconfig
 
 depends_lib-append \
+                port:gettext-runtime \
                 port:gmp \
                 port:libidn2 \
                 port:libtasn1 \
@@ -55,6 +56,7 @@ depends_lib-append \
                 port:zlib
 
 patchfiles      patch-lib-system-certs.c.diff
+patchfiles-append implicit.patch
 
 post-patch {
     # Remove comments which confuse at least Leopard's assembler.
@@ -64,7 +66,6 @@ post-patch {
 configure.args  --disable-guile \
                 --disable-silent-rules \
                 --disable-libdane \
-                --disable-doc \
                 --enable-local-libopts \
                 --enable-openssl-compatibility \
                 --with-p11-kit \
@@ -97,6 +98,9 @@ variant dane description {Build libdane using unbound libraries} {
 if {${os.platform} eq "darwin" && ${os.major} > 19 && ${os.arch} eq "arm"} {
     depends_build-append    port:libtool
 
+    # See: https://gitlab.com/gnutls/gnutls/-/issues/1317
+    patchfiles-append       patch-lib-accelerated-aarch64-Makefile.am.diff
+
     use_autoreconf          yes
     autoreconf.args         --install --verbose --force
 
@@ -121,17 +125,6 @@ if {[variant_isset dane] && ![file exists ${prefix}/var/run/unbound/root.key]} {
 "
 }
 
-variant doc description {Build documentation} {
-    configure.args-delete   --disable-doc
-
-    depends_build-append \
-                port:gtk-doc
-
-    post-destroot {
-        move ${destroot}${prefix}/share/man/man1/certtool.1 ${destroot}${prefix}/share/man/man1/gnutls-certtool.1
-    }
-}
-
 variant guile description {Build guile bindings} {
 # there currently is a build issue with the guile variant
 # the workaround is to first install guile w/o guile and then with +guile
@@ -151,12 +144,10 @@ if {${universal_possible} && [variant_isset universal]} {
     configure.args-append \
         --host=i686-apple-${os.platform}${os.major} \
         --build=i686-apple-${os.platform}${os.major}
-        default_variants    +doc
 } else {
     configure.args-append \
         --host=${build_arch}-apple-${os.platform}${os.major} \
         --build=${build_arch}-apple-${os.platform}${os.major}
-        default_variants    +doc
 }
 
 test.run        yes
@@ -164,6 +155,7 @@ test.target     check
 
 post-destroot {
     move ${destroot}${prefix}/bin/certtool ${destroot}${prefix}/bin/gnutls-certtool
+    move ${destroot}${prefix}/share/man/man1/certtool.1 ${destroot}${prefix}/share/man/man1/gnutls-certtool.1
 }
 
 livecheck.type  regex

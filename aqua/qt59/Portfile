@@ -157,7 +157,7 @@ array set modules {
             45219440
         }
         ""
-        "port:zlib port:libpng path:include/turbojpeg.h:libjpeg-turbo port:freetype path:bin/dbus-daemon:dbus path:lib/pkgconfig/glib-2.0.pc:glib2 port:icu port:pcre2 port:harfbuzz"
+        "port:zlib port:libpng path:include/turbojpeg.h:libjpeg-turbo port:freetype path:bin/dbus-daemon:dbus path:lib/pkgconfig/glib-2.0.pc:glib2 port:icu port:pcre2 path:lib/pkgconfig/harfbuzz.pc:harfbuzz"
         ""
         {"Qt Core" "Qt GUI" "Qt Network" "Qt SQL" "Qt Test" "Qt Widgets" "Qt Concurrent" "Qt D-Bus" "Qt OpenGL" "Qt Platform Headers" "Qt Print Support" "Qt XML"}
         ""
@@ -292,7 +292,7 @@ array set modules {
             2125700
         }
         ""
-        "port:jasper port:libmng port:tiff port:webp"
+        "path:lib/pkgconfig/jasper.pc:jasper port:libmng port:tiff port:webp"
         "qtbase"
         {"Qt Image Formats"}
         ""
@@ -780,6 +780,13 @@ if { ${os.major} < 14 } {
         ui_error "${subport} requires OS X 10.10 or later"
         return -code error "incompatible OS version"
     }
+} elseif {${os.major} >= 21} {
+    # Failed to resolve SDK path for 'macosx12'
+    known_fail  yes
+    pre-fetch {
+        ui_error "${subport} does not build on macOS 12 or later"
+        return -code error "incompatible OS version"
+    }
 }
 
 foreach {module module_info} [array get modules] {
@@ -876,7 +883,7 @@ foreach {module module_info} [array get modules] {
             patchfiles-append patch-find_rez.diff
             post-patch {
                 reinplace \
-                    "s|__MACPORTS_Rez__|[exec xcrun --find Rez]|g" \
+                    "s|__MACPORTS_Rez__|[exec -ignorestderr xcrun --find Rez]|g" \
                     mkspecs/common/mac.conf \
                     mkspecs/features/mac/rez.prf
             }
@@ -1160,7 +1167,7 @@ foreach {module module_info} [array get modules] {
                 -no-libudev       \
                 -no-egl
 
-            # Qt builds part of the system using environment provided my MacPorts.
+            # Qt builds part of the system using environment provided by MacPorts.
             # It builds the rest using its own internal environment.
             # For consistency, clear MacPorts environment.
             #configure.cxx_stdlib
@@ -1185,7 +1192,7 @@ foreach {module module_info} [array get modules] {
             configure.universal_cxxflags
             configure.universal_cppflags
 
-            # cofigure script looks for perl but doesn't seem to use it for our configuration
+            # configure script looks for perl but doesn't seem to use it for our configuration
 
             # configure script uses gawk if it can find it,
             #    so require it for consistency
@@ -1224,7 +1231,7 @@ foreach {module module_info} [array get modules] {
             # these subports use qmake
             PortGroup            qmake5 1.0
 
-            # detremint which variants are to be turned off
+            # determine which variants are to be turned off
             set request_examples true
             set request_tests    true
             set def_var          ""
@@ -1277,7 +1284,7 @@ foreach {module module_info} [array get modules] {
                     set base_examples false
                 }
 
-                # determine if qmake runs tests by default (set via varians)
+                # determine if qmake runs tests by default (set via variants)
                 if {[active_variants ${name}-qtbase tests ""]} {
                     set base_tests true
                 } else {
@@ -1298,7 +1305,7 @@ foreach {module module_info} [array get modules] {
                     set this_tests false
                 }
 
-                # determine of qmake's default and user requests are compatible; override qmake if necessary
+                # determine if qmake's default and user requests are compatible; override qmake if necessary
                 if { ${this_examples} && !${base_examples}  } {
                     configure.args-append "QT_BUILD_PARTS+=\"examples\""
                 }

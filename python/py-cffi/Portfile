@@ -4,13 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-cffi
-version             1.14.5
+version             1.15.0
 revision            0
 categories-append   devel
 platforms           darwin
 license             MIT
 
-python.versions     27 35 36 37 38 39
+python.versions     27 35 36 37 38 39 310
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -22,9 +22,9 @@ long_description    Foreign Function Interface for Python calling C code. \
 
 homepage            https://cffi.readthedocs.org/
 
-checksums           rmd160  38225f668aa57d7ec7e3756843ba1dfdf27494d3 \
-                    sha256  fd78e5fee591709f32ef6edb9a015b4aa1a5022598e36227500c8f4e02328d9c \
-                    size    475055
+checksums           rmd160  cdb71f4d1ee48de0966e890f9268f9e4da9a850d \
+                    sha256  920f0d66a896c2d99f0adbb391f990a84091179542c205fa53ce5787aff87954 \
+                    size    484058
 
 if {${name} ne ${subport}} {
     patchfiles-append   patch-setup.py.diff

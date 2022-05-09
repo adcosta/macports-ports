@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+PortGroup           select 1.0
+
+name                py-hatchling
+version             0.24.0
+revision            0
+categories          python
+license             MIT
+maintainers         {mps @Schamschula} openmaintainer
+description         This is the extensible, standards compliant build backend used by Hatch.
+long_description    {*}${description}
+homepage            https://ofek.dev/hatch/latest/
+
+checksums           rmd160  a8696964672fd1d46d04cf560842be8cad25c40e \
+                    sha256  ce6765f5b5baf3cb57d2f80196c50e201e3728cacd95353f5c9b4f03dfdf4eb9 \
+                    size    44544
+
+python.versions     37 38 39 310
+
+if {${name} ne ${subport}} {
+    python.pep517   yes
+    # Bootstraps itself, no backend dependencies needed
+    python.pep517_backend
+
+    depends_lib-append  \
+                    port:py${python.version}-editables \
+                    port:py${python.version}-pathspec \
+                    port:py${python.version}-pluggy
+
+    select.group    hatchling
+    select.file     ${filespath}/py${python.version}-hatchling
+}

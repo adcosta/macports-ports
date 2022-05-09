@@ -3,14 +3,22 @@
 PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           cmake 1.1
+PortGroup           boost 1.0
+PortGroup           openssl 1.0
+PortGroup           compiler_blacklist_versions 1.0
+PortGroup           legacysupport 1.1
 
-github.setup        facebook folly 2019.09.16.00 v
-revision            0
+legacysupport.newest_darwin_requires_legacy 19
+legacysupport.use_mp_libcxx                 yes
+
+github.setup        facebook folly 2022.01.17.00 v
+revision            2
+checksums           rmd160  b23af912ff85af8a8ec29507e202b07478af8b94 \
+                    sha256  7c79a7526f2b43fda99a982557d74c9cd5d3b51e36f30c5f9d39be9d210e3a38 \
+                    size    3550869
 
 categories          devel
-platforms           darwin
 license             Apache-2
-
 maintainers         nomaintainer
 
 description         An open-source C++ library developed and used at Facebook.
@@ -27,14 +35,11 @@ long_description    Folly (acronymed loosely after Facebook Open Source Library)
                     more idiosyncratic than they would otherwise be (see e.g. PackedSyncPtr.h, SmallLocks.h). \
                     Good performance at large scale is a unifying theme in all of Folly.
 
-checksums           rmd160  4146c1e95e307ae755f0997a27a879891dd73f51 \
-                    sha256  3f7daeb1755246a92b890079dd3881070be8478e1ccfb0dc21037a54de87edbb \
-                    size    3033459
+github.tarball_from releases
+distname            ${name}-v${version}
+extract.mkdir       yes
 
-# doesn't build with libressl as of 2016-09-05
-depends_lib-append  port:boost \
-                    port:bzip2 \
-                    port:python27 \
+depends_lib-append  port:bzip2 \
                     port:gflags \
                     port:google-glog \
                     port:double-conversion \
@@ -43,15 +48,23 @@ depends_lib-append  port:boost \
                     port:lz4 \
                     port:lzma \
                     port:xz \
-                    path:lib/libssl.dylib:openssl \
                     port:zlib \
                     port:zstd \
-                    port:libsodium
+                    port:libsodium \
+                    port:libunwind \
+                    port:libfmt
+
+cmake.generator     Ninja
 
 configure.args-append -DBUILD_SHARED_LIBS=ON -DFOLLY_USE_JEMALLOC=0
 
-compiler.cxx_standard   2014
-configure.cxxflags-append -std=c++14
+compiler.cxx_standard   2017
+configure.cxxflags-append -std=c++17
+
+# error: typedef redefinition with different types ('uint8_t' (aka 'unsigned char') vs 'enum clockid_t')
+compiler.blacklist-append {clang < 1100}
+# error: 'path' is unavailable: introduced in macOS 10.15
+compiler.blacklist-append {macports-clang-[5-9].0}
 
 platform darwin {
     # https://github.com/facebook/folly/issues/864
@@ -63,6 +76,7 @@ platform darwin {
     if {${os.major} < 15} {
         configure.cxxflags-append -DFOLLY_ALLOW_TFO=0
     }
+    configure.cxxflags-append -DFOLLY_MOBILE=0
 }
 
 variant jemalloc description {Use je_malloc} {

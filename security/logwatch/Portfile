@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                logwatch
-version             7.5.5
+version             7.6
 revision            0
 distname            logwatch-${version}
 categories          security
@@ -26,9 +26,9 @@ master_sites        sourceforge:project/logwatch/logwatch-${version}
 platforms           darwin
 depends_lib         path:bin/perl:perl5
 
-checksums           rmd160  69d676a2b5230dc9db0999d8e9e7e47e80b44457 \
-                    sha256  138f181dea49470e1ef2d39af11b851aef0156500601312ce4de25d3a199b1c1 \
-                    size    474167
+checksums           rmd160  8d78c8490a9bbe2110f4895f67fe977afed433bb \
+                    sha256  689f3c68b99ef7af7d3c7007c3ff0a55d5674bdbf9c01f69a9f187726d6d4baf \
+                    size    488750
 
 patchfiles          patch-scripts.logwatch.pl.diff \
                     patch-conf.logwatch.conf.diff \
@@ -97,10 +97,6 @@ Run the following command to load the logwatch launchd plist\
 in order to start the service now and at system startup:
 
 sudo port load logwatch
-
-or if this was an upgrade:
-
-sudo port reload logwatch
 "
 
 livecheck.regex     ${name}-(\[0-9.\]+)${extract.suffix}

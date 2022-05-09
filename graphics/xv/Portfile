@@ -48,7 +48,7 @@ depends_lib             port:xorg-libXt \
                         path:include/turbojpeg.h:libjpeg-turbo \
                         port:tiff \
                         port:libpng \
-                        port:jasper \
+                        path:lib/pkgconfig/jasper.pc:jasper \
                         port:zlib
 
 pre-patch {
@@ -58,6 +58,9 @@ pre-patch {
 patchfiles              patch-Makefile.diff \
                         patch-libpng-1.5.diff \
                         patch-xv.h.diff
+
+# jas_memdump now takes a const
+patchfiles-append       patch-xv-jasmemdump-const.diff
 
 use_configure           no
 

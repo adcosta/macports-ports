@@ -6,7 +6,7 @@ PortGroup       active_variants 1.1
 PortGroup       compiler_blacklist_versions 1.0
 
 version         1.69.0
-revision        3
+revision        6
 
 set branch      [join [lrange [split ${version} .] 0 1] .]
 set tag         [string map {. {}} ${branch}]
@@ -20,7 +20,9 @@ checksums       rmd160  308544f184f04e4f192ac6a1118f6db787558ee6 \
 license         Boost-1
 categories      devel
 platforms       darwin
-maintainers     {mcalhoun @MarcusCalhoun-Lopez} {@mascguy} openmaintainer
+maintainers     {mcalhoun @MarcusCalhoun-Lopez} \
+                {mascguy @mascguy} \
+                openmaintainer
 
 description     Collection of portable C++ source libraries
 
@@ -63,7 +65,6 @@ set bprefix ${prefix}/libexec/boost/${branch}
 # libcdr on these OS versions without affecting build on 10.6 and less
 # (where clang is not the default compiler) or 10.9 and up (where
 # libc++ is the default).
-
 patchfiles-append patch-apple-clang-no-libcxx.diff
 
 # temporary patch to fix: explicit template instanciations in
@@ -72,7 +73,6 @@ patchfiles-append patch-apple-clang-no-libcxx.diff
 # also the following tickets:
 # https://trac.macports.org/ticket/48717
 # https://svn.boost.org/trac/boost/ticket/11671
-
 patchfiles-append patch-export_serialization_explicit_template_instantiations.diff
 
 # revert the default tagged library name changes in 1.69.0 <
@@ -82,6 +82,11 @@ patchfiles-append patch-export_serialization_explicit_template_instantiations.di
 # or st (multi or single), and <arch> is the build arch (x86, x64,
 # p64, p32).
 patchfiles-append patch-revert-lib-name-tagged.diff
+
+# see https://github.com/boostorg/build/commit/b3a59d265929a213f02a451bb63cea75d668a4d9
+# see https://github.com/boostorg/build/issues/440
+# see https://trac.macports.org/ticket/65117
+patchfiles-append patch-version_check.diff
 
 # see https://trac.macports.org/wiki/UsingTheRightCompiler
 patchfiles-append patch-compiler.diff
@@ -126,7 +131,8 @@ if {[string match *gcc* ${configure.compiler}]} {
     configure.args-append --with-toolset=gcc
 }
 
-if {${os.platform} eq "darwin" && ${os.major} <= 10} {
+# makecontext/swapcontext introduced in 10.6
+if {${os.platform} eq "darwin" && ${os.major} < 10} {
     configure.args-append   --without-libraries=context \
                             --without-libraries=coroutine
 }
@@ -260,6 +266,15 @@ if {![variant_isset debug]} {
         }
     }
     default_variants +${selected_python}
+}
+
+post-destroot {
+    # To avoid checking for all Python variants, don't fail if no libs exist
+    foreach f [glob -nocomplain ${destroot}${bprefix}/lib/*python*.dylib] {
+        set tf [file tail ${f}]
+        ln -s ${tf} ${destroot}${bprefix}/lib/[string map "${selected_python} python3" ${tf}]
+        ln -s ${tf} ${destroot}${bprefix}/lib/[string map "${selected_python} python"  ${tf}]
+    }
 }
 
 default_variants +no_single +no_static

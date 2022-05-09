@@ -32,14 +32,14 @@ depends_build       port:pkgconfig \
                     port:libtool \
                     port:gtk-doc
 
-depends_lib         port:gtk3 \
+depends_lib         path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     port:dbus \
                     port:json-glib \
                     port:telepathy-glib \
                     port:py39-rdflib \
                     port:raptor2 \
-                    port:vala
+                    path:bin/vala:vala
 
 gobject_introspection yes
 

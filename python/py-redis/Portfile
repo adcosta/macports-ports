@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-redis
-version             3.5.3
+version             4.2.2
 revision            0
 categories-append   devel
-platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 35 36 37 38 39
+python.versions     37 38 39 310
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,12 +20,17 @@ long_description    ${description}
 
 homepage            https://github.com/andymccurdy/redis-py
 
-checksums           rmd160  8138c8bf7874fbf1b57d603b7a929f4c8e469317 \
-                    sha256  0e7e0cfca8660dea8b7d5cd8c4f6c5e29e11f31158c0b0ae91a397f00e5a05a2 \
-                    size    141112
+checksums           rmd160  b799da0c44b94d5dcbede11dff556ab9e907a661 \
+                    sha256  0107dc8e98a4f1d1d4aa00100e044287f77121a1e6d2085545c4b7fa94a7a27f \
+                    size    2421362
 
 if {${name} ne ${subport}} {
-    depends_build-append \
-                        port:py${python.version}-setuptools
-    livecheck.type      none
+    depends_lib-append  port:py${python.version}-deprecated \
+                        port:py${python.version}-packaging \
+                        port:py${python.version}-typing_extensions \
+                        port:py${python.version}-async-timeout
+
+    if {${python.version} < 38} {
+        depends_lib-append  port:py${python.version}-importlib-metadata
+    }
 }

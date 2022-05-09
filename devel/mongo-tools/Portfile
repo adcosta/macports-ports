@@ -2,6 +2,8 @@
 
 PortSystem          1.0
 
+# This port deliberately does not use github.tarball_from archive because that
+# does not provide us with the commit hash anywhere, which we want to know.
 # This block must be declared before the one declared by the github portgroup
 # (which is included by the golang portgroup).
 post-extract {
@@ -15,14 +17,13 @@ post-extract {
 
 PortGroup           golang 1.0
 
-go.setup            github.com/mongodb/mongo-tools 100.2.1
+go.setup            github.com/mongodb/mongo-tools 100.5.2
 revision            0
-checksums           rmd160  f657e9de3a72d8f2c39c19a7bfe86c248f8cec13 \
-                    sha256  b97a8731c422d5cfbc3d50c41129416b1cfa96a267621b07c8f71d2a13f6600c \
-                    size    27442485
+checksums           rmd160  cf255ef8a6a5ca668bad5812a6c29afc7985f97e \
+                    sha256  1a37212e2581e0d3cbaa34b87191f2febb7018a734d781bbe2a1f5870b3aa5a6 \
+                    size    3803965
 
 categories          devel
-platforms           darwin
 maintainers         {ryandesign @ryandesign} openmaintainer
 license             Apache-2
 
@@ -45,14 +46,7 @@ long_description    mongo-tools is a collection of utilities for working with \
 
 dist_subdir         ${name}
 
-depends_build-append \
-                    port:pkgconfig
-
-depends_lib         port:cyrus-sasl2 \
-                    port:libpcap \
-                    path:lib/libssl.dylib:openssl
-
-patchfiles          openssl.patch \
+patchfiles          deployment_target.patch \
                     version.patch
 
 post-patch {
@@ -83,5 +77,3 @@ destroot {
         README.md \
         ${destroot}${docdir}
 }
-
-github.livecheck.regex  {(\d+\.\d*[02468]\.\d+)}

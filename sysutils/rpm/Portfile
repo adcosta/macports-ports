@@ -5,7 +5,7 @@ PortGroup           perl5 1.0
 
 name                rpm
 version             4.4.9
-revision            22
+revision            23
 perl5.branches      5.28
 platforms           darwin freebsd linux
 license             GPL-2 LGPL-2
@@ -120,6 +120,10 @@ platform darwin {
 
     configure.cppflags-append \
                     -I${frameworks_dir}/Python.framework/Versions/2.7/include/python2.7
+
+    post-configure {
+        exec patch -d ${worksrcpath} -p0 < ${filespath}/patch-implicit-declaration
+    }
 
     post-destroot {
         # Mac OS X specific changes

@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/prometheus/prometheus 2.27.1 v
+go.setup            github.com/prometheus/prometheus 2.35.0 v
+github.tarball_from archive
 revision            0
 
 homepage            https://prometheus.io
@@ -16,26 +17,34 @@ long_description    Prometheus is an open-source systems monitoring and \
                     have adopted Prometheus, and the project has a very \
                     active developer and user community.
 
-platforms           darwin
 categories          sysutils
+installs_libs       no
 license             Apache-2
-
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
 depends_build-append \
-                    port:nodejs15 \
-                    port:npm6 \
+                    port:golangci-lint \
+                    path:bin/node:nodejs16 \
+                    path:bin/npm:npm8 \
                     port:promu \
                     port:yarn
 
+platform darwin {
+    if {${os.major} < 13} {
+        depends_build-replace \
+                    path:bin/node:nodejs16 \
+                    path:bin/node:nodejs14
+    }
+}
+
 build.cmd           make
 build.pre_args-append \
+                    GOLANGCI_LINT=${prefix}/bin/golangci-lint \
                     PROMU=${prefix}/bin/promu
 build.args          build
 build.env-delete    GOPROXY=off
 
-installs_libs       no
 use_parallel_build  no
 use_xcode           yes
 
@@ -48,15 +57,13 @@ set prom_share_dir  ${prefix}/share/${name}
 set prom_log_dir    ${prefix}/var/log/${name}
 set prom_log_file   ${prom_log_dir}/${name}.log
 
-checksums           rmd160  014f5902449038ed5ad8a406dbb9b64259b1424c \
-                    sha256  90df7ed4b3a68e7cd0fe9fc8e94732aedecc2ed5f2828eb515507db64f024c2f \
-                    size    5646587
+checksums           rmd160  b8db37d8c47df15d7eb200781caf645eddd98c45 \
+                    sha256  5264a7b59f5b9e28d3c47bf694a1062e6d3745c3797d28585c2b44eb9d72da1f \
+                    size    6025013
 
 add_users           ${prom_user} \
                     group=${prom_user} \
                     realname=Prometheus
-
-github.tarball_from archive
 
 # promu will fail if it cannot capture the current user using the USER
 # environment variable.  So if USER is not currently set in the environment,
@@ -97,17 +104,17 @@ destroot.keepdirs-append ${destroot}${prom_data_dir} \
                          ${destroot}${prom_conf_dir}
 
 destroot {
-    xinstall -m 755 ${worksrcpath}/${name}  ${destroot}${prefix}/bin/${name}
-    xinstall -m 755 ${worksrcpath}/promtool ${destroot}${prefix}/bin/promtool
+    xinstall -m 0755 ${worksrcpath}/${name}  ${destroot}${prefix}/bin/${name}
+    xinstall -m 0755 ${worksrcpath}/promtool ${destroot}${prefix}/bin/promtool
 
-    xinstall -d -m 755 ${destroot}${prom_conf_dir}
-    xinstall -d -m 755 ${destroot}${prom_doc_dir}
-    xinstall -d -m 755 ${destroot}${prom_share_dir}
+    xinstall -d -m 0755 ${destroot}${prom_conf_dir}
+    xinstall -d -m 0755 ${destroot}${prom_doc_dir}
+    xinstall -d -m 0755 ${destroot}${prom_share_dir}
 
-    xinstall -m 755 -o ${prom_user} -g ${prom_user} -d \
+    xinstall -m 0755 -o ${prom_user} -g ${prom_user} -d \
         ${destroot}${prom_data_dir}
 
-    xinstall -m 755 -o ${prom_user} -g ${prom_user} -d \
+    xinstall -m 0755 -o ${prom_user} -g ${prom_user} -d \
         ${destroot}${prom_log_dir}
 
     touch ${destroot}${prom_log_file}
@@ -120,13 +127,13 @@ destroot {
 
     copy {*}[glob ${worksrcpath}/docs/*] ${destroot}${prom_doc_dir}/
 
-    xinstall -d -m 755 \
+    xinstall -d -m 0755 \
         ${destroot}${prefix}/etc/LaunchDaemons/org.macports.${name}
 
     xinstall -m 0644 -o root -W ${workpath} org.macports.${name}.plist \
         ${destroot}${prefix}/etc/LaunchDaemons/org.macports.${name}
 
-    xinstall -d -m 755 ${destroot}/Library/LaunchDaemons
+    xinstall -d -m 0755 ${destroot}/Library/LaunchDaemons
 
     ln -s ${prefix}/etc/LaunchDaemons/org.macports.${name}/org.macports.${name}.plist \
         ${destroot}/Library/LaunchDaemons/org.macports.${name}.plist

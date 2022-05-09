@@ -6,7 +6,7 @@ PortGroup           xcodeversion 1.0
 
 name                TeXShop4
 conflicts           TeXShop
-version             4.64
+version             4.72
 revision            0
 
 set major           [lindex [split ${version} .] 0]
@@ -32,9 +32,9 @@ worksrcdir          ${propername}-${version}
 # TeXShop4 has frequent stealth updates, keep in sync with revision number
 #dist_subdir         TeXShop/${version}_${revision}
 
-checksums           rmd160  c8452f41c02e95498b0980ba8ee9d4de51d72211 \
-                    sha256  5e2fc4e3c1e091416e568ee265484df9a25911b6970c8d08cb9734b75386175e \
-                    size    150388016
+checksums           rmd160  441e7df2e3ccc13091eb0e9ee7dc07253b2acc29 \
+                    sha256  3ccd13e3d1200e801c341e492dafa3243336d7c195c30e1d2b8e489cb1218608 \
+                    size    154966871
 
 minimum_xcodeversions   {20 12.2}
 
@@ -49,9 +49,9 @@ if {[vercmp ${xcodeversion} 10.0] >= 0} {
 configure.cxx_stdlib    libstdc++
 
 platform darwin {
-    if {${os.major} < 13} {
+    if {${os.major} < 15} {
         pre-fetch {
-            ui_error "${name} @${version} requires at least OS X 10.9 Mavericks"
+            ui_error "${name} @${version} requires at least OS X 10.11 El Capitan"
             return -code error "incompatible OS X version"
         }
         known_fail  yes

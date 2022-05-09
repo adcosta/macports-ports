@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        b4nst turbogit 2.0.0 v
+github.setup        b4nst turbogit 3.1.0 v
+revision            0
 categories          devel
 platforms           darwin
 supported_archs     x86_64
@@ -11,13 +12,13 @@ license             MIT
 maintainers         {b4nst @b4nst} openmaintainer
 
 description         Your git boat friend
-long_description    Cli tool built to help you deal with your day-to-day git work.
+long_description    Opinionated cli enforcing clean git workflow without comprising UX
 
 github.tarball_from archive
 
-checksums           rmd160  daa7c0fbfc73d1fef42ab9f96a67c38ac8bfab78 \
-                    sha256  ee4c61f399caf03745adcabef04feff17ea301deff33f2ed6543d0984064b7f4 \
-                    size    1164156
+checksums           rmd160  e322ffa79c691097ff3b0570747dcca7ec468534 \
+                    sha256  c2acaf6b3a14de44e81c04ebd2ea2a2ddce827c1cb9680b4aea3caf5a16c96e3 \
+                    size    1141496
 
 use_configure       no
 installs_libs       no
@@ -35,7 +36,7 @@ destroot {
 
     set docdir ${prefix}/share/${name}
     xinstall -d ${destroot}${docdir}
-    xinstall -m 0644 -W ${worksrcpath} LICENSE config/tug.toml ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} LICENSE ${destroot}${docdir}
 }
 
 notes "

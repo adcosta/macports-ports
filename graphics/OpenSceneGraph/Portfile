@@ -6,7 +6,7 @@ PortGroup               cmake 1.1
 PortGroup               boost 1.0
 
 github.setup            openscenegraph OpenSceneGraph 3.6.5 OpenSceneGraph-
-revision                3
+revision                4
 conflicts               OpenSceneGraph-devel
 platforms               darwin
 categories              graphics
@@ -41,9 +41,9 @@ depends_lib             port:curl \
                         port:gstreamer1-gst-plugins-base \
                         port:ilmbase \
                         path:include/turbojpeg.h:libjpeg-turbo \
-                        port:jasper \
+                        path:lib/pkgconfig/jasper.pc:jasper \
                         port:libpng \
-                        port:librsvg \
+                        path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
                         port:openexr \
                         port:poppler \
                         port:tiff \

@@ -112,7 +112,7 @@ if {${subport} eq ${name} || ${subport} eq "${name}-lx"} {
     test.target     check
     test.args       VERBOSE=1
 
-    if {${os.platform} eq "darwin" && ${os.major} < 11} {
+    if {${os.platform} eq "darwin" && (${os.major} < 11 || ${os.major} > 20)} {
         depends_build-append    port:python27
         license_noconflict      python27
         configure.python        ${prefix}/bin/python2.7
@@ -188,7 +188,7 @@ if {${subport} eq "${name}-doxygen-docs"} {
 
 if {${subport} eq ${name}} {
     livecheck.url       http://site.icu-project.org/download
-    livecheck.regex     "ICU4C-Download\">(\[0-9.\]+)"
+    livecheck.regex     "ICU (\[0-9.\]+) is now available."
 } else {
     livecheck.type      none
 }

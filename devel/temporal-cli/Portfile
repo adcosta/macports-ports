@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/temporalio/temporal 1.8.1 v
+go.setup            github.com/temporalio/temporal 1.14.5 v
+github.tarball_from archive
 name                temporal-cli
 revision            0
 
@@ -16,14 +17,14 @@ long_description    {*}${description}. Temporal is the open source \
                     critical code at any scale.
 
 categories          devel sysutils
+installs_libs       no
 license             MIT
-
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  0f4af0252241db2255e7161527aab96b720f1b1f \
-                    sha256  d34060b545c47b85232bf58765acb3dcfc992c334b2f152933ad2f1e5bf9a559 \
-                    size    1718356
+checksums           rmd160  91479f8874c6f062cf51965f5fe6cac45d92b417 \
+                    sha256  332520a6eb2b64199a4ceda43eb19b7a8831f9bb4d15c3a4c043b8f53d9e91f5 \
+                    size    1938077
 
 # Allow fetching dependencies at build time
 build.env-delete    GOPROXY=off GO111MODULE=off
@@ -37,5 +38,5 @@ use_parallel_build  no
 notes "temporal-cli is installed as tctl"
 
 destroot {
-    xinstall -m 755 ${worksrcpath}/tctl ${destroot}${prefix}/bin/
+    xinstall -m 0755 ${worksrcpath}/tctl ${destroot}${prefix}/bin/
 }

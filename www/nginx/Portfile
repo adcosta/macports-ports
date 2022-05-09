@@ -3,22 +3,17 @@
 PortSystem          1.0
 
 name                nginx
-version             1.21.0
+version             1.21.6
 revision            0
 categories          www mail
 platforms           darwin
 license             BSD
 maintainers         {cal @neverpanic} {mps @Schamschula} openmaintainer
 
-description         High-performance HTTP(S) server, HTTP(S) reverse proxy and IMAP/POP3 proxy server
-long_description    \
-    Nginx ("engine x") is a high-performance HTTP(S) server and reverse proxy, \
-    as well as an IMAP/POP3 proxy server. Nginx was written by Igor Sysoev for \
-    Rambler.ru, Russia's second-most visited website, where it has been running \
-    in production for over two and a half years. Igor has released the source \
-    code under a BSD-like license. Although still in beta, Nginx is known for \
-    its stability, rich feature set, simple configuration, and low resource \
-    consumption.
+description         High-performance HTTP(S) server, HTTP(S) reverse proxy and IMAP/POP3 \
+                    proxy server
+long_description    Nginx ("engine x") is an HTTP and reverse proxy server, a mail proxy \
+                    server, and a generic TCP/UDP proxy server.
 
 homepage            https://nginx.org/
 master_sites        https://nginx.org/download:nginx \
@@ -26,7 +21,9 @@ master_sites        https://nginx.org/download:nginx \
                     https://github.com/evanmiller/mod_zip/archive/:zip_module \
                     https://people.freebsd.org/~osa/:redis_module \
                     https://github.com/masterzen/nginx-upload-progress-module/archive/:uploadprogress_module \
+                    https://github.com/openresty/echo-nginx-module/archive/:echo_module \
                     https://github.com/arut/nginx-dav-ext-module/archive/:davext_module \
+                    https://github.com/leev/ngx_http_geoip2_module/archive/:geoip2_module \
                     https://codeload.github.com/arut/nginx-rtmp-module/tar.gz/:rtmp_module \
                     https://github.com/slact/nchan/archive/:http_push_module \
                     https://github.com/simpl/ngx_devel_kit/archive/:devel_kit_module \
@@ -38,9 +35,9 @@ master_sites        https://nginx.org/download:nginx \
 
 distfiles           ${name}-${version}${extract.suffix}:nginx
 checksums           ${name}-${version}${extract.suffix} \
-                    rmd160  d7b3d650e95f0f891facb86faea576d8383161ee \
-                    sha256  fe192a4bac2bd3a769e8695cb9fe14a00e57eaceb919095347a83b5b2afc0771 \
-                    size    1063682
+                    rmd160  b00f302758d3671afddbfcb95dca84a938f54472 \
+                    sha256  66dc7081488811e9f925719e34d1b4504c2801c81dee2920e5452a86b11405ae \
+                    size    1073364
 
 depends_lib         port:pcre \
                     port:zlib
@@ -168,13 +165,44 @@ variant degradation description {Allow to return 204 or 444 code for some locati
     configure.args-append   --with-http_degradation_module
 }
 
+variant echo description {Brings echo, sleep, time, exec and more shell-style goodies to Nginx config file} {
+    set echo_filename       echo-nginx-module
+    set echo_version        0.62
+    set echo_distname       ${echo_filename}-${echo_version}
+    distfiles-append        v${echo_version}.tar.gz:echo_module
+    checksums-append        v${echo_version}.tar.gz \
+                            rmd160  2a2099e0436702d42ed3bd74231c099661c14260 \
+                            sha256  86f6866baf7297d85feb42ff6d9c212d1de696f3314a53d3a41a4b533a67ab01 \
+                            size    53329
+
+    configure.args-append   --with-http_dav_module --add-module=${workpath}/${echo_distname}
+}
+
 variant flv description {Add FLV (Flash Video) streaming support to server} {
     configure.args-append   --with-http_flv_module
 }
 
-variant geoip description {Enable Ngx http GeoIP module (http://wiki.nginx.org/HttpGeoIPModule)} {
-    configure.args-append   --with-http_geoip_module
-    depends_lib-append      port:libgeoip
+variant geoip description {Enable Ngx http GeoIP module } {
+    # remove after 2022-12-28
+    pre-configure {
+        ui_error "The geoip module has been replaced by the geoip2 module, \
+            See: https://trac.macports.org/ticket/64305"
+            return -code error
+    }
+}
+
+variant geoip2 description {Enable Ngx http GeoIP2 module (https://github.com/leev/ngx_http_geoip2_module)} {
+    set geoipext_filename   ngx_http_geoip2_module
+    set geoipext_version    3.3
+    set geoipext_distname   ${geoipext_filename}-${geoipext_version}
+    distfiles-append        ${geoipext_version}.tar.gz:geoip2_module
+    checksums-append        ${geoipext_version}.tar.gz \
+                            rmd160  7b272aad1a402ae6ca8fac873d4555afbeab7b75 \
+                            sha256  41378438c833e313a18869d0c4a72704b4835c30acaf7fd68013ab6732ff78a7 \
+                            size    8509
+
+    configure.args-append   --add-module=${workpath}/${geoipext_distname}
+    depends_lib-append      port:libmaxminddb
 }
 
 variant gperftools description {Enable Google Performance Tools profiling for workers} {
@@ -219,9 +247,9 @@ variant mp4 description {Enables mp4 streaming with seeking ability} {
 }
 
 variant perl5 description {Add perl support to the server directly within nginx and call perl via SSI} {
-    depends_lib-append      port:perl5.24
+    depends_lib-append      port:perl5.30
     configure.args-append   --with-http_perl_module \
-                            --with-perl=${prefix}/bin/perl5.24
+                            --with-perl=${prefix}/bin/perl5.30
 }
 
 variant random_index description {Randomize directory indexes} {
@@ -320,13 +348,13 @@ variant redis description {Enable Ngx HTTP Redis module} {
 
 variant rtmp description {Enable Ngx RTMP module (https://github.com/arut/nginx-rtmp-module)} {
     set rtmp_filename       nginx-rtmp-module
-    set rtmp_version        1.2.1
+    set rtmp_version        1.2.2
     set rtmp_distname       ${rtmp_filename}-${rtmp_version}
     distfiles-append        v${rtmp_version}:rtmp_module
     checksums-append        v${rtmp_version} \
-                            rmd160  5fc0b4ac0b2c0a6d70957a5256754db8a9e934cf \
-                            sha256  87aa597400b0b5a05274ee2d23d8cb8224e12686227a0abe31d783b3a645ea37 \
-                            size    519919
+                            rmd160  a19f42e4f15214fd11ac8f334468dc400b86b5bd \
+                            sha256  07f19b7bffec5e357bb8820c63e5281debd45f5a2e6d46b1636d9202c3e09d78 \
+                            size    519934
 
     configure.args-append   --add-module=${workpath}/${rtmp_distname}
 
@@ -343,13 +371,13 @@ variant rtmp description {Enable Ngx RTMP module (https://github.com/arut/nginx-
 
 variant http_push description {Enable Ngx HTTP Push module (https://github.com/slact/nchan)} {
     set http_push_filename  nchan
-    set http_push_version   1.2.8
+    set http_push_version   1.2.15
     set http_push_distname  ${http_push_filename}-${http_push_version}
     distfiles-append        v${http_push_version}.tar.gz:http_push_module
     checksums-append        v${http_push_version}.tar.gz \
-                            rmd160  d59a130768a63280b86f760af0cedf7066fdd2f9 \
-                            sha256  de42e8d4fef6aef9e4c7303a7480adfe9545992470a7f6be008de7a4bb64cc98 \
-                            size    681604
+                            rmd160  1d36b1c82c1e4e125f6763bf7e73933bc3113da9 \
+                            sha256  dbb05bec6a4cf6ad1c1a4e613a2c832669c0eb87847e70ab26bc6c590361a818 \
+                            size    734488
 
      configure.args-append   --add-module=${workpath}/${http_push_distname}
 }
@@ -416,26 +444,26 @@ variant jwt description {Add JWT (Javascript Web Token) support to server using 
 
 variant fancyindex description {Add fancy index support; file listings, like the built-in autoindex module does, but with a touch of style} {
     set fancyindex_filename        ngx-fancyindex
-    set fancyindex_version         0.5.1
+    set fancyindex_version         0.5.2
     set fancyindex_distname        ${fancyindex_filename}-${fancyindex_version}
     distfiles-append        v${fancyindex_version}.tar.gz:fancyindex_module
     checksums-append        v${fancyindex_version}.tar.gz \
-                            rmd160  3c8dacc7748e5de3ed37da7dbe18cf1df9e92421 \
-                            sha256  238bd5521d6c9b55780e6871339a7ea79508b9a6758ad2fa4451f2dfe26d94c9 \
-                            size    28277
+                            rmd160  71a2e8ab3d07396a7f55b8134a30916d6e0f5ed3 \
+                            sha256  c3dd84d8ba0b8daeace3041ef5987e3fb96e9c7c17df30c9ffe2fe3aa2a0ca31 \
+                            size    29052
 
     configure.args-append   --add-module=${workpath}/${fancyindex_distname}
 }
 
 variant vod description {Add MP4 repackeging for HLS, DASH, HDS, HSS using nginx-vod-module} {
     set vod_filename        nginx-vod-module
-    set vod_version         1.28
+    set vod_version         1.29
     set vod_distname        ${vod_filename}-${vod_version}
     distfiles-append        ${vod_version}.tar.gz:vod_module
     checksums-append        ${vod_version}.tar.gz \
-                            rmd160  6bbe8cf212ca19cdce1c1a6b9b80c94826cdae6e \
-                            sha256  ec9449ed400d9719cac741ed8321db92266ccb81ec91099400936559542e66f2 \
-                            size    465594
+                            rmd160  843062897e3e9825ee32833f7204045aecc62a23 \
+                            sha256  775898874367900f14b6197366501c782e8c86dd2b0c3cc45973abf4e8a9217c \
+                            size    469764
 
     configure.args-append   --add-module=${workpath}/${vod_distname}
 }

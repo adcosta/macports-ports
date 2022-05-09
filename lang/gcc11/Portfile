@@ -12,8 +12,8 @@ epoch               0
 name                gcc11
 
 # Note, ARM builds have their own version below...
-version             11.1.0
-revision            2
+version             11.3.0
+revision            1
 
 platforms           darwin
 categories          lang
@@ -44,23 +44,59 @@ master_sites        https://ftpmirror.gnu.org/gcc/gcc-${version}/ \
 # https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/gcc.rb
 # Branch from the Darwin maintainer of GCC with Apple Silicon support
 if { ${os.arch} eq "arm" } {
-    version         11.1.0
+    version         11.2.0
+    revision        3
     master_sites    https://github.com/fxcoudert/gcc/archive
-    distname        gcc-${version}-arm-20210504
-    checksums       rmd160  ccb26e52571aff9230f4bdf067fe8c9d1fb79235 \
-                    sha256  ce862b4a4bdc8f36c9240736d23cd625a48af82c2332d2915df0e16e1609a74c \
-                    size    125460899
+    distname        gcc-${version}-arm-20211126
+    checksums       rmd160  ce5d0621028c8ff2bf3ab677b29f6c14e4c86dfe \
+                    sha256  39416a5a2a0e00c5096937c456ca7632958271b438398184b9a55f6d437f681d \
+                    size    125611219
+    # Patches no longer needed by primary release
+    # To be removed once also not needed by arm version
+    patchfiles-append   patch-Make-lang.in.diff
+    if { ${os.platform} eq "darwin" } {
+        # This following patch works around a problem on MacOS 12.0 with fortran
+        # See also: https://gcc.gnu.org/git/?p=gcc.git;a=patch;h=fabe8cc41e9b01913e2016861237d1d99d7567bf
+        patchfiles-append patch-darwin21-fortran.diff
+    }
 } else {
     distname        gcc-${version}
     use_xz          yes
-    checksums       rmd160  083384ca351ea1cb6e04d15425af2103c908edf4 \
-                    sha256  4c4a6fb8a8396059241c2e674b85b351c26a5d678274007f076957afa1cc9ddf \
-                    size    78877216
+    checksums       rmd160  0c54f3971b4afbd78954d46852f733ff3fae266c \
+                    sha256  b47cf2818691f5b1e21df2bb38c795fac2cfbd640ede2d0a5e1c89e338a3ac39 \
+                    size    81141364
 }
 
 subport             libgcc11 { revision [ expr ${revision} + 0 ] }
 
-patchfiles          patch-Make-lang.in.diff
+if { ${os.platform} eq "darwin" && ${os.major} >= 17 } {
+    # On macOS 10.13 and later, compilation is extremely slow if SIP is
+    # disabled; e.g. from ~30m with SIP enabled, to ~6 hours if disabled.
+    #
+    # This is caused by gcc's build system setting DYLD_LIBRARY_PATH to ensure
+    # that the toolchain picks up newly built library versions, which seems to
+    # trigger a pathologically slow path in dyld's library resolution.
+    #
+    # Since dyld ignores DYLD_LIBRARY_PATH when SIP is enabled, the issue is
+    # avoided entirely, but at the cost of potentially falling back to incorrect
+    # system library paths. The correct, SIP-compatible solution would be gcc
+    # adopting @rpath.
+    #
+    # However, given that SIP is enabled by default in macOS, including on our
+    # build bots, we already have to assume that ignoring DYLD_LIBRARY_PATH will
+    # still produce a valid toolchain.
+    #
+    # Given that, we go ahead and disable DYLD_LIBRARY_PATH explicitly, avoiding
+    # otherwise unworkably long build-times for hosts with SIP disabled.
+    #
+    # See also: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=84257
+    patchfiles-append patch-disable-dyld_library_path.diff
+}
+
+if { ${configure.build_arch} eq "i386" } {
+    # fix no-pie clang bug bootstrapping gcc on i386
+    patchfiles-append patch-iains-i686-clang-bootstrap.diff
+}
 
 depends_build-append \
                     port:texinfo
@@ -71,7 +107,8 @@ depends_lib-append  port:cctools \
                     port:libiconv \
                     port:libmpc \
                     port:mpfr \
-                    port:zlib
+                    port:zlib \
+                    port:zstd
 depends_run-append  port:gcc_select \
                     path:share/doc/libgcc/README:libgcc
 
@@ -85,7 +122,9 @@ platform darwin {
 }
 
 set gcc_configure_langs {c c++ objc obj-c++ lto fortran}
-if {${subport} eq ${name}} {
+if {${subport} eq ${name} && ${build_arch} ne "i386"} {
+    # jit compiler is not building on i386 systems
+    #   https://trac.macports.org/ticket/61130
     lappend gcc_configure_langs jit
 }
 
@@ -111,6 +150,7 @@ configure.args      --enable-languages=[join ${gcc_configure_langs} ","] \
                     --with-mpfr=${prefix} \
                     --with-mpc=${prefix} \
                     --with-isl=${prefix} \
+                    --with-zstd=${prefix} \
                     --enable-stage1-checking \
                     --disable-multilib \
                     --enable-lto \
@@ -125,16 +165,24 @@ configure.args      --enable-languages=[join ${gcc_configure_langs} ","] \
 configure.args-append \
                     --disable-tls
 
+# Disable ccache
+configure.ccache    no
+
 if { ${os.platform} eq "darwin" } {
-    if { [vercmp ${xcodeversion} 12.5] >= 0 || [ vercmp ${cltversion} 12.5 ] >= 0 } {
-        pre-configure {
-            ui_warn "Applying '--without-build-config' workaround to Xcode ${xcodeversion} / CLT ${cltversion}"
-            ui_warn "If versions > 12.5 please check if it is still required"
+    # gcc has build issues on macOS 11.3 with the use of Xcode 12.5 clang via cctools for ld
+    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100340
+    # https://trac.macports.org/ticket/62775
+    if { ([vercmp ${xcodeversion} 12.5] >= 0 && [vercmp ${xcodeversion} 13] < 0) || \
+         ([vercmp ${cltversion} 12.5] >= 0 && [vercmp ${cltversion} 13] < 0) } \
+    {
+        # Skip bootstrap comparison entirely
+        post-patch {
+            reinplace {s|^do-compare =|do-compare = /usr/bin/true|g} \
+                ${worksrcpath}/Makefile.in \
+                ${worksrcpath}/config/bootstrap-debug.mk \
+                ${worksrcpath}/config/bootstrap-debug-lean.mk \
+                ${worksrcpath}/config/bootstrap-debug-lib.mk
         }
-        # gcc has build issues on macOS 11.3 with the use of Xcode clang via cctools for ld
-        # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=100340
-        # https://trac.macports.org/ticket/62775
-        configure.args-append  --without-build-config
     }
 }
 
@@ -196,7 +244,7 @@ use_parallel_build  yes
 destroot.target     install install-info-host
 
 # Is this gcc release supported here.
-if { ${os.platform} eq "darwin" && ${os.major} < 11 } {
+if { ${os.platform} eq "darwin" && ${os.major} < 10 } {
     known_fail   yes
     pre-fetch {
         ui_error "${name} ${version} is not supported on Darwin ${os.major}"
@@ -214,7 +262,7 @@ conflicts_build-append libunwind-headers
 set dylibs {libgcc_ext.10.4.dylib libgcc_ext.10.5.dylib libgcc_s.1.dylib libgcc_s.1.1.dylib \
                 libgcc_s.2.dylib libgfortran.5.dylib libquadmath.0.dylib libstdc++.6.dylib \
                 libobjc-gnu.4.dylib libgomp.1.dylib libitm.1.dylib libssp.0.dylib libasan.6.dylib \
-                libubsan.1.dylib libatomic.1.dylib}
+                libubsan.1.dylib libatomic.1.dylib libgcc_ehs.1.1.dylib}
 
 if { ${subport} ne ${name}} {
 
@@ -224,6 +272,14 @@ if { ${subport} ne ${name}} {
     # Activate hack for new libgcc
     # https://trac.macports.org/wiki/PortfileRecipes#deactivatehack
     pre-activate {
+        if {![catch {set installed [lindex [registry_active libgcc8] 0]}]} {
+            # Extract the epoch of the installed libgcc8
+            set _epoch [lindex $installed 5]
+            # If < 5 need to deactivate
+            if {[vercmp $_epoch 5] < 0} {
+                registry_deactivate_composite libgcc8 "" [list ports_nodepcheck 1]
+            }
+        }
         if {![catch {set installed [lindex [registry_active libgcc10] 0]}]} {
             # Extract the epoch of the installed libgcc9
             set _epoch [lindex $installed 5]

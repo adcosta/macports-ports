@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        dovecot core 2.3.13
+github.setup        dovecot core 2.3.17
 name                dovecot
 revision            0
 epoch               20060722
@@ -65,9 +65,9 @@ subport ${name}-sieve {
 
     distname        dovecot-${core_version}-pigeonhole-${version}
 
-    checksums       rmd160  c79f957fd472d2185fee22b94bcc4563bc7da8ce \
-                    sha256  a431654689e1cf88ee81fd17b050de24fc76d7cdf29b7301da91301e80fc932b \
-                    size    1048867
+    checksums       rmd160  8144f3b69723ac9bffc87173defbcdf789182283 \
+                    sha256  3b8201b878f3966a33a4061a38f11e38fc7133de6c5ce7e03280dd3d3e944a8e \
+                    size    1063351
 
     depends_lib-append \
                     port:${name} \
@@ -93,9 +93,9 @@ set perl5_major_version \
 
 if {${name} eq ${subport}} {
     checksums       ${distname}${extract.suffix} \
-                    rmd160  d7efe49fb37000101af230f6202a3eabc1d375b2 \
-                    sha256  332ad02149a463283c15b0903e9dbc8db7d8ac69a9762cfa938c5228f2a4686c \
-                    size    3844219
+                    rmd160  d8e048d879279943c61f49816e8fed511cfc3a6e \
+                    sha256  8cab77f36130bd370908f7b446680d099f864022fb873c109535e69f5e92d87e \
+                    size    3959234
 
     extract.only    ${distfiles}
 
@@ -217,7 +217,7 @@ if {${name} eq ${subport}} {
     }
 
     variant ldap description {Enable LDAP support} {
-        depends_lib-append          port:openldap
+        depends_lib-append          path:lib/libldap.dylib:openldap
         configure.args-append       --with-ldap=yes
     }
 
@@ -369,33 +369,6 @@ if {${name} eq ${subport}} {
         configure.env-append        PG_CONFIG=${prefix}/lib/postgresql12/bin/pg_config
         configure.args-append       --with-pgsql
     }
-
-    # remove 2021-03-02
-    variant postgresql95 requires postgresql11 description "Legacy compatibility variant" {}
-
-    # remove 2021-03-02
-    variant postgresql94 requires postgresql11 description "Legacy compatibility variant" {}
-
-    # remove 2021-03-02
-    variant postgresql93 requires postgresql11 description "Legacy compatibility variant" {}
-
-    # remove 2021-03-02
-    variant postgresql92 requires postgresql11 description "Legacy compatibility variant" {}
-
-    # remove 2021-03-02
-    variant postgresql91 requires postgresql11 description "Legacy compatibility variant" {}
-
-    # remove 2021-03-02
-    variant postgresql90 requires postgresql11 description "Legacy compatibility variant" {}
-
-    # remove 2021-03-02
-    variant postgresql84 requires postgresql11 description "Legacy compatibility variant" {}
-
-    # remove 2021-03-02
-    variant postgresql83 requires postgresql11 description "Legacy compatibility variant" {}
-
-    # remove 2021-03-02
-    variant postgresql82 requires postgresql11 description "Legacy compatibility variant" {}
 
     variant percona \
         conflicts mysql57 mysql8 mariadb mariadb10.1 \

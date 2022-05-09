@@ -8,8 +8,8 @@ PortGroup           github 1.0
 PortGroup           cmake 1.1
 PortGroup           boost 1.0
 
-github.setup        arvidn libtorrent 2.0.3 v
-revision            1
+github.setup        arvidn libtorrent 2.0.6 v
+revision            0
 name                libtorrent-rasterbar
 license             BSD
 categories          net
@@ -25,9 +25,9 @@ description         A C++ bittorrent library (not the same as port libtorrent)
 long_description    A C++ bittorrent library designed to run on anything from embedded systems to large scale \
                     seed servers. It comes with python bindings and detailed documentation.
 
-checksums           rmd160  b47ce089cb9f7452ac7e9a8265c58cf18cc298b5 \
-                    sha256  59bfc7654bccaa2735353fb21e503ed6f66f1964150b70799150ed3f2403bcc5 \
-                    size    4294340
+checksums           rmd160  e41b588291af4086ecf5d3ad019f2fe73c1572d6 \
+                    sha256  438e29272ff41ccc68ec7530f1b98d639f6d01ec8bf680766336ae202a065722 \
+                    size    4431174
 
 depends_lib-append  path:lib/libssl.dylib:openssl
 
@@ -44,25 +44,18 @@ configure.cxxflags-append -std=c++14
 configure.args-append \
                     -DBoost_LIBRARY_DIR_RELEASE=[boost::lib_dir] \
                     -Dencryption=ON \
-                    -DCMAKE_BUILD_TYPE=Release \
                     -DCMAKE_CXX_STANDARD=14 \
                     -Dlogging=OFF \
                     -Dpython-bindings=ON \
                     -Dpython-install-system-dir=ON
 
+cmake.build_type    Release
+
 universal_variant   no
 
 conflicts_build     ${name}
 
-variant python37 conflicts python38 python39 description {Build bindings for Python 3.7} {
-        require_active_variants boost[boost::version_nodot] python37
-        depends_lib-append port:python37
-        configure.args-append \
-                -DPython3_EXECUTABLE=${prefix}/bin/python3.7 \
-                -DBoost_PYTHON37_LIBRARY_RELEASE=[boost::lib_dir]/libboost_python37-mt.dylib
-}
-
-variant python38 conflicts python37 python39 description {Build bindings for Python 3.8} {
+variant python38 conflicts python39 python310 description {Build bindings for Python 3.8} {
         require_active_variants boost[boost::version_nodot] python38
         depends_lib-append port:python38
         configure.args-append \
@@ -70,7 +63,7 @@ variant python38 conflicts python37 python39 description {Build bindings for Pyt
                 -DBoost_PYTHON38_LIBRARY_RELEASE=[boost::lib_dir]/libboost_python38-mt.dylib
 }
 
-variant python39 conflicts python37 python38 description {Build bindings for Python 3.9} {
+variant python39 conflicts python38 python310 description {Build bindings for Python 3.9} {
         require_active_variants boost[boost::version_nodot] python39
         depends_lib-append port:python39
         configure.args-append \
@@ -78,10 +71,18 @@ variant python39 conflicts python37 python38 description {Build bindings for Pyt
                 -DBoost_PYTHON39_LIBRARY_RELEASE=[boost::lib_dir]/libboost_python39-mt.dylib
 }
 
+variant python310 conflicts python38 python39 description {Build bindings for Python 3.10} {
+        require_active_variants boost[boost::version_nodot] python310
+        depends_lib-append port:python310
+        configure.args-append \
+                -DPython3_EXECUTABLE=${prefix}/bin/python3.10 \
+                -DBoost_PYTHON39_LIBRARY_RELEASE=[boost::lib_dir]/libboost_python310-mt.dylib
+}
+
 variant error_logging description {Enable logging of errors to disk} {
         configure.args-replace -Dlogging=OFF -Dlogging=ON
 }
 
-if {![variant_isset python37] && ![variant_isset python38] && ![variant_isset python39]} {
-        default_variants +python39
+if {![variant_isset python38] && ![variant_isset python39] && ![variant_isset python310]} {
+        default_variants +python310
 }

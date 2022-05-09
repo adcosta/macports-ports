@@ -9,30 +9,35 @@ PortGroup           compiler_blacklist_versions 1.0
 # clock_gettime
 legacysupport.newest_darwin_requires_legacy 15
 
-github.setup        skyjake lagrange 1.5.0 v
+github.setup        skyjake lagrange 1.13.2 v
+revision            0
 github.tarball_from releases
 categories          net gemini
 platforms           darwin
 license             BSD
-maintainers         {@sikmir gmail.com:sikmir} openmaintainer
+maintainers         {@sikmir disroot.org:sikmir} openmaintainer
 
 description         A Beautiful Gemini Client
-long_description    ${description}
+long_description    {*}${description}
 
-checksums           rmd160  0ab0b064d91e1608362743480afb426d15254fe8 \
-                    sha256  da298e0cb366e7a9616a4ed294397e543f69ff4e40d1b5af90ea9d8dc36c317e \
-                    size    20403900
+checksums           rmd160  69b08c8eee8b096e6b4dfd323374e685924932b5 \
+                    sha256  f84c5fe078734df06ada747f87760ea8863369be5519d1e56992c7c5278395da \
+                    size    9858472
 
 depends_build-append \
-                    port:pkgconfig
-depends_lib-append  port:libsdl2 \
+                    port:pkgconfig \
+                    port:zip
+depends_lib-append  port:fribidi \
+                    path:lib/pkgconfig/harfbuzz.pc:harfbuzz \
+                    port:libsdl2 \
                     port:libunistring \
                     path:lib/libssl.dylib:openssl \
                     port:mpg123 \
                     port:pcre \
+                    port:webp \
                     port:zlib
 
-compiler.cxx_standard 2011
+compiler.c_standard 2011
 compiler.blacklist-append {clang < 800}
 
 destroot {

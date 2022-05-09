@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-nbconvert
-version             6.0.7
+version             6.4.5
 revision            0
 categories-append   textproc
 platforms           darwin
 license             BSD
 supported_archs     noarch
 
-python.versions     27 35 36 37 38 39
+python.versions     27 35 36 37 38 39 310
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,9 +20,9 @@ long_description    ${description}
 
 homepage            https://jupyter.org/
 
-checksums           rmd160  4765c18f4048c2a4d1c65e7971a7612fd35d1893 \
-                    sha256  cbbc13a86dfbd4d1b5dee106539de0795b4db156c894c2c5dc382062bbc29002 \
-                    size    896833
+checksums           rmd160  bd733a46ffb2f0558913f158e51d3f9853bc0c8d \
+                    sha256  21163a8e2073c07109ca8f398836e45efdba2aacea68d6f75a8a545fef070d4e \
+                    size    906309
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-setuptools \
@@ -38,7 +38,8 @@ if {${name} ne ${subport}} {
                         port:py${python.version}-pandocfilters \
                         port:py${python.version}-testpath \
                         port:py${python.version}-defusedxml \
-                        port:py${python.version}-nbclient
+                        port:py${python.version}-nbclient \
+                        port:py${python.version}-beautifulsoup4
 
     if {${python.version} eq 27} {
         version             5.5.0

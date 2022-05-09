@@ -1,0 +1,50 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- vim:fenc=utf-8:ft=tcl:et:sw=2:ts=2:sts=2
+
+PortSystem              1.0
+PortGroup               github 1.0
+PortGroup               cmake 1.1
+PortGroup               compiler_blacklist_versions 1.0
+
+github.setup            netxs-group vtm 0.7.5 v
+github.tarball_from     archive
+revision                0
+
+categories              sysutils
+license                 MIT
+
+maintainers             {@aeiouaeiouaeiouaeiouaeiouaeiou outlook.com:aeioudev} openmaintainer
+
+description             Monotty Desktopio - text-based desktop environment \
+                        inside your terminal
+
+long_description        ${name} is a terminal multiplexer with window manager \
+                        and session sharing.
+
+checksums               rmd160  f566cc8edd409985755b789338085e150f5708bb \
+                        sha256  2cf7e3fdd38bdc262db5f8ab8c06381756065201637eb6d070a8235a7ff7a957 \
+                        size    1269362
+
+# Requires a compiler with full C++20 support.
+# Clang may crash due to intensive memory leak:
+# https://github.com/netxs-group/vtm/issues/182
+compiler.blacklist-append \
+                        *clang*
+compiler.fallback-append \
+                        macports-gcc-11
+
+cmake.build_type        Release
+
+configure.cxx_stdlib    libstdc++
+configure.args-append   ${worksrcpath}/src
+
+variant demo description {Build with demo mode} {
+    depends_run-append      port:mc
+    post-patch {
+        reinplace "s|\"Demo mode\" OFF|\"Demo mode\" ON|g" ${worksrcpath}/src/CMakeLists.txt
+    }
+}
+
+notes "
+Recommended to use it in a terminal with mouse\
+and True Color support (e.g. iTerm2).
+"

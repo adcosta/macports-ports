@@ -1,0 +1,86 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem       1.0
+
+name             openjdk18-sap
+categories       java devel
+maintainers      {breun.nl:nils @breun} openmaintainer
+platforms        darwin
+# This port uses prebuilt binaries; 'NoMirror' makes sure MacPorts doesn't mirror/distribute these third-party binaries
+license          GPL-2 NoMirror
+# This port uses prebuilt binaries for a particular architecture; they are not universal binaries
+universal_variant no
+
+supported_archs  x86_64 arm64
+
+version      18.0.1.1
+revision     0
+
+description  SapMachine 18
+long_description An OpenJDK 18 release maintained and supported by SAP
+
+master_sites https://github.com/SAP/SapMachine/releases/download/sapmachine-${version}/
+
+if {${configure.build_arch} eq "x86_64"} {
+    distname     sapmachine-jdk-${version}_macos-x64_bin
+    checksums    rmd160  da7505a2042fbf4c97ed21cdad4d620c05389b03 \
+                 sha256  ade1cfa9e3a42919283d50c233b8e9b27aa52534a270dae32ae896f25ae015a3 \
+                 size    180168248
+} elseif {${configure.build_arch} eq "arm64"} {
+    distname     sapmachine-jdk-${version}_macos-aarch64_bin
+    checksums    rmd160  3c1e0b251b821bee1d3dd97555ea0ad2b00be669 \
+                 sha256  9884a10021da33ac9147627ede7d5514ef55ad4ead55d886a0b7454494930f03 \
+                 size    178492116
+}
+
+worksrcdir   sapmachine-jdk-${version}.jdk
+
+homepage     https://sap.github.io/SapMachine/
+
+livecheck.type  none
+
+use_configure    no
+build {}
+
+variant Applets \
+    description { Advertise the JVM capability "Applets".} {}
+
+variant BundledApp \
+    description { Advertise the JVM capability "BundledApp". This is required by some java-based app bundles to recognize and use the JVM.} {}
+
+variant JNI \
+    description { Advertise the JVM capability "JNI". This is required by some java-based app bundles to recognize and use the JVM.} {}
+
+variant WebStart \
+    description { Advertise the JVM capability "WebStart".} {}
+
+patch {
+    foreach var { Applets BundledApp JNI WebStart } {
+        if {[variant_isset ${var}]} {
+            reinplace -E "s|^(\[\[:space:\]\]*<string>)CommandLine(</string>)|\\1${var}\\2\\\n\\1CommandLine\\2|" ${worksrcpath}/Contents/Info.plist
+        }
+    }
+}
+
+test.run    yes
+test.cmd    Contents/Home/bin/java
+test.target
+test.args   -version
+
+# macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, which is not under ${prefix}.
+destroot.violate_mtree yes
+
+set target /Library/Java/JavaVirtualMachines/${name}
+set destroot_target ${destroot}${target}
+
+destroot {
+    xinstall -m 755 -d ${destroot_target}
+    copy ${worksrcpath}/Contents ${destroot_target}
+}
+
+notes "
+If you have more than one JDK installed you can make ${name} the default\
+by adding the following line to your shell profile:
+
+    export JAVA_HOME=${target}/Contents/Home
+"

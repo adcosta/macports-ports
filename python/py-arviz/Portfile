@@ -4,10 +4,9 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-arviz
-version             0.11.2
+version             0.12.0
 revision            0
 
-platforms           darwin
 supported_archs     noarch
 license             Apache-2
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -17,11 +16,11 @@ long_description    ${description}
 
 homepage            https://github.com/arviz-devs/arviz
 
-checksums           rmd160  5923493224439f28843e70befaf0ed5a547f1dd7 \
-                    sha256  a9d0eb32e84a0472aa78a488ba9b12b05e7be8c2c8fb34a1ba6286cc1254ee0d \
-                    size    1484198
+checksums           rmd160  71f60da808d33f75870c43ed4cac93608d8a8fb9 \
+                    sha256  3684b19cc7cfdd18c4c0d2e273500309f290e00b0e7174864f4388a8c17701df \
+                    size    1514051
 
-python.versions     36 37 38 39
+python.versions     37 38 39 310
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -34,12 +33,8 @@ if {${name} ne ${subport}} {
                     port:py${python.version}-packaging \
                     port:py${python.version}-pandas \
                     port:py${python.version}-scipy \
+                    port:py${python.version}-typing_extensions \
                     port:py${python.version}-xarray
-
-    if {${python.version} > 36} {
-    depends_lib-append \
-                    port:py${python.version}-typing_extensions
-    }
 
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}
@@ -47,6 +42,4 @@ if {${name} ne ${subport}} {
         xinstall -m 0644 -W ${worksrcpath} CHANGELOG.md CODE_OF_CONDUCT.md \
             CONTRIBUTING.md LICENSE README.md ${destroot}${docdir}
     }
-
-    livecheck.type  none
 }

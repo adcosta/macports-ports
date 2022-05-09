@@ -3,8 +3,8 @@
 PortSystem          1.0
 
 name                npm7
-version             7.16.0
-revision            1
+version             7.24.2
+revision            0
 categories          devel
 platforms           darwin
 supported_archs     noarch
@@ -15,7 +15,7 @@ long_description    npm is a package manager for node. \
                     You can use it to install and publish your node programs. \
                     It manages dependencies and does other cool stuff.
 
-conflicts           npm3 npm4 npm5 npm6
+conflicts           npm3 npm4 npm5 npm6 npm8
 
 homepage            https://www.npmjs.com/
 
@@ -27,10 +27,10 @@ extract.suffix      .tgz
 
 # Please keep the sha1 - users can use it to validate sha values
 # published on npmjs.org for the package
-checksums           rmd160  ea077434d608c658d2fc516e328c099b5ff89f10 \
-                    sha1    2325af134d221059ebc245a4ae5b39d24216a2ba \
-                    sha256  34fba8b62ccdfbd5ca8ef9ae23b84d5e435ea513d4e05cf0ce2383ea0127c010 \
-                    size    3658619
+checksums           rmd160  f9f2d6565e8223af13371d12fa2f31454a02d626 \
+                    sha1    861117af8241bea592289f22407230e5300e59ca \
+                    sha256  5b9eeea011f8bc3b76e55cc33339e87213800677f37e0756ad13ef0e9eaccd64 \
+                    size    3146141
 
 worksrcdir          "package"
 
@@ -38,7 +38,7 @@ depends_lib         path:bin/node:nodejs16
 
 platform darwin {
     if {${os.major} < 13} {
-        depends_lib-replace path:bin/node:nodejs16 path:bin/node:nodejs8
+        depends_lib-replace path:bin/node:nodejs16 path:bin/node:nodejs14
     }
 }
 
@@ -92,4 +92,4 @@ ${prefix}/lib/node_modules/ until you manually delete them.
 
 livecheck.type      regex
 livecheck.url       https://registry.npmjs.org/npm
-livecheck.regex     {"latest":"(.*?)"}
+livecheck.regex     {"next-7":"(.*?)"}

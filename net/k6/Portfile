@@ -3,22 +3,31 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/k6io/k6 0.31.1 v
-categories          net
-platforms           darwin
-license             AGPL-3+
-maintainers         {l2dy @l2dy} openmaintainer
-description         A modern load testing tool, using Go and JavaScript
-long_description    k6 is a modern load testing tool, building on Load Impact's \
-                    years of experience in the load and performance testing \
-                    industry. It provides a clean, approachable scripting API, \
-                    local and cloud execution, with command & control through \
-                    CLI or a REST API.
-homepage            https://k6.io/
+go.setup            github.com/k6io/k6 0.38.1 v
+go.package          go.k6.io/k6
+github.tarball_from archive
+revision            0
 
-checksums           rmd160  b9713f3920052ce5c30838661fb5f35d6c8b881e \
-                    sha256  07ad790819c441dd75abf4e8d1e2e00c95cafde9a03ada42e1d6b1812819e485 \
-                    size    6839582
+homepage            https://k6.io
+
+description         A modern load testing tool, using Go and JavaScript
+
+long_description    \
+    ${name} is a modern load testing tool, building on Load Impact's years of \
+    experience in the load and performance testing industry. It provides a \
+    clean, approachable scripting API, local and cloud execution, with \
+    command & control through CLI or a REST API.
+
+categories          net
+installs_libs       no
+license             AGPL-3+
+maintainers         {l2dy @l2dy} \
+                    {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
+
+checksums           rmd160  bb513f2749a49d0077ae763de08e9e7ceea35c24 \
+                    sha256  d48dc59008cdd565c8362b064889770da11069f75719aa001aeab7dd92f4a1b5 \
+                    size    7012699
 
 build.env-delete    GO111MODULE=off
 

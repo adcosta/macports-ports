@@ -4,24 +4,23 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        Unidata cftime 1.5.0 v rel
+github.setup        Unidata cftime 1.6.0 v rel
 github.tarball_from archive
 name                py-cftime
 revision            0
 
 categories-append   devel
-platforms           darwin
 license             MIT
 maintainers         {reneeotten @reneeotten} openmaintainer
 
 description         Time-handling functionality from netcdf4-python
 long_description    ${description}
 
-checksums           rmd160  6997522ead77e88dd1ba6fa4c037e9f4618b145b \
-                    sha256  9cefc1bdcb3d2dd19a5fb5d142057024d6aabdd3577d912b68696f1155b41691 \
-                    size    573606
+checksums           rmd160  376c494e370563a04d079a06d3d72f6400c965ae \
+                    sha256  53fd3204c89d1e20e599995c074c92d7cbed09962252ad842dd90ca2f9ce5f5f \
+                    size    581873
 
-python.versions     27 35 36 37 38 39
+python.versions     27 35 36 37 38 39 310
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -49,6 +48,4 @@ if {${name} ne ${subport}} {
         xinstall -m 0644 -W ${worksrcpath} README.md Changelog \
             LICENSE ${destroot}${docdir}
     }
-
-    livecheck.type  none
 }

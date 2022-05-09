@@ -3,12 +3,13 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/42wim/matterbridge 1.22.2 v
+go.setup            github.com/42wim/matterbridge 1.25.0 v
+github.tarball_from archive
 revision            0
 
 categories          net irc
 license             Apache-2
-maintainers         {outlook.de:judaew @judaew} openmaintainer
+maintainers         {judaew @judaew} openmaintainer
 
 description         Multi-protocols (IRC/XMPP/Mattermost/Slack/Matrix/etc) bridge
 long_description    \
@@ -18,9 +19,9 @@ long_description    \
     required!)
 
 checksums           ${distname}${extract.suffix} \
-                        rmd160  fe57cd9328c628515f53874c78e856b8117bb9a2 \
-                        sha256  3b5a51632d7ca54d57e61489a82b946617098c455afdd99ec6e0425c9832181c \
-                        size    7839327
+                        rmd160  e5294a802bca020e0292202058db2483f7726d48 \
+                        sha256  c8ae52a07d06f416ba9439f0b8fa9163c6f19ca4520a941eb4f6aa5452682017 \
+                        size    38643530
 
 # FIXME: This port currently can't be built without allowing go mod to fetch
 build.env-delete    GOPROXY=off GO111MODULE=off

@@ -65,10 +65,10 @@ if {${os.platform} eq "darwin" && ${os.major} == 10} {
 
         # release
 
-        github.setup glfw glfw 3.3.4
-        checksums   rmd160  87c35b8aa8162bc2af6e643ac2e1153d15a7b518 \
-                    sha256  9d4cc392dc7c90e9501db1456de115c723287f1b9847ac59c3334772d7240fcf \
-                    size    762985
+        github.setup glfw glfw 3.3.7
+        checksums   rmd160  b0ce09a0978726a390865e8ae09b764b1911053e \
+                    sha256  258c627c002c95b7c20984445b5d250f8ce322a4a512be032e1c68e1c3b76441 \
+                    size    779624
         revision    0
 
         # bump the epoch because I moved the version from 20151012 to 3.1.2
@@ -87,11 +87,11 @@ if {${os.platform} eq "darwin" && ${os.major} == 10} {
 
         # devel
 
-        github.setup glfw glfw 114776a24605418e6d719d2f30141e351e93c6e0
-        version     20210513-[string range ${github.version} 0 7]
-        checksums   rmd160  cbd74477a895ad04abed3132d9aee11137b53f31 \
-                    sha256  c33350c396a7cf7484f08389aa2341a17bdbdbbe0cfc3e0867a3100eb69e3ae1 \
-                    size    782639
+        github.setup glfw glfw 7dfd84c458dfa12b351c932b8281b13faf7b50b9
+        version     20220421-[string range ${github.version} 0 7]
+        checksums   rmd160  825160a2928daa85cc004049fe1628ead09390b9 \
+                    sha256  e84cf47c10ad13b2df9cd29ad3942a4eccd591a060ad1e8579d165fd92acab80 \
+                    size    841275
         revision    0
 
         conflicts   glfw
@@ -101,6 +101,12 @@ if {${os.platform} eq "darwin" && ${os.major} == 10} {
         # patch to fix install directory for cmake files and docs
 
         patchfiles-append patch-CMakeLists.txt.devel.diff
+
+        # because I messed up a version as "202105623-52d8347d_0", which
+        # because of the messed up date is always greater than a correctly
+        # formatted date, which means livecheck will never show a newer version.
+
+        epoch           1
 
     }
 }

@@ -4,14 +4,15 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-igraph
-python.rootname     python-igraph
-version             0.9.4
-revision            1
+python.rootname     igraph
+python.pep517       yes
+version             0.9.10
+revision            0
 categories-append   math science
 platforms           darwin
 license             GPL-2+
 
-python.versions     36 37 38 39
+python.versions     37 38 39 310
 
 maintainers         {snc @nerdling} {gmail.com:szhorvat @szhorvat} openmaintainer
 
@@ -23,9 +24,9 @@ long_description    Python interface to the igraph library for network analysis 
 
 homepage            https://igraph.org/python/
 
-checksums           rmd160  f15a1da7e4163285b15de7a413a0f0727925926c \
-                    sha256  b1e4e3b8ea438f85e17874d0b0836107b437ebe68ae0b3be13d2ad399f45405d \
-                    size    3611998
+checksums           rmd160  2846a5529a4bc250be728d3472f95df0e834de9d \
+                    sha256  6f9d8e1d6105b34298591820e94d4d8b3f33f38068523769e7a555bf7c96accb \
+                    size    3723165
 
 variant external_igraph description {Use external igraph library} { }
 
@@ -35,7 +36,7 @@ if {${name} ne ${subport}} {
 
     depends_lib-append      port:py${python.version}-texttable
 
-    depends_build-append    port:py${python.version}-setuptools
+    depends_build-append    port:py${python.version}-setuptools port:py${python.version}-wheel
 
     if {[variant_isset external_igraph]} {
         # Build with external igraph library
@@ -44,11 +45,7 @@ if {${name} ne ${subport}} {
 
         depends_build-append    path:bin/pkg-config:pkgconfig
 
-        # To avoid building the vendored igraph, --use-pkg-config must be passed not only
-        # to setup.py build, but also to setup.py install. When updating post-0.9.4,
-        # check if this is still necessary.
-        build.args-append       --use-pkg-config
-        destroot.args-append    --use-pkg-config
+        build.args-append       -C--global-option=--use-pkg-config
     } else {
         # Build with vendored igraph library
 
@@ -72,6 +69,7 @@ if {${name} ne ${subport}} {
             -DIGRAPH_USE_INTERNAL_GLPK=OFF
             -DIGRAPH_USE_INTERNAL_GMP=OFF
             -DIGRAPH_USE_INTERNAL_LAPACK=OFF
+            -DIGRAPH_USE_INTERNAL_PLFIT=ON
             -DIGRAPH_OPENMP_SUPPORT=OFF
             -DBLA_VENDOR=Apple
         }
@@ -85,11 +83,6 @@ if {${name} ne ${subport}} {
                             port:py${python.version}-numpy \
                             port:py${python.version}-pandas \
                             port:py${python.version}-scipy
-
-    # Patch added for 0.9.4 to prevent linking both to libc++ and libstdc++
-    # See https://github.com/igraph/python-igraph/commit/2ccf9e9b88c37fc277dbd8eb8e0bce0a73e33cae
-    # Safe to remove from future versions.
-    patchfiles              patch-use-correct-cpp-stdlib.diff
 
     pre-test {
         test.env    PYTHONPATH=[glob -nocomplain ${worksrcpath}/build/lib*]

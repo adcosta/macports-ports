@@ -2,26 +2,23 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
-PortGroup           select 1.0
 
 name                py-ansible
-version             3.3.0
+version             5.6.0
+revision            0
 license             GPL-3+
 
 categories-append   sysutils
-platforms           darwin
 supported_archs     noarch
 
 maintainers         {adfernandes @adfernandes} {gmail.com:pedro.salgado @steenzout} openmaintainer
 
-master_sites        pypi:a/ansible
 homepage            https://github.com/ansible/ansible
 description         SSH-based configuration management and deployment system
 
-distname            ansible-${version}
-checksums           rmd160  3d42629e70a2a1fdfd452757e632700b6fe1244e \
-                    sha256  2de5385c48a2a24a19f6cbaccc7d7684c64b6194f9a9b175aba7949d53b07bc9 \
-                    size    31514793
+checksums           rmd160  a35e2d477cb3096f6bc6d441c6606699f07829b1 \
+                    sha256  acd30731434154da376ceeeb416ee1541cdfb8ea3c648023a55a34cb3ecaf9f3 \
+                    size    35479519
 
 conflicts           ansible
 
@@ -33,7 +30,7 @@ long_description \
     be written in any language and are transferred to managed machines \
     automatically.
 
-python.versions 27 36 37 38 39
+python.versions     37 38 39 310
 
 if {${name} ne ${subport}} {
     patch {
@@ -46,8 +43,5 @@ if {${name} ne ${subport}} {
              xargs sed -i '' -e 's^/etc/ansible^${prefix}/etc/ansible^g' \
                        -e 's^/usr/share/ansible^${prefix}/share/ansible^g'"
     }
-    depends_lib-append  port:py${python.version}-ansible-base
-    livecheck.type  none
-} else {
-    livecheck.name  ansible
+    depends_lib-append  port:py${python.version}-ansible-core
 }

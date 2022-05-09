@@ -6,10 +6,11 @@ PortGroup               perl5 1.0
 PortGroup               wxWidgets 1.0
 PortGroup               active_variants 1.1
 PortGroup               linear_algebra 1.0
+PortGroup               boost 1.0
 
 name                    hugin-app
 version                 2019.2.0
-revision                3
+revision                4
 set branch              [join [lrange [split ${version} .] 0 1] .]
 categories              graphics
 maintainers             {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
@@ -32,6 +33,7 @@ compiler.cxx_standard   2011
 
 perl5.branches          5.28
 wxWidgets.use           wxWidgets-3.0-cxx11
+boost.version           1.71
 
 checksums               rmd160  d16c364779a48451b3b222a0dd0efa46535e6ddc \
                         sha256  8ba6bdfea246313f142f17f42e066c6888f51b72e4f8814b5e1c84ff56a95a3e \
@@ -83,7 +85,6 @@ depends_build-append    port:pkgconfig
 # see http://wiki.panotools.org/Development_of_Open_Source_tools#Dependencies
 depends_lib-append          \
     port:${wxWidgets.port}  \
-    port:boost              \
     port:zlib               \
     port:tiff               \
     port:libpano13          \
@@ -118,17 +119,17 @@ pre-configure {
     configure.args-append ${cmake_linalglib}
 }
 
-set pythons_suffixes {36 37 38}
+set pythons_versions {3.6 3.7 3.8 3.9 3.10}
 
 set pythons_ports {}
-foreach s ${pythons_suffixes} {
-    lappend pythons_ports python${s}
+foreach v ${pythons_versions} {
+    lappend pythons_ports python[string map {. {}} ${v}]
 }
 
 set any_python 0
-foreach s ${pythons_suffixes} {
+foreach v ${pythons_versions} {
+    set s [string map {. {}} ${v}]
     set p python${s}
-    set v [string index ${s} 0].[string index ${s} 1]
     set i [lsearch -exact ${pythons_ports} ${p}]
     set c [lreplace ${pythons_ports} ${i} ${i}]
     set python_prefix       ${frameworks_dir}/Python.framework/Versions/${v}
@@ -154,12 +155,13 @@ foreach s ${pythons_suffixes} {
 }
 if {!${any_python}} {
     # keep in sync with python PG
-    default_variants +python38
+    default_variants +python39
 }
 
 pre-fetch {
     set any_python 0
-    foreach s ${pythons_suffixes} {
+    foreach v ${pythons_versions} {
+        set s [string map {. {}} ${v}]
         if {[variant_isset python${s}]} {
             set any_python 1
         }

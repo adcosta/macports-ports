@@ -8,10 +8,10 @@ name                gmt5
 github.setup        GenericMappingTools gmt 5.4.5
 github.tarball_from releases
 distname            ${github.project}-${github.version}-src
-revision            9
+revision            12
 subport gmt6 {
-    github.setup    GenericMappingTools gmt 6.1.1
-    revision        2
+    github.setup    GenericMappingTools gmt 6.3.0
+    revision        3
     epoch           1
 }
 categories          science
@@ -43,9 +43,9 @@ if {${subport} eq "gmt5"} {
                         sha256  078d4997507cb15344c74a874568985e45bdbd6d3a72d330c74c47f4c0359bb1 \
                         size    59175704
 } else {
-    checksums           rmd160  cbedfd353f7d6b38c9e6625f02129da4f655e365 \
-                        sha256  d476cba999340648146ef53ab4a3f64858cbd2f5511cdec9f7f06f3fb7896625 \
-                        size    54252072
+    checksums           rmd160  5888661c856804e296a6f388f5218914f4f1e4c3 \
+                        sha256  69e29b62ee802a3a64260d6a1e023f1350e3bf4070221aa1307bf8a9e56c1ee5 \
+                        size    55396792
 }
 
 depends_lib         port:curl \

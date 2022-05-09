@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                pyupgrade
+version             2.32.0
+revision            0
+
+categories-append   devel
+supported_archs     noarch
+license             MIT
+maintainers         {reneeotten @reneeotten} openmaintainer
+
+description         A tool to automatically upgrade syntax for newer versions.
+long_description    ${description}
+
+homepage            https://github.com/asottile/pyupgrade
+
+checksums           rmd160  4a76c772ab0797ed685ac9c270e9645f7cb822cd \
+                    sha256  6878116d364b72f0c0011dd62dfe96425041a5f753da298b6eacde0f9fd9c004 \
+                    size    40506
+
+python.default_version  310
+
+depends_build-append \
+                    port:py${python.version}-setuptools
+
+depends_lib-append  port:py${python.version}-tokenize-rt
+
+post-destroot {
+    set docdir ${prefix}/share/doc/${subport}
+    xinstall -d ${destroot}${docdir}
+    xinstall -m 0644 -W ${worksrcpath} README.md \
+        LICENSE ${destroot}${docdir}
+}

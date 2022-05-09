@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/wercker/stern 1.11.0
+go.setup            github.com/stern/stern 1.21.0 v
 maintainers         {breun.nl:nils @breun} openmaintainer
 platforms           darwin
 categories          sysutils
@@ -16,15 +16,17 @@ long_description    Stern allows you to tail multiple pods on Kubernetes and \
                     multiple containers within the pod. Each result is color \
                     coded for quicker debugging.
 
-homepage            https://github.com/wercker/stern
+checksums           rmd160  e5ff05a447856d97ad8de504cf091615ab5f52ba \
+                    sha256  b95061eca122a65083e81f2f38d439920d8e4b6057419dc3ffa177c47c642106 \
+                    size    124825
 
-checksums           rmd160  655f16bb2c359778e396fae746df0ad89ed159d7 \
-                    sha256  e42e343052f4de3c050d2c856139841ead24afdf08d40e4e2cdda1fcac687c77 \
-                    size    24394
+set go_ldflags      "-s -w -X ${go.package}/cmd.version=${version}"
+build.args          -ldflags \"${go_ldflags}\" -o bin/${name}
 
-depends_build-append port:govendor
-
-build.cmd           govendor sync && go build -o bin/${name}
+# FIXME: This port currently can't be built without allowing go mod to fetch
+# dependencies during the build phase. See
+# https://trac.macports.org/ticket/61192
+build.env-delete    GOPROXY=off GO111MODULE=off
 
 destroot {
     xinstall -m 755 ${worksrcpath}/bin/${name} ${destroot}${prefix}/bin/${name}

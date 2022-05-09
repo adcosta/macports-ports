@@ -3,8 +3,9 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/roboll/helmfile 0.139.7 v
-revision            1
+go.setup            github.com/roboll/helmfile 0.144.0 v
+github.tarball_from archive
+revision            0
 
 description         Deploy Kubernetes Helm Charts
 
@@ -15,21 +16,19 @@ long_description    Helmfile is a declarative spec for deploying helm charts. \
                     environments.
 
 categories          sysutils
+installs_libs       no
+license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
-license             MIT
-installs_libs       no
 
 # Allow Go to fetch dependencies at buld time
 build.env-delete    GO111MODULE=off GOPROXY=off
 build.cmd           make
 build.args          TAG=v${version} build
 
-checksums           rmd160  0d70b4749f7ddd6acb7c6ff688ae702c8597eb5d \
-                    sha256  f6162b1f8b6a9d8421fa69412bc4e041a9d6b01e2e2b03358aec263facd4a888 \
-                    size    235593
-
-github.tarball_from archive
+checksums           rmd160  d129522c98668dc658f2011b9fc1659ddad8264e \
+                    sha256  fc767d10ec21ca464caaefd309f410d96685a985090c237907a22bd983112c62 \
+                    size    260943
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/

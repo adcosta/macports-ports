@@ -4,14 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-alembic
-version             1.6.5
+version             1.7.7
 revision            0
 categories-append   databases
-platforms           darwin
 license             MIT
 supported_archs     noarch
 
-python.versions     27 35 36 37 38 39
+python.versions     37 38 39 310
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,19 +19,16 @@ long_description    ${description}
 
 homepage            https://alembic.sqlalchemy.org/
 
-checksums           rmd160  5b36ea69896428f61bd64485eee0ef1f2a3908ac \
-                    sha256  a21fedebb3fb8f6bbbba51a11114f08c78709377051384c9c5ead5705ee93a51 \
-                    size    1174376
+checksums           rmd160  3d7535a6bcf3ca495dd5669442b83da6eb8f695f \
+                    sha256  4961248173ead7ce8a21efb3de378f13b8398e6630fab0eb258dc74a8af24c58 \
+                    size    1247590
 
 if {${name} ne ${subport}} {
-
-    if {${python.version} <= 35} {
-        version             1.3.3
-        revision            0
-        distname            ${python.rootname}-${version}
-        checksums           rmd160  e42a3a976700ea2d457599b06f039ed5429d7402 \
-                            sha256  d412982920653db6e5a44bfd13b1d0db5685cbaaccaf226195749c706e1e862a \
-                            size    1072775
+    if {${python.version} <= 38} {
+        depends_lib-append  port:py${python.version}-importlib-metadata
+    }
+    if {${python.version} <= 39} {
+        depends_lib-append  port:py${python.version}-importlib-resources
     }
 
     depends_lib-append  port:py${python.version}-setuptools \
@@ -40,6 +36,4 @@ if {${name} ne ${subport}} {
                         port:py${python.version}-mako \
                         port:py${python.version}-editor \
                         port:py${python.version}-dateutil
-
-    livecheck.type      none
 }

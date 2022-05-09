@@ -3,12 +3,11 @@
 PortSystem          1.0
 
 name                abcMIDI
-version             2021.05.25
+version             2022.05.05
 revision            0
 
 categories          audio
-platforms           darwin
-maintainers         {outlook.de:judaew @judaew} openmaintainer
+maintainers         {judaew @judaew} openmaintainer
 license             GPL-2+
 
 description         Abc to midi and vice versa converter
@@ -18,9 +17,9 @@ long_description    ABC is a text-based music notation language. Abc2midi is a p
 homepage            https://ifdo.ca/~seymour/runabc/top.html
 master_sites        https://ifdo.ca/~seymour/runabc/
 
-checksums           rmd160  cd98735e4e47c88443f7da274b2796aecbc55833 \
-                    sha256  6831fb83bb579249a3865f499a89784be1f67a57f90c4b454d1ac5f30c3ecf2e \
-                    size    604797
+checksums           rmd160  494ed11f9d2244b683fa4ce5a2d933b8c63bb9e5 \
+                    sha256  ec22123b90c5ec29a54b91e4d6651c056f1ff5c168fff3256cafd3205e32ef4f \
+                    size    610217
 
 use_zip             yes
 

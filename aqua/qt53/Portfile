@@ -6,7 +6,7 @@ name                qt53
 
 categories          aqua
 platforms           macosx
-maintainers         {mcalhoun @MarcusCalhoun-Lopez} {kencu @kencu} openmaintainer
+maintainers         {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
 
 # for OpenSSLException, see source and header files in src/network/ssl of qtbase
 license             {LGPL-2.1 LGPL-3 GPL-3 OpenSSLException}
@@ -139,7 +139,7 @@ array set modules {
             46694044
         }
         ""
-        "port:zlib port:libpng path:include/turbojpeg.h:libjpeg-turbo path:bin/dbus-daemon:dbus path:lib/pkgconfig/glib-2.0.pc:glib2 port:icu port:pcre port:harfbuzz"
+        "port:zlib port:libpng path:include/turbojpeg.h:libjpeg-turbo path:bin/dbus-daemon:dbus path:lib/pkgconfig/glib-2.0.pc:glib2 port:icu port:pcre path:lib/pkgconfig/harfbuzz.pc:harfbuzz"
         ""
         {"Qt Core" "Qt GUI" "Qt Network" "Qt SQL" "Qt Test" "Qt Widgets" "Qt Concurrent" "Qt D-Bus" "Qt OpenGL" "Qt Platform Headers" "Qt Print Support" "Qt XML"}
         ""
@@ -229,7 +229,7 @@ array set modules {
             2098004
         }
         ""
-        "port:jasper port:libmng port:tiff port:webp"
+        "path:lib/pkgconfig/jasper.pc:jasper port:libmng port:tiff port:webp"
         "qtbase"
         {"Qt Image Formats"}
         ""
@@ -712,7 +712,7 @@ foreach {module module_info} [array get modules] {
             patchfiles-append patch-find_rez.diff
             post-patch {
                 reinplace \
-                    "s|__MACPORTS_Rez__|[exec xcrun --find Rez]|g" \
+                    "s|__MACPORTS_Rez__|[exec -ignorestderr xcrun --find Rez]|g" \
                     mkspecs/common/mac.conf \
                     mkspecs/features/mac/rez.prf
             }
@@ -742,9 +742,9 @@ foreach {module module_info} [array get modules] {
             # so we instead have to disable adding the SDK tool prefix in configure to allow MacPorts-installed compilers to be used
             patchfiles-append patch-qt53-disable-macsdkify.diff
 
-            # Qt assumes _bit_scan_reverse is not provided by Clang
-            # this assumption is incorrect for recent versions of Clang
-            #     see https://github.com/llvm/llvm-project/commit/e54093fcc0a651df14040a61fc8efdd338389afa
+            # Qt assumes Clang's x86intrin.h does not provide _bit_scan_reverse
+            # this assumption is incorrect for Clang 9.0 and later
+            #     see https://github.com/llvm/llvm-project/commit/88f4054f48c5
             # see https://trac.macports.org/ticket/59364
             patchfiles-append patch-qtbase-intel_intrinsics.diff
 
@@ -1044,7 +1044,7 @@ foreach {module module_info} [array get modules] {
                 -no-egl           \
                 -no-openvg
 
-            # Qt builds part of the system using environment provided my MacPorts.
+            # Qt builds part of the system using environment provided by MacPorts.
             # It builds the rest using its own internal environment.
             # For consistency, clear MacPorts environment.
             #configure.cxx_stdlib
@@ -1073,7 +1073,7 @@ foreach {module module_info} [array get modules] {
             configure.universal_cxxflags
             configure.universal_cppflags
 
-            # cofigure script looks for perl but doesn't seem to use it for our configuration
+            # configure script looks for perl but doesn't seem to use it for our configuration
 
             # configure script uses gawk if it can find it,
             #    so require it for consistency
@@ -1135,7 +1135,7 @@ foreach {module module_info} [array get modules] {
             # these subports use qmake
             PortGroup            qmake5 1.0
 
-            # detremint which variants are to be turned off
+            # determine which variants are to be turned off
             set request_examples true
             set request_tests    true
             set def_var          ""
@@ -1188,7 +1188,7 @@ foreach {module module_info} [array get modules] {
                     set base_examples false
                 }
 
-                # determine if qmake runs tests by default (set via varians)
+                # determine if qmake runs tests by default (set via variants)
                 if {[active_variants ${name}-qtbase tests ""]} {
                     set base_tests true
                 } else {
@@ -1209,7 +1209,7 @@ foreach {module module_info} [array get modules] {
                     set this_tests false
                 }
 
-                # determine of qmake's default and user requests are compatible; override qmake if necessary
+                # determine if qmake's default and user requests are compatible; override qmake if necessary
                 if { ${this_examples} && !${base_examples}  } {
                     configure.args-append "QT_BUILD_PARTS+=\"examples\""
                 }

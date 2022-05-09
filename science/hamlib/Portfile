@@ -24,11 +24,11 @@ homepage            https://hamlib.github.io
 subport hamlib-devel {}
 if {[string first "-devel" $subport] > 0} {
 
-    github.setup    Hamlib Hamlib ff9a745c7a716791d58932ed6b82036823094ab7
-    version         20210604-[string range ${github.version} 0 7]
-    checksums       rmd160  f39079319d30caf4c478cdb006ee4d63bd8603a9 \
-                    sha256  02a37432c50a6a52fc5401c1b9b8fd75b0d80094575f55c0f9b5e503a587a51d \
-                    size    1685083
+    github.setup    Hamlib Hamlib 5427b4cf863e0dc6f59727e0a9a3e480ab9b4055
+    version         20220417-[string range ${github.version} 0 7]
+    checksums       rmd160  1bf3131d5d95ee521199d0b637e3c3ce335890eb \
+                    sha256  864647dc836aa13b740d12f4a1c8e0fb4513e7440083408b5e8c6536eeff6bab \
+                    size    1850018
     revision        0
 
     name            hamlib-devel
@@ -47,11 +47,11 @@ if {[string first "-devel" $subport] > 0} {
 
 } else {
 
-    github.setup    Hamlib Hamlib 4.2
+    github.setup    Hamlib Hamlib 4.4
     github.tarball_from releases
-    checksums       rmd160  46091e5027f753356c3519d992c72d568f05a95e \
-                    sha256  e200b22f307e9a0c826187c2b08fe81c7d0283cf07056e6db3463d1481580fd5 \
-                    size    2311775
+    checksums       rmd160  0b1a5daf50e595f7ccf6deadc315832c63ad9ac1 \
+                    sha256  8bf0107b071f52f08587f38e2dee8a7848de1343435b326f8f66d95e1f8a2487 \
+                    size    2401399
     revision        0
 
     conflicts       hamlib-devel
@@ -109,6 +109,12 @@ foreach py_ver ${python_versions} {
 
         configure.args-append \
             --with-python-binding
+
+        # fixup configure for the correct python3.X-config
+        post-patch {
+            reinplace "s@python3-config@python${active_python_version}-config@g" \
+                ${worksrcpath}/configure
+        }
 
         # specify the Python version to use
         set python_framework_dir ${frameworks_dir}/Python.framework/Versions/${active_python_version}

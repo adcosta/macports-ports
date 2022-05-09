@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-py2app
-version             0.24
+version             0.28
 categories-append   devel
 license             {MIT PSF}
 maintainers         {jmr @jmroot} openmaintainer
@@ -14,24 +14,23 @@ long_description \
     Mac OS X applications, able to run without requiring an existing python \
     installation.  This is a replacement for bundlebuilder.
 
-platforms           darwin
+homepage            https://py2app.readthedocs.io/
 
-homepage            https://github.com/ronaldoussoren/py2app
+checksums           md5 56cfa892a1cf9caf5d66fba4114a7edc \
+                    rmd160 199f72e706b2cd3757b2150379aa2b9277bdf15a \
+                    sha256 fcf2794548b144ab895733c0fc06e7224e4074d0d97b9ddddbde8dcf64bee57c
 
-checksums           md5 cf9a2a27d150856f9845cb5ef9249e81 \
-                    rmd160 597e745425c76d765067b8f0ec25de83a411144d \
-                    sha256 753915b2efaa72b23de1553e00f2cd9d3b4fdc05269ccae4b65c710e38121d67
-
-python.versions     27 35 36 37 38 39
+python.versions     27 37 38 39 310
 
 if {$subport ne $name} {
-    depends_lib     port:py${python.version}-macholib
-    # needs either importlib.metadata or pkg_resources at runtime
-    if {${python.version} >= 38} {
-        depends_build-append  port:py${python.version}-setuptools
-    } else {
-        depends_lib-append  port:py${python.version}-setuptools
+    # needs pkg_resources at runtime
+    depends_lib     port:py${python.version}-macholib \
+                    port:py${python.version}-setuptools
+    if {${python.version} >= 36} {
+        python.pep517   yes
     }
+
+    patchfiles      version.patch
 
     post-destroot {
         xinstall -m 755 -d ${destroot}${prefix}/share/doc/${subport} \

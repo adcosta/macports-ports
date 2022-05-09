@@ -5,10 +5,9 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-black
-version             21.5b2
-revision            0
+version             22.3.0
+revision            1
 
-platforms           darwin
 supported_archs     noarch
 license             MIT
 maintainers         {danchr @danchr} openmaintainer
@@ -28,11 +27,11 @@ long_description \
 
 homepage            https://${python.rootname}.readthedocs.io/
 
-checksums           rmd160  587b873b7be2ec846f8fa83f007265551c08aa68 \
-                    sha256  1fc0e0a2c8ae7d269dfcf0c60a89afa299664f3e811395d40b1922dff8f854b5 \
-                    size    1137486
+checksums           rmd160  7de9c7ebf9800e87ef696b771ad88a3d46c4e042 \
+                    sha256  35020b8886c022ced9282b51b5a875b6d1ab0c387b31a065b84db7c33085ca79 \
+                    size    554277
 
-python.versions     36 37 38 39
+python.versions     37 38 39 310
 
 if {${subport} ne ${name}} {
     depends_build-append \
@@ -40,18 +39,24 @@ if {${subport} ne ${name}} {
                     port:py${python.version}-setuptools_scm
 
     depends_lib-append \
-                    port:py${python.version}-appdirs \
+                    port:py${python.version}-platformdirs \
                     port:py${python.version}-click \
                     port:py${python.version}-mypy_extensions \
-                    port:py${python.version}-pathspec \
-                    port:py${python.version}-regex \
-                    port:py${python.version}-toml \
-                    port:py${python.version}-typed-ast \
-                    port:py${python.version}-typing_extensions
+                    port:py${python.version}-pathspec
 
-    if {${python.version} == 36} {
+    if {${python.version} < 311} {
         depends_lib-append \
-                    port:py${python.version}-dataclasses
+                    port:py${python.version}-tomli
+    }
+
+    if {${python.version} < 310} {
+        depends_lib-append \
+                    port:py${python.version}-typing_extensions
+    }
+
+    if {${python.version} < 38} {
+        depends_lib-append \
+                    port:py${python.version}-typed-ast
     }
 
     depends_run-append \
@@ -71,6 +76,4 @@ when you execute the commands without a version suffix, e.g. 'black', run:
 
 port select --set ${select.group} [file tail ${select.file}]
 "
-
-    livecheck.type  none
 }

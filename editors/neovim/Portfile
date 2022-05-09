@@ -2,13 +2,16 @@
 
 PortSystem 1.0
 PortGroup github 1.0
+
+# use cmake 1.0 for CMAKE_BUILD_TYPE=Release
 PortGroup cmake 1.0
 
-github.setup            neovim neovim 0.4.4 v
-revision                2
+github.setup            neovim neovim 0.7.0 v
+revision                0
 categories              editors
 platforms               darwin
 maintainers             {raimue @raimue} \
+                        {l2dy @l2dy} \
                         openmaintainer
 license                 Apache-2 Vim GPL-2+
 
@@ -20,11 +23,9 @@ long_description \
 
 homepage                https://neovim.io
 
-patchfiles              patch-CMakeLists.diff
-
-checksums               rmd160  740290555b5f031a87ffb6c99a90a03002c31596 \
-                        sha256  50a2d5ae4b426bb7e0956f8875136f9ba5846cdac4650e83460135253d48d0b9 \
-                        size    9559093
+checksums               rmd160  81821a8867549125ca3a658957f7e509ce94b8e9 \
+                        sha256  b177eff79f671ed71d340ed43cfec1c81f3671ea17624142bf3855b2019c7f4e \
+                        size    10923550
 
 depends_build-append    port:pkgconfig
 
@@ -37,7 +38,9 @@ depends_lib             port:gettext \
                         path:lib/libluajit-5.1.2.dylib:luajit \
                         port:lua51-lpeg \
                         port:lua51-mpack \
-                        port:luv-luajit
+                        port:luv-luajit \
+                        port:libiconv \
+                        port:tree-sitter
 
 cmake.out_of_source     yes
 

@@ -14,10 +14,9 @@ if {${os.platform} eq "darwin" && ${os.major} < 18} {
 }
 
 name            libgpg-error
-version         1.42
+version         1.45
 revision        0
 categories      devel
-platforms       darwin
 license         LGPL-2.1+
 maintainers     {mps @Schamschula} openmaintainer
 homepage        https://www.gnupg.org/
@@ -32,12 +31,14 @@ master_sites    gnupg
 
 use_bzip2       yes
 
-checksums       rmd160  65cc1bf594ed23dcad6ac58e04cd3e70fbf161f5 \
-                sha256  fc07e70f6c615f8c4f590a8e37a9b8dd2e2ca1e9408f8e60459c67452b925e23 \
-                size    973996
+checksums       rmd160  074680bf2152e5778d0c8231c9bf9e26e3f7c309 \
+                sha256  570f8ee4fb4bff7b7495cff920c275002aea2147e9a1d220c068213267f80a26 \
+                size    1015954
 
-depends_lib     port:libiconv \
-                port:gettext
+depends_build   port:gettext
+
+depends_lib     port:gettext-runtime \
+                port:libiconv
 
 # build with gawk 5.0.0 is broken see https://trac.macports.org/ticket/58356
 configure.awk   /usr/bin/awk

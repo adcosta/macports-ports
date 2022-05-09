@@ -3,8 +3,9 @@
 PortSystem          1.0
 PortGroup           perl5 1.0
 
-perl5.branches      5.26 5.28 5.30
-perl5.setup         Math-BigRat 0.2614
+perl5.branches      5.28 5.30 5.32 5.34
+perl5.setup         Math-BigRat 0.2622 ../../authors/id/P/PJ/PJACKLAM
+revision            0
 maintainers         nomaintainer
 categories-append   math
 license             {Artistic-1 GPL}
@@ -13,13 +14,14 @@ description         Arbitrary size rational numbers math package
 
 long_description    ${description}
 
-checksums           rmd160  35f8f267907295f7d27ca9d96cf90bcf901b80c1 \
-                    sha256  cea6c20afc6c10a3dc3b62a71df3f842dce13898443bd827242ff3f09f1f3d59 \
-                    size    51700
+checksums           rmd160  4231ef51cf0b26ce40965ef13bb0036fbca3a39c \
+                    sha256  7a340feaeedb2b4e92ec01ba7eb59b3652523d37c9ace31029767f462ad4e210 \
+                    size    71792
 
 if {${perl5.major} != ""} {
     depends_lib-append \
-                    port:p${perl5.major}-math-bigint
+                    port:p${perl5.major}-math-bigint \
+                    port:p${perl5.major}-math-complex
 
     supported_archs noarch
 }

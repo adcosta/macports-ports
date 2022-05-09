@@ -5,8 +5,8 @@ PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 
 name                openssh
-version             8.4p1
-revision            5
+version             9.0p1
+revision            4
 categories          net
 platforms           darwin
 maintainers         nomaintainer
@@ -29,9 +29,9 @@ long_description    OpenSSH is a FREE version of the SSH protocol suite of \
 
 homepage            https://www.openbsd.org/openssh/
 
-checksums           rmd160  2d3eec0b56f7edef5d50b8defa2f143ffee5c65a \
-                    sha256  5a01d22e407eb1c05ba8a8f7c654d388a13e9f226e4ed33bd38748dafa1d2b24 \
-                    size    1742201
+checksums           rmd160  5c79f179c25c8fe0c319d9a08d4b534147184402 \
+                    sha256  03974302161e9ecce32153cfa10012f1e65c8f3750f573a73ab1befd5972a28a \
+                    size    1822183
 
 master_sites        openbsd:OpenSSH/portable \
                     ftp://ftp.cise.ufl.edu/pub/mirrors/openssh/portable/ \
@@ -44,6 +44,11 @@ if {${name} eq ${subport}} {
                         port:zlib
     depends_run         port:ssh-copy-id
 
+    platform darwin 10 {
+        # /usr/bin/ranlib: object: libopenbsd-compat.a(base64.o) malformed object (unknown load command 2)
+        depends_build-append port:cctools
+    }
+
     # the HPN patch needs this, so rewrite all other patches to support it, too
     patch.args          -p1
     patchfiles          launchd.patch \
@@ -52,9 +57,6 @@ if {${name} eq ${subport}} {
                         patch-sandbox-darwin.c-apple-sandbox-named-external.diff \
                         patch-sshd.c-apple-sandbox-named-external.diff \
                         macports-config.patch
-
-    # OpenBSD patch for CVE-2021-28041, remove after upgrading to >= 8.5p1
-    patchfiles-append   patch-zz-8.4-CVE-2021-28041.diff
 
     # We need a couple of patches
     # - pam.patch
@@ -111,7 +113,10 @@ if {${name} eq ${subport}} {
     use_parallel_build  yes
 
     platform macosx {
-        if {${os.major} <= 11} {
+        if {${os.major} < 10} {
+            # See: https://trac.macports.org/ticket/60385
+            configure.args-delete   --with-keychain=apple
+        } elseif {${os.major} <= 11} {
             # clang is required to build the new Apple Keychain integration due
             # to it using the Object Subscripting feature, c.f. #59397.
             # We'll keep it simple and just blacklist any gcc version, cc
@@ -160,17 +165,6 @@ if {${name} eq ${subport}} {
         depends_run-append      port:xauth
     }
 
-    variant gsskex requires kerberos5 description "Add OpenSSH GSSAPI key exchange patch" {
-        patchfiles-append       openssh-8.1p1-gsskex-all-20141021-mp-20201216.patch
-        configure.ldflags-append \
-                                -Wl,-pie
-        configure.cflags-append -fPIE
-        configure.args-append   --with-4in6 \
-                                --disable-utmp \
-                                --disable-wtmp \
-                                --with-privsep-user=_sshd
-    }
-
     variant kerberos5 description "Add Kerberos5 support" {
         depends_lib-append      port:kerberos5
         configure.args-delete   --without-kerberos5
@@ -201,7 +195,6 @@ if {${name} eq ${subport}} {
     variant fido2 description "Enable fido2 support" {
         configure.args-delete  --without-security-key-builtin
         configure.args-append  --with-security-key-builtin
-        patchfiles-append      openssh-8.4p1-fido2.patch
         depends_lib-append      port:libfido2
     }
 

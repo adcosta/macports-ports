@@ -6,7 +6,7 @@ PortGroup       xcodeversion 1.0
 
 name            libsdl2
 set my_name     SDL2
-version         2.0.14
+version         2.0.22
 categories      devel multimedia
 platforms       macosx freebsd
 license         zlib
@@ -22,8 +22,8 @@ homepage        http://www.libsdl.org/
 master_sites    ${homepage}release/
 distname        ${my_name}-${version}
 
-checksums       rmd160 24ddf4bab53fae92fb0c96c7d3e6ceecca91c5df \
-                sha256 d8215b571a581be1332d2106f8036fcb03d12a70bae01e20f424976d275432bc
+checksums       rmd160 887c0414e1e3ad1a74900eae89c071a053d9a178 \
+                sha256 fe7cbf3127882e3fc7259a75a0cb585620272c51745d3852ab9dd87960697f2e
 
 configure.args  --without-x
 build.args      V=1
@@ -35,10 +35,8 @@ minimum_xcodeversions   {11 4.3}
 platform macosx {
     if {${os.major} <= 10} {
         # Build requires at least 10.7.3 SDK, even when targeting 10.6
-        set lion_sdkpath ${developer_dir}/SDKs/MacOSX10.7.sdk
-        if {[file exists $lion_sdkpath]} {
-            configure.sdkroot $lion_sdkpath
-        } else {
+        configure.sdk_version   10.7
+        if {${configure.sdkroot} eq ""} {
             pre-fetch {
                 error "Building $name @${version} on Mac OS X 10.6 requires the MacOSX10.7.sdk to be present in ${developer_dir}/SDKs/"
             }
@@ -69,8 +67,8 @@ if {${os.subplatform} ne "macosx"} {
 post-destroot {
     set docdir ${prefix}/share/doc/${name}
     xinstall -d ${destroot}${docdir}
-    xinstall -m 0644 -W ${worksrcpath} BUGS.txt COPYING.txt CREDITS.txt \
-        README.txt README-SDL.txt TODO.txt WhatsNew.txt \
+    xinstall -m 0644 -W ${worksrcpath} BUGS.txt CREDITS.txt LICENSE.txt \
+        README-SDL.txt TODO.txt WhatsNew.txt \
         {*}[glob ${worksrcpath}/docs/*.md] ${destroot}${docdir}
 }
 

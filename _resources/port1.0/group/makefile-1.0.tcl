@@ -28,6 +28,8 @@
 #
 
 PortGroup compiler_wrapper      1.0
+# By default (for this PG) do not embedded compiler flags in wrappers
+compwrap.add_compiler_flags     no
 
 options makefile.override
 default makefile.override       {CC CXX OBJC OBJCXX FC F77 F90 JAVAC PERL PYTHON RUBY INSTALL AWK BISON PKG_CONFIG}
@@ -43,28 +45,6 @@ default muniversal.arch_tools  {}
 
 default use_configure           no
 default universal_variant       yes
-
-# please remove when 7c91604 has been in a released MacPorts version for at least two weeks
-# see https://github.com/macports/macports-base/commit/7c91604891fa0d071b8d598490c4dc2edb8e0031
-if {![info exists compiler.log_verbose_output]} {
-    options compiler.log_verbose_output
-    default compiler.log_verbose_output yes
-}
-
-# please remove when a86f95c has been in a released MacPorts version for at least two weeks
-# see https://github.com/macports/macports-base/commit/a86f95c5ab86ee52c8fec2271e005591179731de
-if {![info exists compiler.limit_flags]} {
-    options compiler.limit_flags
-    default compiler.limit_flags        no
-}
-
-# please remove when 8a088c3 has been in a released MacPorts version for at least two weeks
-# see https://github.com/macports/macports-base/commit/8a088c30d80c7c3eca10848f28835e1c180229b1
-if {"shellescape" ni [info commands shellescape]} {
-    proc shellescape {arg} {
-        return [regsub -all -- {[^A-Za-z0-9.:@%/+=_-]} $arg {\\&}]
-    }
-}
 
 namespace eval makefile_pg {
 }

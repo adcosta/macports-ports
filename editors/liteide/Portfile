@@ -8,9 +8,8 @@ github.setup        visualfc liteide 37.4 x
 revision            0
 
 categories          editors devel
-platforms           darwin
 license             LGPL
-maintainers         {outlook.de:judaew @judaew} openmaintainer
+maintainers         {judaew @judaew} openmaintainer
 
 description         LiteIDE is a simple, open source, cross-platform Go IDE.
 long_description    {*}${description}

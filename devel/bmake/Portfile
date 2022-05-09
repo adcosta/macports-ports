@@ -3,20 +3,21 @@
 PortSystem          1.0
 
 name                bmake
-version             20200524
+version             20220418
+revision            0
+checksums           rmd160  cd9873772a73a865d2ea390892bf9f32420ca312 \
+                    sha256  6ea7de515cba74f173dc14ee17b1488ae032582028d2e86ea12f70369cc896f5 \
+                    size    805986
+
 categories          devel
-platforms           darwin
+maintainers         {ryandesign @ryandesign} openmaintainer
 license             BSD
-maintainers         nomaintainer
+
 homepage            http://www.crufty.net/help/sjg/bmake.html
 master_sites        http://www.crufty.net/ftp/pub/sjg/
 
 description         Portable NetBSD make
 long_description    bmake is the portable version of NetBSD make.
-
-checksums           rmd160  6975f56a51fb40a146a47a47f1c00074c24ccfee \
-                    sha256  79e72bbab47dad2cfc8e6041a61287fb852109c8e3dc1defc5a2b64e3966dadb \
-                    size    577739
 
 worksrcdir          ${name}
 
@@ -30,7 +31,6 @@ build.target        op=build
 destroot.target     op=install
 destroot.args-append \
                     --prefix=${prefix}
-
 
 livecheck.type      regex
 livecheck.url       ${master_sites}

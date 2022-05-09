@@ -6,13 +6,13 @@ PortGroup           select 1.0
 
 name                py-cython
 python.rootname     Cython
-version             0.29.23
+version             0.29.28
 revision            0
 categories-append   devel
 platforms           darwin
 license             Apache-2
 
-python.versions     27 35 36 37 38 39
+python.versions     27 35 36 37 38 39 310
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -25,9 +25,9 @@ long_description    Cython is a language that makes writing C extensions for \
 
 homepage            http://www.cython.org/
 
-checksums           rmd160  60c4f9eacc57ef5377e992285f3e4fc5641a1a45 \
-                    sha256  6a0d31452f0245daacb14c979c77e093eb1a546c760816b5eed0047686baad8e \
-                    size    2073944
+checksums           rmd160  0597dde8c2b6fe6bf651fcabde5b43bef5ecac41 \
+                    sha256  d6fac2342802c30e51426828fe084ff4deb1b3387367cf98976bb2e64b6f8e45 \
+                    size    2081368
 
 if {${name} ne ${subport}} {
     depends_lib-append \

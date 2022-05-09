@@ -1,0 +1,55 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           cmake 1.1
+
+github.setup        mamba-org mamba 2022.04.21
+name                libmamba
+version             0.23.0
+categories          devel
+platforms           darwin
+license             BSD
+maintainers         {l2dy @l2dy} openmaintainer
+
+checksums           rmd160  ee5b70fe2459343213becca1344684a2d25f54ce \
+                    sha256  c1fe6b5ba882cabdb000e466c9d560932d1e024fdd90038436943f24b0ee4835 \
+                    size    716903
+
+depends_build-append  \
+                    port:ghc-filesystem \
+                    port:nlohmann-json \
+                    port:termcolor \
+                    port:tl-expected
+
+if {${subport} eq ${name}} {
+    description         a reimplementation of the conda package manager in C++
+    long_description    Mamba is {*}${description}.
+
+
+    depends_lib-append  port:libsolv \
+                        port:reproc \
+                        port:spdlog \
+                        port:yaml-cpp
+
+    configure.args      -DBUILD_LIBMAMBA=ON \
+                        -DBUILD_SHARED=ON
+}
+
+subport micromamba {
+    description         a tiny version of the mamba package manager
+    long_description    micromamba is a tiny version of the mamba package manager. \
+                        It is a pure C++ package with a separate command line \
+                        interface. It can be used to bootstrap environments (as an \
+                        alternative to miniconda), but it's currently experimental.
+
+    categories-append   sysutils
+
+    depends_build-append  \
+                        port:CLI11
+
+    depends_lib-append  port:libmamba
+
+    configure.args      -DBUILD_MICROMAMBA=ON \
+                        -DMICROMAMBA_LINKAGE=DYNAMIC
+}

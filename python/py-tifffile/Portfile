@@ -4,9 +4,8 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-tifffile
-version             2021.4.8
+version             2022.5.4
 revision            0
-platforms           darwin
 license             BSD
 maintainers         {mps @Schamschula} openmaintainer
 
@@ -14,14 +13,14 @@ categories-append   science
 description         Store numpy data arrays in TIFF files.
 long_description    {*}${description} Read image and metadata from TIFF-like files used in \
                     bioimaging.
-
+supported_archs     noarch
 homepage            https://www.lfd.uci.edu/~gohlke/
 
-checksums           rmd160  61c0618639e43525cf03c8b2cd34056ac4ef918d \
-                    sha256  55aa8baad38e1567c9fe450fff52160e4a21294a612f241c5e414da80f87209b \
-                    size    246578
+checksums           rmd160  d668d41f56e6931a457819a5ab8136275fee9f53 \
+                    sha256  b03147a15862b7c1d90d47435197f149bef7a52c25ad67cf1f9b465faa71b8d2 \
+                    size    300214
 
-python.versions     37 38 39
+python.versions     37 38 39 310
 
 if {${name} ne ${subport}} {
     depends_build-append \

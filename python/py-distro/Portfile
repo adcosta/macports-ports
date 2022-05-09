@@ -4,24 +4,21 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-distro
-version             1.5.0
-revision            1
+version             1.7.0
+revision            0
 license             Apache-2
 maintainers         {mps @Schamschula} openmaintainer
 description         distro provides information about the OS distribution it runs on, \
                     such as a reliable machine-readable ID, or version information.
-long_description    ${description}
-platforms           darwin
+long_description    {*}${description}
+supported_archs     noarch
 homepage            https://github.com/nir0s/distro
 
-python.versions     27 36 37 38 39
+python.versions     37 38 39 310
 
-# remove for next version update
-dist_subdir         ${name}/${version}_1
-
-checksums           rmd160  34bf3cb1216eda586f428ea71a43629119d9f27d \
-                    sha256  0e58756ae38fbd8fc3020d54badb8eae17c5b9dcbed388b17bb55b8a5928df92 \
-                    size    54340
+checksums           rmd160  2f96725b87f67d3f8e0f7b3fbddf33bf79913e04 \
+                    sha256  151aeccf60c216402932b52e40ee477a939f8d58898927378a02abbe852c1c39 \
+                    size    58164
 
 if {${name} ne ${subport}} {
     depends_lib-append  \

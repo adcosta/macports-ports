@@ -1,0 +1,132 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-tensorflow-macos
+version             2.8.0
+revision            0
+
+platforms           darwin
+categories-append   lang
+license             Apache-2
+maintainers         nomaintainer
+supported_archs     arm64 x86_64
+
+description         Mac-optimized TensorFlow to be used with py-tensorflow-metal.
+
+long_description    Hardware-accelerated TensorFlow and TensorFlow \
+                    Addons for macOS 12.0+. Native hardware \
+                    acceleration is supported on M1 Macs and \
+                    Intel-based Macs through Apple’s ML Compute \
+                    framework.
+
+homepage            https://developer.apple.com/metal/tensorflow-plugin/
+
+extract.suffix      .whl
+extract.only
+
+# set build_arch by hand on arm64/x86_64 systems to get x86_64/arm64 checksums
+# sudo port -d checksum py38-tensorflow-macos os.arch=arm build_arch=arm64
+# run `port clean --all py*-tensorflow-macos` afterwards
+
+platform arm {
+    python.versions 38 39
+    set minimum_supported_major_version 21
+}
+platform i386 {
+    python.versions 38
+    set minimum_supported_major_version 20
+}
+
+if {${os.arch} ni [list arm i386]
+    || ${os.platform} eq {darwin}
+        && ${os.major} < ${minimum_supported_major_version}} {
+    known_fail      yes
+    pre-fetch {
+        ui_error "TensorFlow with ML Compute acceleration is only available \
+            on macOS [expr ${minimum_supported_major_version} - 9] and later \
+            with [join ${supported_archs} " or "] architectures."
+        error {unsupported platform}
+    }
+}
+
+if {${name} ne ${subport}} {
+    conflicts       py${python.version}-tensorflow \
+                    py${python.version}-tensorflow_macos \
+                    py${python.version}-tensorflow1 \
+                    py${python.version}-tensorflow-addons
+
+    # https://pypi.org/project/tensorflow-macos/#files
+    if {${build_arch} eq {arm64}} {
+        if {${python.version} eq 38} {
+            master_sites \
+                    https://files.pythonhosted.org/packages/17/2b/2de70a35a54395be7db8f902283ecfbf3aa5d0ec711c499ba5aeb825d4f3/
+            checksums \
+                    rmd160  fa01adc3d53303a3faeaa2625bf09aa18f05c2c9 \
+                    sha256  10c53c1331844bf9eba4dbf6de6c1fd94f7787df00582fb32f8f3f17f7b4c024 \
+                    size    190081187
+        } elseif {${python.version} eq 39} {
+            master_sites \
+                    https://files.pythonhosted.org/packages/4d/74/47440202d9a26c442b19fb8a15ec36d443f25e5ef9cf7bfdeee444981513/
+            checksums \
+                    rmd160  582fd1504466ffff2f76e2a5c3c8ea90e87acc0b \
+                    sha256  7f522e7b478f2bbd1707632edb0942e22df7878142c60316876fd0269a80d1e7 \
+                    size    190101805
+        }
+    } elseif {${build_arch} eq {x86_64}} {
+        if {${python.version} eq 38} {
+            master_sites \
+                    https://files.pythonhosted.org/packages/e5/6c/05e158fd3a729c3d11720468b170bfa18db140e0091452e5bec2976e0f3d/
+            checksums \
+                    rmd160  ac6587e9eed5065ce91e043e50a4d5b1b06b1f80 \
+                    sha256  53834b7d08e2e07f3e8b5821abfe87fdd693e54d97281f5fa8a626394bd6cd49 \
+                    size    218915044
+        }
+    }
+    distname tensorflow_macos-${version}-cp${python.version}-cp${python.version}-macosx_11_0_${build_arch}
+
+    depends_build-append \
+                    port:py${python.version}-pip \
+                    port:py${python.version}-wheel
+
+    depends_run-append \
+                    port:py${python.version}-absl \
+                    port:py${python.version}-astunparse \
+                    port:py${python.version}-flatbuffers \
+                    port:py${python.version}-gast \
+                    port:py${python.version}-grpcio \
+                    port:py${python.version}-h5py \
+                    port:py${python.version}-keras \
+                    port:py${python.version}-keras_preprocessing \
+                    port:py${python.version}-numpy \
+                    port:py${python.version}-opt_einsum \
+                    port:py${python.version}-protobuf3 \
+                    port:py${python.version}-tensorflow_estimator \
+                    port:py${python.version}-scipy \
+                    port:py${python.version}-tensorboard \
+                    port:py${python.version}-termcolor \
+                    port:py${python.version}-typing_extensions \
+                    port:py${python.version}-wrapt \
+                    port:py${python.version}-typeguard
+    
+    use_configure   no
+
+    build           {}
+
+    destroot.cmd    pip-${python.branch}
+    destroot.args   --ignore-installed \
+                    --no-cache-dir \
+                    --no-dependencies \
+                    --root ${destroot} \
+                    ${distpath}/${distfiles}
+    destroot.post_args
+
+    post-destroot {
+        # avoid conflict with py${python.version}-tensorboard
+        delete      ${destroot}${python.prefix}/bin/tensorboard \
+                    ${destroot}${prefix}/bin/tensorboard-${python.branch}
+    }
+
+    livecheck.type  none
+}
