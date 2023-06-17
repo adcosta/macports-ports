@@ -4,25 +4,25 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-py7zr
-version             0.18.5
+version             0.20.5
 revision            0
 
-platforms           darwin
+platforms           {darwin any}
 supported_archs     noarch
 license             LGPL-2.1+
 maintainers         {@catap korins.ky:kirill} openmaintainer
 description         Pure python 7-zip library
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://github.com/miurahr/py7zr
 
-checksums           rmd160  e71df6f0fd74398f9547ad28a0a1fad93fa9497b \
-                    sha256  81ebb10619739764c2d80ef222e5845373ce84523183371ae9cd88e0df908929 \
-                    size    4260349
+checksums           rmd160  0521155fc61ac3d8e85c0a18421df2a9092f320b \
+                    sha256  6fb4889c0fa32581818a3366984083253585d6c794e82c3242b8a12d6aeaabd3 \
+                    size    4985655
 
 python.pep517       yes
 
-python.versions     38 39 310
+python.versions     38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -30,13 +30,19 @@ if {${name} ne ${subport}} {
 
     depends_lib-append \
                     port:py${python.version}-brotli \
+                    port:py${python.version}-inflate64 \
                     port:py${python.version}-multivolumefile \
                     port:py${python.version}-psutil\
+                    port:py${python.version}-pybcj \
                     port:py${python.version}-pycryptodomex \
                     port:py${python.version}-pyppmd \
                     port:py${python.version}-pyzstd \
-                    port:py${python.version}-texttable \
-                    port:py${python.version}-zipfile-deflate64
+                    port:py${python.version}-texttable
+
+    if {${python.version} < 38} {
+        depends_lib-append \
+                    port:py${python.version}-importlib-metadata
+    }
 
     depends_test-append \
                     port:py${python.version}-cpuinfo \
@@ -47,9 +53,4 @@ if {${name} ne ${subport}} {
                     port:py${python.version}-pytest-remotedata
 
     test.run        yes
-    test.cmd        py.test-${python.branch}
-    test.target     tests
-    test.env        PYTHONPATH=${build.dir}/build/lib
-
-    livecheck.type  none
 }

@@ -2,13 +2,17 @@
 
 PortSystem          1.0
 PortGroup           active_variants 1.1
+PortGroup           legacysupport 1.1
+
+# Availability.h
+legacysupport.newest_darwin_requires_legacy 8
 
 name                hwloc
-set branch          2.4
+set branch          2.9
 version             ${branch}.1
+revision            0
 epoch               1
 categories          devel
-platforms           darwin
 maintainers         {i0ntempest @i0ntempest} openmaintainer
 description         Portable Hardware Locality
 license             BSD
@@ -23,9 +27,9 @@ long_description \
 homepage            https://www.open-mpi.org/projects/hwloc/
 master_sites        https://www.open-mpi.org/software/hwloc/v${branch}/downloads/
 
-checksums           rmd160  246a33becaaf623aec8d6fcdd6efd5864c248d72 \
-                    sha256  4267fe1193a8989f3ab7563a7499e047e77e33fed8f4dec16822a7aebcf78459 \
-                    size    6956102
+checksums           rmd160  d899c73772ecea6f8e41ccf787a26189f5d690b2 \
+                    sha256  a440e2299f7451dc10a57ddbfa3f116c2a6c4be1bb97c663edd3b9c7b3b3b4cf \
+                    size    7464310
 
 depends_build       port:pkgconfig
 depends_lib-append  port:libxml2
@@ -34,8 +38,13 @@ configure.args      --without-x \
                     --disable-cuda \
                     --disable-opencl
 
+configure.checks.implicit_function_declaration.whitelist-append strchr
+
+test.run            yes
+test.target         check
+
 livecheck.type      regex
-livecheck.regex     "${name} v(\[0-9.\]+) "
+livecheck.regex     "${name} (\[0-9.\]+)"
 
 variant cuda description {Enable CUDA support} {
     configure.args-replace  --disable-cuda --enable-cuda

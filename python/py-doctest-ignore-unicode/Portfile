@@ -6,14 +6,15 @@ PortGroup           python 1.0
 name                py-doctest-ignore-unicode
 version             0.1.2
 revision            0
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 categories-append   devel
 supported_archs     noarch
+platforms           {darwin any}
 license             Apache-2
 maintainers         {khindenburg @kurthindenburg} openmaintainer
 
 description         Add flag to ignore unicode literal prefixes in doctests
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://pypi.python.org/pypi/${python.rootname}
 

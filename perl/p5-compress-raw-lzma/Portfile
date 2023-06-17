@@ -4,11 +4,11 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Compress-Raw-Lzma 2.103 ../../authors/id/P/PM/PMQS
+perl5.setup         Compress-Raw-Lzma 2.204 ../../authors/id/P/PM/PMQS
 revision            0
-checksums           rmd160  1b497b6c919c850ad85e808ce6c1348459e7536a \
-                    sha256  8afd2693e9a86ff4e7cf04907991d418569718f551f07e158034143986871dd7 \
-                    size    117512
+checksums           rmd160  401403762a2aaf8157f2251210ef35910a8e2711 \
+                    sha256  b226d0648da3e7309387cd8d9cf629353593fd08bac29533f2559659ef7aac1a \
+                    size    117644
 
 platforms           darwin
 

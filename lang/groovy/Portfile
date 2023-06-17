@@ -4,12 +4,12 @@ PortSystem      1.0
 PortGroup       java 1.0
 
 name            groovy
-version         4.0.2
+version         4.0.12
 revision        0
 
 categories      lang java
 maintainers     {breun.nl:nils @breun} openmaintainer
-platforms       darwin
+platforms       {darwin any}
 license         Apache-2
 supported_archs noarch
 
@@ -41,16 +41,16 @@ master_sites    https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zi
 distname        apache-${name}-binary-${version}
 use_zip         yes
 
-checksums       rmd160  c7d2ee4613fe44571b01e67dcdd83df5f0ed7ab5 \
-                sha256  37bbfc6f33f6ad76698b9b0bfba023e0046f09b58bdc5499eda9ef6760bd512d \
-                size    28946122
+checksums       rmd160  6579f226b54dec5223b7a73d3cfc0bd31f72c423 \
+                sha256  174c28429f63f5ba31cccb3350fd50a2b62a18833be4ac59180b8a43df52dd90 \
+                size    29740498
 
 worksrcdir      ${name}-${version}
 
 use_configure   no
 
 java.version    1.8+
-java.fallback   openjdk8
+java.fallback   openjdk17
 
 build {}
 

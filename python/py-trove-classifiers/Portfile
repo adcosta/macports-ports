@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-trove-classifiers
+version             2023.5.24
+revision            0
+
+supported_archs     noarch
+platforms           {darwin any}
+license             Apache-2
+maintainers         {mps @Schamschula} openmaintainer
+
+description         Canonical source for classifiers on PyPI (pypi.org).
+long_description    {*}${description}
+homepage            https://github.com/pypa/trove-classifiers
+
+checksums           rmd160  85cdebb9fc1aa6e6d7f4af4ad30609c9f0669ea2 \
+                    sha256  fd5a1546283be941f47540a135bdeae8fb261380a6a204d9c18012f2a1b0ceae \
+                    size    15856
+
+python.versions     37 38 39 310 311
+
+python.pep517       yes
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                        port:py${python.version}-calver
+}

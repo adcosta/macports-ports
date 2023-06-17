@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/infracost/infracost 0.9.24 v
+go.setup            github.com/infracost/infracost 0.10.22 v
 github.tarball_from archive
 revision            0
 
@@ -22,9 +22,9 @@ license             Apache-2
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  9723cf4c5e2f3716e2f38f0fb0cac0bd99f46b9d \
-                    sha256  86c50095a4c9b61a8cb42e1c65c47da605466422a3b71d2353278eb9b2c11f60 \
-                    size    1136147
+checksums           rmd160  5c9d972bb435cda1f3772a0944f2ce149d93757c \
+                    sha256  274b3379e37daee40eceb581f72e873a53ff9e5bf881f86b168947d9203853fe \
+                    size    1467193
 
 # Allow Go to fetch deps at build time
 build.env-delete    GO111MODULE=off GOPROXY=off
@@ -35,7 +35,7 @@ build.args          darwin
 
 use_parallel_build  no
 
-post-extract {
+patch {
     reinplace "s|CGO_ENABLED=0||g" Makefile
     # Fix dumb assumption both arm64 and amd64 should always be built for darwin ...
     if {${build_arch} eq "arm64"} {

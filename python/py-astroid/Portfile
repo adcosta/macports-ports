@@ -4,14 +4,15 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-astroid
-version             2.11.4
+version             2.13.3
 revision            0
 
 categories-append   devel
 license             LGPL-2.1+
 supported_archs     noarch
+platforms           {darwin any}
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
@@ -26,14 +27,12 @@ long_description    The aim of this module is to provide a common \
 
 homepage            https://github.com/pycqa/astroid
 
-checksums           rmd160  c4c0d2f6bded89b5bffc2ec4864aeca541df9fec \
-                    sha256  561dc6015eecce7e696ff7e3b40434bc56831afeff783f0ea853e19c4f635c06 \
-                    size    205835
+checksums           rmd160  97bff9334eb1a640c50f0ce5f1e23c996cf8a884 \
+                    sha256  6afc22718a48a689ca24a97981ad377ba7fb78c133f40335dfd16772f29bcfb1 \
+                    size    223593
+
 
 if {${name} ne ${subport}} {
-    depends_build-append \
-                        port:py${python.version}-pytest-runner
-
     depends_lib-append  port:py${python.version}-lazy_object_proxy \
                         port:py${python.version}-wrapt
 
@@ -41,21 +40,12 @@ if {${name} ne ${subport}} {
         depends_lib-append  port:py${python.version}-typed-ast
     }
 
-    if {${python.version} <= 39} {
+    if {${python.version} < 311} {
         depends_lib-append  port:py${python.version}-typing_extensions
     }
 
     post-patch {
-        reinplace {s|wrapt>=1\.11,<1\.13|wrapt>=1.11|g} \
-            ${worksrcpath}/setup.cfg
-        reinplace {s|wrapt<1\.13,>=1\.11|wrapt>=1.11|g} \
-            ${worksrcpath}/astroid.egg-info/requires.txt
+        reinplace "s|setuptools~=62.6|setuptools|g" ${worksrcpath}/pyproject.toml
+        reinplace "s|wheel~=0.37.1|wheel|g" ${worksrcpath}/pyproject.toml
     }
-
-    depends_test-append port:py${python.version}-pytest
-
-    test.run            no
-    test.cmd            py.test-${python.branch}
-    test.target
-    test.env            PYTHONPATH=${worksrcpath}/build/lib
 }

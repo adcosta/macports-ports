@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-param
-version             1.12.1
+version             1.13.0
 revision            0
 license             BSD
 maintainers         {mps @Schamschula} openmaintainer
@@ -14,17 +14,19 @@ long_description    {*}${description} Python attributes extended to have feature
                     strings, default values, etc., each of which is inherited from \
                     parent classes if not specified in a subclass.
 supported_archs     noarch
+platforms           {darwin any}
 homepage            https://github.com/holoviz/param
 
-checksums           rmd160  db686980fbd6d0c3f5f347913ad0376f1552d100 \
-                    sha256  ca53f1837d3172f4c181159fbe009f71f034f8dd9ffaf9e56bf64bf6b4b84f8f \
-                    size    83938
+checksums           rmd160  f54e8481873f9be871082e3e9849f750186f9e2e \
+                    sha256  59d55048d42a85e148a69837df42bd11c3391d47fad15ba57d118e145f001ef2 \
+                    size    85349
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
+    python.pep517   yes
+
     depends_build-append \
                     port:py${python.version}-numpy \
-                    port:py${python.version}-pyobjc \
-                    port:py${python.version}-setuptools
+                    port:py${python.version}-pyobjc
 }

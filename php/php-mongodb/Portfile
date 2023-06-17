@@ -8,16 +8,16 @@ categories          php databases devel
 maintainers         {ryandesign @ryandesign} openmaintainer
 license             Apache-2
 
-php.branches        5.4 5.5 5.6 7.0 7.1 7.2 7.3 7.4 8.0 8.1
+php.branches        5.4 5.5 5.6 7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2
 php.pecl            yes
 
-if {[vercmp ${php.branch} 7.2] >= 0} {
-    version         1.13.0
+if {[vercmp ${php.branch} >= 7.2]} {
+    version         1.15.3
     revision        0
-    checksums       rmd160  314063d58f66087fc59f088bfb5e2e02a7c363fa \
-                    sha256  22865b61d264c90c9eaa85d94f2f5f57e564140cad87c8c2601fa33f80efe0bb \
-                    size    1440287
-} elseif {[vercmp ${php.branch} 7.1] >= 0} {
+    checksums       rmd160  3f07b0e9aba4347e5b3ad0b2564d0fde78c0149e \
+                    sha256  4f2c4e417fb606b462e870ec03656f3a97ba0b399dc24a6d9d153e9846134388 \
+                    size    1742661
+} elseif {[vercmp ${php.branch} >= 7.1]} {
     version         1.11.1
     revision        0
     checksums       rmd160  254a0f9c087c3070fb7efc3c5fda47dfaea4a0d7 \

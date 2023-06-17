@@ -6,17 +6,22 @@ PortGroup           php 1.1
 
 name                php-zstd
 categories-append   devel
-platforms           darwin
 maintainers         {ryandesign @ryandesign} openmaintainer
 license             MIT
 
-php.branches        5.3 5.4 5.5 5.6 7.0 7.1 7.2 7.3 7.4 8.0 8.1
+php.branches        5.3 5.4 5.5 5.6 7.0 7.1 7.2 7.3 7.4 8.0 8.1 8.2
 
 description         Zstandard compression
 
 long_description    This extension allows Zstandard compression from PHP
 
-if {[vercmp ${php.branch} 5.2] >= 0} {
+if {[vercmp ${php.branch} >= 7.0]} {
+    github.setup    kjdev php-ext-zstd 0.12.3
+    revision        0
+    checksums       rmd160  cda45decc299e6a7e2bea461201e3d1440757f50 \
+                    sha256  e55ac40e9997272ce68352973204131aee3366105f2dd38d1cd73251090ff8f4 \
+                    size    20520
+} elseif {[vercmp ${php.branch} >= 5.2]} {
     github.setup    kjdev php-ext-zstd 0.11.0
     revision        0
     checksums       rmd160  ba4ed77ec02699ef274ab14a818c6b899cd32343 \

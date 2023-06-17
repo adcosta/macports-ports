@@ -6,7 +6,7 @@ PortGroup           select 1.0
 PortGroup           github 1.0
 
 name                py-awscli2
-github.setup        aws aws-cli 2.6.1
+github.setup        aws aws-cli 2.11.27
 revision            0
 
 categories          python devel
@@ -19,13 +19,14 @@ long_description    {*}${description}
 
 homepage            https://aws.amazon.com/cli/
 
-checksums           rmd160  9ee4a82533fcb48904dfc920107aaf587fb1a4cd \
-                    sha256  fbede753572aa6ff1d4b7037e2aa9659a8b656ec6d2e1472d36720686249a1eb \
-                    size    11023313
+checksums           rmd160  979cb4f8156232032b41b99e0764baaa0fa3dbbe \
+                    sha256  508f1ea6c959f434318aecb209ed9ddfd925c57c19f8e915b159ec6ae0026c42 \
+                    size    13447441
 
-# This is what Amazon currently supports and there
-# are hard errors with later Pythons right now.
-python.versions     38 39
+python.versions     38 39 310 311
+python.pep517       yes
+python.pep517_backend \
+                    flit
 
 if {${name} ne ${subport}} {
     if {${os.platform} eq "darwin" && ${os.major} <= 15} {
@@ -51,8 +52,7 @@ if {${name} ne ${subport}} {
                         port:py${python.version}-prompt_toolkit \
                         port:py${python.version}-ruamel-yaml \
                         port:py${python.version}-ruamel-yaml-clib \
-                        port:py${python.version}-urllib3 \
-                        port:py${python.version}-wcwidth
+                        port:py${python.version}-urllib3
 
     depends_run-append  port:awscli_select
 
@@ -73,9 +73,6 @@ if {${name} ne ${subport}} {
     }
 
     post-destroot {
-        move ${worksrcpath}/scripts/gen-ac-index ${worksrcpath}
-        system -W ${worksrcpath} "${prefix}/bin/python${python.branch} ./gen-ac-index --include-builtin-index --index-location ${destroot}${python.pkgd}/awscli/data/ac.index"
-
         delete ${destroot}${prefix}/bin/aws.cmd-${python.branch}
 
         set bash_compl_path ${prefix}/share/bash-completion/completions

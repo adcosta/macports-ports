@@ -5,10 +5,11 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-python-lsp-server
-version             1.4.1
+version             1.7.3
 revision            0
 
 categories-append   devel
+platforms           {darwin any}
 supported_archs     noarch
 license             MIT
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -17,13 +18,13 @@ description         A Python implementation of the Language Server Protocol
 long_description    Fork of the python-language-server project, maintained by the Spyder \
                     IDE team and the community.
 
-checksums           rmd160  bd938a699f501e93512e63e3c1fb9a07b3e83a28 \
-                    sha256  be7f83298af9f0951a93972cafc9db04fd7cf5c05f20812515275f0ba70e342f \
-                    size    76416
+checksums           rmd160  9213a327989a1d0981fd0ce8959432c7ad624813 \
+                    sha256  a31b0525be6ec831c7d2b476b744e5aa5074633e1d1b77ee97f332cde15983ea \
+                    size    97336
 
 homepage            https://github.com/python-lsp/python-lsp-server/
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 python.pep517       yes
 
 if {${subport} ne ${name}} {
@@ -33,6 +34,7 @@ if {${subport} ne ${name}} {
     depends_lib-append \
                     port:py${python.version}-autopep8 \
                     port:py${python.version}-codestyle \
+                    port:py${python.version}-docstring-to-markdown \
                     port:py${python.version}-docstyle \
                     port:py${python.version}-flake8 \
                     port:py${python.version}-flake8-mccabe \
@@ -43,11 +45,11 @@ if {${subport} ne ${name}} {
                     port:py${python.version}-python-lsp-jsonrpc \
                     port:py${python.version}-rope \
                     port:py${python.version}-ujson \
+                    port:py${python.version}-whatthepatch \
                     port:py${python.version}-yapf
 
     patchfiles-append   patch-pylsp_plugins_flake8_lint.py.diff \
-                        patch-test_plugins_flake8_lint.py.diff \
-                        patch-mccabe.diff
+                        patch-test_plugins_flake8_lint.py.diff
 
     post-patch {
         reinplace "s|@@FLAKE8_BIN@@|flake8-${python.branch}|g" ${worksrcpath}/pylsp/plugins/flake8_lint.py
@@ -55,16 +57,11 @@ if {${subport} ne ${name}} {
         reinplace "s|@@PYTHON_BIN@@|${python.bin}|g" ${worksrcpath}/pylsp/plugins/flake8_lint.py
     }
 
+    test.run        yes
+
     depends_test-append \
-                    port:py${python.version}-pytest \
                     port:py${python.version}-mock \
                     port:py${python.version}-flaky
-
-    test.run        yes
-    test.cmd        py.test-${python.branch}
-    test.args       -o addopts=''
-    test.target
-    test.env        PYTHONPATH=${worksrcpath}/build/lib
 
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}

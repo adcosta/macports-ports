@@ -322,9 +322,15 @@ proc mpi.setup {args} {
             -gcc49 -gcc5 -gcc6 -gcc8 \
             -gccdevel
 
-        # gcc 9+ only available on OS X 10.6 (Darwin 10) and newer
-        if {${os.major} < 10} {
-            lappend ::mpi.disabled_compilers -gcc9 -gcc10 -gcc11
+        # GCC 9 only supported for macOS 10.6 through 10.10
+        if {${os.major} < 10 || ${os.major} > 14} {
+            lappend ::mpi.disabled_compilers -gcc9
+        }
+
+        # Clang 15 and 16 only available on 10.7 and later
+        if {${os.major} < 11} {
+            lappend ::mpi.disabled_compilers \
+                -clang15 -clang16
         }
 
         if {${os.arch} eq "arm"} {

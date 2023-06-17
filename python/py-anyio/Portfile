@@ -4,29 +4,31 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-anyio
-version             3.5.0
+version             3.6.2
 revision            0
 categories-append   devel
 license             MIT
 supported_archs     noarch
+platforms           {darwin any}
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         AnyIO is a asynchronous compatibility API
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://github.com/agronholm/anyio
 
-checksums           rmd160  08b492256d964cad9816da05b03bf3cff98be0bb \
-                    sha256  a0aeffe2fb1fdf374a8e4b471444f0f3ac4fb9f5a5b542b48824475e0042a5a6 \
-                    size    136934
+checksums           rmd160  d312dc711dbfbfcb5db9fcaf10bd9c1ee37edbd8 \
+                    sha256  25ea0d673ae30af41a0c442f81cf3b38c7e79fdc7b60335a4c14e05eb0947421 \
+                    size    140378
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                        port:py${python.version}-setuptools \
-                        port:py${python.version}-setuptools_scm
+                        port:py${python.version}-setuptools_scm \
+                        port:py${python.version}-toml
 
     depends_lib-append  port:py${python.version}-idna \
                         port:py${python.version}-sniffio

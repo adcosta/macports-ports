@@ -4,16 +4,17 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                buildbot-console-view
-version             3.5.0
+version             3.7.0
 revision            0
-checksums           rmd160  3bb68dbd6b237ff9b652ee78a3d547683e3a9a90 \
-                    sha256  3540d3c20910b9ab0e949c4d4e5bdf226f7d2cd542ad121d06681e267c24494f \
-                    size    18741
+checksums           rmd160  0367e05b939706ccb7d5e50a3eab0e846105cd84 \
+                    sha256  2724a7ed03be4a0a178d5795e3063073db70af443673fc2c12ca6a7aad37f3e9 \
+                    size    18739
 
 categories          devel
 maintainers         {ryandesign @ryandesign} {rajdeep @rajdeepbh} {mojca @mojca} openmaintainer
 license             GPL-2
 supported_archs     noarch
+platforms           {darwin any}
 
 description         console view plugin for Buildbot web UI
 long_description    {*}${description}

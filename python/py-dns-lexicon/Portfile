@@ -5,28 +5,30 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-dns-lexicon
-version             3.11.0
+version             3.12.0
 epoch               1
 revision            0
 categories-append   net
 license             MIT
 supported_archs     noarch
+platforms           {darwin any}
 maintainers         {mps @Schamschula} openmaintainer
 description         Manipulate DNS records on various DNS providers in a \
                     standardized/agnostic way.
 long_description    {*}${description}
 homepage            https://github.com/AnalogJ/lexicon
 
-python.versions     37 38 39 310
+distname            dns_lexicon-${version}
 
-checksums           rmd160  38109b6fd8e800aab587573d47ea44346cd42c8e \
-                    sha256  84dbe54ca31e8f3dc34d786b7dbc3590ed9fae423bdb0c413eb3e9292ad50364 \
-                    size    150963
+python.versions     37 38 39 310 311
+python.pep517       yes
+python.pep517_backend   poetry
+
+checksums           rmd160  cfe0341b419449990a35faa04435915848bac971 \
+                    sha256  13eec59c2d9364288e88506f7d2dc5c295e9d15f0ddce3137535490669bdb5ff \
+                    size    155066
 
 if {${name} ne ${subport}} {
-    depends_lib-append \
-                    port:py${python.version}-setuptools
-
     depends_run-append  \
                     port:py${python.version}-beautifulsoup4 \
                     port:py${python.version}-cryptography \
@@ -42,6 +44,6 @@ if {${name} ne ${subport}} {
     notes "
     To make the Python ${python.branch} version of lexicon the one that is run\
     when you execute the commands without a version suffix, e.g. 'lexicon', run:
-    port select --set ${select.group} [file tail ${select.file}]
+    sudo port select --set ${select.group} [file tail ${select.file}]
     "
 }

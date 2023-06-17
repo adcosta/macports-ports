@@ -4,33 +4,30 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-aiobotocore
-version             2.2.0
+version             2.4.2
 revision            0
 categories-append   devel
-platforms           darwin
+platforms           {darwin any}
 license             Apache-2
 supported_archs     noarch
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
-description         Async client for amazon services
-long_description    ${description}
+description         Async client for Amazon services
+long_description    {*}${description}
 
 homepage            https://github.com/aio-libs/aiobotocore
 
-checksums           rmd160  e9116890aeda617cb24a18c8ba08942ce2666f8d \
-                    sha256  71357939c3022670d7bb94833194147a44ebfce24b1643e4e44fedc1ee7349ba \
-                    size    59699
+checksums           rmd160  5ee0ca47125fc0eb159411bf0094c57113f7a430 \
+                    sha256  0603b74a582dffa7511ce7548d07dc9b10ec87bc5fb657eb0b34f9bd490958bf \
+                    size    67253
 
 if {${name} ne ${subport}} {
-    depends_build-append \
-                        port:py${python.version}-setuptools
     depends_lib-append  port:py${python.version}-botocore \
                         port:py${python.version}-aiohttp \
                         port:py${python.version}-wrapt \
                         port:py${python.version}-aioitertools
-
-    livecheck.type      none
 }

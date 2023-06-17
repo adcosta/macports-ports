@@ -4,33 +4,32 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-redis
-version             4.2.2
+version             4.5.5
 revision            0
 categories-append   devel
 license             MIT
 supported_archs     noarch
+platforms           {darwin any}
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         Python client for Redis key-value store
-long_description    ${description}
+long_description    {*}${description}
 
-homepage            https://github.com/andymccurdy/redis-py
+homepage            https://github.com/redis/redis-py
 
-checksums           rmd160  b799da0c44b94d5dcbede11dff556ab9e907a661 \
-                    sha256  0107dc8e98a4f1d1d4aa00100e044287f77121a1e6d2085545c4b7fa94a7a27f \
-                    size    2421362
+checksums           rmd160  183c98530a6715f0c779615db4479a686ce293cd \
+                    sha256  dc87a0bdef6c8bfe1ef1e1c40be7034390c2ae02d92dcd0c7ca1729443899880 \
+                    size    4557115
 
 if {${name} ne ${subport}} {
-    depends_lib-append  port:py${python.version}-deprecated \
-                        port:py${python.version}-packaging \
-                        port:py${python.version}-typing_extensions \
-                        port:py${python.version}-async-timeout
+    depends_lib-append  port:py${python.version}-async-timeout
 
     if {${python.version} < 38} {
-        depends_lib-append  port:py${python.version}-importlib-metadata
+        depends_lib-append  port:py${python.version}-importlib-metadata \
+                            port:py${python.version}-typing_extensions
     }
 }

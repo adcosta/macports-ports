@@ -2,21 +2,22 @@
 
 PortSystem                  1.0
 PortGroup                   mpi 1.0
+PortGroup                   legacysupport 1.0
 
 name                        cdo
-version                     2.0.5
-revision                    1
+version                     2.2.0
+revision                    3
 platforms                   darwin
 maintainers                 {takeshi @tenomoto} openmaintainer
 license                     GPL-2
 categories                  science
 description                 Climate Data Operators
 homepage                    https://code.mpimet.mpg.de/projects/cdo
-master_sites                https://code.mpimet.mpg.de/attachments/download/26823
+master_sites                https://code.mpimet.mpg.de/attachments/download/28013
 
-checksums           rmd160  c2b6c60cba15c37dca3c4573d6734abbb0c74d96 \
-                    sha256  edeebbf1c3b1a1f0c642dae6bc8c7624e0c54babe461064dc5c7daca4a5b0dce \
-                    size    11791780
+checksums           rmd160  ed59b051f0ceedac33bd9a50b7431c76780543d3 \
+                    sha256  679c8d105706caffcba0960ec5ddc4a1332c1b40c52f82c3937356999d8fadf2 \
+                    size    13305096
 
 long_description \
     CDO is a collection of command line Operators               \
@@ -26,7 +27,7 @@ long_description \
 
 fetch.ignore_sslcert        yes
 
-compiler.cxx_standard       2014
+compiler.cxx_standard       2017
 compiler.thread_local_storage yes
 compilers.choose            cc cxx
 mpi.setup
@@ -39,7 +40,7 @@ depends_lib                 port:netcdf \
                             port:proj8 \
                             port:fftw-3
 
-patchfiles                  patch-skip-nc4-test.diff
+patchfiles                  patch-cdo-mach-task-10.8.diff
 
 configure.args              --with-netcdf=${prefix} \
                             --disable-dependency-tracking \
@@ -53,8 +54,14 @@ configure.args              --with-netcdf=${prefix} \
 configure.cppflags-append   -I${prefix}/include/udunits2
 configure.ldflags-append    -lhdf5
 
+# Since cdo 2.2.0, running tests requires the Python 3 interpreter. But since the configure always looks
+# for a recent Python and does not distinguish whether test is requested, it is added here as a build dependency.
+# To make sure that it works prior to Catalina, it is best to simply require the latest python3 package.
+
+depends_build-append        port:python311
+configure.env-append        PYTHON=${prefix}/bin/python3.11
+
 test.run                    yes
-test.dir                    ${worksrcpath}/test
 test.args                   -j1
 test.target                 check
 

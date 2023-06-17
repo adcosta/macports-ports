@@ -76,6 +76,16 @@ array set crossbinutils.versions_info {
         sha256  e316477a914f567eccc34d5d29785b8b0f5a10208d36bbacedcc39048ecfe024 \
         size    23651408
     }}
+    2.39 {xz {
+        rmd160  eb5d638227d0543d3055fc7e6d8d8c28534f55c9 \
+        sha256  645c25f563b8adc0a81dbd6a41cffbf4d37083a382e02d5d3df4f65c09516d00 \
+        size    25167756
+    }}
+    2.40 {xz {
+        rmd160  3ba72b8be2349251a51108e59cdb03bb4382fa45 \
+        sha256  0f8a4c272d7f17f369ded10a4aca28b8e304828e95526da482b0ccc4dfc9d8e1 \
+        size    25241484
+    }}
 }
 
 proc crossbinutils.setup {target version} {
@@ -117,50 +127,6 @@ proc crossbinutils.setup {target version} {
     }
 
     post-patch {
-        set infopages {
-            gas/doc         as
-            bfd/doc         bfd
-            binutils/doc    binutils
-            gprof           gprof
-            ld              ld
-            libctf/doc      ctf-spec
-        }
-
-        foreach {dir page} ${infopages} {
-            # Fix texinfo source file
-            set tex [glob -directory ${worksrcpath}/${dir} ${page}.texi*]
-            reinplace -q \
-                /setfilename/s/${page}/${crossbinutils.target}-${page}/ ${tex}
-            reinplace -q s/(${page})/(${crossbinutils.target}-${page})/g ${tex}
-            reinplace -q \
-                "s/@file{${page}}/@file{${crossbinutils.target}-${page}}/g" \
-                ${tex}
-            move ${tex} \
-                ${worksrcpath}/${dir}/${crossbinutils.target}-${page}[file extension ${tex}]
-
-            # Fix Makefile(s)
-            if { [ file exists "${worksrcpath}/${dir}/Makefile.in" ] } {
-                reinplace -q -E \
-                    s/\[\[:<:\]\]${page}\\.(info|texi)/${crossbinutils.target}-&/g \
-                    ${worksrcpath}/${dir}/Makefile.in
-            }
-            foreach dir2 {binutils gas libctf} {
-                if { [ file exists "${worksrcpath}/${dir2}/configure" ] } {
-                        reinplace -q -E \
-                        s/\[\[:<:\]\]${page}\\.(info|texi)/${crossbinutils.target}-&/g \
-                        ${worksrcpath}/${dir2}/Makefile.in
-                }
-            }
-        }
-
-        # Fix packages' names.
-        foreach dir {bfd binutils gas gold gprof ld opcodes libctf} {
-            if { [ file exists "${worksrcpath}/${dir}/configure" ] } {
-                reinplace -q "/^ PACKAGE=/s/=.*/=${crossbinutils.target}-${dir}/" \
-                    ${worksrcpath}/${dir}/configure
-            }
-        }
-
         # Install target-compatible libbfd/bfd-plugins/libiberty in the target's directory
         reinplace -q "s|bfdlibdir=.*|bfdlibdir='${prefix}/${crossbinutils.target}/host/lib'|g" \
             ${worksrcpath}/bfd/configure                                \
@@ -178,6 +144,9 @@ proc crossbinutils.setup {target version} {
             ${worksrcpath}/libiberty/Makefile.in
     }
 
+    depends_build \
+        bin:makeinfo:texinfo
+
     depends_lib \
         port:gettext \
         port:zlib
@@ -192,10 +161,9 @@ proc crossbinutils.setup {target version} {
         --target=${target} \
         --program-prefix=${target}- \
         --enable-install-libiberty=${prefix}/${crossbinutils.target}/host \
-        --infodir=${prefix}/share/info \
+        --infodir=${prefix}/share/info/${target} \
         --mandir=${prefix}/share/man \
-        --datarootdir=${prefix}/share/${crossbinutils.target} \
-        
+        --datarootdir=${prefix}/share/${crossbinutils.target}
 
     build.dir ${workpath}/build
 

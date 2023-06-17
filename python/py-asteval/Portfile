@@ -4,10 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-asteval
-version             0.9.26
+version             0.9.29
 revision            0
 
 categories-append   math
+platforms           {darwin any}
 supported_archs     noarch
 license             MIT
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -22,15 +23,15 @@ long_description    ASTEVAL is a safe(ish) evaluator of Python expressions and \
 
 homepage            https://github.com/newville/asteval
 
-checksums           rmd160  80716cab40fac3786e4886120a3577ae64bc8868 \
-                    sha256  36125613ec21ed3e33e370ca8960a1f1e8a2324d78a8016bfa5ad76f1e16ef05 \
-                    size    40113
+checksums           rmd160  927af7b7c2a075c2926a2cbef5f4a9515b6349b4 \
+                    sha256  ab98c61ba9394149c774ae7861497e9c32580301aa693ca19746997216c31fab \
+                    size    42424
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
+python.pep517       yes
 
 if {${subport} ne ${name}} {
     depends_build-append \
-                    port:py${python.version}-setuptools \
                     port:py${python.version}-setuptools_scm
 
     if {${python.version} < 38} {
@@ -38,13 +39,7 @@ if {${subport} ne ${name}} {
                     port:py${python.version}-importlib-metadata
     }
 
-    depends_test-append \
-                    port:py${python.version}-pytest
-
     test.run        yes
-    test.cmd        py.test-${python.branch}
-    test.target
-    test.env        PYTHONPATH=${worksrcpath}/build/lib
 
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}
@@ -52,6 +47,4 @@ if {${subport} ne ${name}} {
         xinstall -m 0644 -W ${worksrcpath} README.rst INSTALL \
             LICENSE ${destroot}${docdir}
     }
-
-    livecheck.type  none
 }

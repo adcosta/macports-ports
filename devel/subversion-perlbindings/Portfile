@@ -6,7 +6,6 @@ name                subversion-perlbindings
 version             1.14.2
 
 categories          devel perl
-platforms           darwin
 maintainers         nomaintainer
 license             Apache-2
 
@@ -32,18 +31,13 @@ foreach branch ${perl5.branches} {
 }
 
 if {${subport} eq ${name}} {
-    distfiles
-    supported_archs noarch
+    PortGroup       stub 1.0
+
     # depend on a default perl version
-    depends_lib     port:${name}-5.28
+    depends_lib     port:${name}-5.34
     # avoid conflict with old version when upgrading
-    replaced_by     ${name}-5.28
-    use_configure   no
-    build {}
-    destroot {
-    xinstall -d ${destroot}${prefix}/share/doc/${name}
-        system "echo $name is a stub port > ${destroot}${prefix}/share/doc/${name}/README"
-    }
+    replaced_by     ${name}-5.34
+
     livecheck.type  regex
     livecheck.url   https://svn.apache.org/repos/asf/subversion/tags/
     livecheck.regex "(\\d+\\.\\d+\\.\\d+)/"

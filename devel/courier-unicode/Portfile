@@ -1,16 +1,15 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-PortSystem 1.0
+PortSystem              1.0
 
 name                    courier-unicode
-version                 2.1
-checksums               rmd160  6d8dbb7de4793e2df9bca7ce5da97a226d41c2f5 \
-                        sha256  684cba7fe722b084ae1ffb0a7f71999756409d5ad4c84bce0efeb8887943ea21 \
-                        size    447917
+version                 2.2.6
+checksums               rmd160  eb95253a2696874a85863c171719bc074cabd7d9 \
+                        sha256  513f68066ed192ace630f601984c565b5c1d1c81d98c6478ebe4edb3a15be03a \
+                        size    598551
 
 categories              devel mail
 license                 GPL-3
-platforms               darwin
 maintainers             nomaintainer
 description             Courier Unicode Library implements several algorithms related to the Unicode Standard
 long_description        {*}${description}
@@ -24,6 +23,7 @@ depends_lib-append      port:libiconv
 patchfiles              patch-courier-unicode.h.in-add-missing-includes.diff
 
 compiler.cxx_standard   2011
+configure.cxxflags-append -std=c++11
 
 # Limit the length of the minor and patch version components to avoid picking
 # up development versions (that contain a YYYYMMDD timestamp).

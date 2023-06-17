@@ -4,9 +4,10 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-cachetools
-version             5.0.0
+version             5.3.1
 revision            0
 
+platforms           {darwin any}
 supported_archs     noarch
 license             MIT
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -17,23 +18,17 @@ long_description    This module provides various {*}${description}, including va
 
 homepage            https://github.com/tkem/cachetools
 
-checksums           rmd160  9cd31e8b6ed09a31c49ece2b6f209724388295ca \
-                    sha256  486471dfa8799eb7ec503a8059e263db000cdda20075ce5e48903087f79d5fd6 \
-                    size    26119
+checksums           rmd160  653ed0c00b91a8ba3eb4751fd48c7867375e8e76 \
+                    sha256  dce83f2d9b4e1f732a8cd44af8e8fab2dbe46201467fc98b3ef8f269092bf62b \
+                    size    27985
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \
                     port:py${python.version}-setuptools
 
-    depends_test-append \
-                    port:py${python.version}-pytest
-
     test.run        yes
-    test.cmd        py.test-${python.branch}
-    test.target
-    test.env        PYTHONPATH=${worksrcpath}/build/lib
 
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}

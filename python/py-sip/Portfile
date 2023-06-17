@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-sip
-version             6.6.1
-revision            1
+version             6.7.9
+revision            0
 epoch               1
 
 categories-append   devel
@@ -21,11 +21,28 @@ long_description    SIP is a tool that makes it very easy to create \
 
 homepage            https://www.riverbankcomputing.com/software/sip/
 
-checksums           rmd160  a3fb1ca47e41f04e018efbebd95d8a90041b71b1 \
-                    sha256  696c575c72144122701171f2cc767fe6cc87050ea755a04909152a8508ae10c3 \
-                    size    1134991
+checksums           rmd160  285333cf660304e5e88987eb3939e5587cb6f4f7 \
+                    sha256  35d51fc10f599d3696abb50f29d068ad04763df7b77808c76b74597660f99b17 \
+                    size    1163252
 
-python.versions     35 36 37 38 39 310
+python.versions     35 36 37 38 39 310 311
+
+foreach pver {37 38 39 310 311} {
+    subport py${pver}-sip-devel {
+        version         6.6.2.dev2206062241
+        master_sites    https://www.riverbankcomputing.com/pypi/packages/sip/
+        epoch           0
+        revision        0
+        checksums       rmd160  016f927449e095264f3439914f0eeed3521a1c3b \
+                        sha256  80410470fe90f37a1769e62bf0ca8b734cc224cb33c778f1de3b2491d1f2a0b6 \
+                        size    1144044
+        conflicts       py${pver}-sip
+    }
+
+    subport py${pver}-sip {
+        conflicts       py${pver}-sip-devel
+    }
+}
 
 if {${name} ne ${subport}} {
     if {${python.version} == 35} {
@@ -42,13 +59,17 @@ if {${name} ne ${subport}} {
                     size    1197925
     } else {
         depends_lib-append \
-                    port:py${python.version}-ply \
+                    port:py${python.version}-ply
+        # 'ScopedName' object has no attribute 'replace'
+        patchfiles-append \
+                    patch-ScopedName-str-conversion.diff
     }
 
     depends_lib-append \
                     port:py${python.version}-packaging \
                     port:py${python.version}-setuptools \
-                    port:py${python.version}-toml
+                    port:py${python.version}-toml \
+                    port:py${python.version}-tomli
 
     if {${python.version} < 38} {
         depends_lib-append \

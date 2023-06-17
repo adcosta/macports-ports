@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        pocoproject poco 1.11.1 poco- -release
+github.setup        pocoproject poco 1.12.4 poco- -release
 categories          devel
 maintainers         {gmail.com:vandervelde.ag @arjanvandervelde} openmaintainer
 
@@ -28,21 +28,19 @@ if {${subport} eq ${name}} {
     PortGroup           openssl 1.0
 
     revision            0
-    checksums           rmd160  10ad3dca43fef5522b20fdeae6cf13eec441ef7c \
-                        sha256  85efbc085f64f8a3facb4961cdde80f85af507601a47a8204d086ff172e31ec6 \
-                        size    5397863
+    checksums           rmd160  474a8ae863281d93b4714a6940cf0357c81f9c6e \
+                        sha256  4e6ccc0df904596478414ef56a992cf885eb4b0ee695b23d307eb2ff91c36626 \
+                        size    5990710
 
     use_bzip2           yes
 
     depends_lib-append  port:expat \
-                        port:pcre \
+                        port:pcre2 \
                         port:zlib
 
     conflicts           arc
 
     patchfiles          DYLD_LIBRARY_PATH.patch
-
-    #openssl.branch      1.1
 
     compiler.c_standard 1999
     compiler.cxx_standard \
@@ -95,9 +93,9 @@ if {${subport} eq ${name}} {
 
 subport ${name}-docs {
     revision            0
-    checksums           rmd160  9a0bfacac7214a46da601f0423f0759ccc9eb67e \
-                        sha256  df79a5d6eedcf73674a76d686397ce4ffb0bf83ab01118d0e9bfd6b6be12e1e2 \
-                        size    1369435
+    checksums           rmd160  fbfcd0d480c48e7c3bc1009089451bc0d6670866 \
+                        sha256  ce4b7e34f3fd61f965fe5f3ae1f0280bc9d28872b6ddd3513ea9e1fcf03d3bb3 \
+                        size    1569791
 
     license             unknown
     supported_archs     noarch

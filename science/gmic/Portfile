@@ -11,12 +11,12 @@ if {${subport} eq "gmic-gimp" || ${subport} eq "gmic-qt"} {
     PortGroup       active_variants 1.1
 } else {
     PortGroup       makefile        1.0
-    
+
     patchfiles      patch-src-Makefile.diff
 }
 
 name                gmic
-version             3.1.0
+version             3.2.5
 revision            1
 license             CeCILL
 categories          science graphics
@@ -29,27 +29,22 @@ long_description    G'MIC stands for GREYC's Magic Image Converter. It is \
                     converting, manipulating, filtering and visualizing \
                     generic 1d/2d/3d multi-spectral image datasets. This \
                     includes classical color images, but also more complex \
-                    data as image sequences or 3D volumetric images. G'MIC \
-                    has been designed with portability in mind and runs on \
-                    different platforms (Windows, Unix, Mac OS X).
+                    data as image sequences or 3D volumetric images.
 
 homepage            https://gmic.eu
 master_sites        https://gmic.eu/files/source/
 
-# gmic will pick up include files from opencv, opencv3 dods not conflict
-conflicts_build     opencv
+checksums           rmd160  86f03dfc69827e3d9c44c64a4db5b42404a82c9b \
+                    sha256  ae1a903df27e3131702c27b6fea6bdd8faabd756f53e22d3f35fb790f22d2035 \
+                    size    11352319
 
 distfiles           ${name}_${version}${extract.suffix}
-
-checksums           rmd160  2bf9333f63ecb720658e7081babf7d41f4b137a4 \
-                    sha256  f0d5ae484d43e385b028557b20242ceaf277ef76fab441c5a019f6c2aa3c30cf \
-                    size    10512767
 
 depends_lib         port:curl \
                     path:lib/libavcodec.dylib:ffmpeg \
                     port:fftw-3 \
                     port:GraphicsMagick \
-                    port:ilmbase \
+                    port:imath \
                     port:libheif \
                     path:include/turbojpeg.h:libjpeg-turbo \
                     port:libpng \
@@ -95,6 +90,8 @@ if {${subport} eq ${name}} {
     build.dir                   ${worksrcpath}/src
     build.target                cli
 
+    installs_libs               no
+
     variant opencv4 description {compile with OpenCV support} {
         depends_lib-append      path:lib/opencv4/libopencv_core.dylib:opencv4
     }
@@ -131,7 +128,7 @@ if {${subport} eq ${name}} {
     pre-activate {
         if {![catch {set installed [lindex [registry_active gmic] 0]}]} {
             set _version [lindex $installed 1]
-            if {[vercmp $_version 3.1.0] < 0} {
+            if {[vercmp $_version 3.1.1] < 0} {
                 registry_deactivate_composite gmic "" [list ports_nodepcheck 1]
             }
         }
@@ -234,11 +231,16 @@ if {${subport} eq ${name}} {
         cmake.build_type        Release
     }
 
+    qt5.min_version             5.11
+
     cmake.source_dir            ${worksrcpath}/gmic-qt
+
+    patchfiles-append           patch-qt-CMakeLists.txt.diff \
+                                patch-gmic-qt-src-FilterSelector-FiltersModelReader.cpp.diff
 
     configure.args-append       -DENABLE_DYNAMIC_LINKING=ON \
                                 -DENABLE_LTO=OFF \
-                                -DENABLE_OPENMP=OFF \
+                                -DENABLE_SYSTEM_GMIC=OFF \
                                 -DGMIC_PATH=${worksrcpath}/src
 
     qt5.depends_build_component qttools
@@ -250,6 +252,12 @@ if {${subport} eq ${name}} {
                                 port:xorg-libsm
 
     require_active_variants     ${name} x11
+
+    platforms {darwin >= 12}
+
+    if {${os.platform} eq "darwin" && ${os.major} < 17} {
+        patchfiles-append       patch-gmic-qt-CMakeLists.txt.diff
+    }
 
     livecheck.type  none
 }

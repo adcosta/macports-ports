@@ -5,7 +5,7 @@ PortGroup           github 1.0
 PortGroup           python 1.0
 
 name                py-acme
-github.setup        certbot certbot 1.27.0 v
+github.setup        certbot certbot 2.6.0 v
 revision            0
 categories-append   security
 license             Apache-2
@@ -13,13 +13,14 @@ maintainers         {mps @Schamschula} openmaintainer
 description         ACME protocol implementation in Python.
 long_description    {*}${description}
 supported_archs     noarch
+platforms           {darwin any}
 homepage            https://certbot.eff.org/
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
-checksums           rmd160  d5b8a964188ae8d83a68c0172be92de35e4c27c9 \
-                    sha256  6301d17091637830094e54961bec8f2d9a866962c836ab39cb1376a7fc76d1e6 \
-                    size    1366352
+checksums           rmd160  eedc65fe561bc628cc46bf26ccbf93f13c85c16b \
+                    sha256  d25e78d3edf952177e77142b332f52481d537cd3646fe418575f30ee77f6e60a \
+                    size    1336178
 
 if {${name} ne ${subport}} {
     build.dir       ${worksrcpath}/acme
@@ -30,19 +31,32 @@ if {${name} ne ${subport}} {
                     port:py${python.version}-setuptools
 
     depends_lib-append  \
-                    port:py${python.version}-asn1 \
-                    port:py${python.version}-chardet \
                     port:py${python.version}-cryptography \
-                    port:py${python.version}-idna \
                     port:py${python.version}-josepy \
-                    port:py${python.version}-ndg_httpsclient \
                     port:py${python.version}-openssl \
                     port:py${python.version}-requests \
-                    port:py${python.version}-requests-toolbelt \
                     port:py${python.version}-pyrfc3339 \
-                    port:py${python.version}-six \
-                    port:py${python.version}-tz \
-                    port:py${python.version}-werkzeug
+                    port:py${python.version}-tz
 
-    livecheck.type  none
+    variant docs description {Build man pages} {
+        depends_lib-append \
+            port:py${python.version}-repoze.sphinx.autointerface \
+            port:py${python.version}-sphinx \
+            port:py${python.version}-sphinx_rtd_theme
+
+        post-build {
+            set env(doc_path) ${worksrcpath}/acme/docs
+            set env(python_branch) ${python.branch}
+            exec sh -c {cd $doc_path && sphinx-build-$python_branch -N -b man . _build/man} >@stdout
+        }
+
+        post-destroot {
+            xinstall -d ${destroot}${prefix}/share/man/man1
+            xinstall -d ${destroot}${prefix}/share/man/man7
+            xinstall -m 640 ${worksrcpath}/acme/docs/_build/man/acme-python.1 \
+                ${destroot}${prefix}/share/man/man1/
+            xinstall -m 640 ${worksrcpath}/acme/docs/_build/man/jws.1 \
+                ${destroot}${prefix}/share/man/man1/
+        }
+    }
 }

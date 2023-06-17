@@ -3,18 +3,19 @@
 PortSystem          1.0
 PortGroup github    1.0
 
-github.setup        DNSCrypt dnscrypt-proxy 2.1.1
+github.setup        DNSCrypt dnscrypt-proxy 2.1.4
 revision            0
-checksums           rmd160  a747304a71c2df1f188d59e5a927f468c0148889 \
-                    sha256  586aeaf29dba527c5a7a256dfc38a9cf81ae6a28a84b3807040d09c34d523902 \
-                    size    6113888
+
+checksums           rmd160  4284d973038af4ba6cff734adee14131beb3d20d \
+                    sha256  b1a9011a52e6ba7f509ee70297f55f50dd8bc99b5cae9fecac91d7e8f523bea2 \
+                    size    6899956
 
 categories          net
 license             ISC
 maintainers         nomaintainer
 description         A protocol for securing communications between a client and a DNS \
                     resolver.
-long_description    ${description}
+long_description    {*}${description}
 platforms           darwin
 
 homepage            https://www.dnscrypt.info

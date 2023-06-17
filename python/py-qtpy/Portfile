@@ -4,13 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        spyder-ide qtpy 2.0.1 v
+github.setup        spyder-ide qtpy 2.3.1 v
 github.tarball_from archive
 revision            0
 name                py-qtpy
 
 categories-append   devel
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         {reneeotten @reneeotten} openmaintainer
 
@@ -18,53 +19,27 @@ description         Abstraction layer for PyQt5/PyQt6/PySide2/PySide6
 long_description    Provides an uniform layer to support PyQt5, PyQt6, \
                     PySide2, and PySide6 with a single codebase.
 
-checksums           rmd160  59889b894680baa749151284c24a4ad0b17e0921 \
-                    sha256  905e801ee0c5fa65c8e0cff1067f99f9c25f69014a5e0674011ce53894f7132b \
-                    size    45778
+checksums           rmd160  567332c0f7470e52f0eba115ed7b183826a87d09 \
+                    sha256  8121e8cdc09f927823b627c02bacabb81982024250eb65997032a19d5a10f3cd \
+                    size    59690
 
-python.versions     27 35 36 37 38 39 310
+python.versions     37 38 39 310 311
+python.pep517       yes
 
 if {${name} ne ${subport}} {
-    if {${python.version} == 27} {
-        github.setup    spyder-ide qtpy 1.11.3 v
-        github.tarball_from archive
-        revision    0
-        checksums   rmd160  41115ac22fbd547d86ecd37476e1be82562caaa6 \
-                    sha256  eae5c5f11acd85b0c35cd39656e093fb1c0bf20fc5176a0010d466405788c5f6 \
-                    size    39447
-        depends_build-append \
-                    port:py${python.version}-setuptools
-    } elseif {${python.version} == 35} {
-        github.setup    spyder-ide qtpy 1.9.0 v
-        github.tarball_from archive
-        revision    0
-        epoch       1
-        checksums   rmd160  2c557686126864e9f0ea150ff0769a7744f91928 \
-                    sha256  436cffcd843a51703ee69e3c800aa471e0b887e491b3612ae6fd3ffeaa940fd2 \
-                    size    35576
-        depends_build-append \
-                    port:py${python.version}-setuptools
-    } else {
-        python.pep517   yes
-    }
+    depends_build-append \
+                    port:py${python.version}-wheel
 
     depends_test-append \
-                    port:py${python.version}-pytest \
-                    port:py${python.version}-mock
+                    port:py${python.version}-pytest-qt
 
     test.run        yes
-    test.cmd        py.test-${python.branch}
-    test.args       -o addopts=''
-    test.target
-    test.env        PYTHONPATH=${worksrcpath}/build/lib
 
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}
         xinstall -d ${destroot}${docdir}
         xinstall -m 0644 -W ${worksrcpath} LICENSE.txt ${destroot}${docdir}
     }
-
-    livecheck.type  none
 
     notes "QtPy needs one of the following backends to be installed on your\
         system: PyQt5, PyQt6, PySide2, or PySide6. If multiple backends are\

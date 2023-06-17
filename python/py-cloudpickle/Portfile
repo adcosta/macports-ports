@@ -4,22 +4,23 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-cloudpickle
-version             2.0.0
+version             2.2.1
 revision            0
 categories-append   science
 license             BSD
 supported_archs     noarch
+platforms           {darwin any}
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         Extended pickling support for Python objects.
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://github.com/cloudpipe/cloudpickle
 
-checksums           rmd160  6b22d437d75167ea382ba70a7d5dd4368c8b2037 \
-                    sha256  5cd02f3b417a783ba84a4ec3e290ff7929009fe51f6405423cfccfadd43ba4a4 \
-                    size    60038
+checksums           rmd160  b35e78d2c32872ab4a9041febe6d9fffe3686583 \
+                    sha256  d89684b8de9e34a2a43b3460fbca07d09d6e25ce858df4d5a44240403b6178f5 \
+                    size    60800

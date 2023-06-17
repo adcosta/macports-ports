@@ -4,10 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                twine
-version             4.0.0
-revision            0
+version             4.0.2
+revision            1
 
 categories-append   devel
+platforms           {darwin any}
 supported_archs     noarch
 license             Apache-2
 maintainers         {gmail.com:jjstickel @jjstickel} \
@@ -18,11 +19,11 @@ long_description    {*}${description}
 
 homepage            https://twine.readthedocs.io/
 
-checksums           rmd160  bbab78a45624681a79310bd1b2b27e5ae6c069d0 \
-                    sha256  817aa0c0bdc02a5ebe32051e168e23c71a0608334e624c793011f120dbbc05b7 \
-                    size    215212
+checksums           rmd160  a19a198f115fcf154845a36473a08af5f8f1a69a \
+                    sha256  9e102ef5fdd5a20661eb88fad46338806c3bd32cf1db729603fe3697b1bc83c8 \
+                    size    215249
 
-python.default_version  310
+python.default_version  311
 python.pep517       yes
 
 depends_build-append \

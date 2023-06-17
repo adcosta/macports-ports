@@ -35,11 +35,11 @@ if {${subport} eq ${name}} {
 }
 
 subport yt-dlp {
-    github.setup    yt-dlp ${subport} 2022.03.08.1
+    github.setup    yt-dlp ${subport} 2023.03.04
     revision        0
-    checksums       rmd160  5dfe1c1d304e7b747650e7f3844bc70df30c8d6c \
-                    sha256  135fd7bbf81c2639419b191d8e5abb80cd8a9801b7ed8e92a331a4107e820ab2 \
-                    size    4455336
+    checksums       rmd160  3cfc1d605d50853ded5eaa95d0f4e699cabbe66a \
+                    sha256  771d2abefcd5f1e6f3ab6d6d18cdae98be4ab73538d1174e7e7236640418e150 \
+                    size    5125843
 
     dist_subdir     ${subport}/${version}
     distname        ${subport}
@@ -53,9 +53,9 @@ subport yt-dlp {
 }
 
 categories          net
-platforms           darwin
 maintainers         {ryandesign @ryandesign}
 supported_archs     noarch
+platforms           {darwin any}
 license             public-domain
 installs_libs       no
 
@@ -64,16 +64,21 @@ long_description    ${name} is a small {*}${description}.
 
 github.tarball_from releases
 
-worksrcdir          ${name}
+worksrcdir          ${subport}
 
 patchfiles-append   ${subport}-config-location.patch \
                     ${subport}-update.patch
 
 post-patch {
+    if {${subport} eq ${name}} {
+        set optfile options.py
+    } else {
+        set optfile utils.py
+    }
     reinplace -W ${worksrcpath} "s|@PREFIX@|${prefix}|g" \
             README.md \
             ${subport}.1 \
-            [string map {- _} ${subport}]/options.py
+            [string map {- _} ${subport}]/${optfile}
 }
 
 post-destroot {
@@ -94,13 +99,14 @@ variant ffmpeg description {Add ffmpeg dependency, used to extract audio} {
 
 default_variants    +ffmpeg
 
-variant python37 conflicts python38 python39 python310 description {Use Python 3.7} {}
-variant python38 conflicts python37 python39 python310 description {Use Python 3.8} {}
-variant python39 conflicts python37 python38 python310 description {Use Python 3.9} {}
-variant python310 conflicts python37 python38 python39 description {Use Python 3.10} {}
+variant python37 conflicts python38 python39 python310 python311 description {Use Python 3.7} {}
+variant python38 conflicts python37 python39 python310 python311 description {Use Python 3.8} {}
+variant python39 conflicts python37 python38 python310 python311 description {Use Python 3.9} {}
+variant python310 conflicts python37 python38 python39 python311 description {Use Python 3.10} {}
+variant python311 conflicts python37 python38 python39 python310 description {Use Python 3.11} {}
 
-if {![variant_isset python37] && ![variant_isset python38] && ![variant_isset python39] && ![variant_isset python310]} {
-    default_variants +python310
+if {![variant_isset python37] && ![variant_isset python38] && ![variant_isset python39] && ![variant_isset python310] && ![variant_isset python311]} {
+    default_variants +python311
 }
 
 if {[variant_isset python37]} {
@@ -111,6 +117,8 @@ if {[variant_isset python37]} {
     python.default_version  39
 } elseif {[variant_isset python310]} {
     python.default_version  310
+} elseif {[variant_isset python311]} {
+    python.default_version  311
 }
 
 depends_build-append        port:py${python.version}-setuptools

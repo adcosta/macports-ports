@@ -5,10 +5,9 @@ PortSystem          1.0
 name                a60
 version             0.23a
 
-categories          lang
-platforms           darwin
+categories          lang algol
 license             GPL-2
-maintainers         nomaintainer
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 
 description         Algol 60 interpreter NASE A60
 long_description \
@@ -31,6 +30,12 @@ patchfiles          patch-comm.h.diff \
                     patch-Makefile.in.diff
 
 configure.args      --prefix=${destroot}${prefix}
+
+platform darwin 10 powerpc {
+    # Without this Rosetta silently builds x86 binary.
+    configure.args-append \
+                    CC="${configure.cc} -arch ppc"
+}
 
 variant xa60 description {Add xa60 which is a simple X11 front end for a60} {
     depends_lib     port:xorg-libice \

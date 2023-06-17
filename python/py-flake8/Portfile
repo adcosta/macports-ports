@@ -5,11 +5,12 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-flake8
-version             4.0.1
-revision            1
+version             6.0.0
+revision            0
 
 categories-append   devel
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         {petr @petrrr} openmaintainer
 
@@ -23,13 +24,11 @@ long_description    \
 
 homepage            https://flake8.readthedocs.org/
 
-checksums           rmd160  79c452e1e331845cb48ec35faf55c88a6b64b58c \
-                    sha256  806e034dda44114815e23c16ef92f95c91e4c71100ff52813adf7132a6ad870d \
-                    size    154905
+checksums           rmd160  3d26d25023445ef6462dabb50503736d19c3c597 \
+                    sha256  c61007e76655af75e6785a931f452915b371dc48f56efd765247c8fe68f2b181 \
+                    size    138524
 
-python.versions     37 38 39 310
-
-patchfiles          patch-mccabe.diff
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_lib-append      port:py${python.version}-codestyle \
@@ -61,11 +60,7 @@ port select --set ${select.group} [file tail ${select.file}]
     }
 
     depends_test-append \
-                    port:py${python.version}-pytest \
                     port:py${python.version}-mock
 
     test.run        yes
-    test.cmd        py.test-${python.branch}
-    test.target
-    test.env        PYTHONPATH=${worksrcpath}/build/lib
 }

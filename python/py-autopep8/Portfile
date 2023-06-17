@@ -5,12 +5,12 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-autopep8
-version             1.6.0
+version             2.0.2
 revision            0
 
 categories-append   devel
-platforms           darwin
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         {reneeotten @reneeotten} openmaintainer
 
@@ -25,11 +25,11 @@ long_description    autopep8 automatically formats Python code to \
 
 homepage            https://github.com/hhatto/autopep8
 
-checksums           rmd160  68ee6df66228e178fc038ff8439b1c0176ef60a2 \
-                    sha256  44f0932855039d2c15c4510d6df665e4730f2b8582704fa48f9c55bd3e17d979 \
-                    size    122165
+checksums           rmd160  62077d8b422af37ae38cdcb18b068fc05970a04d \
+                    sha256  f9849cdd62108cb739dbcdbfb7fdcc9a30d1b63c4cc3e1c1f893b5360941b61c \
+                    size    116154
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_lib-append \

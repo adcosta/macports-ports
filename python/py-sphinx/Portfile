@@ -5,7 +5,7 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-sphinx
-version             4.5.0
+version             6.2.1
 categories-append   textproc devel
 license             BSD
 maintainers         {jmr @jmroot} openmaintainer
@@ -18,15 +18,16 @@ long_description \
     been cleaned up in the hope that it will be useful to many other projects.
 
 supported_archs     noarch
+platforms           {darwin any}
 
 homepage            https://www.sphinx-doc.org/
 python.rootname     Sphinx
 
-checksums           md5 ed63e60d798d212c1afdecf8acda690e \
-                    rmd160 872e10aa5a8dd44f00a45fed7ebd5f9f8de32437 \
-                    sha256 7bf8ca9637a4ee15af412d1a1d9689fec70523a68ca9bb9127c2f3eeb344e2e6
+checksums           md5 ffbafb3bbc0a978813947b183da1c0b5 \
+                    rmd160 08743068737f0d5fc171fa7a3fe24faec00aba47 \
+                    sha256 6d56a34697bb749ffa0152feafc4b19836c755d90a7c59b72bc7dfd371b9cc6b
 
-python.versions     27 35 36 37 38 39 310
+python.versions     27 36 37 38 39 310 311
 
 if {$subport ne $name} {
     depends_lib     port:py${python.version}-docutils
@@ -39,26 +40,23 @@ if {$subport ne $name} {
                     port:py${python.version}-requests \
                     port:py${python.version}-snowballstemmer \
                     port:sphinx_select
-    if {${python.version} > 35} {
-        patchfiles-append   setup.py.patch
+    if {${python.version} >= 36} {
         python.pep517   yes
+        python.pep517_backend   flit
         if {${python.version} <= 39} {
             depends_lib-append  port:py${python.version}-importlib-metadata
         }
-    } else {
-        depends_lib-append  port:py${python.version}-setuptools
+        if {${python.version} >= 38} {
+            patchfiles-append   pyproject.toml.patch
+        }
     }
-    if {${python.version} == 35} {
-        version     3.5.4
+    if {${python.version} in {36 37}} {
+        version     5.3.0
         revision    0
-        checksums   md5 dd46088ebc01f6f721ee7618df680d68 \
-                    rmd160 70102258335337eff3cc16526e84e9a95c625018 \
-                    sha256 19010b7b9fa0dc7756a6e105b2aacd3a80f798af3c25c273be64d7beeb482cb1 \
-                    size 5911093
-
-        patch.pre_args      -p1
-        # Source of patch: https://github.com/catap/sphinx/tree/docutils-1.8-v354
-        patchfiles-append   docutils-0.18-v345.patch
+        checksums   md5 b752f7b0177865a36cbcdcef4ac80cd4 \
+                    rmd160 b9d212a39f7dc632b595d92f5cd0e8c48213b571 \
+                    sha256 51026de0a9ff9fc13c05d74913ad66047e104f56a129ff73e174eb5c3ee794b5
+        patchfiles  pyproject.toml-5.3.0.patch
     }
     if {${python.version} == 27} {
         version     1.8.5
@@ -67,6 +65,7 @@ if {$subport ne $name} {
                     rmd160 a7a38523976288c13a8a7e5bf4a81367db9af462 \
                     sha256 c7658aab75c920288a8cf6f09f244c6cfdae30d82d803ac1634d9f223a80ca08
 
+        depends_lib-append  port:py${python.version}-setuptools
         depends_run-append  port:py${python.version}-six \
                             port:py${python.version}-sphinxcontrib-websupport \
                             port:py${python.version}-typing

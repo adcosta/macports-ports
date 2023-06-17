@@ -11,8 +11,8 @@ configure.cxx_stdlib    libc++
 compiler.cxx_standard   2014
 
 name                    nodejs18
-version                 18.1.0
-revision                0
+version                 18.16.0
+revision                1
 
 categories              devel net
 platforms               darwin
@@ -26,28 +26,25 @@ long_description        Node's goal is to provide an easy way to build scalable 
                         Machine or Python's Twisted. Node takes the event model a bit further-it \
                         presents the event loop as a language construct instead of as a library.
 
-conflicts               nodejs8 nodejs10 nodejs12 nodejs13 nodejs14 nodejs15 nodejs16 nodejs17
+conflicts               nodejs8 nodejs10 nodejs12 nodejs13 nodejs14 nodejs15 nodejs16 nodejs17 nodejs19 nodejs20
 
 homepage                https://nodejs.org/
 master_sites            ${homepage}dist/v${version}
 use_xz                  yes
 
-checksums               rmd160  2d65e0a9788bad04e57919d3047bb03bbd311875 \
-                        sha256  e8b0cc20089e0d7726bc0e921d247f8831263bdba6b5f102bd95ea0f63300b7e \
-                        size    36841136
+checksums               rmd160  d2031b9967c2d6c3838d85ec63c33e0b48274081 \
+                        sha256  33d81a233e235a509adda4a4f2209008d04591979de6b3f0f67c1c906093f118 \
+                        size    40467860
 
 distname                node-v${version}
 
-depends_build-append    port:pkgconfig
-
-set py_ver              3.10
+set py_ver              3.11
 set py_ver_nodot        [string map {. {}} ${py_ver}]
 
-depends_lib-append      port:python${py_ver_nodot} \
+depends_build-append    port:pkgconfig \
+                        port:python${py_ver_nodot}
+depends_lib-append      path:lib/pkgconfig/icu-uc.pc:icu \
                         port:zlib
-
-# TODO: when icu is upgraded to v68.x, use MacPorts'.
-#depends_lib-append             port:icu
 
 # error: 'atomic_load<v8::internal::OwnedVector<const unsigned char> >' is unavailable: introduced in macOS 10.9
 set min_darwin 13
@@ -96,15 +93,14 @@ post-patch {
 pre-configure {
     # Copy zlib headers here because we do not want to prepend the entire
     # ${prefix}/include to the include path (the build will then attempt to use
-    # ICU 67 headers)
+    # ICU headers)
     file mkdir ${workpath}/zlib-inc
     file copy ${prefix}/include/zconf.h ${prefix}/include/zlib.h \
         ${workpath}/zlib-inc/
 }
 
 configure.args-append   --without-npm
-# TODO: when icu is upgraded to v68.x, use MacPorts'.
-# configure.args-append   --with-intl=system-icu
+configure.args-append   --with-intl=system-icu
 configure.args-append   --shared-zlib
 configure.args-append   --shared-zlib-includes=${workpath}/zlib-inc
 configure.args-append   --shared-zlib-libpath=${prefix}/lib
@@ -193,7 +189,6 @@ destroot {
 
     # install docs
     xinstall -m 644 -W ${worksrcpath} \
-        AUTHORS \
         CHANGELOG.md \
         CONTRIBUTING.md \
         GOVERNANCE.md \
@@ -205,4 +200,4 @@ destroot {
 
 livecheck.url       ${homepage}dist/
 livecheck.type      regex
-livecheck.regex     {v(\d+\.\d+\.\d+)}
+livecheck.regex     {v(18.\d+\.\d+)}

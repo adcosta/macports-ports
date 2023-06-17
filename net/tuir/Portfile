@@ -6,13 +6,14 @@ PortGroup           python 1.0
 name                tuir
 version             1.29.0
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 categories          net
 
 python.default_version \
                     310
 
-maintainers         nomaintainer
+maintainers         {gmail.com:srirangav @srirangav} openmaintainer
 
 description         Browse Reddit from your terminal
 long_description    A text-based interface (TUI) to view and interact with \

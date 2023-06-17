@@ -4,13 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        pydicom pydicom 2.2.2 v
+github.setup        pydicom pydicom 2.3.1 v
 name                py-pydicom
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 license             MIT BSD
 maintainers         {eborisch @eborisch} \
                     openmaintainer
 supported_archs     noarch
+platforms           {darwin any}
 
 description         Python Module for working with DICOM files
 
@@ -23,9 +24,9 @@ long_description    pydicom is a pure python package for working with DICOM \
 
 homepage            https://pydicom.github.io/pydicom/stable/index.html
 
-checksums           rmd160  46aaa15383711a56477bfcaeba959ca7c0e06477 \
-                    sha256  6ef1c299e8898f65f51880fa4d638c62a49a9dca47d1b327142e4eadcbdb1672 \
-                    size    2174907
+checksums           rmd160  1a6f5908cd18fbf452bad10684ad181cb8708046 \
+                    sha256  887b9222e0c3db2932fcc8f1fb75bc10dba6a4ab84f47bcbd2bfe137bbbd9b40 \
+                    size    2189356
 
 if {${name} ne ${subport}} {
     depends_lib-append      port:py${python.version}-numpy

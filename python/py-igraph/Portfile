@@ -6,13 +6,13 @@ PortGroup           python 1.0
 name                py-igraph
 python.rootname     igraph
 python.pep517       yes
-version             0.9.10
+version             0.10.4
 revision            0
 categories-append   math science
 platforms           darwin
 license             GPL-2+
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 maintainers         {snc @nerdling} {gmail.com:szhorvat @szhorvat} openmaintainer
 
@@ -24,9 +24,9 @@ long_description    Python interface to the igraph library for network analysis 
 
 homepage            https://igraph.org/python/
 
-checksums           rmd160  2846a5529a4bc250be728d3472f95df0e834de9d \
-                    sha256  6f9d8e1d6105b34298591820e94d4d8b3f33f38068523769e7a555bf7c96accb \
-                    size    3723165
+checksums           rmd160  db645765a74cda532e097b68137093b18d35c65f \
+                    sha256  4786e05919ee93f6479fe8ca697d68537edfe47549ed09dfb33bda4daced1fb9 \
+                    size    4209850
 
 variant external_igraph description {Use external igraph library} { }
 
@@ -52,8 +52,7 @@ if {${name} ne ${subport}} {
         depends_lib-append      port:arpack \
                                 port:glpk \
                                 port:gmp \
-                                port:libxml2 \
-                                port:SuiteSparse_CXSparse
+                                port:libxml2
 
         depends_build-append    path:bin/cmake:cmake
 
@@ -65,21 +64,22 @@ if {${name} ne ${subport}} {
             -DIGRAPH_GRAPHML_SUPPORT=ON
             -DIGRAPH_USE_INTERNAL_ARPACK=OFF
             -DIGRAPH_USE_INTERNAL_BLAS=OFF
-            -DIGRAPH_USE_INTERNAL_CXSPARSE=OFF
             -DIGRAPH_USE_INTERNAL_GLPK=OFF
             -DIGRAPH_USE_INTERNAL_GMP=OFF
             -DIGRAPH_USE_INTERNAL_LAPACK=OFF
             -DIGRAPH_USE_INTERNAL_PLFIT=ON
             -DIGRAPH_OPENMP_SUPPORT=OFF
             -DBLA_VENDOR=Apple
+            -DIGRAPH_WARNINGS_AS_ERRORS=OFF
         }
 
         build.env-append        IGRAPH_CMAKE_EXTRA_ARGS=[join $extra_cmake_args]
     }
 
     # python-igraph optionally makes use of these, and some tests depend on them.
-    # If they are not installed, the corresponding tests will simply be skipped.
-    depends_test-append     port:py${python.version}-networkx \
+    # If they are not installed, the corresponding tests will simply be skipped..
+    depends_test-append     port:py${python.version}-matplotlib \
+                            port:py${python.version}-networkx \
                             port:py${python.version}-numpy \
                             port:py${python.version}-pandas \
                             port:py${python.version}-scipy
@@ -89,7 +89,6 @@ if {${name} ne ${subport}} {
     }
 
     test.run                yes
-    test.cmd                python${python.branch} -m unittest
     test.target
 
     livecheck.type          none

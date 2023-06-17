@@ -7,11 +7,12 @@ name                py-kitchen
 version             1.2.6
 revision            1
 supported_archs     noarch
+platforms           {darwin any}
 license             LGPL-2.1
 
 python.versions     37 38 39 310
 
-maintainers         nomaintainer
+maintainers         {gmail.com:srirangav @srirangav} openmaintainer
 
 description         ${name} is a python API for commonly used snippets of \
                     code
@@ -36,4 +37,3 @@ if {${name} ne ${subport}} {
                         port:py${python.version}-chardet
 
 }
-

@@ -5,7 +5,7 @@ PortSystem       1.0
 name             openjdk17-microsoft
 categories       java devel
 maintainers      {breun.nl:nils @breun} openmaintainer
-platforms        darwin
+platforms        {darwin any}
 # This port uses prebuilt binaries; 'NoMirror' makes sure MacPorts doesn't mirror/distribute these third-party binaries
 license          GPL-2 NoMirror
 # This port uses prebuilt binaries for a particular architecture; they are not universal binaries
@@ -14,9 +14,8 @@ universal_variant no
 # https://docs.microsoft.com/en-us/java/openjdk/download#openjdk-17
 supported_archs  x86_64 arm64
 
-set build 7
-
-version      17.0.3
+version      17.0.7
+set build    7
 revision     0
 
 description  Microsoft Build of OpenJDK 17 (Long Term Support)
@@ -27,21 +26,23 @@ master_sites https://aka.ms/download-jdk/
 
 if {${configure.build_arch} eq "x86_64"} {
     distname     microsoft-jdk-${version}-macOS-x64
-    checksums    rmd160  7d8b26bbd28d14f0ff65c8178b0246a679380858 \
-                 sha256  17e2e0fe8ac0745850a1537b7c111178ad57a912bddeafaf6f82548c8c7cc1be \
-                 size    187304425
+    checksums    rmd160  15310019479998e592e2fdf5ffcf6f7687da0030 \
+                 sha256  1a7ccf0b748c9b3ef441678aebfe85631986f7860f8b1c5eab263cfee41889c0 \
+                 size    187677698
 } elseif {${configure.build_arch} eq "arm64"} {
     distname     microsoft-jdk-${version}-macOS-aarch64
-    checksums    rmd160  c88e507c3b79167fe30639ae51fc87edf6f61888 \
-                 sha256  3695ee9c60925fc370b34e5f9954bc1834ad55e321e8b0b622ac51c12f8fdb38 \
-                 size    177743370
+    checksums    rmd160  f4427717f247b887fce6a371de4e7d8902f4f52b \
+                 sha256  48e4f97b524ae4aed5c80b4672fa746c72efb648172a99828ffe5ed501029a6e \
+                 size    177836676
 }
 
 worksrcdir   jdk-${version}+${build}
 
 homepage     https://www.microsoft.com/openjdk
 
-livecheck.type  none
+livecheck.type      regex
+livecheck.url       https://docs.microsoft.com/en-us/java/openjdk/download
+livecheck.regex     microsoft-jdk-(17\.\[0-9\.\]+)-macOS-.*\.tar\.gz
 
 use_configure    no
 build {}

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        pyviz holoviews 1.14.9 v
+github.setup        pyviz holoviews 1.16.2 v
 revision            0
 categories-prepend  science
 license             BSD
@@ -15,23 +15,24 @@ long_description    {*}${description} With HoloViews, you can usually express wh
                     want to do in very few lines of code, letting you focus on what you \
                     are trying to explore and convey, not on the process of plotting.
 supported_archs     noarch
+platforms           {darwin any}
 homepage            https://github.com/holoviz/holoviews
 
-checksums           rmd160  c09d7be4b8b0dd12392a87032e5b5a6985e160bb \
-                    sha256  e1b255fbbb5397f818cbce6abaa1b95f47e93fd8ce6ce3fcf1d148fd8ad2b4c9 \
-                    size    4810848
+checksums           rmd160  46ba998c175f4370ee0c6aa72fde76ae75bd0a71 \
+                    sha256  300c64597f1f401363532de1255c3f4ad96f775a5a37a734276c69079c953126 \
+                    size    4830535
 
-variant python37 conflicts python38 python39 python310 description {Use Python 3.7} {}
-variant python38 conflicts python37 python39 python310 description {Use Python 3.8} {}
-variant python39 conflicts python37 python38 python310 description {Use Python 3.9} {}
-variant python310 conflicts python37 python38 python39 description {Use Python 3.10} {}
+variant python38 conflicts python39 python310 python311 description {Use Python 3.8} {}
+variant python39 conflicts python38 python310 python311 description {Use Python 3.9} {}
+variant python310 conflicts python38 python39 python311 description {Use Python 3.10} {}
+variant python311 conflicts python38 python39 python310 description {Use Python 3.11} {}
 
-if {![variant_isset python37] && ![variant_isset python38]
-        && ![variant_isset python39]} {
-    default_variants +python310
+if {![variant_isset python38] && ![variant_isset python39]
+        && ![variant_isset python310]} {
+    default_variants +python311
 }
 
-foreach pv {310 39 38 37} {
+foreach pv {311 310 39 38} {
     if {[variant_isset python${pv}]} {
         python.default_version ${pv}
         break

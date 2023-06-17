@@ -1,45 +1,51 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           gitlab 1.0
+PortGroup           compiler_blacklist_versions 1.0
 PortGroup           cmake 1.1
 PortGroup           boost 1.0
 
-cmake.generator     Ninja
-
+gitlab.setup        inkscape inkscape 1_2_2 INKSCAPE_
+version             1.2.2
 name                inkscape-devel
 conflicts           inkscape
 set my_name         inkscape
-
-epoch               2
-set version_date    2022-04-09
-version             1.2.0-[join [split ${version_date} -] {}]
 revision            1
+epoch               2
+
+categories          graphics gnome
 license             GPL-3+
 maintainers         {mascguy @mascguy} openmaintainer
-categories          graphics gnome
-platforms           darwin
 
 description         This is the current development pre-release version of Inkscape.
-
 long_description    Inkscape is an multi-platform, Open-Source Vector Graphics Editor \
                     that uses SVG as its native file format. \
                     ${description}
 
-homepage            https://inkscape.org/
-master_sites        https://inkscape.org/en/gallery/item/32731
-
-distname            ${my_name}-1.2-beta
 dist_subdir         ${my_name}
 
-use_xz              yes
+checksums           rmd160  1ef4eff44ca73e2357c6fcf6f48f4538fffa1e6b \
+                    sha256  60b9cf9c950713b614f5f3af0a67dcdbe04998517bb8701d01e2c2e5c8345e3a \
+                    size    50339931
 
-checksums           rmd160  7ca4f70e7cca6a64dbba87ba6f5ff9af0153ba4a \
-                    sha256  3d47a44b5ac46cd85988ab0139eff156840207a9d73a7577052a0a83313d650b \
-                    size    79997436
+cmake.generator     Ninja
 
 set python_major    3
-set python_minor    10
+set python_minor    11
 set python_version  ${python_major}${python_minor}
+
+# Blacklist older Clang versions, for compilation errors:
+#   src/display/cairo-utils.cpp:
+#     No matching function for call to 'isnan'
+#   src/ui/dialog/objects.cpp:
+#     No member named 'extract'
+# See: https://trac.macports.org/ticket/65002
+compiler.blacklist-append \
+                    {clang < 1001}
+# FIXME: Avoid Clang 15 for now, until upstream cleans up issues
+compiler.blacklist-append \
+                    {macports-clang-15}
 
 # this port only uses boost headers during build
 # and does not link with any boost libraries
@@ -47,27 +53,25 @@ set python_version  ${python_major}${python_minor}
 boost.depends_type  build
 depends_build-append \
                     port:pkgconfig \
-                    port:libtool \
-                    port:intltool \
+                    port:gettext \
                     port:gtest
 
 depends_lib-append  port:desktop-file-utils \
                     port:libxslt \
                     port:libsigcxx2 \
-                    port:adwaita-icon-theme \
                     port:double-conversion \
                     port:gdl3 \
-                    port:libsoup \
+                    path:lib/pkgconfig/libsoup-2.4.pc:libsoup \
                     path:lib/pkgconfig/cairo.pc:cairo \
                     path:include/turbojpeg.h:libjpeg-turbo \
                     port:boehmgc \
+                    port:gettext-runtime \
                     port:gsl \
                     port:glibmm \
                     port:gtkmm3 \
                     port:gspell \
-                    port:dbus-glib \
                     port:lcms2 \
-                    port:poppler \
+                    path:lib/pkgconfig/poppler.pc:poppler \
                     port:ImageMagick \
                     port:libcdr-0.1 \
                     port:libvisio-0.1 \
@@ -78,10 +82,12 @@ depends_lib-append  port:desktop-file-utils \
 
 depends_run-append  port:py${python_version}-cssselect \
                     port:py${python_version}-lxml \
-                    port:py${python_version}-numpy
+                    port:py${python_version}-numpy \
+                    port:adwaita-icon-theme
 
 post-patch {
-    reinplace "s|\"python-interpreter\", *\{\"python3\"|\"python-interpreter\", \{\"python${python_major}.${python_minor}\"|g" ${worksrcpath}/src/extension/implementation/script.cpp
+    reinplace "s|\"python-interpreter\", *\{\"python3\"|\"python-interpreter\", \{\"python${python_major}.${python_minor}\"|g" \
+        ${worksrcpath}/src/extension/implementation/script.cpp
     reinplace "s|COMMAND python3 |COMMAND ${prefix}/bin/python${python_major}.${python_minor} |g" \
         ${worksrcpath}/share/filters/CMakeLists.txt \
         ${worksrcpath}/share/paint/CMakeLists.txt \
@@ -91,21 +97,19 @@ post-patch {
     reinplace "s|^#include \"Object.h\"|#include <poppler/Object.h>|" \
         ${worksrcpath}/src/extension/internal/pdfinput/pdf-parser.cpp \
         ${worksrcpath}/src/extension/internal/pdfinput/pdf-parser.h
-    reinplace "s|\"\$\{CMAKE_INSTALL_LIBDIR\}/inkscape\"|\$\{CMAKE_INSTALL_LIBDIR\}|" ${worksrcpath}/src/CMakeLists.txt
+    reinplace "s|\"\$\{CMAKE_INSTALL_LIBDIR\}/inkscape\"|\$\{CMAKE_INSTALL_LIBDIR\}|" \
+        ${worksrcpath}/src/CMakeLists.txt
 }
 
-compiler.cxx_standard 2017
+compiler.cxx_standard \
+                    2017
 
 configure.args-append \
                     -DWITH_OPENMP=OFF \
                     -DWITH_MANPAGE_COMPRESSION=OFF
 
-#
-# the following dummy variants are used
-# to identify this port's binary dependencies
-# based on which variant of gtkmm is used for the build
-#
-
+# The following dummy variants are used to identify this port's binary dependencies,
+# based on which variant of gtkmm is used for the build.
 variant x11 conflicts quartz {}
 variant quartz conflicts x11 {}
 
@@ -114,8 +118,12 @@ if {![variant_isset quartz]} {
 }
 
 post-activate {
-        system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${prefix}/share/icons/hicolor"
-        system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/gtk-update-icon-cache-3.0 -f -t ${prefix}/share/icons/hicolor"
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
 }
 
-livecheck.type      none
+notes {
+    Install port 'inkscape-app', to create a macOS app launcher.
+}
+
+gitlab.livecheck.regex     {([0-9_]*)}

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           conflicts_build 1.0
 PortGroup           github 1.0
 
-github.setup        radareorg radare2 5.6.8
+github.setup        radareorg radare2 5.8.8
 revision            0
 categories          devel
 platforms           darwin
@@ -21,14 +21,19 @@ depends_lib         port:capstone \
                     port:libzip
 conflicts_build     ${name}
 
-checksums           rmd160  b1b6cb76b8ba78a4ddd692408a08c277d464226d \
-                    sha256  81b2bde18158279fe8437a0a4d8ad3fd2e83ee156ee4da24b97a2d1d592b73d9 \
-                    size    9627036
+checksums           rmd160  2f061dd251521ddac5363dad5597b933e247b75b \
+                    sha256  5010f5d971bc8b175a79e6728d6f449ef9bb54764df4e7ebacd8d1dd40138444 \
+                    size    11168695
 
 configure.args-append \
                     --with-syscapstone \
                     --with-syszip \
                     --with-compiler=clang
+
+post-patch {
+    # 5.7.8: r_fs library fails to build without -lzip. Check again in the next version.
+    reinplace "s|LDFLAGS+=\$(SHLR)/grub/libgrubfs.a|LDFLAGS+=\$(SHLR)/grub/libgrubfs.a -lzip|g" ${worksrcpath}/libr/fs/Makefile
+}
 
 build.env-append    HOST_CC=${configure.cc}
 

@@ -3,13 +3,12 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
-PortGroup           github 1.0
 
-github.setup        dulwich dulwich 0.20.35 dulwich-
 name                py-dulwich
+version             0.21.5
 categories-append   devel
-maintainers         {lbschenkel @lbschenkel} openmaintainer
-license             GPL-2+
+maintainers         {danchr @danchr} openmaintainer
+license             {GPL-2+ Apache-2+}
 
 description         Pure-Python Git Library
 long_description    Simple Pure-Python implementation of the Git file \
@@ -18,30 +17,18 @@ long_description    Simple Pure-Python implementation of the Git file \
 
 homepage            https://www.dulwich.io
 
-checksums           rmd160  0cd8ebeb85cb9326c6090d8e8e23d1b1be10101b \
-                    sha256  87f5ff95767fb176aab14e9c0e7ae6544fb17916630cd31571578d10017bf72e \
-                    size    412687
+checksums           rmd160  ecec5299bb6126d4f9703e15d2122f48ab873eea \
+                    sha256  70955e4e249ddda6e34a4636b90f74e931e558f993b17c52570fa6144b993103 \
+                    size    441948
 
-python.versions     27 38 39 310
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
-    # 0.20 dropped support for Python 2.7
-    if {${python.version} == 27} {
-        github.setup            dulwich dulwich 0.19.16 dulwich-
+    python.pep517           yes
 
-        checksums               rmd160  1029473c8fd18718ef7f4a3dea082a053ee92ca4 \
-                                sha256  6d225b7d5f5a293beb1d0855f41feef74230605ffde7929a5719eed4019cb6d1 \
-                                size    369717
-
-        build.target-append build_ext
-        build.args-append   --inplace
-    } else {
-        python.pep517           yes
-
-        if {${python.version} < 310} {
-            depends_lib-append \
-                    port:py${python.version}-importlib-metadata
-        }
+    if {${python.version} < 310} {
+        depends_build-append \
+            port:py${python.version}-importlib-metadata
     }
 
     patchfiles      patch-archflags.diff \
@@ -50,6 +37,4 @@ if {${name} ne ${subport}} {
     depends_lib-append \
                     port:py${python.version}-setuptools \
                     port:py${python.version}-urllib3
-
-    livecheck.type  none
 }

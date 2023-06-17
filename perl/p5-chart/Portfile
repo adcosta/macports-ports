@@ -4,22 +4,28 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Chart v2.401.1
+perl5.setup         Chart v2.403.9 ../../authors/id/L/LI/LICHTKIND
 revision            0
 license             {Artistic-1 GPL}
-platforms           darwin
 maintainers         nomaintainer
 
 description         Chart - a series of charting modules
 long_description    ${description}
 
-checksums           rmd160  cd7bb64d610bd260d1446d115131140a071e4a59 \
-                    sha256  4834109f7ae03bc83025e9674e3460a0311989ec8c687fc4f3b26c52b61fadf0 \
-                    size    1716318
+checksums           rmd160  2ce7734aa54bc99ac8ad2474fb8c60b9bc7129e9 \
+                    sha256  57c6828bb4c8a72170feb67dc1f148abf19cab3827779e30877b4611ed67f3ab \
+                    size    143559
+
+platforms           {darwin any}
+supported_archs     noarch
 
 if {${perl5.major} != ""} {
-    depends_lib-append \
-                    port:p${perl5.major}-gd
+    depends_build-append \
+                    port:p${perl5.major}-test-simple \
+                    port:p${perl5.major}-test-warn
 
-    supported_archs noarch
+    depends_lib-append \
+                    port:p${perl5.major}-gd \
+                    port:p${perl5.major}-graphics-toolkit-color
+
 }

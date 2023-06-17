@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           java 1.0
 
 name                tomcat-native
-version             1.2.31
-revision            1
+version             1.2.35
+revision            0
 categories          java www
 maintainers         {thebishops.org:matt @mattbishop} openmaintainer
 license             Apache-2
@@ -18,9 +18,9 @@ long_description    This port provides access to native apr and other \
 homepage            https://tomcat.apache.org/
 master_sites        apache:tomcat/tomcat-connectors/native/${version}/source/
 
-checksums           rmd160  d4b768b042f7c6c6c7096628f9ba3c3a4e2b2d44 \
-                    sha256  acc0e6e342fbdda54b029564405322823c93d83f9d64363737c1cbcc3af1c1fd \
-                    size    428057
+checksums           rmd160  bb60848b76178dcb90a7408110fb1f5b702aed5c \
+                    sha256  24613b7a75c7b00aa1837526758d32c3c3ccf2782e6eb634a900b6ed3f4697ff \
+                    size    436593
 
 distname            ${name}-${version}-src
 worksrcdir          ${distname}/native

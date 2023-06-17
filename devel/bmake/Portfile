@@ -3,11 +3,11 @@
 PortSystem          1.0
 
 name                bmake
-version             20220418
+version             20230522
 revision            0
-checksums           rmd160  cd9873772a73a865d2ea390892bf9f32420ca312 \
-                    sha256  6ea7de515cba74f173dc14ee17b1488ae032582028d2e86ea12f70369cc896f5 \
-                    size    805986
+checksums           rmd160  c67a23319f4e1e56d13fb91128378def44a3cc2c \
+                    sha256  dfe556df70e1555b70eccf4e6d367aa8b91aa076d5e9b55e36b5ce3e721f9050 \
+                    size    842893
 
 categories          devel
 maintainers         {ryandesign @ryandesign} openmaintainer
@@ -24,6 +24,8 @@ worksrcdir          ${name}
 configure.cmd       ./boot-strap
 configure.args-append \
                     op=configure
+
+configure.checks.implicit_function_declaration.whitelist-append strchr
 
 build.cmd           ./boot-strap
 build.target        op=build

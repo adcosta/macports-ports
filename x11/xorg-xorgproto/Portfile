@@ -3,20 +3,20 @@
 PortSystem          1.0
 
 name                xorg-xorgproto
-version             2022.1
+version             2023.1
 epoch               1
 revision            0
 
-checksums           rmd160  6dc824c3f29be2a4379b0c97549f21b391cd989e \
-                    sha256  1d2dcc66963f234d2c1e1f8d98a0d3e8725149cdac0a263df4097593c48bc2a6 \
-                    size    870526
+checksums           rmd160  384029e421bd955cb28bd8f295a071109cba73e0 \
+                    sha256  6545e41aceba43c13497ac8084dad5db6deef580a5ea7d0bd7872cfd1be72a13 \
+                    size    759168
 
 categories          x11 devel
 license             X11
 maintainers         {jeremyhu @jeremyhu} {jonesc @cjones051073} openmaintainer
 
 homepage            https://www.x.org
-platforms           darwin
+platforms           {darwin any}
 supported_archs     noarch
 
 description         X.org xorgproto
@@ -26,7 +26,7 @@ master_sites        xorg:individual/proto/
 
 distname            xorgproto-${version}
 
-use_bzip2           yes
+use_xz              yes
 
 configure.args      --enable-legacy \
                     --without-xmlto \

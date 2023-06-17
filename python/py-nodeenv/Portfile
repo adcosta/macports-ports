@@ -4,11 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-nodeenv
-version             1.6.0
+version             1.8.0
 revision            0
 
 categories-append   devel
-platforms           darwin
+platforms           {darwin any}
 supported_archs     noarch
 license             BSD
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -18,11 +18,11 @@ long_description    ${description}
 
 homepage            https://github.com/ekalinin/nodeenv
 
-checksums           rmd160  6ca3d360cd38d0a9945fee145c080c0173da5be0 \
-                    sha256  3ef13ff90291ba2a4a7a4ff9a979b63ffdd00a464dbe04acf0ea6471517a4c2b \
-                    size    34047
+checksums           rmd160  479f80f92ba139d6357053dd869df02063357cb3 \
+                    sha256  d51e0c37e64fbf47d017feac3145cdbb58836d7eee8c6f6d3b6880c5456227d2 \
+                    size    36669
 
-python.versions     39 310
+python.versions     39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -34,6 +34,4 @@ if {${name} ne ${subport}} {
         xinstall -m 0644 -W ${worksrcpath} AUTHORS CHANGES \
             LICENSE README README.rst ${destroot}${docdir}
     }
-
-    livecheck.type  none
 }

@@ -12,7 +12,7 @@ PortGroup           xcodeversion                  1.0
 PortGroup           legacysupport                 1.1
 
 # Please also check if Gate needs a revbump after root6 update
-github.setup        root-project root 6-26-02 v
+github.setup        root-project root 6-28-04 v
 version             [string map {- .} ${github.version}]
 revision            0
 livecheck.version   ${github.version}
@@ -24,9 +24,9 @@ livecheck.version   ${github.version}
 #livecheck.version   6-14-00
 #revision            0
 
-checksums           rmd160  4710d0636f73175c8ec706983906229b7ed1294e \
-                    sha256  acbb1b96e9ceda14fbb56872f0bde449456f91aca6d35fc08885c13ab4cb16c8 \
-                    size    193728270
+checksums           rmd160  431858bbcb93b64caf9bb1bd587d50aa9bde2b36 \
+                    sha256  20e2a9a1177cee0a1c592211bd3ba1ff1f56c70ac3c0c3947fa9493dc9fd87c0 \
+                    size    185358669
 
 # extract major version
 set version_major   [lindex [split ${version} .] 0]
@@ -57,11 +57,9 @@ compilers.choose    f90 fc f77
 compilers.setup     require_fortran -g95 -gcc44 -gcc45 -gcc46 -gcc47 -gcc48 -gcc49 -gcc5 -gcc6 -gcc7 -gcc8
 compiler.blacklist-append *gcc* {clang < 920} {macports-clang-3.[0-9]} {macports-clang-[4-6].0}
 
-# If using Macports clang, make sure its added as a runtime dep as well as cling will need it.
-foreach clang_v { 7.0 8.0 9.0 10 11 12 13 } {
-    if { ${configure.compiler} eq "macports-clang-${clang_v}"} {
-        depends_run-append port:clang-${clang_v}
-    }
+# If using MacPorts clang, make sure it's added as a runtime dep as well as cling will need it.
+if {[regexp {macports-clang-(.*)} ${configure.compiler} -> clang_v]} {
+    depends_run-append port:clang-${clang_v}
 }
 
 depends_build-append port:pkgconfig
@@ -165,6 +163,9 @@ configure.args-append \
                     -Dbuiltin_veccore=OFF \
                     -DPNG_LIBRARY=${prefix}/lib/libpng.dylib \
                     -DPNG_PNG_INCLUDE_DIR=${prefix}/include
+
+configure.env-append \
+                    TBB_ROOT=${prefix}/libexec/tbb
 
 # Work-around until ROOT supports building for macOS 11.X as deployment target.
 if {${os.platform} eq "darwin" && ${os.major} >= 20} {
@@ -397,13 +398,13 @@ variant opengl description {Build with opengl support} {
 # ========================================================================================
 
 # List of possible python versions
-set python_versions { 3.8 3.9 3.10 }
+set python_versions { 3.8 3.9 3.10 3.11 }
 # Enable python variant by default on OS X 10.9 and newer.
 # Disabled on older systems due to an issue fetching the source for
 # the various python dependencies due to these systems having out of
 # date SSL versions that are rejected by the upstream server.
 if {${os.platform} ne "darwin" || ${os.major} >= 13} {
-    set default_python_variant +python310
+    set default_python_variant +python311
 } else {
     set default_python_variant ""
 }
@@ -429,6 +430,8 @@ foreach py_ver ${python_versions} {
 if {${default_python_variant} != ""} {
     default_variants-append "${default_python_variant}"
 }
+
+variant jupyter description {Enable Jupyter support} { }
 
 # If a python variant is enabled, activate it
 set active_python_version ""
@@ -463,9 +466,11 @@ foreach py_ver ${python_versions} {
         }
         depends_lib-append      port:python${py_ver_no_dot} \
                                 port:py${py_ver_no_dot}-numpy \
-                                port:py${py_ver_no_dot}-jupyter \
-                                port:py${py_ver_no_dot}-gnureadline \
+                                port:py${py_ver_no_dot}-gnureadline
+        if {[variant_isset jupyter ]} {
+            depends_lib-append  port:py${py_ver_no_dot}-jupyter \
                                 port:py${py_ver_no_dot}-metakernel
+        }
 
         post-destroot {
             # Install PyROOT in the correct place
@@ -508,13 +513,14 @@ foreach py_ver ${python_versions} {
                 system "install_name_tool -add_rpath ${install_prefix}/lib/root ${f} > /dev/null 2>&1 ; true"
             }
         }
-        # patch the command ROOT assumes to run for juypter
-        pre-configure {
-            foreach f [ exec find ${worksrcpath}/ -type f -and -name "nbmain.cxx" ] {
-                reinplace "s|\"jupyter\"|\"jupyter-${active_python_version}\"|g" $f
+        if {[variant_isset jupyter ]} {
+            # patch the command ROOT assumes to run for jupyter
+            pre-configure {
+                foreach f [ exec find ${worksrcpath}/ -type f -and -name "nbmain.cxx" ] {
+                    reinplace "s|\"jupyter\"|\"jupyter-${active_python_version}\"|g" $f
+                }
             }
         }
-
     }
 }
 

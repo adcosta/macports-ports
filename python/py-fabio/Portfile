@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-fabio
-version             0.12.0
+version             0.14.0
 revision            0
 
 universal_variant   no
@@ -23,11 +23,11 @@ long_description \
 
 homepage            https://github.com/silx-kit/fabio
 
-checksums           rmd160  9e3b2cad4d3883eb3c71a05553f186506b31175e \
-                    sha256  04dbb312b42462dfe09685ce9ff1d7494639eef3f2a32e2ed0bb8ee284f865bc \
-                    size    1511482
+checksums           rmd160  4006110b92008dfcf67608dbf787f577b478f85a \
+                    sha256  72ab0cb7247ec97dc552447112a54cd77b5fbe6f5ede8fc9b070e4e1c13cf01e \
+                    size    1611095
 
-python.versions     37 38 39
+python.versions     37 38 39 310
 
 if {${name} ne ${subport}} {
     depends_lib-append \

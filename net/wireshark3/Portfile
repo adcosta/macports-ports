@@ -30,13 +30,12 @@ long_description    A network analyzer that lets you capture and \
 #   https://gitlab.com/wireshark/wireshark/-/merge_requests/1404
 
 if {${os.major} >= 16} {
-    version         3.6.5
+    version         3.6.8
     revision        0
 
-    checksums       sha256  a2d741d60ff3516137d4b9f38cdc07eee54a56ec36046f4c3afee6bfb4f6eaa1 \
-                    rmd160  ef68cb3f47f01c56854f7d82f1820c4a83b9a8ff \
-                    sha1    72499f56ed70434256054b8d81a1c71bee38c9c2 \
-                    size    39939340
+    checksums       sha256  67ab23ee09a646ab8cc0ddcc985209f24f253337461e3d9644c6cfe1c097260c \
+                    sha1    e4b2cb5703f9d6cf0934469a2e8a2426cb308dad \
+                    size    39942580
 
     livecheck.type  regex
     livecheck.url   ${homepage}download.html
@@ -65,7 +64,7 @@ distfiles           wireshark-${version}${extract.suffix}
 
 worksrcdir          wireshark-${version}
 
-conflicts           wireshark2 wireshark22 wireshark30
+conflicts           wireshark2 wireshark22 wireshark30 wireshark4
 
 depends_build-append \
                     port:pkgconfig
@@ -145,7 +144,7 @@ variant libsmi description {Build with libsmi snmp support} {
 
 variant gnutls description {Build with GNU TLS support} {
     configure.args-replace  -DENABLE_GNUTLS=OFF -DENABLE_GNUTLS=ON
-    depends_lib-append      port:gnutls
+    depends_lib-append      path:lib/pkgconfig/gnutls.pc:gnutls
 }
 
 variant cares conflicts adns description description {Build with c-ares support} {
@@ -168,7 +167,7 @@ variant chmodbpf description {Enable Wireshark to access macOS capture devices} 
     depends_run             port:wireshark-chmodbpf
 }
 
-set pythons_suffixes {36 37 38 39 310}
+set pythons_suffixes {36 37 38 39 310 311}
 
 set pythons_ports {}
 foreach py_ver_nodot ${pythons_suffixes} {
@@ -196,7 +195,7 @@ foreach py_ver_nodot ${pythons_suffixes} {
 ## if no python3* variant is specified, add +python310
 ## XYZZY: it would be better to detect which python3* is already installed and use that...
 if {!${python_isset}} {
-    default_variants-append +python310
+    default_variants-append +python311
 }
 
 

@@ -9,7 +9,7 @@ conflicts           gimp2 gimp2-devel
 set git_commit      9046c758e7b82ffe39b1acb93160a0c9c15743ff
 set git_date        20200223
 version             2.99.1-${git_date}
-revision            7
+revision            12
 license             GPL-3+
 categories          graphics
 maintainers         {devans @dbevans} {mascguy @mascguy}
@@ -64,7 +64,7 @@ depends_lib         port:desktop-file-utils \
                     port:aalib \
                     port:xpm \
                     path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
-                    port:poppler \
+                    path:lib/pkgconfig/poppler.pc:poppler \
                     port:curl \
                     port:libwmf \
                     port:libmypaint \
@@ -139,7 +139,6 @@ configure.args      --build=${configure.build_arch}-apple-${os.platform}${os.ver
                     --without-alsa \
                     --without-gudev \
                     --without-webkit \
-                    ac_cv_path_INTLTOOL_PERL=${configure.perl} \
                     ac_cv_path_PERL=${configure.perl}
 
 # keep empty GIMP font directory

@@ -3,9 +3,11 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/go-critic/go-critic 0.6.3 v
+go.setup            github.com/go-critic/go-critic 0.8.1 v
 github.tarball_from archive
 revision            0
+
+homepage            https://go-critic.com
 
 description         The most opinionated Go source code linter for code audit.
 
@@ -19,17 +21,18 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  0b250914b3c70f577a979d871512bb7509138dc3 \
-                    sha256  74fd0995f401c49206b569f4c11be867da01f627e8979861d67ac8ea60173d7d \
-                    size    175424
-
-set bin_name        gocritic
+checksums           rmd160  a3da45ef0217d2956eb918f4c0be54a961514fe8 \
+                    sha256  537a63799bd90d903d2c79db2caf29f6b26807991e1ecb8d686d947860faf4b2 \
+                    size    180491
 
 # Allow Go to fetch dependencies at run-time
 build.env-delete    GO111MODULE=off GOPROXY=off
 
-build.target        ./cmd/${bin_name}
+build.cmd           make
+build.pre_args-append \
+                    GOCRITIC_VERSION=${version}
+build.args          build-release
 
 destroot {
-    xinstall -m 0755 ${worksrcpath}/${bin_name} ${destroot}${prefix}/bin/
+    xinstall -m 0755 ${worksrcpath}/bin/gocritic ${destroot}${prefix}/bin/
 }

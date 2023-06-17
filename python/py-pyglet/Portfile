@@ -4,12 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pyglet
-version             1.5.23
+version             2.0.7
 revision            0
 categories-append   devel graphics
 license             BSD
 
-python.versions     27 37 38 39 310
+python.versions     27 37 38 39 310 311
+python.pep517       yes
+python.pep517_backend flit
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,9 +22,9 @@ homepage            https://pyglet.readthedocs.org/
 
 use_zip             yes
 
-checksums           rmd160  7ec8aef1add2eb4d27fd3a27632f208e8a64c608 \
-                    sha256  dee920203cf306159c503babb62f38787268708977f5c945d28337594b797c46 \
-                    size    6975489
+checksums           rmd160  132f6eb78adc275cf4244f0a58b7c4bbfac068aa \
+                    sha256  9282f9497c1c0cdcb2cc39d8c05090cf686dedb9ebbef4a8de49af22a0ae0e8f \
+                    size    6509176
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -35,6 +37,10 @@ if {${name} ne ${subport}} {
         checksums           rmd160  7bb3f66eafcfafe00d83a2c556c699b0eb1d81e9 \
                             sha256  c57e3e18246f45e4d6bb3d29e39d128d6e72b05f4212b10353adc3ba260ceb65 \
                             size    5121084
-        livecheck.type      none
+        python.pep517       no
+    } else {
+        patchfiles-append   patch-pyproject.toml.diff
     }
+
+    livecheck.type      none
 }

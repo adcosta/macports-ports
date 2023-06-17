@@ -4,10 +4,10 @@ PortSystem          1.0
 PortGroup           cmake 1.1
 PortGroup           github 1.0
 
-github.setup        mongodb mongo-c-driver 1.21.1
-checksums           rmd160  cdca05dcdbd7ea0878231d482574461c690da045 \
-                    sha256  2dd10399a31108116236ada68ae6d3f4b1bf78c03b43b1a33933d42aa0e62ed4 \
-                    size    7123649
+github.setup        mongodb mongo-c-driver 1.23.4
+checksums           rmd160  d4fdebca53980a5b19d9312468b7b422f20175f2 \
+                    sha256  209406c91fcf7c63aa633179a0a6b1b36ba237fb77e0470fd81f7299a408e334 \
+                    size    7795336
 
 categories          devel
 maintainers         {ryandesign @ryandesign} openmaintainer
@@ -19,7 +19,8 @@ configure.args-append \
                     -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF \
                     -DENABLE_EXAMPLES=OFF \
                     -DENABLE_TESTS=OFF \
-                    -DENABLE_UNINSTALL=OFF
+                    -DENABLE_UNINSTALL=OFF \
+                    -DMONGO_USE_CCACHE=OFF
 
 if {${subport} eq ${name}} {
     revision        0
@@ -44,7 +45,7 @@ if {${subport} eq ${name}} {
 
     depends_lib-append \
                     port:cyrus-sasl2 \
-                    port:icu \
+                    path:lib/pkgconfig/icu-uc.pc:icu \
                     port:libbson \
                     port:snappy \
                     port:zlib
@@ -88,6 +89,7 @@ subport libbson {
                     to building, parsing, and iterating BSON documents.
 
     patchfiles-append \
+                    aligned_alloc.patch \
                     libbson.patch
 
     configure.args-append \

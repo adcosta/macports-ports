@@ -3,11 +3,12 @@
 PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           legacysupport 1.1
+PortGroup           compiler_blacklist_versions 1.0
 
 # clock_gettime
 legacysupport.newest_darwin_requires_legacy 15
 
-github.setup        Singular Singular 4-3-0 Release-
+github.setup        Singular Singular 4-3-2p2 Release-
 name                singular
 revision            0
 version             [string map {- .} ${github.version}]
@@ -22,9 +23,13 @@ long_description \
     geometry, and singularity theory.
 homepage            https://www.singular.uni-kl.de/
 
-checksums           rmd160  9cad7f8f035111df0c62728cb6f9bd3cc3ff3deb \
-                    sha256  bf112efbccfb185bb267730809830b3c43c2b918170c5f9244239784cd3bb930 \
-                    size    13730856
+checksums           rmd160  6e418df33304486101b4b10198a7aead615d4a64 \
+                    sha256  04d88ed4a33dc0a2ceddff4bad13d04a8014cfef0a95d0d5bfd84db7802b2e79 \
+                    size    13756650
+
+# clang: error: unknown argument: '-fno-delete-null-pointer-checks'
+# https://trac.macports.org/ticket/65804
+compiler.blacklist-append {clang < 700} *gcc-4.*
 
 depends_build-append \
                     port:autoconf \

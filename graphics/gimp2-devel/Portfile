@@ -7,41 +7,44 @@ PortGroup           perl5 1.0
 name                gimp2-devel
 conflicts           gimp2 gimp3-devel
 set my_name         gimp2
+
 # please remember to update the gimp metapackage to match
-version             2.10.30
-revision            1
-set branch          [join [lrange [split ${version} .] 0 1] .]
-license             GPL-3+
+version             2.10.34
+revision            4
+epoch               0
+
 categories          graphics
+license             GPL-3+
 maintainers         {mascguy @mascguy} openmaintainer
-platforms           darwin
 
 description         The GNU Image Manipulation Program
 long_description    The GNU Image Manipulation Program (GIMP) is a powerful \
                     tool for the preparation and manipulation of digital images. \
                     The GIMP provides the user with a wide variety of image \
                     manipulation, painting, processing, and rendering tools.
-
 homepage            https://gimp.org/
+
+set branch          [join [lrange [split ${version} .] 0 1] .]
 master_sites        gimp:gimp/v${branch}/
 dist_subdir         ${my_name}
 distname            gimp-${version}
 use_bzip2           yes
 
-checksums           rmd160  14fdac9916d7bd78e1fbcac9474ec4107006736b \
-                    sha256  88815daa76ed7d4277eeb353358bafa116cd2fcd2c861d95b95135c1d52b67dc \
-                    size    31731327
+checksums           rmd160  12535f147504eb1da17e868ecac18bd840c87d02 \
+                    sha256  84004642d351b398a4293cd7fd3592044a944f05bb52850ee6068f247c657aa3 \
+                    size    31405329
 
-# force default perl to match intltool
-perl5.branches      5.28
+perl5.branches      5.34
 
-depends_build       port:pkgconfig \
+depends_build-append \
+                    port:pkgconfig \
                     port:appstream-glib \
                     port:intltool \
                     port:gtk-doc \
                     port:perl${perl5.major}
 
-depends_lib         port:desktop-file-utils \
+depends_lib-append \
+                    port:desktop-file-utils \
                     port:iso-codes \
                     path:lib/pkgconfig/babl.pc:babl \
                     path:lib/pkgconfig/gegl-0.4.pc:gegl \
@@ -65,7 +68,7 @@ depends_lib         port:desktop-file-utils \
                     port:aalib \
                     port:xpm \
                     path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
-                    port:poppler \
+                    path:lib/pkgconfig/poppler.pc:poppler \
                     port:curl \
                     port:libwmf \
                     port:libmypaint \
@@ -74,13 +77,16 @@ depends_lib         port:desktop-file-utils \
                     port:dbus-glib \
                     port:libxml2 \
                     port:libxslt \
+                    port:webp \
+                    port:xz \
                     port:xdg-utils \
                     port:xorg-libXcursor \
                     port:xorg-libXmu \
                     port:xorg-libXext \
                     port:xorg-libXfixes
 
-depends_run         port:gimp-help-en
+depends_run-append \
+                    port:gimp-help-en
 
 # gcc-4.2 5493 and 5666.3_13: gimpcpuaccel.c:180: error: can't find a register in class 'BREG' while reloading 'asm'
 # redefinition of typedef is invalid in C [-Wtypedef-redefinition] (#50329)
@@ -89,17 +95,26 @@ depends_run         port:gimp-help-en
 compiler.cxx_standard 2014
 compiler.blacklist-append *gcc-3.* *gcc-4.* {clang < 700}
 
-patchfiles          patch-etc-gimprc.in.diff \
-                    patch-mach-task-info.diff \
-                    patch-quartz-32bit.diff \
-                    MYPAINT_BRUSHES_DIR.patch
+configure.cflags-append \
+                    -Wno-deprecated-declarations
 
-if {${os.platform} eq "darwin" && ${os.major} < 11} {
-    # avoid Cursor type conflict between X11 and Quickdraw
-    # error: typedef redefinition with different types ('struct Cursor' vs 'XID' (aka 'unsigned long'))
-    # not an issue on 10.7 and later
-    patchfiles-append \
+patchfiles-append   patch-etc-gimprc.in.diff
+patchfiles-append   patch-mach-task-info.diff
+patchfiles-append   patch-quartz-32bit.diff
+patchfiles-append   patch-mypaint_brushes_dir.diff
+
+# Disable update check for 10.8 and earlier, due to lack of NSURLSession
+# Upstream merge request: https://gitlab.gnome.org/GNOME/gimp/-/merge_requests/913
+patchfiles-append   patch-updatecheck-nsurlsession.diff
+
+platform darwin {
+    if {${os.major} < 11} {
+        # avoid Cursor type conflict between X11 and Quickdraw
+        # error: typedef redefinition with different types ('struct Cursor' vs 'XID' (aka 'unsigned long'))
+        # not an issue on 10.7 and later
+        patchfiles-append \
                     patch-x11-widgets-fix.diff
+    }
 }
 
 use_autoreconf      yes
@@ -122,7 +137,8 @@ pre-configure {
 
 configure.perl      ${perl5.bin}
 
-configure.env       CC_FOR_BUILD=${configure.cc}
+configure.env-append \
+                    CC_FOR_BUILD=${configure.cc}
 
 if {[vercmp $xcodeversion 4.3] < 0 && [string match "*macports*" ${configure.compiler}]} {
     # Xcode 4.2 fails with load commands in the newer toolchain
@@ -130,10 +146,14 @@ if {[vercmp $xcodeversion 4.3] < 0 && [string match "*macports*" ${configure.com
 
     configure.env-append \
         AR=${prefix}/bin/ar \
-        RANLIB=${prefix}/bin/ranlib
+        RANLIB=${prefix}/bin/ranlib \
+        NM=${prefix}/bin/nm
+    configure.args-append \
+        lt_cv_path_NM=${prefix}/bin/nm
 }
 
-configure.args      --build=${configure.build_arch}-apple-${os.platform}${os.version} \
+configure.args-append \
+                    --build=${configure.build_arch}-apple-${os.platform}${os.version} \
                     --enable-mp \
                     --with-bug-report-url=https://guide.macports.org/#project.tickets \
                     --with-pdbgen \
@@ -146,7 +166,6 @@ configure.args      --build=${configure.build_arch}-apple-${os.platform}${os.ver
                     --without-alsa \
                     --without-gudev \
                     --without-webkit \
-                    ac_cv_path_INTLTOOL_PERL=${configure.perl} \
                     ac_cv_path_PERL=${configure.perl}
 
 # keep empty GIMP font directory
@@ -166,11 +185,11 @@ variant python27 description {Build with python plugin support using python 2.7}
 
 
 variant remote description {Enable building of obsolete gimp-remote helper app} {
-    configure.args-append   --enable-gimp-remote
+    configure.args-append --enable-gimp-remote
 }
 
 variant debug description {Enable debugging} {
-    configure.args-append  --enable-debug
+    configure.args-append --enable-debug
 }
 
 variant quartz {
@@ -186,11 +205,8 @@ variant quartz {
     configure.args-append --without-x
 }
 
-#
 # set default variants
-#
-
-default_variants    +python27
+default_variants +python27
 
 post-activate {
     system "${prefix}/bin/gtk-update-icon-cache -f -t ${prefix}/share/icons/hicolor"

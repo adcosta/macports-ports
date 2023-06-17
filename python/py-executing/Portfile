@@ -4,14 +4,15 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-executing
-version             0.8.3
+version             1.2.0
 revision            0
 categories-append   devel
-platforms           darwin
+platforms           {darwin any}
 license             MIT
 supported_archs     noarch
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,15 +21,11 @@ long_description    ${description}
 
 homepage            https://github.com/alexmojaki/executing
 
-checksums           rmd160  e93a011adef0bf6a4facb1b17b99deeca8f4afef \
-                    sha256  c6554e21c6b060590a6d3be4b82fb78f8f0194d809de5ea7df1c093763311501 \
-                    size    482046
+checksums           rmd160  b4c9b2ba90f3356a8629154d6afe1a4cca955505 \
+                    sha256  19da64c18d2d851112f09c287f8d3dbbdf725ab0e569077efb6cdcbd3497c107 \
+                    size    654544
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                        port:py${python.version}-setuptools \
-                        port:py${python.version}-setuptools_scm \
-                        port:py${python.version}-toml
-
-    livecheck.type      none
+                        port:py${python.version}-setuptools_scm
 }

@@ -5,11 +5,11 @@ PortGroup           active_variants 1.1
 PortGroup           conflicts_build 1.0
 
 name                magic
-version             8.3.299
+version             8.3.400
 revision            0
-checksums           rmd160  79fba4ce2362f17201bfcb2abdb80080683f289b \
-                    sha256  7b04a8c93ef334e7545225626d0e6982f9db6e287c6051635e7bfb4657705573 \
-                    size    4153704
+checksums           rmd160  b7b362d280ae10fd35fc69793095f24443a92ea5 \
+                    sha256  3fc1b7a9341eafe68eb854c75436bbdbb92806db0e48e665a02faf895e38fb7d \
+                    size    4212674
 
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          science
@@ -35,7 +35,11 @@ depends_lib         port:blt \
                     port:libGLU \
                     port:mesa \
                     port:tcl \
-                    port:tk
+                    port:tk \
+                    port:xorg-libice \
+                    port:xorg-libXi \
+                    port:xorg-libXmu \
+                    port:zlib
 
 require_active_variants tk x11
 
@@ -47,21 +51,13 @@ configure.dir       ${worksrcpath}/scripts
 
 if {${os.platform} eq "darwin" && ${os.major} < 19} {
     depends_build-append \
-                    port:python310
+                    port:python311
     configure.args-append \
-                    ac_cv_path_PYTHON3=${prefix}/bin/python3.10
+                    ac_cv_path_PYTHON3=${prefix}/bin/python3.11
 } else {
     configure.args-append \
                     ac_cv_path_PYTHON3=/usr/bin/python3
 }
-
-# Massive implicit declaration of function problems beyond my interest
-# to fix at present; leaving it to the developers to fix. Therefore,
-# incompatible with arm64 at present.
-# https://github.com/RTimothyEdwards/magic/issues/69
-supported_archs     i386 ppc ppc64 x86_64
-configure.cflags-append \
-                    -Wno-error=implicit-function-declaration
 
 use_parallel_build  no
 

@@ -4,12 +4,10 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         WWW-Mechanize 2.07 ../../authors/id/O/OA/OALDERS
+perl5.setup         WWW-Mechanize 2.17
 revision            0
-platforms           darwin
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
-
 description         Handy web browsing in a Perl object
 long_description    WWW::Mechanize, or Mech for short, helps you automate \
                     interaction with a website. It supports performing a \
@@ -20,26 +18,25 @@ long_description    WWW::Mechanize, or Mech for short, helps you automate \
                     can be fetched. Mech also stores a history of the URLs \
                     you have visited, which can be queried and revisited.
 
-checksums           rmd160  ad3098b0ba0b27b62a54859a97820cb2bcfa0f06 \
-                    sha256  9863cedcffc6b032664992c27fe7cb4bf5f9ce89452e77dc960d1a4a3349e783 \
-                    size    184930
+platforms           {darwin any}
+supported_archs     noarch
+
+checksums           rmd160  10c8e0a50a9b193b3160b87eea6e8ec1efaef803 \
+                    sha256  9c02003e84621dea12c980c4101e79e4f8cae4e382cd3da239faa8bd198f063a \
+                    size    197517
 
 if {${perl5.major} != ""} {
     depends_build-append \
-                    port:p${perl5.major}-cgi \
                     port:p${perl5.major}-http-daemon \
-                    port:p${perl5.major}-http-server-simple \
                     port:p${perl5.major}-path-tiny \
                     port:p${perl5.major}-test-deep \
                     port:p${perl5.major}-test-exception \
                     port:p${perl5.major}-test-fatal \
                     port:p${perl5.major}-test-memory-cycle \
-                    port:p${perl5.major}-test-nowarnings \
                     port:p${perl5.major}-test-output \
+                    port:p${perl5.major}-test-simple \
                     port:p${perl5.major}-test-taint \
-                    port:p${perl5.major}-test-warn \
                     port:p${perl5.major}-test-warnings
-                    
 
     depends_lib-append \
                     port:p${perl5.major}-getopt-long \
@@ -49,6 +46,4 @@ if {${perl5.major} != ""} {
                     port:p${perl5.major}-http-message \
                     port:p${perl5.major}-libwww-perl \
                     port:p${perl5.major}-uri
-
-    supported_archs noarch
 }

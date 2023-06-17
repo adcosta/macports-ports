@@ -57,11 +57,6 @@ if {[regexp {macports-clang-(.*)} ${configure.compiler} -> llvm_ver]} {
 }
 
 if { ${os.platform} eq "darwin" && ${os.major} < 11 } {
-    # Once Snow Leopard gets "real Rust", remove the next 3 lines
-    depends_build-replace port:cargo port:mrustc-rust
-    configure.env-append RUSTC=${prefix}/libexec/mrustc-rust/bin/rustc
-    configure.env-append CARGO=${prefix}/libexec/mrustc-rust/bin/cargo
-
     depends_build-append port:cctools
     configure.env-append AR=${prefix}/bin/ar
 }
@@ -102,9 +97,6 @@ destroot.dir        ${worksrcpath}/js/src/obj
 post-destroot {
     # make static lib name version specific to avoid conflict with other mozjs versions
     move ${destroot}${prefix}/lib/libjs_static.ajs ${destroot}${prefix}/lib/libjs${version_major}_static.ajs
-}
-if {![info exists universal_possible]} {
-    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
 }
 
 if {${universal_possible} && [variant_isset universal]} {

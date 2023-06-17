@@ -4,38 +4,43 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           legacysupport 1.1
 
-github.setup        sumneko lua-language-server 3.2.2
-fetch.type          git
+github.setup        LuaLS lua-language-server 3.6.22
+github.tarball_from releases
 revision            0
 
 categories          lua devel
 license             MIT
 maintainers         {judaew @judaew} openmaintainer
 
-description         Lua Language Server coded by Lua
+description         A language server that offers Lua language support
 long_description    {*}${description}
 
-post-fetch {
-    system -W ${worksrcpath} "git submodule update --init"
-    system -W ${worksrcpath}/3rd/luamake "git submodule update --init"
+use_zip             yes
+extract.mkdir       yes
+distname            ${name}-${version}-submodules
 
-    copy ${filespath}/wrapper ${worksrcpath}
-    reinplace "s,@@PREFIX@@,${prefix},g" ${worksrcpath}/wrapper
-    reinplace "s,cc = clang,cc = ${configure.cc},g" \
-        ${worksrcpath}/3rd/luamake/compile/ninja/macos.ninja
-}
+checksums           rmd160  3a3c05935bde1a77f5bdb3033faea2ff5fcf8753 \
+                    sha256  e4bb02a5e32f0af584298da424ad3a0517bd1b9b359cc88c0d64d02a5452608f \
+                    size    31238168
 
-depends_build       port:ninja
-use_configure       no
+depends_build       port:luamake
 compiler.c_standard 2011
 compiler.cxx_standard 2017
 
-pre-build {
-    system -W ${worksrcpath} "${prefix}/bin/ninja -C 3rd/luamake -f \
-        compile/ninja/macos.ninja"
+configure {
+    # see https://trac.macports.org/wiki/UsingTheRightCompiler
+    set makefile    [open "${worksrcpath}/make.lua" "a"]
+    puts $makefile  ""
+    puts $makefile  "lm.cc = '${configure.cc}'"
+    close $makefile
 }
 
-build.cmd ${worksrcpath}/3rd/luamake/luamake rebuild
+pre-build {
+    copy ${filespath}/wrapper ${worksrcpath}
+    reinplace "s,@@PREFIX@@,${prefix},g" ${worksrcpath}/wrapper
+}
+
+build.cmd ${prefix}/bin/luamake rebuild
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/wrapper ${destroot}${prefix}/bin/${name}
@@ -55,7 +60,7 @@ destroot {
 notes "
     To use in Neovim, it is sufficient to specify cmd in lspconfig:
 
-        require'lspconfig'.sumneko_lua.setup \{
+        require'lspconfig'.lua_ls.setup \{
             cmd = \{\"${prefix}/bin/${name}\"\};
         \}
 

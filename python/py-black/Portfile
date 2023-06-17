@@ -5,10 +5,10 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-black
-version             22.3.0
-revision            1
+version             22.12.0
 
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         {danchr @danchr} openmaintainer
 
@@ -27,16 +27,18 @@ long_description \
 
 homepage            https://${python.rootname}.readthedocs.io/
 
-checksums           rmd160  7de9c7ebf9800e87ef696b771ad88a3d46c4e042 \
-                    sha256  35020b8886c022ced9282b51b5a875b6d1ab0c387b31a065b84db7c33085ca79 \
-                    size    554277
+checksums           rmd160  ca7f2a9317be24e7a92b9dabb2e251865ec7cc24 \
+                    sha256  229351e5a18ca30f447bf724d007f890f97e13af070bb6ad4c0a441cd7596a2f \
+                    size    553112
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
+python.pep517       yes
 
 if {${subport} ne ${name}} {
     depends_build-append \
-                    port:py${python.version}-setuptools \
-                    port:py${python.version}-setuptools_scm
+                    port:py${python.version}-hatchling \
+                    port:py${python.version}-hatch-vcs \
+                    port:py${python.version}-hatch-fancy-pypi-readme
 
     depends_lib-append \
                     port:py${python.version}-platformdirs \

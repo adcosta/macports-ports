@@ -2,16 +2,17 @@
 
 PortSystem          1.0
 PortGroup           legacysupport 1.1
-legacysupport.newest_darwin_requires_legacy 10
+# CLOCK_REALTIME
+legacysupport.newest_darwin_requires_legacy 15
 
 name                mariadb-10.5
 set name_mysql      ${name}
-version             10.5.15
+version             10.5.18
 set version_branch  [join [lrange [split ${version} .] 0 1] .]
 # Please set revision_client and revision_server to 0 if you bump
 # version; these can be changed independently for the 2 subports, but
 # can be changed at the same time if that's what's required.
-set revision_client 2
+set revision_client 0
 set revision_server 0
 categories          databases
 platforms           darwin
@@ -27,12 +28,10 @@ if {$subport eq $name} {
     PortGroup           boost 1.0
     PortGroup           openssl 1.0
 
-    boost.version       1.71
+    boost.version       1.78
     compiler.cxx_standard 2011
 
-    # Not ready for openssl3 yet
-    # https://trac.macports.org/ticket/63984
-    openssl.branch      1.1
+    openssl.branch      3
 
     # build configuration will incorrectly find and use the openssl shim port headers
     # which are in the primary prefix, in preference to the openssl11 ones, due to a bug
@@ -69,11 +68,11 @@ if {$subport eq $name} {
 
     set libmariadb_github_author  MariaDB
     set libmariadb_github_project mariadb-connector-c
-    set libmariadb_github_branch  f6c3d9fd2af5d17db64cc996574aa312efd70fcf
+    set libmariadb_github_branch  7fdb3eab66384a355475704332d11cc1ab82499a
 
     set wsrep_github_author  codership
     set wsrep_github_project wsrep-lib
-    set wsrep_github_branch  edd141127c11d78ef073f9f3ca61708821f20b32
+    set wsrep_github_branch  8bfce04189671eb1f06e0fa83dff8c880f31088f
 
     set wsrep_api_github_author   codership
     set wsrep_api_github_project  wsrep-API
@@ -81,7 +80,7 @@ if {$subport eq $name} {
 
     set columnstore_github_author   mariadb-corporation
     set columnstore_github_project  mariadb-columnstore-engine
-    set columnstore_github_branch   105aeb3e1e25dbb3dee6a53425dc665c7b7332dc
+    set columnstore_github_branch   f91c12c9df0597561b0d7f5cc6876e246d24763b
 
     set libmarias3_github_author   mariadb-corporation
     set libmarias3_github_project  libmarias3
@@ -120,25 +119,25 @@ if {$subport eq $name} {
                  https://github.com/${libmarias3_github_author}/${libmarias3_github_project}/archive/${libmarias3_github_branch}:tagsix
 
     checksums       ${main_distfile} \
-                    rmd160  5674a952a58ceaa7ff54244711366383b68a47e7 \
-                    sha256  9610be2bcdf6feadab75a7d9b4c3a4363d3d3be2cd1d28a1707a948366232857 \
-                    size    65529235 \
+                    rmd160  283b2ac6078e769084a91551b7b8dc568693039f \
+                    sha256  dae639e5757c00b7f5e2aa3a291965eda75f632afcb72b35b7d96827e8d1e06b \
+                    size    66101190 \
                     ${libmariadb_distfile} \
-                    rmd160  42554f52c61fa387221266857a7599bddca79c34 \
-                    sha256  69e7757539545547bde6d994bcbaab62304569452bee845e3e1407573cbaf76b \
-                    size    967901 \
+                    rmd160  c63e8387fa7bf3f2d6d4d7db87835f01875fcccf \
+                    sha256  37902fbad5b55968e297b071819228a0b58f253d82d2813f249a7ba230d71019 \
+                    size    1191573 \
                     ${wsrep_distfile} \
-                    rmd160  3cae17df2b0b9d3e4e6ba6cfcb7785fcd267cae1 \
-                    sha256  abb96e1548e39fa8b2479ed8cb3e69e5ca4c16302934b3f05eaeab928e207c7e \
-                    size    176349 \
+                    rmd160  f5c1f52a07dcccd4babb0e4da5ddca52cd78c8e7 \
+                    sha256  8a64fbb42a76c9839e2aaf43ebeb143f39c2842874084b7f1f7ba1f842b7d052 \
+                    size    176413 \
                     ${wsrep_api_distfile} \
                     rmd160  996ddebec67793a0b15d9e2cff9aa70e7760550e \
                     sha256  99960eb0ccb4dff5eb354289b0a8ec2ecb0dcc246f54edf292f69f340a916ee4 \
                     size    91283 \
                     ${columnstore_distfile} \
-                    rmd160  b05b07f22f55205d11eebaa5b3dbd16f2cbd7578 \
-                    sha256  c6f87ce0ea1a9c02dfb67a820c5540bb831747a8f563a6f711ade337f391ca67 \
-                    size    14602831 \
+                    rmd160  9bb6e42de4cc47b0e14cef409820a1e527e3b2b6 \
+                    sha256  6b29244c6485f4ee4a700894f8cb7b983b7665e89668b8e8e09bc79e61c58f23 \
+                    size    14612522 \
                     ${libmarias3_distfile} \
                     rmd160  bf90ab4856c1fec9272309134837f1f50fdb8de8 \
                     sha256  0c9ce4cc300bfefcb9dd188a46d736c0e119210c01cbfb04725b07f5330be679 \
@@ -331,7 +330,7 @@ possible to install and have running all the MacPorts mysql ports
 simultaneously.
 "
 
-    github.livecheck.regex (${version_branch}.\[0-9\]+)
+    github.livecheck.regex (${version_branch}\\.\[0-9\]+)
 
 }
 

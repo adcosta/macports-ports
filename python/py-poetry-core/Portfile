@@ -4,18 +4,24 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           select 1.0
 
+# If you update this port, also update the port poetry to the latest
+# compatible with this port. py-poetry-core is closely coupled to poetry,
+# both in terms of APIs but also the version pinning.
 name                py-poetry-core
-version             1.0.7
-revision            1
+version             1.6.1
+revision            0
 
-checksums           rmd160  25eb60bd64122e02697ee2c1afe5b76eb414616c \
-                    sha256  98c11c755a16ef6c5673c22ca94a3802a7df4746a0853a70b6fae8b9f5cac206 \
-                    size    346244
+distname            poetry_core-${version}
+
+checksums           rmd160  1d3c7bfed575e4fb9424dc78b2f1c4524141aeb5 \
+                    sha256  0f9b0de39665f36d6594657e7d57b6f463cc10f30c28e6d1c3b9ff54c26c9ac3 \
+                    size    443618
 
 categories-append   devel
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
-maintainers         nomaintainer
+maintainers         {gmail.com:davidgilman1 @dgilman} openmaintainer
 
 homepage            https://github.com/python-poetry/poetry-core
 description         A PEP 517 build backend implementation developed for Poetry.
@@ -23,15 +29,12 @@ long_description    ${description} This project is intended to be a light \
                     weight, fully compliant, self-contained package allowing PEP 517 \
                     compatible build frontends to build Poetry managed projects.
 
-# keep older Python versions here, do add the EOL version to the list below
-python.versions     36 37 38 39 310
+python.versions     37 38 39 310 311
 python.pep517       yes
 # Bootstraps itself, no backend dependencies needed
 python.pep517_backend
 
 if {${name} ne ${subport}} {
-    patchfiles      pyproject.toml.patch
-
     if {${python.version} < 38} {
         depends_lib-append  port:py${python.version}-importlib-metadata
     }
@@ -46,6 +49,4 @@ if {${name} ne ${subport}} {
             ${destroot}${python.pkgd}/poetry/__init__.py \
             ${destroot}${python.pkgd}/poetry/__pycache__
     }
-
-    livecheck.type  none
 }

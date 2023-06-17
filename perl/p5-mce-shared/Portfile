@@ -4,18 +4,19 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         MCE-Shared 1.876 ../../authors/id/M/MA/MARIOROY
+perl5.setup         MCE-Shared 1.885 ../../authors/id/M/MA/MARIOROY
 revision            0
 license             {Artistic-1 GPL}
 maintainers         {devans @dbevans} openmaintainer
 description         MCE::Shared - MCE extension for sharing data supporting threads and processes
-long_description    ${description}
+long_description    {*}${description}
 
-platforms           darwin
+platforms           {darwin any}
+supported_archs     noarch
 
-checksums           rmd160  9e52ef59c6ef5df1ace24891d20bb43e1a492d45 \
-                    sha256  2babb0115f3bc14e06d770088e792e23d7abfcbce2450e1c322d5d3046c7a48a \
-                    size    155142
+checksums           rmd160  eed7a3ebc3ae4c3dec77e88c5058e2af8b0ce1ff \
+                    sha256  5ac5bccaf71b7e785a535be74e26303f4b09b152b566e6d5a4bfcf7619d0ef96 \
+                    size    158073
 
 if {${perl5.major} != ""} {
     depends_lib-append \
@@ -25,6 +26,4 @@ if {${perl5.major} != ""} {
                     port:p${perl5.major}-sereal-decoder \
                     port:p${perl5.major}-sereal-encoder \
                     port:p${perl5.major}-time-hires
-
-    supported_archs noarch
 }

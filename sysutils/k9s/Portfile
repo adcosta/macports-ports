@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/derailed/k9s 0.25.18 v
+go.setup            github.com/derailed/k9s 0.27.4 v
 github.tarball_from archive
 revision            0
 
@@ -25,9 +25,9 @@ maintainers         {breun.nl:nils @breun} \
                     {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  9a06480e67e9f961c9ff094f8e951eb874ac098e \
-                    sha256  2a911c57011164c0f11e3cdf763182abf189efde80b7a764e361aa070b7e3f46 \
-                    size    6407574
+checksums           rmd160  84d2f50a4b5bf47440e8ddfafb4f01b4fc0bb8e2 \
+                    sha256  4f2b42270bcbe37497c52c6c8fbd99e5b6e5333f1ab0b36dbdfeaccbc50a4ae1 \
+                    size    6400972
 
 # FIXME: This port currently can't be built without allowing go mod to fetch
 # dependencies during the build phase. See
@@ -36,7 +36,7 @@ build.env-delete    GOPROXY=off GO111MODULE=off
 
 build.cmd           make
 build.pre_args-append \
-                    GIT_REV="" DATE=""
+                    VERSION="${github.tag_prefix}${version}" GIT_REV="" DATE=""
 build.args          build
 
 destroot {
@@ -45,6 +45,21 @@ destroot {
     xinstall -d ${destroot}${prefix}/share/${name}
     copy ${worksrcpath}/skins   ${destroot}${prefix}/share/${name}/
     copy ${worksrcpath}/plugins ${destroot}${prefix}/share/${name}/
+
+    set bash_completion ${prefix}/share/bash-completion/completions
+    xinstall -d ${destroot}${bash_completion}
+    exec ${destroot}${prefix}/bin/${name} completion bash > \
+        ${destroot}${bash_completion}/${name}
+
+    set zsh_completion ${prefix}/share/zsh/site-functions
+    xinstall -d ${destroot}${zsh_completion}
+    exec ${destroot}${prefix}/bin/${name} completion zsh > \
+        ${destroot}${zsh_completion}/_${name}
+
+    set fish_completion ${prefix}/share/fish/vendor_completions.d
+    xinstall -d ${destroot}${fish_completion}
+    exec ${destroot}${prefix}/bin/${name} completion fish > \
+        ${destroot}${fish_completion}/${name}.fish
 }
 
 notes "

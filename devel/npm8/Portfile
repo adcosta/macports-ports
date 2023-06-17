@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                npm8
-version             8.9.0
+version             8.19.4
 revision            0
 categories          devel
 platforms           darwin
@@ -15,7 +15,7 @@ long_description    npm is a package manager for node. \
                     You can use it to install and publish your node programs. \
                     It manages dependencies and does other cool stuff.
 
-conflicts           npm3 npm4 npm5 npm6 npm7
+conflicts           npm3 npm4 npm5 npm6 npm7 npm9
 
 homepage            https://www.npmjs.com/
 
@@ -27,10 +27,10 @@ extract.suffix      .tgz
 
 # Please keep the sha1 - users can use it to validate sha values
 # published on npmjs.org for the package
-checksums           rmd160  7d308d046f56b0327472d734e509bc25f90f35a6 \
-                    sha1    2d02bba6f84ddc9b7354cb08b2c5c1258f91a40d \
-                    sha256  19a36ab5340cbe5b17d1aa0fa18a5934bbb5b8157db055706b155d98b6f122b7 \
-                    size    2452155
+checksums           rmd160  9ed91059cca64bc3a42cb650eb1691f8f13a5912 \
+                    sha1    65ad6a2dfdd157a4ef4467fb86e8dcd35a43493f \
+                    sha256  2667a1b8300f315d223e43c307fbe946eb8b97792af399424ef67ea9cb0a72f6 \
+                    size    2438811
 
 worksrcdir          "package"
 
@@ -44,14 +44,18 @@ platform darwin {
 
 use_configure       no
 
-patchfiles          patch-lib-commands-update.js.diff
+patchfiles          patch-lib-commands-update.js.diff \
+                    patch-package.json.diff
 
 post-patch {
     foreach f [concat ${worksrcpath}/bin/npm-cli.js \
                    ${worksrcpath}/bin/npx-cli.js \
                    ${worksrcpath}/node_modules/@npmcli/arborist/bin/index.js \
+                   ${worksrcpath}/node_modules/color-support/bin.js \
+                   ${worksrcpath}/node_modules/cssesc/bin/cssesc \
                    ${worksrcpath}/node_modules/mkdirp/bin/cmd.js \
                    ${worksrcpath}/node_modules/node-gyp/bin/node-gyp.js \
+                   ${worksrcpath}/node_modules/node-gyp/node_modules/nopt/bin/nopt.js \
                    ${worksrcpath}/node_modules/nopt/bin/nopt.js \
                    ${worksrcpath}/node_modules/npm-packlist/bin/index.js \
                    ${worksrcpath}/node_modules/opener/bin/opener-bin.js \
@@ -69,7 +73,7 @@ build {
 }
 
 destroot.cmd        ${prefix}/bin/node ./bin/npm-cli.js
-destroot.args       --global ${distname}.tgz
+destroot.args       --location global ${distname}.tgz
 destroot.destdir    --prefix=${destroot}${prefix}
 
 post-destroot {
@@ -87,4 +91,4 @@ ${prefix}/lib/node_modules/ until you manually delete them.
 
 livecheck.type      regex
 livecheck.url       https://registry.npmjs.org/npm
-livecheck.regex     {"latest":"(.*?)"}
+livecheck.regex     {"next-8":"(.*?)"}

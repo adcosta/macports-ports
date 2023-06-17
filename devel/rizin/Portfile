@@ -6,7 +6,7 @@ PortGroup           meson   1.0
 PortGroup           openssl 1.0
 
 epoch               1
-github.setup        rizinorg rizin 0.3.4 v
+github.setup        rizinorg rizin 0.5.2 v
 revision            0
 
 homepage            https://rizin.re
@@ -24,7 +24,14 @@ maintainers         {l2dy @l2dy} \
                     {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-fetch.type          git
+github.tarball_from releases
+distname            ${github.project}-src-v${github.version}
+worksrcdir          ${github.project}-v${github.version}
+extract.suffix      .tar.xz
+
+checksums           rmd160  31f703fc1b1ec4f5d48ff0de91d139ef9a446400 \
+                    sha256  71ab80fc3c8ac9c80a10000d838128af28a05d31a0ee183900c2c5c6e350eca3 \
+                    size    11779644
 
 depends_build-append \
                     port:pkgconfig
@@ -33,8 +40,7 @@ depends_lib         port:capstone \
                     port:libzip \
                     port:zlib \
                     port:lz4 \
-                    port:tree-sitter \
-                    port:libuv
+                    port:tree-sitter
 
 configure.args-append \
                     -Duse_sys_capstone=enabled \
@@ -44,5 +50,4 @@ configure.args-append \
                     -Duse_sys_lz4=enabled \
                     -Duse_sys_xxhash=disabled \
                     -Duse_sys_openssl=enabled \
-                    -Duse_sys_tree_sitter=enabled \
-                    -Duse_sys_libuv=enabled
+                    -Duse_sys_tree_sitter=enabled

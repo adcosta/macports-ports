@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-types-ujson
+version             5.7.0.5
+revision            0
+categories-append   devel
+license             Apache-2
+supported_archs     noarch
+platforms           {darwin any}
+
+python.versions     37 38 39 310 311
+
+maintainers         nomaintainer
+
+description         Typing stubs for ujson
+long_description    {*}${description}. Typeshed contains external type \
+                    annotations for the Python standard library and \
+                    Python builtins, as well as third party packages \
+                    as contributed by people external to those projects. \
+                    This data can e.g. be used for static analysis, type \
+                    checking or type inference.
+
+homepage            https://github.com/python/typeshed
+
+checksums           rmd160  f4bc6f676c33e458377bbd427f9d0d01d4ddacbd \
+                    sha256  7ff2a6776048e6ad6abc7ebedfd42ae1b6c005512affbae44caf3fb1e96b5d12 \
+                    size    3217
+
+if {${name} ne ${subport}} {
+    python.pep517   yes
+}

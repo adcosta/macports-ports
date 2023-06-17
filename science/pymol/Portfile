@@ -6,7 +6,7 @@ PortGroup           github 1.0
 PortGroup           boost 1.0
 
 github.setup        schrodinger pymol-open-source 2.5.0 v
-revision            3
+revision            4
 name                pymol
 conflicts           pymol-devel
 
@@ -28,26 +28,27 @@ checksums           rmd160  6432d47616aee1e5d9d40cc2a74425b33159d7a0 \
                     size    10471287
 
 subport pymol-devel {
-    github.setup    schrodinger pymol-open-source b8a7bae98b94194d3e7801395aa6c90e9308b460
-    version         20220425-[string range ${github.version} 0 7]
+    github.setup    schrodinger pymol-open-source 17be7d0f287d9ba2d659c009
+    version         20230519-[string range ${github.version} 0 7]
     conflicts       pymol
     revision        0
     maintainers     {reneeotten @reneeotten} openmaintainer
-    checksums       rmd160  58e8d763933c6a4972b2bcb0f23b250a4425b7a1 \
-                    sha256  5550f21925b44435cb2caac95d0274bcbb6bbb4ee33d8f4fbaa0d0894bbeb40d \
-                    size    10491023
+    checksums       rmd160  90a7861d51fb0b45bfec61e33b2689591965ffd7 \
+                    sha256  a8acf01fa082a6233836f08811279172549ae24a7c4592bbaa6182b5da8904a6 \
+                    size    10494107
 }
 
-variant python37 conflicts python38 python39 python310 description {Use Python 3.7} {}
-variant python38 conflicts python37 python39 python310 description {Use Python 3.8} {}
-variant python39 conflicts python37 python38 python310 description {Use Python 3.9} {}
-variant python310 conflicts python37 python38 python39 description {Use Python 3.10} {}
+variant python37 conflicts python38 python39 python310 python311 description {Use Python 3.7} {}
+variant python38 conflicts python37 python39 python310 python311 description {Use Python 3.8} {}
+variant python39 conflicts python37 python38 python310 python311 description {Use Python 3.9} {}
+variant python310 conflicts python37 python38 python39 python311 description {Use Python 3.10} {}
+variant python311 conflicts python37 python38 python39 python310 description {Use Python 3.11} {}
 
-if {![variant_isset python37] && ![variant_isset python38] && ![variant_isset python39]} {
-    default_variants +python310
+if {![variant_isset python37] && ![variant_isset python38] && ![variant_isset python39] && ![variant_isset python310]} {
+    default_variants +python311
 }
 
-foreach pv {310 39 38 37} {
+foreach pv {311 310 39 38 37} {
     if {[variant_isset python${pv}]} {
         python.default_version ${pv}
         break

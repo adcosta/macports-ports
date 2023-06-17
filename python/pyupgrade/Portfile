@@ -4,10 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                pyupgrade
-version             2.32.0
+version             3.6.0
 revision            0
 
 categories-append   devel
+platforms           {darwin any}
 supported_archs     noarch
 license             MIT
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -17,11 +18,11 @@ long_description    ${description}
 
 homepage            https://github.com/asottile/pyupgrade
 
-checksums           rmd160  4a76c772ab0797ed685ac9c270e9645f7cb822cd \
-                    sha256  6878116d364b72f0c0011dd62dfe96425041a5f753da298b6eacde0f9fd9c004 \
-                    size    40506
+checksums           rmd160  c436552441555a438bc8113aa039517fe02b6299 \
+                    sha256  6e888c168f0684babdb6b820a2d70138435eaf43402b42291c789091dd247fba \
+                    size    42853
 
-python.default_version  310
+python.default_version  311
 
 depends_build-append \
                     port:py${python.version}-setuptools

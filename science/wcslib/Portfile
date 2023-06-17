@@ -4,11 +4,11 @@ PortSystem          1.0
 PortGroup           compilers 1.0
 
 name                wcslib
-version             7.7
+version             7.12
 revision            0
-checksums           rmd160  e12cf7f8a522b79c7c74b95af826ec126c91cf4d \
-                    sha256  a708e6b4e90e2cd6427434715b591bb9c3d4005c99725ec494b8e0bed2de5355 \
-                    size    2515760
+checksums           rmd160  9e07198cccec0e784a67a0d950494ec2a23ff099 \
+                    sha256  9cf8de50e109a97fa04511d4111e8d14bd0a44077132acf73e6cf0029fe96bd4 \
+                    size    2989693
 
 categories          science
 license             LGPL-3+
@@ -36,6 +36,11 @@ configure.args      --disable-fortran \
                     --with-cfitsioinc=${prefix}/include \
                     --with-cfitsiolib=${prefix}/lib \
                     --without-pgplot
+
+# https://trac.macports.org/ticket/66253
+if {${build_arch} in [list i386 ppc]} {
+    configure.ldflags-append -read_only_relocs suppress
+}
 
 # The -I flag from CPPFLAGS ends up in the wrong place on the build line
 # (before the -I flags for source directories). The build system will add

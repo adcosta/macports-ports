@@ -10,6 +10,7 @@ PortGroup       muniversal 1.0
 
 name            texlive-bin
 version         2022.62882
+revision        3
 
 categories      tex
 maintainers     {dports @drkp}
@@ -67,14 +68,14 @@ depends_lib     port:fontconfig \
                 path:lib/pkgconfig/cairo.pc:cairo \
                 path:lib/pkgconfig/pixman-1.pc:libpixman \
                 port:graphite2 \
-                port:icu \
+                path:lib/pkgconfig/icu-uc.pc:icu \
                 path:lib/pkgconfig/harfbuzz.pc:harfbuzz \
                 path:lib/pkgconfig/harfbuzz-icu.pc:harfbuzz-icu \
                 port:libpaper \
                 port:gmp \
                 port:mpfr \
                 port:potrace \
-                port:poppler \
+                path:lib/pkgconfig/poppler.pc:poppler \
                 port:texlive-common
 
 depends_run     port:ghostscript
@@ -228,7 +229,7 @@ build.env                   OBJC=${configure.objc} \
 
 # this is not optimal, but we have to duplicate this cxx11 PG logic here
 # because of https://trac.macports.org/ticket/56280
-if {[string match *clang* ${configure.cxx}]} {
+if {[string match *clang* ${configure.cxx}] && ${configure.cxx_stdlib} ne ""} {
     lappend configure.objcxxflags -stdlib=${configure.cxx_stdlib}
 }
 if {[string match macports-libstdc++ ${configure.cxx_stdlib}]} {

@@ -12,7 +12,7 @@ epoch               3
 version             7.5.0
 revision            3
 subport             libgcc7 { revision 1 }
-platforms           darwin
+platforms           {darwin < 15}
 categories          lang
 maintainers         nomaintainer
 # an exception in the license allows dependents to not be GPL
@@ -184,23 +184,6 @@ build.target        bootstrap-lean
 use_parallel_build  yes
 
 destroot.target     install install-info-host
-
-# On Darwin19+ fails to build for Xcode < 11.3
-# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=90835
-# https://trac.macports.org/ticket/59351
-# for more background on the issue.
-if { ${os.major} >= 19 } {
-    if {[vercmp ${xcodeversion} 11.3] < 0} {
-        known_fail  yes
-        pre-fetch {
-            ui_error "${name} ${version} is (currently) not supported on Darwin ${os.major} Xcode ${xcodeversion}"
-            ui_error "See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=90835 and"
-            ui_error "    https://trac.macports.org/ticket/59351 for more details"
-            ui_error "To install this port upgrade Xcode to 11.3 or newer"
-            return -code error "incompatible Xcode version"
-        }
-    }
-}
 
 # List of all dylibs to possibly be installed
 set alldylibs {libgcc_ext.10.4.dylib libgcc_ext.10.5.dylib libgcc_s.1.dylib libgfortran.4.dylib libquadmath.0.dylib libstdc++.6.dylib libobjc-gnu.4.dylib libgomp.1.dylib libitm.1.dylib libssp.0.dylib libasan.4.dylib libubsan.0.dylib libcilkrts.5.dylib libatomic.1.dylib}

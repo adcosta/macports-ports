@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           openssl 1.0
 
 name                stunnel
-version             5.64
+version             5.69
 revision            0
 set major           [lindex [split ${version} .] 0]
 categories          security net
@@ -27,13 +27,14 @@ master_sites        https://www.stunnel.org/downloads/archive/${major}.x/ \
                     http://ftp.nluug.nl/pub/networking/stunnel/archive/${major}.x/ \
                     http://stunnel.cybermirror.org/archive/${major}.x/
 
-checksums           rmd160  3ab38aca0e21a233ea94f498947c98eefa876685 \
-                    sha256  eebe53ed116ba43b2e786762b0c2b91511e7b74857ad4765824e7199e6faf883 \
-                    size    869088
+checksums           rmd160  6de66f2b60914654f94ca33ab45a9d96f08e1a7d \
+                    sha256  1ff7d9f30884c75b98c8a0a4e1534fa79adcada2322635e6787337b4e38fdb81 \
+                    size    879988
 
 openssl.branch      no_version
 
-patchfiles          patch-configure
+patchfiles          patch-configure \
+                    patch-src-client.c.diff
 
 configure.args      --disable-libwrap \
                     --disable-silent-rules

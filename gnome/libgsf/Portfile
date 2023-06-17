@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           gobject_introspection 1.0
 
 name                libgsf
-version             1.14.48
+version             1.14.50
 revision            0
 license             LGPL-2.1
 set branch          [join [lrange [split $version .] 0 1] .]
@@ -23,14 +23,15 @@ master_sites        gnome:sources/$name/$branch/
 
 use_xz              yes
 
-checksums           rmd160  ec3793d0cf4fa62e4e5da625e78cb6e5e04ba350 \
-                    sha256  ff86d7f1d46dd0ebefb7bd830a74a41db64362b987bf8853fff6ab4c1132b837 \
-                    size    701760
+checksums           rmd160  4241017becde8237d55413d943b26b65911d27eb \
+                    sha256  6e6c20d0778339069d583c0d63759d297e817ea10d0d897ebbe965f16e2e8e52 \
+                    size    702424
 
 depends_build       port:pkgconfig \
+                    port:gettext \
                     port:gtk-doc
 
-depends_lib         port:gettext \
+depends_lib         port:gettext-runtime \
                     path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     port:libxml2 \
                     path:lib/pkgconfig/gdk-pixbuf-2.0.pc:gdk-pixbuf2 \

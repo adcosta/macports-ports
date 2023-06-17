@@ -1,11 +1,14 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           github 1.0
-PortGroup           cargo 1.0
+PortGroup           github  1.0
+PortGroup           cargo   1.0
 
-github.setup        soywod himalaya 0.4.0 v
+github.setup        soywod himalaya 0.8.1 v
+github.tarball_from archive
 revision            0
+
+homepage            https://pimalaya.org/himalaya
 
 description         Minimalist CLI email client, written in Rust
 
@@ -21,32 +24,20 @@ long_description    {*}${description}. Bringing emails to the terminal is a \
                     by default.
 
 categories          mail
-platforms           darwin
+installs_libs       no
+license             BSD
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
-license             BSD
-installs_libs       no
 
-build.pre_args      --release -v -j${build.jobs}
+build.pre_args-delete \
+                    --offline --frozen
 
-checksums           rmd160  5b42645383cbcdc078c8b2d9deba1b0f1b620331 \
-                    sha256  07359cc9827ecda8052a23428f642e06da5a899c40fe887acc5a880c76676131 \
-                    size    49693
-
-set vimfiles_path   ${prefix}/share/vim/vimfiles
-
-depends_run         path:bin/vim:vim
-
-github.tarball_from archive
+checksums           rmd160  401de62288713fa2319022585004bad76fa6cac4 \
+                    sha256  0a4d6325f541e0eb1b23c2f9b6b47eb01feaf78a0eb3fd5a29624990d9ca0e23 \
+                    size    86620
 
 destroot {
-    xinstall -m 755 \
+    xinstall -m 0755 \
         ${worksrcpath}/target/[cargo.rust_platform]/release/${name} \
         ${destroot}${prefix}/bin/
-
-    xinstall -d ${destroot}${vimfiles_path}
-
-    foreach vimdir {autoload doc ftplugin lua plugin syntax} {
-        copy ${worksrcpath}/vim/${vimdir} ${destroot}${vimfiles_path}/
-    }
 }

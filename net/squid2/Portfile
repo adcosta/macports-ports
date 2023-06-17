@@ -7,7 +7,6 @@ version         2.7.STABLE9
 revision        2
 set branch      [join [lrange [split ${version} .] 0 1] .]
 categories      net
-platforms       darwin
 license         GPL-2+
 maintainers     {jmr @jmroot} openmaintainer
 description     advanced proxy caching server for http, https, ftp, gopher
@@ -47,7 +46,7 @@ patchfiles      patch-cf.data.pre.diff \
 
 depends_lib     port:zlib
 
-conflicts       squid3 squid4 squid5
+conflicts       squid3 squid5
 
 # replace old config.{guess,sub} with recent versions from automake
 depends_build-append    port:automake

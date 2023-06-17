@@ -1,0 +1,36 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           makefile 1.0
+
+github.setup        adsr mle 1.7.2 v
+revision            0
+
+categories          editors
+license             Apache-2
+maintainers         {@sikmir disroot.org:sikmir} openmaintainer
+
+description         Small, flexible, terminal-based text editor
+long_description    {*}${description}
+
+checksums           rmd160  0e0381fa710a0ef2913f950796e2e155ee24e53e \
+                    sha256  6f2c7b51a04875e3e5087aefaca5ce7dd6de23b7f458806ef2c9928afbd06fa7 \
+                    size    143641
+
+post-patch {
+    reinplace "s|-llua5.4|-llua|g" ${worksrcpath}/Makefile
+    reinplace "s|<lua5.4/|<|g" ${worksrcpath}/mle.h
+}
+
+configure.cflags-append \
+                    -I${prefix}/include/uthash
+
+depends_lib-append  port:lua \
+                    port:pcre2 \
+                    port:uthash
+
+post-destroot {
+    set mandir ${destroot}${prefix}/share/man/man1
+    xinstall ${worksrcpath}/mle.1 ${mandir}
+}

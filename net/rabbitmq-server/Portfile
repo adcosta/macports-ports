@@ -3,14 +3,14 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        rabbitmq rabbitmq-server 3.8.3 v
+github.setup        rabbitmq rabbitmq-server 3.11.15 v
 revision            0
-checksums           rmd160  b0c2f92172d52b19e20c4f61ac30daebc71da0b7 \
-                    sha256  5a2739ed1dba77f88316b4c63393d8037fc4acf51881ba922470453e891875b6 \
-                    size    11958032
+checksums           rmd160  c30a5ee11a501b8a271bda39f92dd8125230f4c6 \
+                    sha256  538be3c85e8cad10de62705714f71eaacb04339f73a81477c91478600bb8253c \
+                    size    20897748
 
 categories          net
-platforms           darwin
+platforms           {darwin any}
 maintainers         nomaintainer
 license             MPL-1.1 MIT Apache-2
 supported_archs     noarch

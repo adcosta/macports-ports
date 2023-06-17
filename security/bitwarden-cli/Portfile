@@ -1,12 +1,15 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           github 1.0
-
-github.setup        bitwarden cli 1.22.1 v
-revision            0
+PortGroup           npm 1.0
 
 name                bitwarden-cli
+version             2023.5.0
+revision            0
+
+npm.rootname        @bitwarden/cli
+distname            cli-${version}
+
 categories          security
 license             GPL-3
 maintainers         {bochtler.io:macports @MarcelBochtler} \
@@ -16,23 +19,6 @@ description         Bitwarden password manager CLI
 long_description    CLI implementation of the Bitwarden password manager.
 homepage            https://bitwarden.com
 
-fetch.type          git
-
-depends_fetch-append \
-                    path:bin/npm:npm6
-
-post-fetch {
-    system -W "${worksrcpath}" "npm run sub:init"
-}
-
-configure {
-    system -W "${worksrcpath}" "npm install"
-}
-
-build {
-    system -W "${worksrcpath}" "npm run dist:mac"
-}
-
-destroot {
-    xinstall -m 755 ${worksrcpath}/dist/macos/bw ${destroot}${prefix}/bin
-}
+checksums           rmd160  8b813166ab40ea527f1d22ff7c3f85d15a2e8f03 \
+                    sha256  1e9a592ed4ae1611afbd652ee546fd95b2bbf8414a02db836d756ee653ed2321 \
+                    size    654560

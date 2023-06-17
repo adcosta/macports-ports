@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/lucagrulla/cw 4.1.0 v
+go.setup            github.com/lucagrulla/cw 4.1.3 v
 github.tarball_from archive
 revision            0
 
@@ -18,12 +18,15 @@ license             Apache-2
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  ac45d3294d140366a98a5d8e5b71471aba1b5350 \
-                    sha256  bfaed93fc80d6c1ed12b8943a054e7b032aa99d23696c507ccac0b0fc7b0a727 \
-                    size    107472
+checksums           rmd160  4050b5ddcb65cac5973d9069016bebc4298ebffb \
+                    sha256  f7780a47ca0912d6d2d1f39dc59c65211eef8b189296813aabcffeda0585c9d2 \
+                    size    109554
 
 # Allow Go to fetch dependencies during build time
 build.env-delete    GO111MODULE=off GOPROXY=off
+
+build.pre_args-append \
+    -ldflags \" -X main.version=${version} \"
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/

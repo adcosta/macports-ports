@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           perl5 1.0
 
-github.setup        darold pgbadger 11.8 v
+github.setup        darold pgbadger 12.1 v
 revision            0
 categories          databases
 maintainers         nomaintainer
@@ -13,20 +13,20 @@ long_description    pgBadger is a PostgreSQL log analyzer built for speed with f
                     from your PostgreSQL log file. It's a single and small Perl script that \
                     outperforms any other PostgreSQL log analyzer.
 
-platforms           darwin
 license             BSD
 supported_archs     noarch
+platforms           {darwin any}
 
 homepage            https://pgbadger.darold.net/
 
-checksums           rmd160  8297dac8875b0eac2091754464244f6c32abb6f8 \
-                    sha256  ab415994e7baf7255d38bb056ee154bb3416259f45a032c89cb78c99e5fad735 \
-                    size    2987691
+checksums           rmd160  1343da052e8e1851a422637622c369b5a78fa148 \
+                    sha256  369f1af4b1ee909f81b6da6a8bc634bf88dc997cbf74942ea5ff931edabd0f98 \
+                    size    3041875
 
 perl5.require_variant   yes
 perl5.conflict_variants yes
 perl5.branches          5.28 5.30 5.32 5.34
-perl5.default_branch    5.28
+perl5.default_branch    5.34
 perl5.create_variants   ${perl5.branches}
 
 depends_lib-append  port:p${perl5.major}-text-csv_xs \

@@ -4,17 +4,20 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           cmake 1.1
 
-github.setup        mamba-org mamba 2022.04.21
+github.setup        mamba-org mamba 2022.11.25
 name                libmamba
-version             0.23.0
+version             1.1.0
+revision            1
 categories          devel
 platforms           darwin
 license             BSD
 maintainers         {l2dy @l2dy} openmaintainer
 
-checksums           rmd160  ee5b70fe2459343213becca1344684a2d25f54ce \
-                    sha256  c1fe6b5ba882cabdb000e466c9d560932d1e024fdd90038436943f24b0ee4835 \
-                    size    716903
+checksums           rmd160  4f89072a596bcf8672fe3c29dfc126b303bbcaa0 \
+                    sha256  0b6aa37f3c4ce2df4e8de61cf0155bc943e6ff6bad44298cefd3a16ae41c4f2e \
+                    size    846432
+
+compiler.cxx_standard 2017
 
 depends_build-append  \
                     port:ghc-filesystem \
@@ -22,10 +25,18 @@ depends_build-append  \
                     port:termcolor \
                     port:tl-expected
 
+depends_lib-append  port:libarchive \
+                    port:libfmt9
+
+cmake.module_path-append \
+                    ${prefix}/lib/libfmt9/cmake
+
 if {${subport} eq ${name}} {
     description         a reimplementation of the conda package manager in C++
     long_description    Mamba is {*}${description}.
 
+    depends_build-append  \
+                        port:python310
 
     depends_lib-append  port:libsolv \
                         port:reproc \

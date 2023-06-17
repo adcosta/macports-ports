@@ -3,11 +3,11 @@
 PortSystem      1.0
 PortGroup       github 1.0
 
-github.setup    jenv jenv 0.5.4
+github.setup    jenv jenv 0.5.6
 revision        0
 
 categories      java
-platforms       darwin
+platforms       any
 maintainers     {breun.nl:nils @breun} openmaintainer
 license         MIT
 supported_archs noarch
@@ -19,9 +19,9 @@ long_description jEnv is a command line tool to help you forget how to set the J
 homepage        https://www.jenv.be
 github.tarball_from archive
 
-checksums       rmd160  c08d732f50377a7fd2a38d3f77218e5fed336bf8 \
-                sha256  15a78dab7310fb487d2c2cad7f69e05d5d797dc13f2d5c9e7d0bbec4ea3f2980 \
-                size    21331
+checksums       rmd160  791f26b1d0e1bfe44810a6f3c22c3c4cab003031 \
+                sha256  1afac0386ab4459b8523fb45937eb3111f3ce2b83f5b0da11327f5dd200e0672 \
+                size    22667
 
 use_configure   no
 

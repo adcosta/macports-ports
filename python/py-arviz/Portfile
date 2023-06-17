@@ -4,9 +4,10 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-arviz
-version             0.12.0
+version             0.15.1
 revision            0
 
+platforms           {darwin any}
 supported_archs     noarch
 license             Apache-2
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -16,25 +17,26 @@ long_description    ${description}
 
 homepage            https://github.com/arviz-devs/arviz
 
-checksums           rmd160  71f60da808d33f75870c43ed4cac93608d8a8fb9 \
-                    sha256  3684b19cc7cfdd18c4c0d2e273500309f290e00b0e7174864f4388a8c17701df \
-                    size    1514051
+checksums           rmd160  11ef538e7de0e5ce49435d93c9b15a0c66361285 \
+                    sha256  981cce0282bdf6f3b379255b95a440979f9a0ef0ae9dd88a54f763cf5b31484c \
+                    size    1566128
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \
                     port:py${python.version}-setuptools
 
     depends_lib-append \
+                    port:py${python.version}-h5netcdf \
                     port:py${python.version}-matplotlib \
-                    port:py${python.version}-netcdf4 \
                     port:py${python.version}-numpy \
                     port:py${python.version}-packaging \
                     port:py${python.version}-pandas \
                     port:py${python.version}-scipy \
                     port:py${python.version}-typing_extensions \
-                    port:py${python.version}-xarray
+                    port:py${python.version}-xarray \
+                    port:py${python.version}-xarray-einstats
 
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}

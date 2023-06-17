@@ -7,7 +7,7 @@ PortGroup           legacysupport 1.1
 legacysupport.newest_darwin_requires_legacy 15
 
 name                knot
-version             3.1.8
+version             3.2.7
 revision            0
 categories          net
 license             GPL-3+
@@ -21,27 +21,21 @@ master_sites        https://secure.nic.cz/files/knot-dns/ \
 
 use_xz              yes
 
-checksums           rmd160  61cad5502aa6a3c0623a43376ad9f9abf25b0ac9 \
-                    sha256  767e458a56277a1270b359294c3be6c63fd734884d62a045e01756a46507aa94 \
-                    size    1439912
+checksums           rmd160  e0ee858951a4868a132ee0e55fe179ff2158c372 \
+                    sha256  d3b7872ac8aa80f7f54ddb1bb3b1e2f90ec55f7270a2c4a9338eab42b7d2767b \
+                    size    1681416
 
 depends_build       port:pkgconfig
 
 depends_lib         port:fstrm \
-                    port:gnutls \
+                    path:lib/pkgconfig/gnutls.pc:gnutls \
                     port:libidn2 \
                     port:lmdb \
                     port:nghttp2 \
                     port:protobuf-c \
                     port:userspace-rcu
 
-if {${os.platform} eq "darwin" && ${os.major} < 15} {
-    known_fail          yes
-    pre-fetch {
-        ui_error "${name} ${version} requires macOS 10.11 or greater."
-        return -code error "incompatible macOS version"
-    }
-}
+platforms {darwin >= 15}
 
 configure.args      --disable-silent-rules
 

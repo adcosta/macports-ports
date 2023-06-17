@@ -4,11 +4,10 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           legacysupport 1.0
 
-github.setup        karelzak util-linux 2.38 v
+github.setup        karelzak util-linux 2.39 v
 revision            0
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          devel
-platforms           darwin
 maintainers         {khindenburg @kurthindenburg} openmaintainer
 license             BSD GPL-2+ public-domain
 
@@ -35,14 +34,16 @@ fetch.ignore_sslcert    yes
 
 use_xz              yes
 
-checksums           rmd160  1620da4958c2d4716fcbcb9b8333d5b944c9261e \
-                    sha256  6d111cbe4d55b336db2f1fbeffbc65b89908704c01136371d32aa9bec373eb64 \
-                    size    7349140
-
-patchfiles          patch-includes.diff
+checksums           rmd160  c4a061cc89efea1df45616dbaf0948ea27345d00 \
+                    sha256  32b30a336cda903182ed61feb3e9b908b762a5e66fe14e43efb88d37162075cb \
+                    size    8103428
 
 if { ${os.platform} eq "darwin" && ${os.major} < 9 } {
     configure.cppflags-append -D__DARWIN_UNIX03
+
+    # disable strict POSIX on Tiger as it blocks certain functions
+    # https://trac.macports.org/ticket/65582
+    patchfiles-append patch-util-linux-disable-posix-tiger.diff
 }
 
 depends_lib-append  port:gettext \
@@ -78,13 +79,16 @@ configure.args      --disable-agetty \
                     --without-audit \
                     --without-python
 
+configure.checks.implicit_function_declaration.whitelist-append strchr
+
 # When adding new programs, check the .c file for license
-build.target        colcrt column hardlink look rename rev scriptreplay setsid
+build.target        colcrt column getopt hardlink look rename rev scriptreplay setsid
 
 destroot {
     foreach path {
             text-utils/colcrt
             text-utils/column
+            misc-utils/getopt
             misc-utils/hardlink
             misc-utils/look
             misc-utils/rename

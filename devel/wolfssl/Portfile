@@ -3,7 +3,8 @@
 PortSystem          1.0
 
 name                wolfssl
-version             5.3.0
+version             5.6.0
+revision            0
 categories          devel security
 platforms           darwin
 maintainers         {wolfssl.com:facts @JacobBarthelmeh} openmaintainer
@@ -24,11 +25,11 @@ long_description    \
 master_sites        https://www.wolfssl.com/
 use_zip             yes
 
-checksums           rmd160  490285c39168e8eca0a1d2dfcb1fbe08698fa7ef \
-                    sha256  60d9d47b255f05da0c90538b30cd6b43bcbc8a29f057ed41d4dd14aee4dde8bd \
-                    size    22125813
+checksums           rmd160  eb980b4b2ac5f7d5ae461aff271be9261202d3f2 \
+                    sha256  ff8ca6bcdc01786727d7f11c05d04afa8e83b450014c92e9061df1a89eba15d9 \
+                    size    23437703
 
-configure.args      --enable-distro \
+configure.args      --enable-all \
                     --disable-jobserver \
                     --disable-silent-rules
 
@@ -62,3 +63,4 @@ test.run    yes
 test.env    TMPDIR=/tmp RANDFILE=/tmp/wolfssl-unittest-rnd DYLD_LIBRARY_PATH=${worksrcpath}/src/.libs
 test.target check
 test.args   -j${build.jobs}
+

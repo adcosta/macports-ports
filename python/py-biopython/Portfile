@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-biopython
-version             1.79
+version             1.81
 revision            0
 
 categories-append   science
@@ -17,11 +17,11 @@ long_description    ${description}: parsers for various file formats, interfaces
 
 homepage            https://biopython.org/
 
-checksums           rmd160  255f7048741fb2dc08b16578c2fa9054751da51f \
-                    sha256  edb07eac99d3b8abd7ba56ff4bedec9263f76dfc3c3f450e7d2e2bcdecf8559b \
-                    size    16738730
+checksums           rmd160  317d2a85d0a39b17a360d70fe26a7700b8152256 \
+                    sha256  2cf38112b6d8415ad39d6a611988cd11fb5f33eb09346666a87263beba9614e0 \
+                    size    19324875
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \

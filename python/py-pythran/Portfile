@@ -4,27 +4,28 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pythran
-version             0.11.0
+version             0.13.1
 revision            0
 
 categories-append   devel
+platforms           {darwin any}
+supported_archs     noarch
 license             BSD
 maintainers         {reneeotten @reneeotten} openmaintainer
 
 description         Ahead of Time compiler for numeric kernels
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://github.com/serge-sans-paille/pythran
 
-checksums           rmd160  f43f1485028662baa70b843ba608579898164ae5 \
-                    sha256  0b2cba712e09f7630879dff69f268460bfe34a6d6000451b47d598558a92a875 \
-                    size    3768003
+checksums           rmd160  b6d260dc112e1d5611ff25d3afe7b1ef4f4d755a \
+                    sha256  8aad08162f010e5425a7b254dd68d83311b430bb29f9252dce2eff3ba39497dd \
+                    size    4010788
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                    port:py${python.version}-pytest-runner \
                     port:py${python.version}-setuptools
 
     depends_lib-append \
@@ -44,12 +45,4 @@ if {${name} ne ${subport}} {
         xinstall -m 0644 -W ${worksrcpath} README.rst Changelog \
             LICENSE ${destroot}${docdir}
     }
-
-    depends_test-append \
-                    port:py${python.version}-pytest
-
-    test.run        yes
-    test.env        PYTHONPATH=${worksrcpath}/build/lib
-
-    livecheck.type  none
 }

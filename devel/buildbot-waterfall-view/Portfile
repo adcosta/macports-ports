@@ -4,16 +4,17 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                buildbot-waterfall-view
-version             3.5.0
+version             3.7.0
 revision            0
-checksums           rmd160  a8640bcf89e1017a96ac74670c8546f688093e71 \
-                    sha256  1268880c21b8885230167c228bc7e3208ec2ef0b0189fcde65e5bb1f2634e1d1 \
-                    size    192440
+checksums           rmd160  f7760528c478256347ec2b183e27b6697267dcd3 \
+                    sha256  f77e5e785da4a53ebc94afd4320f0c650398123ec3f05693f624acfe535a8580 \
+                    size    193919
 
 categories          devel
 maintainers         {ryandesign @ryandesign} {rajdeep @rajdeepbh} {mojca @mojca} openmaintainer
 license             GPL-2
 supported_archs     noarch
+platforms           {darwin any}
 
 description         waterfall view plugin for Buildbot web UI
 long_description    {*}${description}

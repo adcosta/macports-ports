@@ -2,13 +2,11 @@
 
 PortSystem          1.0
 PortGroup           java 1.0
-# *sigh* can't seem to get the git portgroup to have additional distfiles, so do everything manually
 
 name                leiningen
-version             2.9.6
+version             2.10.0
 categories          devel java
 maintainers         {easieste @easye} openmaintainer
-platforms           darwin
 supported_archs     noarch
 license             EPL-1
 
@@ -17,28 +15,32 @@ long_description    {*}${description}
 
 homepage            https://leiningen.org
 
+# Codeberg attachments use UUIDs for non-source archives
+set uuid 43cebda5-a7c2-405b-b641-5143a00051b5
+
 master_sites \
-    https://github.com/technomancy/leiningen/archive/:source \
-    https://github.com/technomancy/leiningen/releases/download/${version}/:standalone
+    https://codeberg.org/leiningen/leiningen/archive/:source \
+    https://codeberg.org/attachments/${uuid}?dummy=:standalone
 
 distfiles           \
     ${version}.tar.gz:source \
-    leiningen-${version}-standalone.zip:standalone
+    leiningen-${version}-standalone.jar:standalone
 
 checksums           \
     ${version}.tar.gz \
-                    rmd160  fb157ce84899f859de97c71b5e6a32ed898f9534 \
-                    sha256  2f3b8a7eb710bd3a266975387f216bd4a3bace2f1b0a1f0ae88a93d919d813d9 \
-                    size    923578 \
-    leiningen-${version}-standalone.zip \
-                    rmd160  25f881f605a4b6b7548489279db23bd86f47c2a3 \
-                    sha256  41c543f73eec4327dc20e60d5d820fc2a9dc772bc671610b9c385d9c4f5970b8 \
-                    size    12760940
+                    rmd160  c341d4470a9db737fb95399634569e775e81f164 \
+                    sha256  6b04dbe0934ab4c34dc27b0055ad290d2ba9c0f454c1bda7defa58d62946b743 \
+                    size    973533 \
+    leiningen-${version}-standalone.jar \
+                    rmd160  d60d82959270188c2d77b747d5e2953b63a786b1 \
+                    sha256  d27299bad34075ac2864d0bd0559f835c6e2c476c0b0a283bcbdb574fdadbb34 \
+                    size    12758097
 
 java.version    1.8+
 
 extract.only    ${version}.tar.gz
 
+worksrcdir      ${name}
 use_configure   no
 
 set javadir       ${prefix}/share/java/leiningen
@@ -51,5 +53,5 @@ build {
 destroot {
     xinstall -m 0755 -d ${destroot}${javadir}
     xinstall -m 0755 ${worksrcpath}/bin/lein-pkg ${destroot}${prefix}/bin/lein
-    xinstall -m 0644 ${distpath}/leiningen-${version}-standalone.zip ${destroot}${lein_jar_dest}
+    xinstall -m 0644 ${distpath}/leiningen-${version}-standalone.jar ${destroot}${lein_jar_dest}
 }

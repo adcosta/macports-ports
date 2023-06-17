@@ -1,12 +1,13 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           github      1.0
-PortGroup           makefile    1.0
+PortGroup           cmake           1.1
+PortGroup           github          1.0
+PortGroup           legacysupport   1.1
 
-github.setup        ebiggers libdeflate 1.10 v
+github.setup        ebiggers libdeflate 1.18 v
 github.tarball_from archive
-revision            1
+revision            0
 
 description         Heavily optimized library for DEFLATE/zlib/gzip \
                     compression and decompression
@@ -27,10 +28,6 @@ maintainers         {linux.com:nickblack @dankamongmen} \
                     {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  81681b7e53369ebf4fdb11e02dcc179140290b45 \
-                    sha256  5c1f75c285cd87202226f4de49985dcb75732f527eefba2b3ddd70a8865f2533 \
-                    size    158379
-
-# https://github.com/ebiggers/libdeflate/issues/167
-# https://github.com/macports/macports-ports/pull/13927#issuecomment-1058731048
-patchfiles          patch-shared_lib_ldflags-variable-fix.diff
+checksums           rmd160  f5b19e3d2c526660630f26a5087a86cbb8c3faf4 \
+                    sha256  225d982bcaf553221c76726358d2ea139bb34913180b20823c782cede060affd \
+                    size    184924

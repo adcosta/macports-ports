@@ -4,11 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-sphinx-autodoc-typehints
-version             1.18.1
+version             1.23.2
 revision            0
 
 categories-append   textproc devel
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         {judaew @judaew} openmaintainer
 
@@ -20,16 +21,18 @@ homepage            https://github.com/agronholm/sphinx-autodoc-typehints
 
 distname            sphinx_autodoc_typehints-${version}
 
-checksums           rmd160  b39f26a651ffe7e4c32652aac4b5652e23c64f2e \
-                    sha256  07631c5f0c6641e5ba27143494aefc657e029bed3982138d659250e617f6f929 \
-                    size    31198
+checksums           rmd160  542736d2f08b45f3d0065474cb6b30e4cb4d07b2 \
+                    sha256  dd8e999eb7d31643d42eb7d4673e0551c44af31a9e0fc07ddbc893b063d88658 \
+                    size    36198
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
+python.pep517       yes
+python.pep517_backend hatch
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                        port:py${python.version}-setuptools \
-                        port:py${python.version}-setuptools_scm
+                        port:py${python.version}-hatch-vcs
+
     depends_run-append \
                         port:py${python.version}-sphinx
 

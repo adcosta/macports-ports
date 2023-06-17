@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                google-cloud-sdk
-version             384.0.0
+version             435.0.0
 revision            0
 categories          devel python
 license             Apache-2
@@ -16,24 +16,24 @@ long_description    Google Cloud SDK is a set of tools for Google Cloud Platform
                     products and services from the command-line. You can run these tools \
                     interactively or in your automated scripts.
 
-platforms           darwin
+platforms           {darwin any}
 supported_archs     i386 x86_64 arm64
 
 if { ${configure.build_arch} eq "i386" } {
     distname        ${name}-${version}-darwin-x86
-    checksums       rmd160  e5f6bd8d572de6d8497ee20fb9a637423eb380b3 \
-                    sha256  cb0d80a70a5fc2d64594267aab3b7a21da0f9eeec8e1ca79fa940c7eb915695d \
-                    size    106733091
+    checksums       rmd160  54466922cc99b5c0fe03c597768c8ca03f9bbd9d \
+                    sha256  d4b439847cdef3c7d3e7b3a184ecb51557247812665bfe7e4540de39996425f9 \
+                    size    100486137
 } elseif { ${configure.build_arch} eq "x86_64" } {
     distname        ${name}-${version}-darwin-x86_64
-    checksums       rmd160  4abe055edbc13629a13dae4cc4eddfa8e91f6951 \
-                    sha256  a371506ed0bc2cd208dcb9eb27141d32959a9d47bed2775a14d5ef27aba367bb \
-                    size    103326292
+    checksums       rmd160  30ff10bb202505c18786077c341300a59ec34a02 \
+                    sha256  e77614ae832c4b2ea625e9efe39f0b5780146ced798e01bcdf48d12778f8f638 \
+                    size    120762227
 } elseif { ${configure.build_arch} eq "arm64" } {
     distname        ${name}-${version}-darwin-arm
-    checksums       rmd160  d5224c584fd815a78e2b6638c77819c4ef853814 \
-                    sha256  7fd64baeab4b9cf9d03776419f441704576233d982a3f649aff78e289a8338ec \
-                    size    101914656
+    checksums       rmd160  52c4760e7b1998ef7960823e2ad6ef569ec4888d \
+                    sha256  02fe7816e67f43caf6f1d8d7859dc16426064112551cf02875ee3d5e21b47442 \
+                    size    117882396
 }
 
 homepage            https://cloud.google.com/sdk/
@@ -41,9 +41,23 @@ master_sites        https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/
 
 worksrcdir          ${name}
 
+# Most recent supported Python version according to https://cloud.google.com/sdk/docs/install#mac
 python.default_version 39
 
 post-patch {
+    # Default to the MacPorts Python binary
+    reinplace "s|CLOUDSDK_PYTHON=\$(order_python .*|CLOUDSDK_PYTHON=${python.bin}|" \
+        ${worksrcpath}/bin/bq \
+        ${worksrcpath}/bin/docker-credential-gcloud \
+        ${worksrcpath}/bin/git-credential-gcloud.sh \
+        ${worksrcpath}/bin/gcloud \
+        ${worksrcpath}/bin/gsutil \
+        ${worksrcpath}/bin/java_dev_appserver.sh
+
+    reinplace "s|^#!/usr/bin/env python$|#!${python.bin}|" \
+        ${worksrcpath}/bin/dev_appserver.py
+
+    # Disable updater
     reinplace "s|\"disable_updater\": false|\"disable_updater\": true|" ${worksrcpath}/lib/googlecloudsdk/core/config.json
 }
 
@@ -54,7 +68,7 @@ build               {}
 # so each variant adds an explicit mapping from variant name to gcloud component name.
 # See https://cloud.google.com/sdk/docs/components for more info about gcloud components.
 # Current list of available components is not documented by Google, but can be found via: gcloud components list
-# 'gcloud', 'bq', 'gsutil' and 'core' components are installed by default, so are not offered as variants.
+# 'gcloud', 'gcloud-crc32c', 'bq', 'gsutil' and 'core' components are installed by default, so are not offered as variants.
 set variant_to_component [dict create]
 variant alpha description {Add gcloud CLI Alpha Commands} { dict set variant_to_component alpha alpha }
 variant anthos_auth description {Add Anthos auth} { dict set variant_to_component anthos_auth anthos-auth }
@@ -67,24 +81,28 @@ variant appctl description {Add Appctl} { dict set variant_to_component appctl a
 variant beta description {Add gcloud CLI Beta Commands } { dict set variant_to_component beta beta }
 variant bigtable description {Add Cloud Bigtable Emulator} { dict set variant_to_component bigtable bigtable }
 variant cbt description {Add Cloud Bigtable Command Line Tool} { dict set variant_to_component cbt cbt }
-variant cloud_build_local description {Add Google Cloud Build Local Builder} { dict set variant_to_component cloud_build_local cloud-build-local }
 variant cloud_datastore_emulator description {Add Cloud Datastore Emulator} { dict set variant_to_component cloud_datastore_emulator cloud-datastore-emulator }
 variant cloud_firestore_emulator description {Add Cloud Firestore Emulator} { dict set variant_to_component cloud_firestore_emulator cloud-firestore-emulator }
+variant cloud_run_proxy description {Add Cloud Run Proxy} { dict set variant_to_component cloud_run_proxy cloud-run-proxy }
 variant cloud_sql_proxy description {Add Cloud SQL Proxy} { dict set variant_to_component cloud_sql_proxy cloud_sql_proxy }
 variant config_connector description {Add config connector} { dict set variant_to_component config_connector config-connector }
 variant datalab description {Add Cloud Datalab Command Line Tool} { dict set variant_to_component datalab datalab }
 variant docker_credential_gcr description {Add Google Container Registry's Docker credential helper} { dict set variant_to_component docker_credential_gcr docker-credential-gcr }
-variant emulator_reverse_proxy description {Add Emulator Reverse Proxy} { dict set variant_to_component emulator_reverse_proxy emulator-reverse-proxy }
+variant enterprise_certificate_proxy description {Add Enterprise certificate proxy} { dict set variant_to_component enterprise_certificate_proxy enterprise-certificate-proxy }
+variant gke_gcloud_auth_plugin description {Add GKE Google Cloud auth plugin} { dict set variant_to_component gke_gcloud_auth_plugin gke-gcloud-auth-plugin }
 variant kpt description {Add kpt} { dict set variant_to_component kpt kpt }
 variant kubectl description {Add kubectl} { dict set variant_to_component kubectl kubectl }
 variant kubectl_oidc description {Add kubectl-oidc} { dict set variant_to_component kubectl_oidc kubectl-oidc }
 variant kustomize description {Add Kustomize} { dict set variant_to_component kustomize kustomize }
 variant local_extract description {Add On-Demand Scanning API extraction helper} { dict set variant_to_component local_extract local-extract }
+variant log_streaming description {Add Log Streaming} { dict set variant_to_component log_streaming log-streaming }
 variant minikube description {Add Minikube} { dict set variant_to_component minikube minikube }
 variant nomos description {Add Nomos CLI} { dict set variant_to_component nomos nomos }
+variant package_go_module description {Add Artifact Registry Go Module Package Helper} { dict set variant_to_component package_go_module package-go-module }
 variant pkg description {Add pkg} { dict set variant_to_component pkg pkg }
 variant pubsub_emulator description {Add Cloud Pub/Sub Emulator} { dict set variant_to_component pubsub_emulator pubsub-emulator }
 variant skaffold description {Add Skaffold} { dict set variant_to_component skaffold skaffold }
+variant terraform_tools description {Add Terraform Tools} { dict set variant_to_component terraform_tools terraform-tools }
 
 patch {
     set install_command "CLOUDSDK_CONFIG=${worksrcpath}/.config ./install.sh \
@@ -154,4 +172,5 @@ variant zsh_completion description {Enable completion support for zsh} {
             source '${prefix}/libexec/google-cloud-sdk/completion.zsh.inc'"
 }
 
-livecheck.url       https://cloud.google.com/sdk/docs/quickstart-macos
+livecheck.url       https://cloud.google.com/sdk/docs/install-sdk
+livecheck.regex     {google-cloud-cli-([\d\.]+)-darwin}

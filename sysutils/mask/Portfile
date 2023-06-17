@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           cargo   1.0
 PortGroup           github  1.0
 
-github.setup        jakedeichert mask 0.11.1 v
+github.setup        jakedeichert mask 0.11.3 v
 github.tarball_from archive
 revision            0
 
@@ -25,9 +25,9 @@ maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
 checksums           ${distname}${extract.suffix} \
-                    rmd160  898cb9d83addeb4315840fcac8d0996c68facf70 \
-                    sha256  49de25ee23bfa2f04f09750cf9b223a8ff5024280dca4ea40893e53212bef0b0 \
-                    size    30151
+                    rmd160  f83c1b1fc22ca5f0905c9cd2ed239b21cdb135c3 \
+                    sha256  539008c8c138bb38c142d0cc9f84c2b89b43e9eb8f5b349f5d0eb308de49860d \
+                    size    30213
 
 destroot {
     xinstall -m 0755 \

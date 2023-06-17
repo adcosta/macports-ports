@@ -5,8 +5,8 @@ PortGroup           cmake 1.1
 PortGroup           github 1.0
 PortGroup           boost 1.0
 
-github.setup        kpeeters cadabra2 2.3.8
-revision            0
+github.setup        kpeeters cadabra2 2.4.3.2
+revision            1
 
 categories          math
 platforms           darwin
@@ -23,15 +23,16 @@ long_description    Cadabra is a computer algebra system for the \
                     philosophy differ substantially from other computer \
                     algebra systems.
 
-homepage            http://cadabra.phi-sci.com/
+homepage            https://cadabra.science/index.html
 
-checksums           rmd160  efc6bf8f523598258b0e9fb70b8d4775cc2daf3f \
-                    sha256  0386a188200c4df244dca06a89f2721ec3b1ff00a30207dff1a620f68600d7d2 \
-                    size    24656994
+checksums           rmd160  b7f670693d1bc2e76964a4a4caf790a7ae3d04a7 \
+                    sha256  8cce723f7f95a0072ba5292bdce320cde46af1cd91123f286f06cc107321d1f4 \
+                    size    25161710
 
 compiler.cxx_standard 2017
 
-set python.version  39
+set python.version  311
+set python.branch   [string index ${python.version} 0].[string range ${python.version} 1 end]
 
 depends_build-append \
                     port:pkgconfig \
@@ -52,8 +53,8 @@ configure.args      -DENABLE_MATHEMATICA=OFF \
                     -DSQLITE3_INCLUDE_DIR=${prefix}/include
 
 post-destroot {
-    ln ${destroot}${prefix}/lib/python3.9/site-packages/cadabra2.cpython-39-darwin.so \
-            ${destroot}${prefix}/lib/cadabra2.cpython-39-darwin.so
+    ln ${destroot}${prefix}/lib/python${python.branch}/site-packages/cadabra2.cpython-${python.version}-darwin.so \
+            ${destroot}${prefix}/lib/cadabra2.cpython-${python.version}-darwin.so
 }
 
 post-activate {

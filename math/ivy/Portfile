@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/robpike/ivy 0.1.13 v
+go.setup            github.com/robpike/ivy 0.2.10 v
 go.package          robpike.io/ivy
 github.tarball_from archive
 revision            0
@@ -17,9 +17,9 @@ license             BSD
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  51a48d53b1f1f462ab151178f652190986f833c1 \
-                    sha256  28de9abc33d17e9d4a7f3803afd3ded849b41ed8fea74f4db08abf3991269755 \
-                    size    269105
+checksums           rmd160  2ecd606dad51a75bdf896c91b3f8cac7c8378dd3 \
+                    sha256  da69310b834a408eb5d63d749b9029873f796314dabc05e553a10aa77e5c37d9 \
+                    size    281222
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/

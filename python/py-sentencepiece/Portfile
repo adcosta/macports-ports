@@ -4,14 +4,16 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        google sentencepiece 0.1.93 v
-revision            0
-name                py-${github.project}
+github.setup        google sentencepiece 0.1.99 v
+revision            2
+checksums           rmd160  c312f02a761517825c67a1dfcdcb17dee8e51a4c \
+                    sha256  63617eaf56c7a3857597dcd8780461f57dd21381b56a27716ef7d7e02e14ced4 \
+                    size    11960799
 
+name                py-${github.project}
 categories-append   textproc
 license             Apache-2
 maintainers         nomaintainer
-platforms           darwin
 
 description         Python wrapper for ${github.project}
 long_description    SentencePiece is an unsupervised text tokenizer \
@@ -26,11 +28,10 @@ long_description    SentencePiece is an unsupervised text tokenizer \
                     purely end-to-end system that does not depend on \
                     language-specific pre/postprocessing.
 
-checksums           rmd160  76b1e1ae6e5b297ed07c749d7ff35f12e4852322 \
-                    sha256  9a146e83dc6a403e431ae444dcc0c28203be81436566acc628edae42fc8901ec \
-                    size    11684466
+github.tarball_from archive
+dist_subdir         ${github.project}
 
-python.versions     37 38 39
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -38,14 +39,14 @@ if {${name} ne ${subport}} {
                     port:py${python.version}-setuptools
 
     depends_lib-append \
+                    port:protobuf3-cpp \
                     port:sentencepiece
 
     worksrcdir      ${distname}/python
 
-    compiler.cxx_standard 2011
+    compiler.cxx_standard 2017
 
     test.run        yes
-    test.env        PYTHONPATH=${worksrcpath}/build/lib
 
     livecheck.type  none
 }

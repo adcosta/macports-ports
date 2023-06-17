@@ -2,45 +2,36 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
-PortGroup           github 1.0
 
 name                py-stack_data
-github.setup        alexmojaki stack_data 0.2.0 v
+version             0.6.2
 revision            0
 categories-append   devel
-platforms           darwin
 license             MIT
 supported_archs     noarch
+platforms           {darwin any}
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         Library that extracts data from stack frames and tracebacks.
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            http://github.com/alexmojaki/stack_data
 
-checksums           rmd160  71ea7860d69b4b6c8ac5d870b4d7f7f9d5ad3ebe \
-                    sha256  0df90ca0f48da17a60f5cd6008671d3565916c6db22f5f51db414c49ba427b52 \
-                    size    28862
+checksums           rmd160  74a2d53a9435f76c6d793cc4b66ff76caa1c471d \
+                    sha256  32d2dd0376772d01b6cb9fc996f3c8b57a357089dec328ed4b6553d037eaf815 \
+                    size    44146
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                        port:py${python.version}-setuptools \
-                        port:py${python.version}-wheel \
-                        port:py${python.version}-setuptools_scm \
-                        port:py${python.version}-toml
+                        port:py${python.version}-setuptools_scm
 
     depends_lib-append  port:py${python.version}-executing \
                         port:py${python.version}-asttokens \
                         port:py${python.version}-pure_eval
-
-    patchfiles-append   patch-pyproject.toml.diff
-
-    post-patch {
-        reinplace "s|@@VERSION@@|${version}|" ${worksrcpath}/pyproject.toml
-    }
 
     livecheck.type      none
 }

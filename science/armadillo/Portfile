@@ -1,12 +1,13 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem                      1.0
-PortGroup                       cmake 1.0
+PortGroup                       cmake 1.1
 PortGroup                       mpi 1.0
 
 name                            armadillo
-version                         11.0.1
-revision                        1
+version                         12.4.1
+revision                        0
+
 categories                      science
 maintainers                     {mps @Schamschula} openmaintainer
 license                         Apache-2
@@ -26,15 +27,13 @@ master_sites                    sourceforge:project/arma
 
 use_xz                          yes
 
-checksums                       rmd160  f88c5602fd03ffebc71495b1eac1e4a80ac84a49 \
-                                sha256  e43d4449376c1fc8b562095431bb82cf9c4ff98a791a22a25d0f96e5e7937c22 \
-                                size    6842520
+checksums                       rmd160  eb13117c4d894dfa5d7ff2475bd556e1b28aefe1 \
+                                sha256  8127635d27dfb996fab495de6ff9ce84bd9b5e04de3c0037fc2ac6de96dcf397 \
+                                size    6803716
 
 depends_build-append            port:pkgconfig
 
 depends_lib-append              port:hdf5
-
-cmake.out_of_source             yes
 
 mpi.setup
 mpi.enforce_variant             hdf5
@@ -48,12 +47,20 @@ variant arpack description {compile with ARPACK support} {
 
 variant openblas description {compile with OpenBLAS support} {
     depends_lib-append          path:lib/libopenblas.dylib:OpenBLAS
-    configure.args-append       -DALLOW_BLAS_LAPACK_MACOS=TRUE
+    configure.args-append       -DALLOW_BLAS_LAPACK_MACOS=TRUE \
+                                -DALLOW_OPENBLAS_MACOS=ON
 }
 
 variant superlu description {compile with SuperLU support} {
     depends_lib-append          port:superlu
     configure.args-append       -DARMA_USE_SUPERLU=ON
+}
+
+if {${os.platform} eq "darwin" && ${os.major} < 11} {
+    # Without OpenBLAS the build fails on Leopard and Rosetta with undefined symbols.
+    # https://trac.macports.org/ticket/65292
+    # -DALLOW_OPENBLAS_MACOS=ON is necessary.
+    default_variants            +openblas
 }
 
 # Fix https://trac.macports.org/ticket/59173,

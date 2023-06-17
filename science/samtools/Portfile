@@ -2,12 +2,16 @@
 
 PortSystem              1.0
 PortGroup               github 1.0
+PortGroup               legacysupport 1.1
 
-github.setup            samtools samtools 1.15.1
+# strnlen
+legacysupport.newest_darwin_requires_legacy 10
+
+github.setup            samtools samtools 1.17
 revision                0
-checksums               rmd160  dd0a1a5228d6025f373e6f838a0152720becf3c4 \
-                        sha256  708c525ac76b0532b25f14aadea34a4d11df667bc19bf0a74dae617d80526c6e \
-                        size    7831692
+checksums               rmd160  754d76646bff4b648b3413aa3297d7c33297fb68 \
+                        sha256  3adf390b628219fd6408f14602a4c4aa90e63e18b395dad722ab519438a2a729 \
+                        size    8605080
 
 categories              science
 maintainers             {ryandesign @ryandesign} openmaintainer

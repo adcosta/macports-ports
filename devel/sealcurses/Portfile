@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           gitea 1.0
+
+gitea.domain        git.skyjake.fi
+gitea.setup         skyjake sealcurses e11026ca34b03c5ab546512f82a6f705d0c29e95
+version             2023-02-06
+revision            0
+categories          devel
+license             BSD
+maintainers         {@sikmir disroot.org:sikmir} openmaintainer
+
+description         SDL Emulation and Adaptation Layer for Curses (ncursesw)
+long_description    {*}${description}
+
+checksums           rmd160  cd0d2f2d9a9852ee59f582984dfec9c52eb76c8a \
+                    sha256  797efa8fcfea3d69383c493b4fc29305c72fdc5f3586063e84e89da601739d2c \
+                    size    22432
+
+worksrcdir          ${name}
+
+depends_build-append \
+                    port:pkgconfig
+depends_lib-append  port:ncurses \
+                    port:the_Foundation
+
+compiler.c_standard 2011

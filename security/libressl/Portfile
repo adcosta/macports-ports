@@ -5,26 +5,28 @@ PortGroup           muniversal 1.0
 PortGroup           compiler_blacklist_versions 1.0
 
 name                libressl
-version             3.4.3
+version             3.7.3
+revision            0
 categories          security devel
 platforms           darwin
 license             OpenSSL SSLeay
-maintainers         {jeremyhu @jeremyhu}
+maintainers         {@artkiver gmail.com:artkiver} {cal @neverpanic} openmaintainer
 
 description         LibreSSL SSL/TLS cryptography library
 long_description    LibreSSL is composed of four parts: \
                     The openssl(1) utility, which provides tools for managing keys, certificates, etc. \
                     libcrypto: a library of cryptography fundamentals \
                     libssl: a TLS library, backwards-compatible with OpenSSL \
-                    libtls: a new TLS library, designed to make it easier to write foolproof applications
+                    libtls: a new TLS library, designed to make it easier to write foolproof applications \
+                    This port tracks the stable releases, for development releases please use libressl-devel.
 homepage            https://www.libressl.org
 
 conflicts           openssl libressl-devel
 
 master_sites        openbsd:LibreSSL
-checksums           rmd160  6a13599f57f297a40164143d30713203fcf22461 \
-                    sha256  ff88bffe354818b3ccf545e3cafe454c5031c7a77217074f533271d63c37f08d \
-                    size    3913963
+checksums           rmd160  5d16907cb88eff01f4898502381d184db30fa7d6 \
+                    sha256  7948c856a90c825bd7268b6f85674a8dcd254bae42e221781b24e3f8dc335db3 \
+                    size   4337594
 
 patchfiles          patch-openssldir-cert.pem.diff
 
@@ -48,5 +50,5 @@ platform darwin {
 }
 
 livecheck.type      regex
-livecheck.url       https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/
-livecheck.regex     "(\\d+\\.\\d+\\.\\d+)"
+livecheck.url       https://www.libressl.org/
+livecheck.regex     "The latest stable release is (\\d+\\.\\d+\\.\\d+)"

@@ -8,6 +8,7 @@ version             0.9
 revision            0
 
 categories-append   science
+platforms           {darwin any}
 supported_archs     noarch
 license             BSD
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -24,18 +25,19 @@ checksums           rmd160  3c7aff83b51a08caebb8a4bb55009ebcfbe9f752 \
                     sha256  be2602a08b4453bccd2b276640ebe2f06e1598aa3883492be7d11c686f623507 \
                     size    180992
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
-foreach pver {37 38 39 310} {
+foreach pver {37 38 39 310 311} {
     subport py${pver}-nmrglue-devel {
         PortGroup       github 1.0
 
-        github.setup    jjhelmus nmrglue 000003f42d58a33e78773b50c63de61c4c506a08
-        version         20220420-[string range ${github.version} 0 7]
+        github.setup    jjhelmus nmrglue 0d198378197c3901abcd2cee5feacf5350621426
+        version         20230614-[string range ${github.version} 0 7]
         revision        0
-        checksums       rmd160  a75dfa052c9b387a890626dae7a49e001dbd94c4 \
-                        sha256  ae9a7c3313f9c8ca91a610a276f3c43d93af1254e1534fd1e68059a869c3bb42 \
-                        size    14917155
+        checksums       rmd160  5cf898d4e829b6891ac53d52ab2c7858c72ecbc4 \
+                        sha256  91c4c96c268fe497896f6e86c8c29891e19a2d33c6d7ca2e2fbc53e8296c19c9 \
+                        size    14917052
+
         conflicts       py${pver}-nmrglue
     }
 }
@@ -48,14 +50,8 @@ if {${name} ne ${subport}} {
                     port:py${python.version}-numpy \
                     port:py${python.version}-scipy
 
-    depends_test-append  \
-                    port:py${python.version}-pytest
-
     test.run        yes
-    test.cmd        py.test-${python.branch}
-    test.target
     test.args       --pyargs nmrglue
-    test.env        PYTHONPATH=${worksrcpath}/build/lib
 
     post-destroot {
         xinstall -d ${destroot}${prefix}/share/doc/${subport}

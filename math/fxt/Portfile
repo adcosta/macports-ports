@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                fxt
+version             2023.05.07
+categories          math
+license             GPL-3+
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+description         Library of low-level algorithms
+long_description    {*}${description}
+homepage            https://www.jjj.de/fxt/
+master_sites        ${homepage}
+checksums           rmd160  bb86f256b066220affdbf1a619c27a31ad5b21ca \
+                    sha256  e4de8f48d7946e97193186402ac03a4dd2f4e92558238214447eccc88c851c04 \
+                    size    1858184
+extract.rename      yes
+
+patchfiles          patch-makefile.diff
+
+post-patch {
+    reinplace "s,@PREFIX@,${prefix}," ${worksrcpath}/makefile
+}
+
+use_configure       no
+
+compiler.cxx_standard 2017
+
+build.args-append   CC="${configure.cc} [get_canonical_archflags cc]" \
+                    CXX="${configure.cxx} [get_canonical_archflags cxx]"
+
+destroot.env-append PREFIX=${prefix}

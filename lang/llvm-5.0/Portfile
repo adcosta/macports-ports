@@ -11,13 +11,12 @@ set clang_executable_version 5.0
 set lldb_executable_version 5.0.2
 name                    llvm-${llvm_version}
 revision                4
-subport                 clang-${llvm_version} { revision 5 }
+subport                 clang-${llvm_version} { revision 6 }
 subport                 lldb-${llvm_version} { revision 2 }
 set suffix              mp-${llvm_version}
 set sub_prefix          ${prefix}/libexec/llvm-${llvm_version}
 dist_subdir             llvm
 categories              lang
-platforms               darwin
 license                 NCSA
 maintainers             {jeremyhu @jeremyhu}
 
@@ -65,13 +64,7 @@ if {${subport} eq "llvm-${llvm_version}"} {
     }
 
     # Not supported on macOS11 and newer
-    if { ${os.major} > 19 } {
-        known_fail yes
-        pre-fetch {
-            ui_error "${subport} is not supported on this macOS release (Darwin ${os.major})."
-            return -code error "Unsupported macOS version"
-        }
-    }
+    platforms {darwin < 20}
 
 } elseif {${subport} eq "lldb-${llvm_version}"} {
     homepage            https://lldb.llvm.org/
@@ -79,7 +72,7 @@ if {${subport} eq "llvm-${llvm_version}"} {
     long_description    Lldb is the "LLVM native" debugger.
 
     depends_lib         port:libxml2 port:libomp port:llvm-${llvm_version} port:ncurses
-    depends_build-append port:swig-python port:doxygen
+    depends_build-append port:swig-python path:bin/doxygen:doxygen
 
     # Clang doesn't actually use any of these, but the LLVM makefile
     # system overlinks its binaries. Remove (or convert to build deps?)
@@ -305,7 +298,7 @@ if {[lsearch -exact $PortInfo(depends_build) port:cctools] != -1} {
 }
 
 # use the system python27 if present
-if {${os.platform} eq "darwin" && ${os.major} >= 11} {
+if {${os.platform} eq "darwin" && ${os.major} >= 11 && ${os.major} < 21} {
     set pythonfullpath   /usr/bin/python2.7
 } else {
     set pythonfullpath   ${prefix}/bin/python2.7
@@ -314,16 +307,17 @@ if {${os.platform} eq "darwin" && ${os.major} >= 11} {
 configure.args-append   -DPYTHON_EXECUTABLE=${pythonfullpath}
 
 platform darwin {
+    # libcxx is untested on PPC
+    if {${build_arch} ni [list ppc ppc64]} {
+        configure.cxx_stdlib libc++
+        depends_lib-append port:libcxx
 
-    configure.cxx_stdlib libc++
-    depends_lib-append port:libcxx
-    supported_archs i386 x86_64
-
-    pre-fetch {
-        if {${os.major} < 11} {
-            if {![file exists /usr/lib/libc++.dylib]} {
-                ui_error "$name requires a C++11 runtime, which your configuration does not allow"
-                error "unsupported configuration"
+        pre-fetch {
+            if {${os.major} < 11} {
+                if {![file exists /usr/lib/libc++.dylib]} {
+                    ui_error "$name requires a C++11 runtime, which your configuration does not allow"
+                    error "unsupported configuration"
+                }
             }
         }
     }
@@ -370,6 +364,12 @@ platform darwin {
 
         # https://llvm.org/bugs/show_bug.cgi?id=25680
         configure.cxxflags-append -U__STRICT_ANSI__
+
+        # Wrong type in OrcRemoteTargetClient.h
+        # error: could not convert 'Src->((llvm::orc::remote::OrcRemoteTargetClient<ChannelT>*)this)->callB<llvm::orc::remote::OrcRemoteTargetRPCAPI::ReadMem>(Size)'
+        # from 'Expected<vector<unsigned char,allocator<unsigned char>>>' to 'Expected<vector<char,allocator<char>>>'
+        # Patch borrows from llvm-7.1: https://github.com/iains/LLVM-7-branch/blob/7.1.1-Darwin-WIP/llvm/include/llvm/ExecutionEngine/Orc/OrcRemoteTargetClient.h
+        patchfiles-append patch-include-orc.diff
     }
 
     # https://llvm.org/bugs/show_bug.cgi?id=25674
@@ -377,17 +377,7 @@ platform darwin {
 }
 
 if {${subport} eq "lldb-${llvm_version}"} {
-    if {${os.platform} eq "darwin" && ${os.major} < 12} {
-        depends_build
-        depends_lib
-        depends_run
-        archive_sites
-        known_fail yes
-        pre-fetch {
-            ui_error "${subport} is not supported on this os version at present."
-            return -code error {unsupported platform}
-        }
-    }
+    platforms {darwin >= 13} {darwin < 21}
 }
 
 post-extract {
@@ -439,13 +429,12 @@ if {${subport} eq "lldb-${llvm_version}"} {
         xinstall -m 755 -d ${destroot}${prefix}/share/doc/lldb-${llvm_version}
         xinstall -m 644 ${worksrcpath}/tools/lldb/docs/code-signing.txt ${destroot}${prefix}/share/doc/lldb-${llvm_version}/
     }
-    post-activate {
-        ui_msg "Please follow the instructions in ${prefix}/share/doc/lldb-${llvm_version}/code-signing.txt and then codesign the debugserver with:"
-        if {${os.major} >= 13} {
-            ui_msg "   sudo codesign --force --deep --preserve-metadata=identifier,entitlements,resource-rules,requirements,flags,team-identifier --sign <identity> ${sub_prefix}/bin/debugserver"
-        } else {
-            ui_msg "   sudo codesign --force --deep --preserve-metadata=identifier,entitlements,resource-rules,requirements --sign <identity> ${sub_prefix}/bin/debugserver"
-        }
+
+    notes "Please follow the instructions in ${prefix}/share/doc/lldb-${llvm_version}/code-signing.txt and then codesign the debugserver with:\n--------------------\n"
+    if {${os.major} >= 13} {
+        notes-append "sudo codesign --force --deep --preserve-metadata=identifier,entitlements,resource-rules,requirements,flags,team-identifier --sign <identity> ${sub_prefix}/bin/debugserver"
+    } else {
+        notes-append "sudo codesign --force --deep --preserve-metadata=identifier,entitlements,resource-rules,requirements --sign <identity> ${sub_prefix}/bin/debugserver"
     }
 }
 
@@ -553,6 +542,10 @@ if {${subport} eq "llvm-${llvm_version}"} {
     variant libstdcxx description {-stdlib=libstdc++_macports searches for MacPorts libstdc++} {
 
         patchfiles-append 9001-macports-libstdcxx.diff
+        if {${os.major} < 11} {
+            # see https://trac.macports.org/ticket/61778
+            depends_run-append  port:libstdcxx_clang_fix
+        }
 
         post-patch {
             reinplace "s|@@MACPORTS_GCC_INCLUDE_DIR@@|${prefix}/include/gcc/c++|g" \
@@ -601,7 +594,9 @@ if {${subport} eq "llvm-${llvm_version}"} {
             }
         }
     }
-    default_variants-append +libstdcxx
+    if { ${cxx_stdlib} eq "libstdc++" } {
+        default_variants-append +libstdcxx
+    }
 
     post-patch {
         reinplace "s|@@PREFIX@@|${prefix}|" \

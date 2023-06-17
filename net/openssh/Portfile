@@ -5,14 +5,13 @@ PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 
 name                openssh
-version             9.0p1
-revision            4
+version             9.3p1
+revision            2
 categories          net
-platforms           darwin
-maintainers         nomaintainer
+maintainers         {@artkiver gmail.com:artkiver} openmaintainer
 license             BSD
 installs_libs       no
-conflicts           lsh
+conflicts           lsh pkixssh
 
 description         OpenSSH secure login server
 
@@ -29,9 +28,9 @@ long_description    OpenSSH is a FREE version of the SSH protocol suite of \
 
 homepage            https://www.openbsd.org/openssh/
 
-checksums           rmd160  5c79f179c25c8fe0c319d9a08d4b534147184402 \
-                    sha256  03974302161e9ecce32153cfa10012f1e65c8f3750f573a73ab1befd5972a28a \
-                    size    1822183
+checksums           rmd160  29768ab6830484f797d0138d2c7f53791a319d4c \
+                    sha256  e9baba7701a76a51f3d85a62c383a3c9dcd97fa900b859bc7db114c1868af8a8 \
+                    size    1856839
 
 master_sites        openbsd:OpenSSH/portable \
                     ftp://ftp.cise.ufl.edu/pub/mirrors/openssh/portable/ \
@@ -49,7 +48,6 @@ if {${name} eq ${subport}} {
         depends_build-append port:cctools
     }
 
-    # the HPN patch needs this, so rewrite all other patches to support it, too
     patch.args          -p1
     patchfiles          launchd.patch \
                         agent.patch \
@@ -113,8 +111,10 @@ if {${name} eq ${subport}} {
     use_parallel_build  yes
 
     platform macosx {
-        if {${os.major} < 10} {
+        if {${os.major} < 10 || (${os.major} == 10 && ${configure.build_arch} eq "ppc")} {
             # See: https://trac.macports.org/ticket/60385
+            # clang does not work for ppc on 10.6.8 Rosetta
+            # See also: https://trac.macports.org/ticket/65613
             configure.args-delete   --with-keychain=apple
         } elseif {${os.major} <= 11} {
             # clang is required to build the new Apple Keychain integration due
@@ -128,6 +128,8 @@ if {${name} eq ${subport}} {
             # support Object Subscripting and the oldest version in our tree is
             # now 3.3.
             compiler.blacklist-append   *gcc* cc {clang < 421}
+        } elseif {(${os.major} >= 22 && ${configure.build_arch} eq "x86_64")} {
+            compiler.blacklist-append   {clang >= 1403 < 1500}
         }
     }
 
@@ -198,7 +200,6 @@ if {${name} eq ${subport}} {
         depends_lib-append      port:libfido2
     }
 
-    default_variants            +kerberos5 +xauth
 
     platform darwin {
         # create link to /usr/include/pam because 'security' was renamed to 'pam'
@@ -249,11 +250,11 @@ if {${name} eq ${subport}} {
 
 subport ssh-copy-id {
     revision            0
-    platforms           darwin freebsd
+    platforms           any
     supported_archs     noarch
     maintainers         {l2dy @l2dy} openmaintainer
     description         Shell script to install your public key(s) on a remote machine
-    long_description    ${description}
+    long_description    {*}${description}
 
     # Make sure to not create multiple copies of the same distfile.
     distname            openssh-${version}

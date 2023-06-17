@@ -4,7 +4,7 @@ PortSystem          1.0
 
 PortGroup           golang 1.0
 
-go.setup            github.com/kubernetes/kops 1.23.1 v
+go.setup            github.com/kubernetes/kops 1.26.3 v
 github.tarball_from archive
 revision            0
 go.package          k8s.io/kops
@@ -18,14 +18,19 @@ license             Apache-2
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  ac41763e4b4a4ff7698ff047f997ba4efd08f0b5 \
-                    sha256  4bef36390f9ca2f77c8910e969c7236cea7608f211fe46f844d791955e46f49a \
-                    size    30371945
+checksums           rmd160  b7db93b00369c0f03e4d4cf943fa58930f5ba57c \
+                    sha256  10959b7b59f61a6078471eb2da30ad8c839fa96f648c2c9606a3deafce36eb91 \
+                    size    32851307
 
-depends_run         port:kubectl-1.23
+depends_run         port:kubectl-1.26
 
 build.cmd           make
-build.target        all
+
+# This project uses vendored sources, which cannot be used with Go modules
+# and the proxy turned off.
+build.env-delete    GO111MODULE=off GOPROXY=off
+
+build.target        kops
 
 # Do not build on macOS 10.11 and earlier
 if {${os.platform} eq "darwin" && ${os.major} < 16} {
@@ -39,7 +44,8 @@ if {${os.platform} eq "darwin" && ${os.major} < 16} {
 
 destroot {
     xinstall -m 0755 \
-        {*}[glob ${worksrcpath}/.build/local/*] ${destroot}${prefix}/bin
+        {*}[glob ${worksrcpath}/.build/dist/${goos}/${goarch}/kops] \
+        ${destroot}${prefix}/bin
 }
 
 github.livecheck.regex  {([0-9.]+)}

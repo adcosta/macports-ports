@@ -4,12 +4,7 @@ PortSystem          1.0
 PortGroup           muniversal 1.0
 
 name                mpg123
-version             1.29.3
-revision            0
-checksums           rmd160  ea2a7bcc0b79c59b5e3c19d00bffacb4308e4f47 \
-                    sha256  963885d8cc77262f28b77187c7d189e32195e64244de2530b798ddf32183e847 \
-                    size    1069979
-
+version             1.31.3
 categories          audio
 maintainers         nomaintainer
 license             LGPL-2.1
@@ -23,10 +18,13 @@ long_description \
     playback (22 kHz or 11 kHz) is even possible on 486 CPUs.
 
 homepage            https://www.mpg123.de/
-platforms           darwin
 master_sites        sourceforge:project/mpg123/mpg123/${version} \
                     ${homepage}download/
 use_bzip2           yes
+checksums           md5 23ff362764374d3f2051862eea2d9a56 \
+                    sha1 c41b98e4c5ac55a5b3787b5aa309a71a6d458145 \
+                    rmd160 2ebbc67354ba5aad55b6d0944944695d278d77ad \
+                    sha256 1ca77d3a69a5ff845b7a0536f783fee554e1041139a6b978f6afe14f5814ad1a
 
 platform macosx {
     configure.args-append --with-audio=coreaudio
@@ -37,9 +35,6 @@ set merger_configure_args(i386)     --with-cpu=sse
 set merger_configure_args(ppc)      --with-cpu=altivec
 set merger_configure_args(ppc64)    --with-cpu=altivec
 set merger_configure_args(x86_64)   --with-cpu=x86-64
-if {![info exists universal_possible]} {
-    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
-}
 if {(!${universal_possible} || ![variant_isset universal]) && [info exists merger_configure_args(${configure.build_arch})]} {
     configure.args-append $merger_configure_args(${configure.build_arch})
 }

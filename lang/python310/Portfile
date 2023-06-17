@@ -7,12 +7,11 @@ PortGroup clang_dependency 1.0
 name                python310
 
 # Remember to keep py310-tkinter and py310-gdbm's versions sync'd with this
-version             3.10.4
+version             3.10.12
 
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          lang
 license             PSF
-platforms           darwin
 maintainers         {jmr @jmroot}
 
 description         An interpreted, object-oriented programming language
@@ -24,9 +23,9 @@ master_sites        ${homepage}ftp/python/${version}/
 
 distname            Python-${version}
 use_xz              yes
-checksums           md5 21f2e113e087083a1e8cf10553d93599 \
-                    rmd160 91646052fa7d6a2ba447e1eb6b594f4e76e26f62 \
-                    sha256 80bf925f571da436b35210886cf79f6eb5fa5d6c571316b73568343451f77a19
+checksums           md5 49b0342476b984e106d308c25d657f12 \
+                    rmd160 2fa4755bd20a07c1af9b51a83659716fb9163b8f \
+                    sha256 afb74bf19130e7a47d10312c8f5e784f24e0527981eab68e20546cfb865830b8
 
 patchfiles          patch-setup.py.diff \
                     patch-Lib-cgi.py.diff \
@@ -35,7 +34,7 @@ patchfiles          patch-setup.py.diff \
                     patch-configure-xcode4bug.diff \
                     sysconfig.py.patch
 
-if {${os.platform} eq "darwin" && ${os.major} < 10} {
+if {${os.platform} eq "darwin" && ${os.major} <= 10} {
     # work around no copyfile and/or pthread_threadid_np on older systems
     patchfiles-append  patch-no-copyfile-on-Tiger.diff \
                        patch-threadid-older-systems.diff
@@ -108,37 +107,8 @@ platform darwin {
         # poll() misbehaves on 10.8 and older
         # See https://trac.macports.org/ticket/18376
         if {${os.major} <= 12} {
-            set oldmtime [file mtime ${worksrcpath}/pyconfig.h]
             system -W ${worksrcpath} "ed - pyconfig.h < ${filespath}/pyconfig.ed"
-            file mtime ${worksrcpath}/pyconfig.h $oldmtime
         }
-    }
-
-    post-build {
-        set buildlibdir [lindex [glob -directory ${worksrcpath}/build lib.*-*-*-${branch}] 0]
-        # preserve mtime of sysconfig data file to avoid rebuilding things after changing it
-        set oldmtime [file mtime ${buildlibdir}/_sysconfigdata__darwin_darwin.py]
-
-        # Without this, LINKFORSHARED is set to
-        # ... $(PYTHONFRAMEWORKDIR)/Versions/$(VERSION)/$(PYTHONFRAMEWORK)
-        # (this becomes Python.framework/Versions/3.10/Python) which doesn't
-        # work for dependents that incorrectly use this variable to find out
-        # how to link against python (see ticket #15099); instead we mirror
-        # the behavior of `python-config --ldflags` here.
-        set lfs_pattern {^([[:space:]]*'LINKFORSHARED':).*}
-        set lfs_replacement "\\1 '-L${framewdir}/lib/python${branch}/${confdir} -lpython${branch} -ldl -framework CoreFoundation',"
-        reinplace -E s|${lfs_pattern}|${lfs_replacement}| \
-            ${buildlibdir}/_sysconfigdata__darwin_darwin.py
-
-        # remove -arch flags from the config
-        reinplace -E {s|-arch [a-z0-9_]+||g} \
-            ${buildlibdir}/_sysconfigdata__darwin_darwin.py
-
-        # also remove gettext overlinking
-        reinplace "s|-lintl||" \
-            ${buildlibdir}/_sysconfigdata__darwin_darwin.py
-
-        file mtime ${buildlibdir}/_sysconfigdata__darwin_darwin.py $oldmtime
     }
 
     post-destroot {
@@ -150,15 +120,43 @@ platform darwin {
         ln -s ${framewdir}/lib/pkgconfig/python-${branch}.pc ${destroot}${prefix}/lib/pkgconfig/
         ln -s ${framewdir}/lib/pkgconfig/python-${branch}-embed.pc ${destroot}${prefix}/lib/pkgconfig/
 
+        set libdir ${destroot}${framewdir}/lib/python${branch}
+        # Without this, LINKFORSHARED is set to
+        # ... $(PYTHONFRAMEWORKDIR)/Versions/$(VERSION)/$(PYTHONFRAMEWORK)
+        # (this becomes Python.framework/Versions/3.10/Python) which doesn't
+        # work for dependents that incorrectly use this variable to find out
+        # how to link against python (see ticket #15099); instead we mirror
+        # the behavior of `python-config --ldflags` here.
+        set lfs_pattern {^([[:space:]]*'LINKFORSHARED':).*}
+        set lfs_replacement "\\1 '-L${framewdir}/lib/python${branch}/${confdir} -lpython${branch} -ldl -framework CoreFoundation',"
+        reinplace -E s|${lfs_pattern}|${lfs_replacement}| \
+            ${libdir}/_sysconfigdata__darwin_darwin.py
+
+        # remove -arch flags from the config
+        reinplace -E {s|-arch [a-z0-9_]+||g} \
+            ${libdir}/_sysconfigdata__darwin_darwin.py
+
+        # also remove gettext overlinking
+        reinplace "s|-lintl ||" \
+            ${libdir}/_sysconfigdata__darwin_darwin.py
+
+        # recompile the modified file
+        set python_for_build python.exe
+        # executable differs depending on filesystem case sensitivity
+        if {![file exists ${worksrcpath}/${python_for_build}]} {
+            set python_for_build python
+        }
+        system -W ${worksrcpath} "env DYLD_FRAMEWORK_PATH=. ./${python_for_build} -E -m compileall -d [shellescape ${framewdir}/lib/python${branch}] -o 0 -o 1 -o 2 [shellescape ${libdir}/_sysconfigdata__darwin_darwin.py]"
+
         # Also make the sysconfig changes in the Makefile
         reinplace {s|^\(LINKFORSHARED=\).*$|\1 -L$(LIBPL) -lpython$(VERSION)$(ABIFLAGS) $(LIBS) $(SYSLIBS)|} \
-            ${destroot}${framewdir}/lib/python${branch}/${confdir}/Makefile
+            ${libdir}/${confdir}/Makefile
 
         reinplace -E {s|-arch [a-z0-9_]+||g} \
-           ${destroot}${framewdir}/lib/python${branch}/${confdir}/Makefile
+           ${libdir}/${confdir}/Makefile
 
         reinplace "s|-lintl||" \
-           ${destroot}${framewdir}/lib/python${branch}/${confdir}/Makefile
+           ${libdir}/${confdir}/Makefile
     }
 }
 
@@ -222,9 +220,7 @@ variant universal {
     }
     configure.args-append   --enable-universalsdk=${configure.sysroot}
     post-configure {
-        set oldmtime [file mtime ${worksrcpath}/pyconfig.h]
         system -W ${worksrcpath} "ed - pyconfig.h < ${filespath}/pyconfig.h-universal.ed"
-        file mtime ${worksrcpath}/pyconfig.h $oldmtime
     }
 
     post-destroot {
@@ -245,7 +241,9 @@ variant lto description {enable Link-Time Optimization} {
 platform darwin {
     # Build failures on 10.9 and older
     if {${os.major} > 11} {
-        default_variants +lto
+        if {${os.major} > 14 || !($universal_possible && [variant_isset universal])} {
+            default_variants +lto
+        }
         if {${os.major} > 13} {
             default_variants-append +optimizations
         }

@@ -2,42 +2,56 @@
 
 PortSystem          1.0
 PortGroup           muniversal 1.0
+PortGroup           legacysupport 1.1
 
 name                openldap-devel
 conflicts           openldap
 set my_name         openldap
-version             2.6.1
-revision            0
+version             2.6.4
+revision            1
+
+checksums           rmd160  296485d5a306da653670614209d3c927018aca71 \
+                    sha256  d51704e50178430c06cf3d8aa174da66badf559747a47d920bb54b2d4aa40991 \
+                    size    6478424
+
 categories          databases
-maintainers         {mascguy @mascguy} openmaintainer
 license             openldap
+maintainers         {mascguy @mascguy} openmaintainer
+
 description         OpenLDAP Software
 long_description    OpenLDAP Software is an open source implementation \
                     of the Lightweight Directory Access Protocol.
-
-platforms           darwin
 homepage            https://www.openldap.org/
-master_sites        https://www.openldap.org/software/download/OpenLDAP/openldap-release/
 
+master_sites        https://www.openldap.org/software/download/OpenLDAP/openldap-release/
 distname            ${my_name}-${version}
 dist_subdir         ${my_name}
 extract.suffix      .tgz
 
-checksums           rmd160  499da23f5692c409f9283e6c07293f9b9c1792b1 \
-                    sha256  9d576ea6962d7db8a2e2808574e8c257c15aef55f403a1fb5a0faf35de70e6f3 \
-                    size    6440418
+# Needed for _posix_memalign
+# See: https://trac.macports.org/ticket/46236
+# See: https://trac.macports.org/ticket/47630
+# Needed for clock_gettime
+legacysupport.newest_darwin_requires_legacy \
+                    16
 
 depends_lib-append  path:bin/perl:perl5 \
+                    port:tcp_wrappers \
                     port:cyrus-sasl2 \
                     port:libfetch \
                     path:lib/libssl.dylib:openssl \
                     port:db48 \
-                    port:icu
+                    path:lib/pkgconfig/icu-uc.pc:icu
+
+# Needed for `gdate` on older macOS releases
+depends_test-append path:libexec/coreutils/libstdbuf.so:coreutils
 
 patchfiles-append   patch-ltmain.diff
 patchfiles-append   patch-dynamic_lookup-11.diff
 patchfiles-append   patch-fix_implicit.diff
 patchfiles-append   patch-libressl.diff
+# Use 'gdate', rather than 'date', for tests
+patchfiles-append   patch-tests-gdate.diff
 
 configure.env-append        LANG=C
 configure.cppflags-append   -I${prefix}/include/db48 -I${prefix}/include/openssl -DBIND_8_COMPAT
@@ -47,16 +61,23 @@ platform darwin {
     if {${os.major} <= 9} {
         configure.cppflags-append -DMDB_DSYNC=O_SYNC
     }
+
+    if {${os.major} >= 22} {
+        # The openldap build uses soelim from groff, and newer OS versions do
+        # not provide groff as part of the base OS install.
+        depends_build-append port:groff
+    }
 }
 
 configure.ldflags-append    -L${prefix}/lib/db48
 
-configure.args      --mandir=${prefix}/share/man \
+configure.args-append \
+                    --mandir=${prefix}/share/man \
                     --localstatedir=${prefix}/var \
                     --with-cyrus-sasl \
                     --with-fetch \
                     --with-tls \
-                    --disable-wrappers \
+                    --enable-wrappers \
                     --enable-crypt \
                     --enable-syncprov \
                     --enable-ipv6
@@ -77,21 +98,15 @@ variant overlays description {Enable all available overlays} {
                     --enable-overlays
 }
 
-# REVIEW: Disable wrappers by default for 2.6.x. Causes build failures; more investigation needed.
-variant wrappers description {Enable use of tcp_wrappers} {
-    configure.args-replace \
-                    --disable-wrappers \
-                    --enable-wrappers
-
-    depends_lib-append \
-                    port:tcp_wrappers
-}
-
-platform darwin {
-    if {${os.major} < 10} {
-        # https://trac.macports.org/ticket/46236
-        configure.args-append --disable-mdb
-    }
+variant backends description {Enable additional backends} {
+    configure.args-append \
+                    --enable-asyncmeta \
+                    --enable-ldap \
+                    --enable-mdb \
+                    --enable-meta \
+                    --enable-null \
+                    --enable-relay \
+                    --enable-sock
 }
 
 pre-build {

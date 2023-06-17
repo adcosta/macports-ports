@@ -3,12 +3,12 @@
 PortSystem          1.0
 PortGroup           python 1.0
 
-## Portfile generated/maintained using the Universal Packaging Tool (upt)
 name                py-pkce
 version             1.0.3
 revision            0
 
 categories-append   www
+platforms           {darwin any}
 supported_archs     noarch
 license             MIT
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -22,7 +22,7 @@ checksums           rmd160  5001b60d76c136c98e47f6bb9ee2d5bac9e4e924 \
                     sha256  9775fd76d8a743d39b87df38af1cd04a58c9b5a5242d5a6350ef343d06814ab6 \
                     size    2757
 
-python.versions     39 310
+python.versions     39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -34,6 +34,4 @@ if {${name} ne ${subport}} {
         xinstall -m 0644 -W ${worksrcpath} README.md \
             LICENSE ${destroot}${docdir}
     }
-
-    livecheck.type  none
 }

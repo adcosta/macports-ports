@@ -1,10 +1,19 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-PortSystem 1.0
-PortGroup github 1.0
+PortSystem      1.0
 
-github.setup    rbsec sslscan 2.0.10
-revision        1
+PortGroup       github 1.0
+PortGroup       legacysupport 1.1
+PortGroup       makefile 1.0
+PortGroup       openssl 1.0
+
+# memmem
+legacysupport.newest_darwin_requires_legacy 10
+
+github.setup    rbsec sslscan 2.0.16
+github.tarball_from \
+                archive
+revision        0
 categories      net
 maintainers     {raimue @raimue} \
                 openmaintainer
@@ -14,24 +23,14 @@ long_description \
     SSL-based services, such as HTTPS. The output will \
     include the certificate and the prefered ciphers of \
     the SSL service in plaintext or XML.
-platforms       darwin
 license         {GPL-3+ OpenSSLException}
 
-depends_lib     port:openssl
-
-checksums       rmd160  f17e0b1219700ecc03af091b0bada30407c12b30 \
-                sha256  9d2d0400af0a50da1fdfe6791d1edabc9cff118f425b811e5a8a2b52077ecb8c \
-                size    110419
+checksums       rmd160  86f7e1c771daa8b16f91cc4735d1223094690e80 \
+                sha256  eae49b9c2023f9c9adeb10c50a6ee3ddf5da7aae20f6a6c59251e7a84aa44131 \
+                size    113523
 
 # implicit declaration of inet_ntop
 patchfiles      sslscan.c.patch
 
-use_configure   no
-
-build.args      PREFIX="${prefix}" \
-                CC="${configure.cc}" \
-                CPPFLAGS="-I${prefix}/include/openssl" \
-                CFLAGS="${configure.cflags} [get_canonical_archflags cc]" \
-                LDFLAGS="[get_canonical_archflags ld] -L${prefix}/lib"
-
-destroot.args   PREFIX="${prefix}"
+# cc1: error: unrecognized command line option "-std=gnu11"
+compiler.c_standard 2011

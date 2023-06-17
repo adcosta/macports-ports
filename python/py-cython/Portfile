@@ -3,16 +3,19 @@
 PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           select 1.0
+PortGroup           compiler_blacklist_versions 1.0
 
 name                py-cython
 python.rootname     Cython
-version             0.29.28
+version             0.29.35
 revision            0
 categories-append   devel
-platforms           darwin
 license             Apache-2
 
-python.versions     27 35 36 37 38 39 310
+conflicts           ${name}-devel
+
+python.versions     27 35 36 37 38 39 310 311
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -25,13 +28,19 @@ long_description    Cython is a language that makes writing C extensions for \
 
 homepage            http://www.cython.org/
 
-checksums           rmd160  0597dde8c2b6fe6bf651fcabde5b43bef5ecac41 \
-                    sha256  d6fac2342802c30e51426828fe084ff4deb1b3387367cf98976bb2e64b6f8e45 \
-                    size    2081368
+checksums           rmd160  7eb3cff92e38c1e6b0d8e4fa3b521eb28c52e364 \
+                    sha256  6e381fa0bf08b3c26ec2f616b19ae852c06f5750f4290118bf986b6f85c8c527 \
+                    size    2097520
 
 if {${name} ne ${subport}} {
     depends_lib-append \
                         port:py${python.version}-setuptools
+
+    if {${python.version} >= 37} {
+        conflicts   py${python.version}-cython-devel
+    } else {
+        conflicts
+    }
 
     if {${python.version} eq 27} {
         version             0.29.13
@@ -45,6 +54,13 @@ if {${name} ne ${subport}} {
         checksums           rmd160  130804bc375318396f2bd47073bd1d514acbdcdb \
                             sha256  6361588cb1d82875bcfbad83d7dd66c442099759f895cf547995f00601f9caf2 \
                             size    2060265
+    } else {
+        # https://github.com/macports/macports-ports/commit/760996927a0a2b5c0d9871670155d64f840dff8e#commitcomment-74373855
+        compiler.blacklist-append *gcc-3.* *gcc-4.*
+    }
+
+    if {${python.version} < 37} {
+        python.pep517       no
     }
 
     depends_run         port:cython_select

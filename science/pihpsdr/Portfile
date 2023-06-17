@@ -16,15 +16,12 @@ maintainers         {ra1nb0w @ra1nb0w} openmaintainer
 description         piHPSDR is an HPSDR application designed for low power boards, like Raspberry.
 long_description    ${description}
 
-github.setup        dl1ycf pihpsdr 269455d8ad243678f2a09d7c2030aefca9549232
-version             20220422-[string range ${github.version} 0 7]
-checksums           rmd160  dc69557861df201fa7956ae5e135af7c52e8dcb5 \
-                    sha256  e8043acbf9bfc360bc03c56bc8a0ce4eb43614cc592db4a6328293c6b8c2dc0b \
-                    size    119398866
+github.setup        dl1ycf pihpsdr a5992fe8f83669561eb162d018c41787c360d341
+version             20230516-[string range ${github.version} 0 7]
+checksums           rmd160  ced4a947f136996cf61d780519b84b3c348a5bf5 \
+                    sha256  f3f6c41d97ebc6e7918e82c9261fc3e2540e49dcb3b8aea95a1870298bc6af7d \
+                    size    119067573
 revision            0
-
-patchfiles-append \
-    0001-add-remote-audio-output-option-for-each-RX.patch
 
 compiler.c_standard 1999
 

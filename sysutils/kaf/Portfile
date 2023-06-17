@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/birdayz/kaf 0.1.47 v
+go.setup            github.com/birdayz/kaf 0.2.3 v
 github.tarball_from archive
 revision            0
 
@@ -27,9 +27,9 @@ destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
 }
 
-checksums          rmd160  bb064e57535efcac08e8a5f7eb027fa01e6c90e7 \
-                   sha256  47476967e3f61bc70865ea9b89e38f88c9c434f2eb9bc1014dd174f40fa945f9 \
-                   size    866659
+checksums          rmd160  921b4c8fd3c5d3d7174ef4c2d1f70bc87b223f44 \
+                   sha256  0067a1a708a2e7774acc7029087804e48026ad85b4ab7300a360a640782692d6 \
+                   size    855662
 
 notes "
 

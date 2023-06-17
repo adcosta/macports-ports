@@ -3,12 +3,13 @@
 PortSystem          1.0
 
 name                nginx
-version             1.21.6
+version             1.24.0
 revision            0
 categories          www mail
-platforms           darwin
 license             BSD
-maintainers         {cal @neverpanic} {mps @Schamschula} openmaintainer
+maintainers         {mps @Schamschula} openmaintainer
+
+conflicts           nginx-devel
 
 description         High-performance HTTP(S) server, HTTP(S) reverse proxy and IMAP/POP3 \
                     proxy server
@@ -35,9 +36,9 @@ master_sites        https://nginx.org/download:nginx \
 
 distfiles           ${name}-${version}${extract.suffix}:nginx
 checksums           ${name}-${version}${extract.suffix} \
-                    rmd160  b00f302758d3671afddbfcb95dca84a938f54472 \
-                    sha256  66dc7081488811e9f925719e34d1b4504c2801c81dee2920e5452a86b11405ae \
-                    size    1073364
+                    rmd160  e3ca7270b5d3a27b3f83ff50cc858e9011bea3e1 \
+                    sha256  77a2541637b92a621e3ee76776c8b7b40cf6d707e69ba53a940283e30ff2f55d \
+                    size    1112471
 
 depends_lib         port:pcre \
                     port:zlib
@@ -56,7 +57,6 @@ set auto_activate_confs {nginx.conf mime.types fastcgi.conf}
 
 # portfile-scoped vars for variant routines to re-def and use in port-stages (post-extract, pre-patch, etc)
 set nginx_lua_mod_dirname      ""
-set nginx_rtmp_mod_dirname     ""
 set nginx_upload_mod_dirname   ""
 
 # for aforementioned re-defs of portfile-scoped vars in variant routines
@@ -77,7 +77,12 @@ configure.args-append \
                     --http-client-body-temp-path=${nginx_rundir}/client_body_temp \
                     --http-proxy-temp-path=${nginx_rundir}/proxy_temp \
                     --http-fastcgi-temp-path=${nginx_rundir}/fastcgi_temp \
-                    --http-uwsgi-temp-path=${nginx_rundir}/uwsgi_temp
+                    --http-uwsgi-temp-path=${nginx_rundir}/uwsgi_temp \
+                    --with-compat
+
+# pcre2 breaks the lua module (https://trac.macports.org/ticket/65150)
+configure.args-append \
+                    --without-pcre2
 
 # remove --disable-dependency-tracking
 configure.universal_args-delete   --disable-dependency-tracking
@@ -167,13 +172,13 @@ variant degradation description {Allow to return 204 or 444 code for some locati
 
 variant echo description {Brings echo, sleep, time, exec and more shell-style goodies to Nginx config file} {
     set echo_filename       echo-nginx-module
-    set echo_version        0.62
+    set echo_version        0.63
     set echo_distname       ${echo_filename}-${echo_version}
     distfiles-append        v${echo_version}.tar.gz:echo_module
     checksums-append        v${echo_version}.tar.gz \
-                            rmd160  2a2099e0436702d42ed3bd74231c099661c14260 \
-                            sha256  86f6866baf7297d85feb42ff6d9c212d1de696f3314a53d3a41a4b533a67ab01 \
-                            size    53329
+                            rmd160  b280638afa7b59cf9956962fa568c23125d1ae75 \
+                            sha256  8af374d29592ef95baee53c91959c7b04927f11304c318a94f0ee140760515a4 \
+                            size    53421
 
     configure.args-append   --with-http_dav_module --add-module=${workpath}/${echo_distname}
 }
@@ -193,13 +198,13 @@ variant geoip description {Enable Ngx http GeoIP module } {
 
 variant geoip2 description {Enable Ngx http GeoIP2 module (https://github.com/leev/ngx_http_geoip2_module)} {
     set geoipext_filename   ngx_http_geoip2_module
-    set geoipext_version    3.3
+    set geoipext_version    3.4
     set geoipext_distname   ${geoipext_filename}-${geoipext_version}
     distfiles-append        ${geoipext_version}.tar.gz:geoip2_module
     checksums-append        ${geoipext_version}.tar.gz \
-                            rmd160  7b272aad1a402ae6ca8fac873d4555afbeab7b75 \
-                            sha256  41378438c833e313a18869d0c4a72704b4835c30acaf7fd68013ab6732ff78a7 \
-                            size    8509
+                            rmd160  d6a4115102b8aa13205431d91fe46d60b0762dc8 \
+                            sha256  ad72fc23348d715a330994984531fab9b3606e160483236737f9a4a6957d9452 \
+                            size    8877
 
     configure.args-append   --add-module=${workpath}/${geoipext_distname}
     depends_lib-append      port:libmaxminddb
@@ -321,12 +326,12 @@ variant xslt description {Post-process pages with XSLT} {
 
 variant zip description {Enable Ngx zip download module (https://github.com/evanmiller/mod_zip)} {
 
-    set zip_version         1.2.0
+    set zip_version         1.3.0
     distfiles-append        ${zip_version}.tar.gz:zip_module
     checksums-append        ${zip_version}.tar.gz \
-                            rmd160  41f9570894de3e8adcd72956ac26378f23ae2275 \
-                            sha256  9b6294c651166a0c06b4aa723d3bc54feebc5cd495dcb3bdfd362c4b2c84bf62 \
-                            size    27046
+                            rmd160  d63baa2d56e957c895895e02ac399c67282a7acf \
+                            sha256  5e7f24b6b4efb8258d92ec921ade9df69e4bad36f833a39b47ee947b3d637f22 \
+                            size    30266
 
     configure.args-append   --add-module=${workpath}/mod_zip-${zip_version}
     patchfiles-append       patch-src-http-ngx_http_upstream.c.diff \
@@ -357,55 +362,44 @@ variant rtmp description {Enable Ngx RTMP module (https://github.com/arut/nginx-
                             size    519934
 
     configure.args-append   --add-module=${workpath}/${rtmp_distname}
-
-    nginx_set_portfile_var  nginx_rtmp_mod_dirname    "${rtmp_distname}"
-
-    # patch routine balks on file names with "../", but rel-paths in patchfiles start from $worksrcpath
-    pre-patch {
-        ln -s   "${workpath}/${nginx_rtmp_mod_dirname}" "${worksrcpath}/nginx_rtmp_module.tmp"
-    }
-    post-patch {
-        file delete   "${worksrcpath}/nginx_rtmp_module.tmp"
-    }
 }
 
 variant http_push description {Enable Ngx HTTP Push module (https://github.com/slact/nchan)} {
     set http_push_filename  nchan
-    set http_push_version   1.2.15
+    set http_push_version   1.3.6
     set http_push_distname  ${http_push_filename}-${http_push_version}
     distfiles-append        v${http_push_version}.tar.gz:http_push_module
     checksums-append        v${http_push_version}.tar.gz \
-                            rmd160  1d36b1c82c1e4e125f6763bf7e73933bc3113da9 \
-                            sha256  dbb05bec6a4cf6ad1c1a4e613a2c832669c0eb87847e70ab26bc6c590361a818 \
-                            size    734488
+                            rmd160  46499a30841730923fae1d03e31b9af397269172 \
+                            sha256  ba0b7cc6b710a20ce1ed2554caf56154035291aaf115e407d7a6bb699fde42df \
+                            size    761436
 
      configure.args-append   --add-module=${workpath}/${http_push_distname}
 }
 
 variant devel_kit description {Enable ngx_devel_kit module (https://github.com/simpl/ngx_devel_kit)} {
     set devel_kit_filename  ngx_devel_kit
-    set devel_kit_version   0.3.1
+    set devel_kit_version   0.3.2
     set devel_kit_distname  ${devel_kit_filename}-${devel_kit_version}
     distfiles-append        v${devel_kit_version}.tar.gz:devel_kit_module
     checksums-append        v${devel_kit_version}.tar.gz \
-                            rmd160  5c52a463544294096611aa9dec1c76e937a1aa23 \
-                            sha256  0e971105e210d272a497567fa2e2c256f4e39b845a5ba80d373e26ba1abfbd85 \
-                            size    66542
+                            rmd160  bd3e1d164e521988e50f18d97b3d58c14e97e953 \
+                            sha256  aa961eafb8317e0eb8da37eb6e2c9ff42267edd18b56947384e719b85188f58b \
+                            size    66551
 
     configure.args-append     --add-module=${workpath}/${devel_kit_distname}
 }
 
 variant lua requires devel_kit description {Enable Lua module (https://github.com/openresty/lua-nginx-module)} {
-    depends_lib-append      path:lib/libluajit-5.1.2.dylib:luajit
+    depends_lib-append      port:luajit-openresty
     set ngx_lua_filename    lua-nginx-module
-    # Note: keep at version 0.10.15
-    set ngx_lua_version     0.10.15
+    set ngx_lua_version     0.10.24
     set ngx_lua_distname    ${ngx_lua_filename}-${ngx_lua_version}
     distfiles-append        v${ngx_lua_version}.tar.gz:lua_module
     checksums-append        v${ngx_lua_version}.tar.gz \
-                            rmd160  1e3801a632eee54458c53a05293cf301653240ec \
-                            sha256  7d5f3439c8df56046d0564b5857fd8a30296ab1bd6df0f048aed7afb56a0a4c2 \
-                            size    655110
+                            rmd160  261a3564a6ee96f6131b109c12ae552fde450738 \
+                            sha256  c5935ff25557031ab34d960d958a210613c9e6369b97db169b946717eca48fdf \
+                            size    724961
 
     configure.cflags        -I${prefix}/include/luajit-2.1/ ${configure.cflags}
     configure.env           LUAJIT_INC=${prefix}/include/luajit-2.1/
@@ -413,34 +407,45 @@ variant lua requires devel_kit description {Enable Lua module (https://github.co
     configure.args-append   --add-module=${workpath}/${ngx_lua_distname}
 
     nginx_set_portfile_var  nginx_lua_mod_dirname    "${ngx_lua_distname}"
+
+    patchfiles-append       patch-lua_config.diff
+
+    # patch routine balks on file names with "../", but rel-paths in patchfiles start from $worksrcpath
+    pre-patch {
+        ln -s   "${workpath}/${nginx_lua_mod_dirname}" "${worksrcpath}/ngx_lua_distname.tmp"
+    }
+    post-patch {
+        file delete   "${worksrcpath}/ngx_lua_distname.tmp"
+    }
 }
 
 variant headers_more description {Enable headers-more module (https://github.com/openresty/headers-more-nginx-module)} {
     set ngx_h_more_filename     headers-more-nginx-module
-    set ngx_h_more_version      0.33
+    set ngx_h_more_version      0.34
     set ngx_h_more_distname     ${ngx_h_more_filename}-${ngx_h_more_version}
     distfiles-append            v${ngx_h_more_version}.tar.gz:h_more_module
     checksums-append            v${ngx_h_more_version}.tar.gz \
-                                rmd160  fb27195a722e81f533016e693b5a6616fd6b4f72 \
-                                sha256  a3dcbab117a9c103bc1ea5200fc00a7b7d2af97ff7fd525f16f8ac2632e30fbf \
-                                size    28130
+                                rmd160  d437b7f755b5584548a94354f9b82dcd84e906d6 \
+                                sha256  0c0d2ced2ce895b3f45eb2b230cd90508ab2a773299f153de14a43e44c1209b3 \
+                                size    28827
 
     configure.args-append       --add-module=${workpath}/${ngx_h_more_distname}
 }
 
-variant jwt description {Add JWT (Javascript Web Token) support to server using TeslaGov's ngx-http-auth-jwt-module (https://github.com/TeslaGov/ngx-http-auth-jwt-module)} {
-    set jwt_filename        ngx-http-auth-jwt-module
-    set jwt_version         1.0.0
-    set jwt_distname        ${jwt_filename}-${jwt_version}
-    distfiles-append        ${jwt_version}.tar.gz:jwt_module
-    checksums-append        ${jwt_version}.tar.gz \
-                            rmd160  b9ccb4f971eb864ad018e5ecff718150687dab71 \
-                            sha256  9043bf1b46ecf71b03f6b9292b774bc283181d674ad4c2b61b6d74c838798dac \
-                            size    13804
-
-    configure.args-append   --add-dynamic-module=${workpath}/${jwt_distname}
-    depends_lib-append      port:libjwt
-}
+# See https://github.com/TeslaGov/ngx-http-auth-jwt-module/issues/82
+# variant jwt description {Add JWT (Javascript Web Token) support to server using TeslaGov's ngx-http-auth-jwt-module (https://github.com/TeslaGov/ngx-http-auth-jwt-module)} {
+#     set jwt_filename        ngx-http-auth-jwt-module
+#     set jwt_version         1.1.0
+#     set jwt_distname        ${jwt_filename}-${jwt_version}
+#     distfiles-append        ${jwt_version}.tar.gz:jwt_module
+#     checksums-append        ${jwt_version}.tar.gz \
+#                             rmd160  41a340016ae7c7df7a306ac296b2ec26abb4a7d6 \
+#                             sha256  effdcb27e492134e8e990d4e7edf26c72855ec5b7676ca997a69efcb589b35fe \
+#                             size    14736
+# 
+#     configure.args-append   --add-dynamic-module=${workpath}/${jwt_distname}
+#     depends_lib-append      port:libjwt
+# }
 
 variant fancyindex description {Add fancy index support; file listings, like the built-in autoindex module does, but with a touch of style} {
     set fancyindex_filename        ngx-fancyindex
@@ -457,17 +462,17 @@ variant fancyindex description {Add fancy index support; file listings, like the
 
 variant vod description {Add MP4 repackeging for HLS, DASH, HDS, HSS using nginx-vod-module} {
     set vod_filename        nginx-vod-module
-    set vod_version         1.29
+    set vod_version         1.31
     set vod_distname        ${vod_filename}-${vod_version}
     distfiles-append        ${vod_version}.tar.gz:vod_module
     checksums-append        ${vod_version}.tar.gz \
-                            rmd160  843062897e3e9825ee32833f7204045aecc62a23 \
-                            sha256  775898874367900f14b6197366501c782e8c86dd2b0c3cc45973abf4e8a9217c \
-                            size    469764
+                            rmd160  c4613d66aa9dc73a255f5e920a0b7a1c86eb63fb \
+                            sha256  ace04201cf2d2b1a3e5e732a22b92225b8ce61a494df9cc7f79d97efface8952 \
+                            size    470904
 
     configure.args-append   --add-module=${workpath}/${vod_distname}
 }
 
 livecheck.type      regexm
 livecheck.url       ${homepage}
-livecheck.regex     {nginx-(\d+\.\d+\.\d+)</a>\s+mainline}
+livecheck.regex     {nginx-(\d+\.\d+\.\d+)</a>\s+stable}

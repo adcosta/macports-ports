@@ -3,8 +3,8 @@
 PortSystem          1.0
 PortGroup           bitbucket 1.0
 
-set emacs_version   28.1
-set emacs_mac_ver   9.0
+set emacs_version   28.2
+set emacs_mac_ver   9.1
 
 bitbucket.setup     mituharu emacs-mac emacs-${emacs_version}-mac-${emacs_mac_ver}
 name                emacs-mac-app
@@ -21,13 +21,13 @@ long_description    ${name} is the \"Mac port\" of GNU Emacs ${emacs_version}. \
 platforms           darwin
 license             GPL-3+
 
-checksums           rmd160  5496d49592fd3c69f6f32f4ab23973a4c68db87b \
-                    sha256  967d5642ca47ae3de2626f0fc7163424e36925642827e151c3906179020dd90e \
-                    size    45985554
+checksums           rmd160  7d5b8766f5f1f4853728e0d038f5ac71586d2200 \
+                    sha256  9287262473589c1edfe42e92b183a8ddf1682c995e81763adfdf95160874843e \
+                    size    46031009
 
 depends_lib         port:ncurses \
                     port:libxml2 \
-                    port:gnutls \
+                    path:lib/pkgconfig/gnutls.pc:gnutls \
                     port:lcms2 \
                     port:gmp \
                     port:jansson
@@ -83,8 +83,8 @@ if {${os.major} <= 13} {
 }
 
 subport ${name}-devel {
-    set emacs_version   28.1
-    set date            2022-04-05
+    set emacs_version   28.2
+    set date            2022-09-12
 
     version         [string map {- {}} ${date}]
     revision        0
@@ -95,7 +95,7 @@ subport ${name}-devel {
 
     fetch.type      git
     git.url         --shallow-since=${date}T00:00:00 --branch work https://bitbucket.org/mituharu/emacs-mac.git
-    git.branch      1be8ebee4895b668a9a92d9ba34a1dd75a9c3ce1
+    git.branch      6e6d2e0c27b3f8a7a9bc54448c7ccb56cb8c66a4
 
     # --shallow-since needs a newer version of git than on some older systems,
     # so use MacPorts version
@@ -104,9 +104,8 @@ subport ${name}-devel {
 
     conflicts       emacs-mac-app
 
-    # Bitbucket doesn't seem to have a good way to get the latest commit on a
-    # branch
-    livecheck.type  none
+    livecheck.version   ${git.branch}
+    bitbucket.livecheck work
 }
 
 destroot.destdir {}
@@ -144,15 +143,13 @@ variant imagemagick description {Enable ImageMagick bindings} {
 }
 
 variant nativecomp description {Builds emacs with native compilation support} {
-    depends_lib-append       port:gcc11
-
-    configure.args-append    --with-native-compilation
-
-    compiler.cpath-prepend   ${prefix}/include/gcc11
-    compiler.library_path-prepend \
-        ${prefix}/lib/gcc11
-
-    build.args-append        NATIVE_FULL_AOT=1
+    set gcc_v                      12
+    depends_lib-append             port:gcc${gcc_v}
+    configure.args-append          --with-native-compilation
+    compiler.cpath-prepend         ${prefix}/include/gcc${gcc_v}
+    compiler.library_path-prepend  ${prefix}/lib/gcc${gcc_v}
+    configure.ldflags-append       "-Wl,-rpath ${prefix}/lib/gcc${gcc_v}"
+    build.args-append              NATIVE_FULL_AOT=1
 }
 
 variant metal description {Enable experimental Metal support} {
@@ -161,4 +158,7 @@ variant metal description {Enable experimental Metal support} {
 
 default_variants-append +nativecomp
 
-livecheck.version   ${version}
+if {${subport} eq ${name}} {
+    livecheck.regex     {"emacs-[0-9.]+-mac-([0-9.]+)"}
+    livecheck.version   ${version}
+}

@@ -4,25 +4,23 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         MCE 1.878 ../../authors/id/M/MA/MARIOROY
+perl5.setup         MCE 1.887 ../../authors/id/M/MA/MARIOROY
 revision            0
 maintainers         {devans @dbevans} openmaintainer
 license             {Artistic-1 GPL}
-
 description         Many-Core Engine for Perl providing parallel processing capabilities
-long_description    ${description}
+long_description    {*}${description}
 
-platforms           darwin
+platforms           {darwin any}
+supported_archs     noarch
 
-checksums           rmd160  4e3a1f057629c0d6a32ccabe30d1d7438adcccca \
-                    sha256  bb5713197cc5ab91302aec746b5cc7204bf84556c30d6af67ce34a6fd38444ad \
-                    size    224535
+checksums           rmd160  3a8bd67e907362397b730af1c84b23e88275c9ab \
+                    sha256  4591ef2fbb657b4d344797eb166eed8099236446c4a01490cf2c28033fe0033a \
+                    size    230179
 
 if {${perl5.major} != ""} {
     depends_lib-append \
                     port:p${perl5.major}-sereal-decoder \
                     port:p${perl5.major}-sereal-encoder \
                     port:p${perl5.major}-time-hires
-
-    supported_archs noarch
 }

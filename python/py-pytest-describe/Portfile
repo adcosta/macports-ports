@@ -1,0 +1,33 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-pytest-describe
+version             2.1.0
+revision            0
+
+categories-append   devel
+platforms           {darwin any}
+supported_archs     noarch
+license             MIT
+maintainers         {reneeotten @reneeotten} openmaintainer
+
+description         Describe-style plugin for pytest
+long_description    {*}${description}
+
+homepage            https://github.com/pytest-dev/pytest-describe
+
+checksums           rmd160  9a327921ccd962e55627c9f5a7b6b7858dec161f \
+                    sha256  0630c95ac4942ab8dcd8e766236f86436b4984896db0c059fc234fef66fe9732 \
+                    size    10272
+
+python.versions     37 38 39 310 311
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools
+
+    depends_lib-append \
+                    port:py${python.version}-pytest
+}

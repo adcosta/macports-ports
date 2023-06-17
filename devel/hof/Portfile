@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/hofstadter-io/hof 0.6.1 v
+go.setup            github.com/hofstadter-io/hof 0.6.7 v
 github.tarball_from archive
 revision            0
 
@@ -32,19 +32,23 @@ license             BSD
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  36184c7d6fbe16989da1e6902e42027d57694997 \
-                    sha256  330f5e9d730ce6cea4cd13d36ab0f194a3e1453e88da5ef32562ee3df42da7f6 \
-                    size    351145
+checksums           rmd160  5ee6429c2fbbc8258439c67290090c3952300d75 \
+                    sha256  86f877fd62fbb8b1399c47f2921c3ebd721fc4674a090f15a213c6866ecfbf03 \
+                    size    441549
 
 # Allow Go to fetch dependencies at build-time
 build.env-delete    GO111MODULE=off GOPROXY=off
 build.pre_args-append \
     -ldflags \" \
-        -X ${go.package}/cmd/${name}/verinfo.Commit=Release     \
-        -X ${go.package}/cmd/${name}/verinfo.Version=${version} \
+        -X ${go.package}/cmd/${name}/verinfo.BuildArch=${goarch}    \
+        -X ${go.package}/cmd/${name}/verinfo.BuildOS=${goos}        \
+        -X ${go.package}/cmd/${name}/verinfo.Commit=Release         \
+        -X ${go.package}/cmd/${name}/verinfo.Version=${version}     \
     \"
 build.args          ./cmd/${name}
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
 }
+
+github.livecheck.regex  {([0-9.]+)}

@@ -1,14 +1,15 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
+
 PortSystem      1.0
 PortGroup       app 1.0
 
 name            gtkwave
-version         3.3.104
-revision        1
+version         3.3.115
+revision        0
+
 categories      cad
-platforms       darwin
 license         GPL-2+
-maintainers     nomaintainer
+maintainers     {langly.org:kenneth.ostby @langly} openmaintainer
 description     A viewer for common electronic CAD waveform files.
 long_description \
         GTKWave is a fully featured GTK+ based wave viewer for Unix \
@@ -17,23 +18,29 @@ long_description \
 
 homepage        http://gtkwave.sourceforge.net
 master_sites    sourceforge:project/gtkwave/gtkwave-${version}
- 
-checksums       rmd160  37e1b1bdc994ea8d9407e501b2afddb55321a22c \
-                sha256  d20dd1a9307b908439c68122a9f81d3ff434a6bfa5439f0cb01398fec650894f \
-                size    3498560
 
-depends_build   port:pkgconfig
+checksums       rmd160  8299c47c7d8a42f26e6d8a402df0ee3cfe2fe56d \
+                sha256  570e7f295a35cdd5ba173d4e3b6adb29e78354e76cc21a7ce2932551863e7bb9 \
+                size    3511620
 
-depends_lib     port:bzip2 \
+depends_build-append \
+                port:pkgconfig
+
+depends_lib-append \
+                port:bzip2 \
                 path:lib/pkgconfig/gtk+-2.0.pc:gtk2 \
                 port:gtk-osx-application-gtk2 \
+                path:lib/pkgconfig/harfbuzz.pc:harfbuzz \
+                path:lib/pkgconfig/pango.pc:pango \
                 port:tk \
                 port:xz \
                 port:zlib
 
-configure.args  --with-tcl=${prefix}/lib \
+configure.args-append \
+                --with-tcl=${prefix}/lib \
                 --with-tk=${prefix}/lib \
                 --disable-mime-update \
+                --disable-silent-rules \
                 "GTK_MAC_CFLAGS=\"\$(${prefix}/bin/pkg-config --cflags gtk-mac-integration-gtk2)\"" \
                 "GTK_MAC_LIBS=\"\$(${prefix}/bin/pkg-config --libs gtk-mac-integration-gtk2)\""
 
@@ -42,8 +49,8 @@ post-activate {
         system "${prefix}/bin/update-mime-database ${prefix}/share/mime; true"
 }
 
-app.create yes
-app.name GTKWave
-app.executable gtkwave
-app.icon share/icons/hicolor/scalable/apps/gtkwave.svg
-app.retina yes
+app.create      yes
+app.name        GTKWave
+app.executable  gtkwave
+app.icon        share/icons/hicolor/scalable/apps/gtkwave.svg
+app.retina      yes

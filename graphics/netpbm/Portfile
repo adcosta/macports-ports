@@ -5,28 +5,28 @@ PortGroup               github 1.0
 
 # Download distfiles from GitHub mirror because fetching from svn keeps being
 # problematic.
-github.setup            leahneukirchen netpbm-mirror 5991a720c260e171c145d035014609f18cb2eaf3
+github.setup            leahneukirchen netpbm-mirror a70405848cb06782036364a88e27f452fb0a0b32
 name                    netpbm
-version                 10.98.02
-svn.revision            4327
+version                 11.01.00
+svn.revision            4489
 set source_branch       advanced
 distname                ${source_branch}-r${svn.revision}
 set source_distfile     ${distfiles}
 
-set userguide_commit    61c296305814a003d4e2fad1bf8b165357eb4c79
-set userguide_revision  4296
+set userguide_commit    62c62a8423c7d6746f437f46c35499281c39e4dd
+set userguide_revision  4475
 set userguide_branch    userguide
 set userguide_distname  ${userguide_branch}-r${userguide_revision}
 set userguide_distfile  ${userguide_distname}${extract.suffix}
 
 checksums               ${source_distfile} \
-                        rmd160  39e93c8a27333b7691e2a71714b09eea0b574484 \
-                        sha256  7ed7fdfc8cae0a11f15ace63715296917a4a1f61017c06f3d09ead2d39d83320 \
-                        size    2942964 \
+                        rmd160  4c6c6c0155233c0a2d3ee20d708979156e3285a2 \
+                        sha256  b908d200897ba535a59ec00f39b222868eb151e8caaf252e27ae3e5425f8a258 \
+                        size    2964306 \
                         ${userguide_distfile} \
-                        rmd160  89e74d7b5268727707a4e15c27f65c8e6a65da33 \
-                        sha256  30a422fb207f9fd02a635a9c75cbb0b24293ca2d7de8f947866ee67ce41dadde \
-                        size    1809300
+                        rmd160  226dacb174d6dec71e95d0551b67310a136ac1a7 \
+                        sha256  2d5b56cdd84a28cc01b680058b4293876340ed60cc62a7486435fa4a2309ead6 \
+                        size    1815523
 
 categories              graphics
 platforms               darwin freebsd linux
@@ -50,13 +50,17 @@ distfiles               ${source_distfile}:source \
 master_sites            ${github.master_sites}:source \
                         ${github.homepage}/archive/${userguide_commit}:userguide
 
+if {[exists extract.rename]} {
+    # set by the github portgroup, doesn't work with multiple dirs
+    extract.rename      no
+}
 post-extract {
     move ${workpath}/${github.project}-${git.branch} ${workpath}/${distname}
     move ${workpath}/${github.project}-${userguide_commit} ${workpath}/${userguide_distname}
 
     set newest_mtime 0
     fs-traverse item ${worksrcpath} {
-        if [file isfile ${item}] {
+        if {[file isfile ${item}]} {
             set item_mtime [file mtime ${item}]
             if {${item_mtime} > ${newest_mtime}} {
                 set newest_mtime ${item_mtime}
@@ -181,12 +185,12 @@ destroot {
 }
 
 if {${subport} eq ${name}} {
-    revision            0
+    revision            1
     installs_libs       no
 
     # TODO: Don't build libnetpbm again in netpbm subport.
 
-    depends_lib-append  path:lib/pkgconfig/jasper.pc:jasper \
+    depends_lib-append  port:jasper \
                         port:jbigkit \
                         path:include/turbojpeg.h:libjpeg-turbo \
                         port:libnetpbm \
@@ -301,22 +305,20 @@ platform darwin 8 {
         set data [read $fl]
         close $fl
         if {[regexp "build 4061" ${data}]} {
-            ui_msg "On Mac OS X ${macosx_version}, ${name} @${version} does not work with gcc version \"${data}\"."
+            ui_msg "On Mac OS X ${macos_version}, ${name} @${version} does not work with gcc version \"${data}\"."
             return -code error "incompatible gcc version"
         }
     }
 }
 
 patchfiles-append       patch-python.diff
-if {${os.platform} eq "darwin" && (${os.major} < 10 || ${os.major} > 20)} {
-    # The system python on 10.5 and earlier is too old and 12.3 and
-    # later no longer have a system python.
-    depends_build-append \
-                        port:python27
-    configure.python    ${prefix}/bin/python2.7
-} else {
-    configure.python    /usr/bin/python
-}
+
+set python_branch       3.10
+set python_version      [string map {. {}} ${python_branch}]
+
+configure.python        ${prefix}/bin/python${python_branch}
+
+depends_build-append    port:python${python_version}
 post-patch {
     reinplace \
         "s|__MACPORTS_PYTHON__|${configure.python}|g" \

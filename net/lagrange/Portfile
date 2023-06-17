@@ -2,44 +2,59 @@
 
 PortSystem          1.0
 PortGroup           cmake 1.1
-PortGroup           github 1.0
-PortGroup           legacysupport 1.1
+PortGroup           gitea 1.0
 PortGroup           compiler_blacklist_versions 1.0
 
-# clock_gettime
-legacysupport.newest_darwin_requires_legacy 15
-
-github.setup        skyjake lagrange 1.13.2 v
+gitea.domain        git.skyjake.fi
+gitea.setup         gemini lagrange 1.16.3 v
 revision            0
-github.tarball_from releases
 categories          net gemini
-platforms           darwin
 license             BSD
 maintainers         {@sikmir disroot.org:sikmir} openmaintainer
 
 description         A Beautiful Gemini Client
 long_description    {*}${description}
 
-checksums           rmd160  69b08c8eee8b096e6b4dfd323374e685924932b5 \
-                    sha256  f84c5fe078734df06ada747f87760ea8863369be5519d1e56992c7c5278395da \
-                    size    9858472
+checksums           rmd160  de136d3bf7f441b0a3e7af29f7b32ecc7eaf7a6a \
+                    sha256  2e5441daf05a9a9c793577af33711c1ddef85317b03df36b714af2bdcb513406 \
+                    size    7537052
+
+worksrcdir          ${name}
 
 depends_build-append \
                     port:pkgconfig \
                     port:zip
-depends_lib-append  port:fribidi \
+depends_lib-append  port:the_Foundation
+
+variant gui conflicts tui description {Build the GUI interface} {
+    depends_lib-append \
+                    port:fribidi \
                     path:lib/pkgconfig/harfbuzz.pc:harfbuzz \
                     port:libsdl2 \
-                    port:libunistring \
-                    path:lib/libssl.dylib:openssl \
                     port:mpg123 \
-                    port:pcre \
-                    port:webp \
-                    port:zlib
+                    port:webp
+
+    destroot {
+        copy ${build.dir}/Lagrange.app ${destroot}${applications_dir}
+    }
+}
+
+variant tui conflicts gui description {Build the TUI interface} {
+    configure.args-append \
+                    -DENABLE_TUI=YES \
+                    -DENABLE_MPG123=NO \
+                    -DENABLE_WEBP=NO \
+                    -DENABLE_FRIBIDI=NO \
+                    -DENABLE_HARFBUZZ=NO \
+                    -DENABLE_POPUP_MENUS=NO \
+                    -DENABLE_IDLE_SLEEP=NO
+
+    depends_lib-append \
+                    port:ncurses \
+                    port:sealcurses
+}
+
+default_variants    +gui
 
 compiler.c_standard 2011
 compiler.blacklist-append {clang < 800}
-
-destroot {
-    copy ${build.dir}/Lagrange.app ${destroot}${applications_dir}
-}

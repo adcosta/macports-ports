@@ -4,11 +4,11 @@ PortSystem          1.0
 
 name                mtools
 conflicts           multimarkdown
-version             4.0.39
+version             4.0.43
 revision            0
-checksums           rmd160  a73c4253e0c4fc76eda0b0a07487833f3313be6b \
-                    sha256  fb89bc2be8408f4875121fa7d584ab91ea5a34b5cbdb736ff2e015e03a4241b3 \
-                    size    382376
+checksums           rmd160  5b5a3ab4def822ffda89a7c20990406d61268603 \
+                    sha256  997ffe4125a19de1fd433ed63f128f7d54bc1a5915f3cdb36da6491ef917f217 \
+                    size    383347
 
 categories          sysutils
 maintainers         {ryandesign @ryandesign} openmaintainer
@@ -22,6 +22,8 @@ master_sites        gnu:mtools
 use_lzip            yes
 
 depends_lib         port:libiconv
+
+configure.checks.implicit_function_declaration.whitelist-append strchr
 
 configure.args      --without-x
 

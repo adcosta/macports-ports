@@ -6,7 +6,7 @@ PortGroup           cmake 1.1
 PortGroup           github 1.0
 PortGroup           compiler_blacklist_versions 1.0
 
-github.setup        OGRECave ogre 13.3.4 v
+github.setup        OGRECave ogre 13.6.4 v
 github.tarball_from archive
 revision            0
 license             MIT
@@ -27,9 +27,9 @@ long_description    OGRE (Object-Oriented Graphics Rendering Engine) is a \
 homepage            https://www.ogre3d.org/
 platforms           darwin
 
-checksums           rmd160  ef40754d823da254c641fc0db307bdca58b4904b \
-                    sha256  fb809bcaf5cdf2829f8a413784d7698091fbeefd3998ac202f4993d56893d96b \
-                    size    91276695
+checksums           rmd160  3b95c3c42ec9117f29f337432af974da7bd1cf91 \
+                    sha256  9a8bde4884b2ce66594d2192c5147a07ad0e7b0fc87de86c798597142867d272 \
+                    size    91952349
 
 use_xcode           yes
 
@@ -42,7 +42,7 @@ compiler.blacklist-append \
 
 depends_build-append \
                     path:bin/dot:graphviz \
-                    port:doxygen \
+                    path:bin/doxygen:doxygen \
                     port:pkgconfig
 
 depends_lib-append  port:assimp \
@@ -64,7 +64,7 @@ if {${os.platform} eq "darwin" && ${os.major} < 14} {
 }
 
 post-patch {
-    reinplace "s|@rpath|\${prefix}/lib|" ${worksrcpath}/CMake/Utils/OgreConfigTargets.cmake
+    reinplace "s|@rpath|${prefix}/lib|" ${worksrcpath}/CMake/Utils/OgreConfigTargets.cmake
     reinplace "s|/Release\"|\"|" ${worksrcpath}/CMake/Utils/OgreConfigTargets.cmake
     reinplace "s|\"/\${PLATFORM_NAME}\"|\"\"|" ${worksrcpath}/CMake/Utils/OgreConfigTargets.cmake
 }
@@ -84,6 +84,13 @@ configure.args-append \
                     -DOGRE_PLUGIN_DIR_CMAKE=share/${name}/Cmake
 
 post-destroot {
-    xinstall -d -m 755 ${destroot}${prefix}/share/${name}/config
-    move {*}[glob ${destroot}${prefix}/bin/*.cfg]  ${destroot}${prefix}/share/${name}/config
+    set ogre_share   ${destroot}${prefix}/share/${name}
+    set ogre_config  ${ogre_share}/config
+    set ogre_plugins ${ogre_share}/plugins
+
+    xinstall -d ${ogre_config}
+    move {*}[glob ${destroot}${prefix}/bin/*.cfg] ${ogre_config}
+
+    xinstall -d ${ogre_plugins}
+    destroot.keepdirs ${ogre_plugins}
 }

@@ -9,7 +9,7 @@ PortGroup           makefile 1.0
 # Need openat(), unlinkat(), fdopendir()
 legacysupport.newest_darwin_requires_legacy 13
 
-github.setup        tavianator bfs 2.5
+github.setup        tavianator bfs 2.6.3
 github.tarball_from archive
 
 categories          sysutils
@@ -25,9 +25,9 @@ long_description    bfs is a variant of the UNIX find command that operates brea
     versions of find, including: POSIX find, GNU find, BSD find and macOS find. \
     If you're not familiar with find, the GNU find manual provides a good introduction.
 
-checksums           rmd160  dd41f5033d2776805881dab51d6f6921cd2b7698 \
-                    sha256  410be5de74bfc5dece213731d3a8462310789118d299fb14f02bd9b0fdd66875 \
-                    size    154230
+checksums           rmd160  35cc64341e3e9c5a9dd93e5a61fb4b9dbb05563e \
+                    sha256  b88b7d8f8c5f701209fd2967546ad154c405281749ad458bc116b40da14b98f6 \
+                    size    175876
 
 # clang: error: unable to execute command: Segmentation fault: 11
 compiler.blacklist  {clang < 500}

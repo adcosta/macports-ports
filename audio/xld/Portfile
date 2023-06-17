@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                xld
-version             20211018
+version             20230416
 revision            0
 
 categories          audio
@@ -23,9 +23,9 @@ master_sites        sourceforge:xld
 distname            xld-${version}
 use_dmg             yes
 
-checksums           rmd160  ff488c700ce45116cd9c92910d7162955b036b92 \
-                    sha256  5234e17218624e6bb341a2bb23c8994310b7d4962d3f878c3ed27b265d2791d6 \
-                    size    10967402
+checksums           rmd160  46f76b806f523d7081a1ebc5ebe1746ce61bba57 \
+                    sha256  264e34bd90bea1cb5c7fc2756675c9c714d4907c85d959ea219268c0d455589a \
+                    size    11140995
 
 variant universal {}
 default_variants +universal

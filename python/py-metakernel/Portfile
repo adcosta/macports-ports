@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-metakernel
-version             0.29.0
+version             0.29.4
 revision            0
 categories-append   devel science
 license             BSD
@@ -14,17 +14,20 @@ long_description    ${description} which includes core magic functions (includin
                     help, command and file path completion, parallel and distributed \
                     processing, downloads, and much more).
 supported_archs     noarch
+platforms           {darwin any}
 homepage            https://github.com/Calysto/metakernel
 
-checksums           rmd160  a5d330cf78fc03a3e91e0ad09425239509f2529b \
-                    sha256  f81f32c29eeae3683c1fe04f14af83d55c8b7f2aa09eb6083776a2fe675cc1c0 \
-                    size    197295
+checksums           rmd160  ad8f37b5e7e6d1feb901690e4f1d4778879359b0 \
+                    sha256  931ac5fccb318e1b7bcc6b3468470bfd27f4ab070b892a033c352513b2eb7268 \
+                    size    189933
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
+    python.pep517   yes
+    python.pep517_backend \
+                    hatch
+
     depends_lib-append  \
                     port:py${python.version}-notebook
-
-    livecheck.type  none
 }

@@ -4,9 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-py2app
-version             0.28
+version             0.28.6
 categories-append   devel
 license             {MIT PSF}
+platforms           {darwin any}
+supported_archs     noarch
 maintainers         {jmr @jmroot} openmaintainer
 description         converts python scripts into executable Mac OS X apps
 long_description \
@@ -16,21 +18,17 @@ long_description \
 
 homepage            https://py2app.readthedocs.io/
 
-checksums           md5 56cfa892a1cf9caf5d66fba4114a7edc \
-                    rmd160 199f72e706b2cd3757b2150379aa2b9277bdf15a \
-                    sha256 fcf2794548b144ab895733c0fc06e7224e4074d0d97b9ddddbde8dcf64bee57c
+checksums           md5 d6cf9d6244e6574581688f4b6617277d \
+                    rmd160 44a3b61ffe03d6233847e386b7774a1e4ac08be5 \
+                    sha256 8dbd5f638d1cf63d6479f3095922b4e030d13de83da6a2a802c58c7d0f9e0a8e
 
-python.versions     27 37 38 39 310
+python.versions     37 38 39 310 311
+python.pep517       yes
 
 if {$subport ne $name} {
     # needs pkg_resources at runtime
     depends_lib     port:py${python.version}-macholib \
                     port:py${python.version}-setuptools
-    if {${python.version} >= 36} {
-        python.pep517   yes
-    }
-
-    patchfiles      version.patch
 
     post-destroot {
         xinstall -m 755 -d ${destroot}${prefix}/share/doc/${subport} \

@@ -6,7 +6,7 @@ PortGroup           python 1.0
 name                py-awscrt
 # This is only used by awscli2. Bump when Amazon bumps
 # their pinned version in awscli2's setup.cfg.
-version             0.13.5
+version             0.16.19
 revision            0
 
 categories-append   devel
@@ -19,11 +19,11 @@ long_description    {*}${description}
 
 homepage            https://aws.amazon.com/cli/
 
-checksums           rmd160  7623ca588fb06dceb457f9b28cc96889e37ccb86 \
-                    sha256  7543658cc2ac6e5e9e072844622bd681125ccd3070dcdd51565f2bddef3df268 \
-                    size    19890641
+checksums           rmd160  8c3d2d71a7f5c9b4efba32a42bace3450b8b2e07 \
+                    sha256  f514febfd9cc2b7afa3d3906cf786189a34837e321cd1fb719fbef00a78f2d65 \
+                    size    28488666
 
-python.versions     37 38 39 310
+python.versions     38 39 310 311
 
 if {${name} ne ${subport}} {
     if {${os.platform} eq "darwin" && ${os.major} <= 15} {

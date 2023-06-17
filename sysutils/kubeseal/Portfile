@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/bitnami-labs/sealed-secrets 0.17.5 v
+go.setup            github.com/bitnami-labs/sealed-secrets 0.22.0 v
 github.tarball_from archive
 name                kubeseal
 revision            0
@@ -18,18 +18,27 @@ maintainers         @tux-o-matic \
                     {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
+checksums           rmd160  09f109c4751ac7f2db6f195d99b11585ab975e70 \
+                    sha256  2285eaa1b0e9dca769096018821f3f852d32c75dc875e53a01754d9176b5e623 \
+                    size    1294783
+
 # Allow fetching deps at build time
 build.env-delete    GO111MODULE=off GOPROXY=off
 
-build.pre_args      -ldflags \"-X main.VERSION=${version}\"
-build.args          ./cmd/${name}
+build.cmd           make
+build.target        ${name}
 
-checksums           rmd160  362db230d7c08f75e67b28c047b961754efd3782 \
-                    sha256  893c8ae20218e4a688961a78afd8d3e3990c87259f6d975c86b3a84baeb5c8a9 \
-                    size    168911
+use_parallel_build  no
+
+patch {
+    reinplace \
+        "s|^TAG = .*|TAG = ${github.tag_prefix}${version}|" \
+        ${worksrcpath}/Makefile
+}
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
 }
 
-github.livecheck.regex  {([\d.]+)}
+github.livecheck.regex \
+                    {([\d.]+)}

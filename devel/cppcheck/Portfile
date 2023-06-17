@@ -3,7 +3,7 @@
 PortSystem                  1.0
 PortGroup                   github 1.0
 
-github.setup                danmar cppcheck 2.7.5
+github.setup                danmar cppcheck 2.10.3
 revision                    0
 
 categories                  devel
@@ -21,29 +21,32 @@ long_description            Cppcheck is an analysis tool for C and C++ code. Unl
 
 github.tarball_from         archive
 
-checksums                   rmd160  b1d1ee1b72e900d36aaf3917bec609f0051dfac4 \
-                            sha256  6c7ac29e57fa8b3ac7be224510200e579d5a90217e2152591ef46ffc947d8f78 \
-                            size    3940968
+checksums                   rmd160  fb27ebeb83dc0d6219289bbdb7d9a9973f0f5c84 \
+                            sha256  8aae5e116daeaaf5d19f3efa61b91c06f161cb97412a1d1af6e1e20686e48967 \
+                            size    3447010
 
-set python_branch   3.10
+
+set python_branch   3.11
 set python_version  [string map {"." ""} ${python_branch}]
 set python_bin      ${prefix}/bin/python${python_branch}
 
-depends_build               port:docbook-xsl-nons \
+depends_build-append        port:docbook-xsl-nons \
                             port:docbook-xml-4.5 \
                             port:libxslt
 
-depends_lib                 port:pcre \
+depends_lib-append          port:pcre \
                             port:python${python_version} \
                             port:py${python_version}-pygments
 
-post-patch {
-    reinplace -W ${worksrcpath} "/CXXFLAGS/s/-O2/${configure.cxxflags}/" Makefile
-    reinplace -W ${worksrcpath} "s|#!/usr/bin/env python|#!${python_bin}|" htmlreport/cppcheck-htmlreport
+# Jan 2023 - master base/github PG default to yes which errors
+if {[exists extract.rename]} { extract.rename no }
 
+post-patch {
+    reinplace -W ${worksrcpath} "s|#!/usr/bin/env python3|#!${python_bin}|" htmlreport/cppcheck-htmlreport
 }
 
 compiler.cxx_standard       2011
+compiler.thread_local_storage yes
 
 use_configure               no
 
@@ -52,13 +55,19 @@ variant universal {}
 set sharedir                ${prefix}/share/${name}
 
 build.target                all man
-build.args                  CXX="${configure.cxx} [get_canonical_archflags cxx]" \
+build.args                  CXX="${configure.cxx} [get_canonical_archflags cxx] ${configure.cxxflags}" \
                             DB2MAN=${prefix}/share/xsl/docbook-xsl-nons/manpages/docbook.xsl \
                             FILESDIR=${sharedir} \
                             HAVE_RULES=yes \
                             MATCHCOMPILER=yes \
                             PREFIX=${prefix} \
                             PYTHON_INTERPRETER=${python_bin}
+
+# https://trac.macports.org/ticket/66418
+platform darwin 8 {
+    depends_build-append    port:gmake-apple
+    build.cmd               gmake-apple
+}
 
 test.run                    yes
 test.target                 test

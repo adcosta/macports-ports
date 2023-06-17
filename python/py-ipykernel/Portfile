@@ -4,15 +4,16 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-ipykernel
-version             6.13.0
+version             6.23.1
 revision            0
-
 categories-append   devel
 license             BSD
 supported_archs     noarch
+platforms           {darwin any}
 
-python.versions     27 37 38 39 310
+python.versions     37 38 39 310 311
 python.pep517       yes
+python.pep517_backend hatch
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -21,41 +22,34 @@ long_description    {*}${description}
 
 homepage            https://ipython.org/
 
-checksums           rmd160  c1ff94faa16b29f9dfae9d1572283733868d4774 \
-                    sha256  0e28273e290858393e86e152b104e5506a79c13d25b951ac6eca220051b4be60 \
-                    size    131331
+checksums           rmd160  3e5cc5da19485ac33b0131c1a930abc9087cdcc2 \
+                    sha256  1aba0ae8453e15e9bc6b24e497ef6840114afcdb832ae597f32137fa19d42a6f \
+                    size    153370
 
 if {${name} ne ${subport}} {
+
+    if {${python.version} eq 37} {
+        version             6.21.3
+        revision            0
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  cf826d0445626559a59b1d0088707865b3bd0697 \
+                            sha256  c8ff581905d70e7299bc1473a2f7c113bec1744fb3746d58e5b4b93bd8ee7001 \
+                            size    150659
+    }
+
     depends_lib-append  port:py${python.version}-debugpy \
                         port:py${python.version}-ipython \
+                        port:py${python.version}-comm \
                         port:py${python.version}-traitlets \
                         port:py${python.version}-jupyter_client \
+                        port:py${python.version}-jupyter_core \
+                        port:py${python.version}-nest_asyncio \
                         port:py${python.version}-tornado \
                         port:py${python.version}-matplotlib-inline \
                         port:py${python.version}-appnope \
+                        port:py${python.version}-zmq \
                         port:py${python.version}-psutil \
-                        port:py${python.version}-nest_asyncio \
                         port:py${python.version}-packaging
-
-    if {${python.version} eq 27} {
-        version             4.9.0
-        revision            0
-        distname            ${python.rootname}-${version}
-        checksums           rmd160  055f76d943ed8f8d1011676d418c4cf23fa891c6 \
-                            sha256  c5a498c70f7765c34f3397cf943b069057f5bef4e0218e4cfbb733e9f38fa5fa \
-                            size    95255
-
-        python.pep517       no
-
-        depends_build-append \
-                            port:py${python.version}-setuptools
-        depends_lib-delete  port:py${python.version}-debugpy \
-                            port:py${python.version}-matplotlib-inline \
-                            port:py${python.version}-appnope \
-                            port:py${python.version}-nest_asyncio \
-                            port:py${python.version}-psutil \
-                            port:py${python.version}-packaging
-    }
 
     livecheck.type      none
 }

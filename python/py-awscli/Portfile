@@ -5,11 +5,12 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-awscli
-version             1.23.9
+version             1.27.155
 revision            0
 
 categories          python devel
 supported_archs     noarch
+platforms           {darwin any}
 license             Apache-2
 maintainers         {judaew @judaew} openmaintainer
 
@@ -18,11 +19,11 @@ long_description    {*}${description}
 
 homepage            https://aws.amazon.com/cli/
 
-checksums           rmd160  7a72fb602c3ae2091fecd43fa5281a002b528565 \
-                    sha256  f464f2f98577948d9dd4e8f64e74ceac23596367e874108f2c0f770362a62257 \
-                    size    1574459
+checksums           rmd160  207324ddb19f92c56a23c6895907ab01cc2e2c3d \
+                    sha256  112656de982aba68a5ce3ae8e001a2fd68a25b64f08b002a5b1bbe198db2e0be \
+                    size    1517643
 
-python.versions     37 38 39 310
+python.versions     39 310 311
 
 if {${name} ne ${subport}} {
     conflicts           py${python.version}-awscli2
@@ -60,7 +61,7 @@ if {${name} ne ${subport}} {
         xinstall -d ${destroot}${bash_compl_path}
         xinstall -m 0644 ${worksrcpath}/bin/aws_bash_completer \
             ${destroot}${bash_compl_path}/aws-${python.branch}
- 
+
         set zsh_compl_path ${prefix}/share/zsh/site-functions
         xinstall -d ${destroot}${zsh_compl_path}
         xinstall -m 0644 ${worksrcpath}/bin/aws_zsh_completer.sh \
@@ -80,7 +81,7 @@ port select --set ${select.group} [file tail ${select.file}]
 If you use a plugin in your ~/.aws/config, it must be installed. For example,
 Wasabi for S3 uses the awscli_plugin_endpoint plugin. Just install it:
 
-port install py${python.version}-awscli_plugin_endpoint
+port install py${python.version}-awscli-plugin-endpoint
 
 If your plugin is not in MacPorts, you can install it using the
 py${python.version}-pip port, for example:

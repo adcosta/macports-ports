@@ -4,18 +4,18 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Math-BigInt-GMP 1.6010
+perl5.setup         Math-BigInt-GMP 1.6012
 revision            0
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Math::BigInt::GMP - Use the GMP library for Math::BigInt routines
-long_description    ${description}
+long_description    {*}${description}
 
 platforms           darwin
 
-checksums           rmd160  17ee55b2858b3b0195fbf928e5941690b67c504e \
-                    sha256  56266a397e7335a60a27fc85684ca9710a7f1396a3c2ef946e5ff891892520a8 \
-                    size    2591919
+checksums           rmd160  44afbed04dbff18b779522bb9d63042b168f39a4 \
+                    sha256  0f96108a64481999da8cd44a0be90de7433e94ea0712fa33c792336615ca9ea8 \
+                    size    2592463
 
 if {${perl5.major} != ""} {
     depends_lib-append \

@@ -5,11 +5,11 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           python 1.0
 
 name                py-astropy
-version             5.0.4
+version             5.3
 revision            0
-checksums           rmd160  74bc0321c7a69592520c5b2b3037a01f2b60f069 \
-                    sha256  001184f1a9c3f526a363883ce28efb9cbf076df3d151ca3e131509a248f0dfb9 \
-                    size    7851964
+checksums           rmd160  4f826c63b7b26b1e9971b452d08f08700a95c5ba \
+                    sha256  1f694be1c2b32309aca15cf7b54aa17546e944135209394cdceebd7a7889e4e5 \
+                    size    7794677
 
 maintainers         {mps @Schamschula} openmaintainer
 categories-append   science
@@ -20,7 +20,7 @@ license             BSD
 
 homepage            http://www.astropy.org
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 # see https://trac.macports.org/ticket/48941
 compiler.blacklist  {*llvm-gcc42}
@@ -28,6 +28,7 @@ compiler.blacklist  {*llvm-gcc42}
 if {${name} ne ${subport}} {
     depends_build-append \
                     port:pkgconfig \
+                    path:bin/cython-${python.branch}:py${python.version}-cython \
                     port:py${python.version}-extension-helpers \
                     port:py${python.version}-jinja2 \
                     port:py${python.version}-setuptools \
@@ -39,9 +40,11 @@ if {${name} ne ${subport}} {
                     port:erfa \
                     port:expat \
                     port:py${python.version}-colorlog \
+                    port:py${python.version}-h5py \
                     port:py${python.version}-matplotlib \
                     port:py${python.version}-numpy \
                     port:py${python.version}-packaging \
+                    port:py${python.version}-pandas \
                     port:py${python.version}-pyerfa \
                     port:py${python.version}-pyobjc \
                     port:py${python.version}-pythran \
@@ -63,4 +66,6 @@ if {${name} ne ${subport}} {
 
     dist_subdir     ${name}/${version}
     distname        astropy-${version}
+
+    patchfiles      patch-pyproject.toml.diff
 }

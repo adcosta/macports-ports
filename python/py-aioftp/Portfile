@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-aioftp
-version             0.21.2
+version             0.21.4
 revision            0
 categories-append   net
 license             Apache-2
@@ -12,13 +12,14 @@ maintainers         {mps @Schamschula} openmaintainer
 description         ftp client/server for asyncio
 long_description    {*}${description}
 supported_archs     noarch
+platforms           {darwin any}
 homepage            https://github.com/aio-libs/aioftp
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
-checksums           rmd160  ada82082dde6b6b71cb9eaca1a3c678e1c2433da \
-                    sha256  256cde05d08f5cb60c98a92f0aa41017f987a116dd46f8f4bca545e3e0fc2d22 \
-                    size    51672
+checksums           rmd160  8418959bb24931a7fc6511685e488512b89f368f \
+                    sha256  28bb26d4616c7c381a1543281f987051b8d2d1d5bfaf023d9e7e2c2105c51bb9 \
+                    size    52587
 
 if {${name} ne ${subport}} {
     depends_build-append \

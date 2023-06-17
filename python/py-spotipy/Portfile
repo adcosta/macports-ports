@@ -4,10 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-spotipy
-version             2.19.0
+version             2.23.0
 revision            0
 
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         {judaew @judaew} openmaintainer
 
@@ -15,17 +16,18 @@ description         A light weight Python library for the Spotify Web API
 long_description    {*}${description}
 homepage            https://spotipy.readthedocs.io/
 
-checksums           rmd160  e17f8527dc867c4d0538673302af2eba38269861 \
-                    sha256  904f6e813dba837758e9510c1bee51d7ca217f169246625a13e693733dc33543 \
-                    size    32447
+checksums           rmd160  bc7dabf17eb4053e916f726ce8022bedfa531043 \
+                    sha256  0dfafe08239daae6c16faa68f60b5775d40c4110725e1a7c545ad4c7fb66d4e8 \
+                    size    38541
 
-python.versions     38 39 310
+python.versions     39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \
                     port:py${python.version}-setuptools \
 
     depends_run-append \
+                    port:py${python.version}-redis \
                     port:py${python.version}-requests \
                     port:py${python.version}-six \
                     port:py${python.version}-urllib3

@@ -4,12 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-bokeh
-version             2.4.2
+version             3.1.1
 revision            0
 categories-append   devel
 license             BSD
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -21,18 +22,24 @@ long_description    Bokeh (pronounced boh-Kay) is an implementation of \
 
 homepage            https://github.com/bokeh/bokeh
 
-checksums           rmd160  93ecf0c8ac31c56f62e02fa9a19942b8ed1fe378 \
-                    sha256  f0a4b53364ed3b7eb936c5cb1a4f4132369e394c7ae0a8ef420459410958033d \
-                    size    17693785
+checksums           rmd160  cecfc65b6c84db00da4975e03d4576a22c690e87 \
+                    sha256  ba0fc6bae4352d307541293256dee930a42d0acf92e760c72dc0e7397c3a28e9 \
+                    size    7700613
 
 if {${name} ne ${subport}} {
-    depends_lib-append  port:py${python.version}-setuptools \
-                        port:py${python.version}-yaml \
+    depends_build-append \
+                        port:py${python.version}-setuptools-git-versioning
+
+    depends_lib-append  port:py${python.version}-colorama \
+                        port:py${python.version}-contourpy \
                         port:py${python.version}-dateutil \
                         port:py${python.version}-jinja2 \
                         port:py${python.version}-numpy \
-                        port:py${python.version}-Pillow \
                         port:py${python.version}-packaging \
+                        port:py${python.version}-pandas \
+                        port:py${python.version}-Pillow \
                         port:py${python.version}-tornado \
-                        port:py${python.version}-typing_extensions
+                        port:py${python.version}-typing_extensions \
+                        port:py${python.version}-yaml \
+                        port:py${python.version}-xyzservices
 }

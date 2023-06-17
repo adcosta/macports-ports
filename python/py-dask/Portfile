@@ -4,13 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-dask
-version             2022.5.0
+version             2023.5.0
 revision            0
 categories-append   devel
 license             BSD
 supported_archs     noarch
+platforms           {darwin any}
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
@@ -28,20 +29,21 @@ long_description    Dask provides multi-core execution on larger-than-memory \
 
 homepage            https://github.com/dask/dask/
 
-checksums           rmd160  69f1c24a43b7ccc65778a4c30ed5965985c0180c \
-                    sha256  0afd69dd0cd9f838fc0710eda1f3e3333d6603b37e93ded7fac4a51d77566a0f \
-                    size    8651478
+checksums           rmd160  c9336b8d973cf305dba15ff6bcf77ab9c6cc5820 \
+                    sha256  4f4c28ac406e81b8f21b5be4b31b21308808f3e0e7c7e2f4a914f16476d9941b \
+                    size    8510890
 
 if {${name} ne ${subport}} {
     depends_build-append \
                         port:py${python.version}-setuptools
 
-    depends_lib-append  port:py${python.version}-packaging \
-                        port:py${python.version}-yaml \
-                        port:py${python.version}-cloudpickle \
+    depends_lib-append  port:py${python.version}-cloudpickle \
                         port:py${python.version}-fsspec \
+                        port:py${python.version}-packaging \
+                        port:py${python.version}-partd \
                         port:py${python.version}-toolz \
-                        port:py${python.version}-partd
+                        port:py${python.version}-versioneer \
+                        port:py${python.version}-yaml
 
     if {${python.version} eq 37} {
         version             2022.2.0

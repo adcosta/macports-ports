@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           java 1.0
 
 name                asciidoctorj
-version             2.5.3
+version             2.5.10
 revision            0
 
 categories          textproc java
@@ -23,9 +23,9 @@ master_sites        https://repo1.maven.org/maven2/org/asciidoctor/asciidoctorj/
 distname            ${name}-${version}-bin
 worksrcdir          ${name}-${version}
 
-checksums           rmd160  dd87d7cb51545afeb66ff1cb4b938a0b72d9dffa \
-                    sha256  2af46345b0fc56fe9936a719f29185d12e89b8f0f2f85a3423da2e6a9448ded0 \
-                    size    54258617
+checksums           rmd160  b08d74370e31ea44589b7beb9c3a4c8a7491cea1 \
+                    sha256  292db5e831192982ce485d1a1ffa37590b17d5e3757f11052145f07b6d1161bd \
+                    size    59000529
 
 java.version        1.8+
 java.fallback       openjdk11

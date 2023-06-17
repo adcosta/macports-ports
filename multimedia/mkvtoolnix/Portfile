@@ -29,11 +29,11 @@ use_xz              yes
 
 livecheck.type      none
 if {${os.platform} ne "darwin" || ${os.major} >= 19} {
-    version         67.0.0
+    version         76.0
     revision        0
-    checksums       rmd160  bf0d57eb268ade36012ca41e889bc03e8bc26da8 \
-                    sha256  db68be91ee8a0b688d924cc00d3bac9349306d54c29ce44a555728c1abb7d3ec \
-                    size    7791720
+    checksums       rmd160  d0ba9825793ab9501e424308cfca8a0bccf91f29 \
+                    sha256  6ace661b61a49d1026b1a97336051d7aa85d56fb34527f2ca97d8933f7efe90d \
+                    size    11021180
 
     livecheck.type  regex
     livecheck.url   [lindex ${master_sites} 0]
@@ -44,7 +44,7 @@ if {${os.platform} ne "darwin" || ${os.major} >= 19} {
     # The following features of the C++17 standards are not supported by ccache /opt/local/bin/clang++-mp-9.0:
     #   * file system library (C++17)
     version         53.0.0
-    revision        3
+    revision        5
     checksums       rmd160  5fb3ea63712cbdaf9e61b8fd573ef7e1d9a06540 \
                     sha256  8dfd66278c81e6f1df0fd84aad30ce2b4cf7a2ad4336924f01f1879f9d1e4cd6 \
                     size    7567276
@@ -62,10 +62,11 @@ if {${os.platform} ne "darwin" || ${os.major} >= 19} {
     # The following features of the C++11/C++14/C++17 standards are not supported by /usr/bin/clang++:
     #   * std::optional (C++17)
     version         41.0.0
-    revision        3
+    revision        5
     checksums       rmd160  17b2f3b7d6eb87e9d9d4aac536b66705c18d497f \
                     sha256  7cdd6ad9144324162604172b7e96cb13cdbb7913e07c4ad7633344aac20e4103 \
                     size    7401548
+    patchfiles      patch-mm_text_io.diff
 }
 
 distname            ${my_name}-${version}
@@ -125,7 +126,7 @@ compiler.cxx_standard 2017
 configure.cxxflags-append -std=c++17
 
 set cxx_stdlibflags {}
-if {[string match *clang* ${configure.cxx}]} {
+if {[string match *clang* ${configure.cxx}] && ${configure.cxx_stdlib} ne ""} {
     set cxx_stdlibflags -stdlib=${configure.cxx_stdlib}
 }
 

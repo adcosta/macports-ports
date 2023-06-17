@@ -12,8 +12,8 @@ set clang_executable_version 10
 set lldb_executable_version 10
 name                    llvm-${llvm_version}
 revision                3
-subport                 clang-${llvm_version} { revision 6 }
-subport                 lldb-${llvm_version} { revision 1 }
+subport                 clang-${llvm_version} { revision 8 }
+subport                 lldb-${llvm_version} { revision 3 }
 set suffix              mp-${llvm_version}
 set sub_prefix          ${prefix}/libexec/llvm-${llvm_version}
 dist_subdir             llvm
@@ -70,7 +70,7 @@ if {${subport} eq "llvm-${llvm_version}"} {
     long_description    Lldb is the "LLVM native" debugger.
 
     depends_lib         port:libxml2 port:libomp port:llvm-${llvm_version} port:ncurses
-    depends_build-append port:swig-python port:doxygen
+    depends_build-append port:swig-python path:bin/doxygen:doxygen
 }
 
 # the backtik pkgconfig setting in the ffi config line requires pkg-config
@@ -186,7 +186,8 @@ if {${subport} eq "lldb-${llvm_version}"} {
         1006-Fix-build-issues-pre-Lion-due-to-missing-a-strnlen-d.patch \
         1007-Fix-float.h-to-work-on-Snow-Leopard-and-earlier.patch \
         openmp-locations.patch \
-        clang-driver-support-11.x-target.diff
+        clang-driver-support-11.x-target.diff \
+        patch-lldb-ObjectFileMachO.cpp-iterator.diff
 }
 
 configure.post_args         ../${worksrcdir}
@@ -286,7 +287,9 @@ if {[lsearch -exact $PortInfo(depends_build) port:cctools] != -1} {
 }
 
 # use the system python27 if present
-if {${os.platform} eq "darwin" && ${os.major} >= 11} {
+if {${os.platform} eq "darwin" && ${os.major} >= 21} {
+    set pythonfullpath   /usr/bin/python3
+} elseif {${os.platform} eq "darwin" && ${os.major} >= 11} {
     set pythonfullpath   /usr/bin/python2.7
 } else {
     set pythonfullpath   ${prefix}/bin/python2.7
@@ -321,6 +324,12 @@ variant assertions description "Enable assertions for error detection (has perfo
 platform darwin {
 
     if {${subport} eq "clang-${llvm_version}"} {
+
+        if {${os.major} <= 18} {
+            # on systems that might build i386, we need atomic builtins
+            # https://trac.macports.org/ticket/58712
+            configure.args-append    -DCOMPILER_RT_EXCLUDE_ATOMIC_BUILTIN=OFF
+        }
 
         if {${os.major} <= 15} {
             # XRAY uses TLS, MAP_ANONYMOUS, and clock_gettime, so disable it
@@ -374,17 +383,7 @@ platform darwin {
 }
 
 if {${subport} eq "lldb-${llvm_version}"} {
-    if {${os.platform} eq "darwin" && ${os.major} < 15} {
-        depends_build
-        depends_lib
-        depends_run
-        archive_sites
-        known_fail yes
-        pre-fetch {
-            ui_error "${subport} is not supported on this os version at present."
-            return -code error {unsupported platform}
-        }
-    }
+    platforms {darwin >= 15}
 }
 
 post-extract {
@@ -432,13 +431,12 @@ if {${subport} eq "lldb-${llvm_version}"} {
 
     build.dir   ${build.dir}/tools/lldb
 
-    post-activate {
-        ui_msg "Please follow the instructions at  https://lldb.llvm.org/resources/build.html#code-signing-on-macos and then codesign lldb-server with:"
-        if {${os.major} >= 13} {
-            ui_msg "   sudo codesign --force --deep --preserve-metadata=identifier,entitlements,resource-rules,requirements,flags,team-identifier --sign <identity> ${sub_prefix}/bin/lldb-server"
-        } else {
-           ui_msg "   sudo codesign --force --deep --preserve-metadata=identifier,entitlements,resource-rules,requirements --sign <identity> ${sub_prefix}/bin/lldb-server"
-        }
+    notes "Please follow the instructions at https://lldb.llvm.org/resources/build.html#code-signing-on-macos and then codesign lldb-server with:\n--------------------\n"
+    notes-append "${sub_prefix}/scripts/lldb/macos-setup-codesign.sh"
+    if {${os.major} >= 13} {
+        notes-append "sudo codesign --force --deep --preserve-metadata=identifier,entitlements,resource-rules,requirements,flags,team-identifier --sign lldb_codesign ${sub_prefix}/bin/lldb-server"
+    } else {
+        notes-append "sudo codesign --force --deep --preserve-metadata=identifier,entitlements,resource-rules,requirements --sign lldb_codesign ${sub_prefix}/bin/lldb-server"
     }
 }
 
@@ -475,6 +473,13 @@ post-destroot {
         ln -s ${prefix}/libexec/ld64/ld ${destroot}${sub_prefix}/bin/ld
     } elseif {${subport} eq "lldb-${llvm_version}"} {
         delete ${destroot}${prefix}/bin/debugserver-${suffix}
+
+        set lldb_scripts_srcdir ${worksrcpath}/tools/lldb/scripts
+        set lldb_scripts_destdir ${destroot}${sub_prefix}/scripts/lldb
+        xinstall -d ${lldb_scripts_destdir}
+        xinstall -m 755 -W ${lldb_scripts_srcdir} \
+            macos-setup-codesign.sh \
+            ${lldb_scripts_destdir}
     }
 }
 
@@ -524,7 +529,7 @@ if {${subport} eq "llvm-${llvm_version}"} {
                 ${worksrcpath}/tools/clang/tools/scan-build/libexec/c++-analyzer \
                 ${worksrcpath}/tools/clang/tools/scan-build/bin/scan-build
 
-            # pythonfullpath is set above, depending on presence of system python2.7
+            # pythonfullpath is set above, depending on presence of system python2.7 or python3
             reinplace "s|/usr/bin/env python|${pythonfullpath}|g" \
                  ${worksrcpath}/tools/clang/tools/scan-view/bin/scan-view
 
@@ -545,19 +550,16 @@ if {${subport} eq "llvm-${llvm_version}"} {
     variant libstdcxx description {-stdlib=libstdc++_macports searches for MacPorts libstdc++} {
 
         patchfiles-append 9001-macports-libstdcxx.diff
+        if {${os.major} < 11} {
+            # see https://trac.macports.org/ticket/61778
+            depends_run-append  port:libstdcxx_clang_fix
+        }
 
         post-patch {
-            if { ${configure.build_arch} eq "arm64" } {
-                # see https://github.com/macports/macports-ports/commit/be1e11a368f672d927a7bdb381f2fa71a79ba483
-                set gcc_arch    aarch64
-            } else {
-                set gcc_arch    ${configure.build_arch}
-            }
-
             reinplace "s|@@MACPORTS_GCC_INCLUDE_DIR@@|${prefix}/include/gcc/c++|g" \
                 ${worksrcpath}/tools/clang/lib/Frontend/InitHeaderSearch.cpp \
                 ${worksrcpath}/tools/clang/lib/Driver/ToolChains/Darwin.cpp
-            reinplace "s|@@MACPORTS_HOST_NAME@@|${gcc_arch}-apple-darwin${os.major}|g" \
+            reinplace "s|@@MACPORTS_HOST_NAME@@|${configure.build_arch}-apple-darwin${os.major}|g" \
                 ${worksrcpath}/tools/clang/lib/Driver/ToolChains/Darwin.cpp
             reinplace "s|@@MACPORTS_libstdc++@@|${prefix}/lib/libgcc/libstdc++.6.dylib|g" \
                 ${worksrcpath}/tools/clang/lib/Driver/ToolChains/Darwin.cpp
@@ -591,7 +593,9 @@ if {${subport} eq "llvm-${llvm_version}"} {
             }
         }
     }
-    default_variants-append +libstdcxx
+    if { ${cxx_stdlib} eq "libstdc++" } {
+        default_variants-append +libstdcxx
+    }
 
     post-patch {
         reinplace "s|@@PREFIX@@|${prefix}|" \

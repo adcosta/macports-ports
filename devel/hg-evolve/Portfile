@@ -4,17 +4,17 @@ PortSystem              1.0
 PortGroup               python 1.0
 
 name                    hg-evolve
-version                 10.5.0
+version                 11.0.1
 revision                0
-checksums               rmd160  fe4e7219d2d81f33edf80ca92faa120585728dbb \
-                        sha256  a76ccf50273e2abb0dc4f0a1756dd98243a8f87241ec8718b6a879521d109dac \
-                        size    845049
+checksums               rmd160  be3b84d2f879e785355a9c72595ee926b3aedfff \
+                        sha256  82ea42df9a4b40e2604a65e2069f8ac6a5ae317de22925fdc4352d11a07fc054 \
+                        size    854850
 
 categories              devel
 license                 GPL-2
 platforms               darwin
 supported_archs         noarch
-maintainers             {lbschenkel @lbschenkel} openmaintainer
+maintainers             nomaintainer
 
 homepage                https://www.mercurial-scm.org/doc/evolution/
 description             Additional history rewriting commands for Mercurial.
@@ -28,10 +28,18 @@ long_description        Additional history rewriting commands for Mercurial \
                         developers to safely rewrite the same parts of history \
                         in a distributed way.
 
-python.default_version  310
+python.default_version  311
 python.pep517           yes
 
 depends_lib-append      port:mercurial
+depends_test-append     port:dash
+
+test.run                yes
+
+test.cmd                ${python.bin} ./run-tests.py
+test.args               -v -j ${build.jobs} --shell=${prefix}/bin/dash
+test.target
+test.dir                ${worksrcpath}/tests
 
 notes                   "
 To enable the evolve extension, add the following to your ~/.hgrc:
@@ -39,6 +47,11 @@ To enable the evolve extension, add the following to your ~/.hgrc:
 \[extensions\]
 evolve =
 "
+
+pre-test {
+    xinstall ${prefix}/share/mercurial/contrib/killdaemons.py ${test.dir}
+    xinstall ${prefix}/share/mercurial/contrib/run-tests.py ${test.dir}
+}
 
 post-patch {
     file delete ${worksrcpath}/hgext3rd/__init__.py

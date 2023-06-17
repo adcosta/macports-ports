@@ -32,7 +32,7 @@ checksums           sha256  bb4697ead91824b1fa33ffbe6643f6193459a66c906910a7611d
                     sha1    60d5dfeac1b75d813ffee049ca3fd393e9c9890f \
                     size    30860760
 
-conflicts           wireshark-devel wireshark wireshark2 wireshark22 wireshark24 wireshark3
+conflicts           wireshark2 wireshark22 wireshark3 wireshark4
 
 depends_build-append \
                     port:pkgconfig
@@ -110,7 +110,7 @@ variant libsmi description {Build with libsmi snmp support} {
 
 variant gnutls description {Build with GNU TLS support} {
     configure.args-replace  -DENABLE_GNUTLS=OFF -DENABLE_GNUTLS=ON
-    depends_lib-append      port:gnutls
+    depends_lib-append      path:lib/pkgconfig/gnutls.pc:gnutls
 }
 
 variant cares conflicts adns description description {Build with c-ares support} {

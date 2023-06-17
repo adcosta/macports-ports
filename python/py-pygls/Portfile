@@ -4,10 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pygls
-version             0.11.3
+version             1.0.2
 revision            0
 
 supported_archs     noarch
+platforms           {darwin any}
 license             Apache-2
 maintainers         {judaew @judaew} openmaintainer
 
@@ -20,12 +21,12 @@ long_description    \
     write your own language server in just a few lines of code.
 homepage            https://github.com/openlawlibrary/pygls
 
-checksums           rmd160  839f8f9255e891d44a21d9f821f419c260fc090e \
-                    sha256  4d86fc854e6d6613cd42bf7511e9c6aac947fc8d62ff973a705570b036d969f2 \
-                    size    139426
+checksums           rmd160  0131ab7301d82711f6a7deee34273d5cb75ce81c \
+                    sha256  888ed63d1f650b4fc64d603d73d37545386ec533c0caac921aed80f80ea946a4 \
+                    size    674931
 
 python.pep517       yes
-python.versions     38 39 310
+python.versions     39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools \
@@ -33,7 +34,7 @@ if {${name} ne ${subport}} {
                             port:py${python.version}-toml \
                             port:py${python.version}-wheel
 
-    depends_run-append      port:py${python.version}-pydantic \
+    depends_run-append      port:py${python.version}-lsprotocol \
                             port:py${python.version}-typeguard \
                             port:py${python.version}-typing_extensions
 

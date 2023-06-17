@@ -5,11 +5,12 @@ PortGroup           python 1.0
 
 name                py-tz
 python.rootname     pytz
-version             2022.1
+version             2023.3
 revision            0
 
 categories-append   devel
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         nomaintainer
 
@@ -19,11 +20,11 @@ long_description    pytz brings the Olson tz database into Python. This library 
 
 homepage            https://pypi.python.org/pypi/pytz
 
-checksums           rmd160  c0ca4276c3788cdf6e99038f9984c2a05dd81867 \
-                    sha256  1e760e2fe6a8163bc0b3d9a19c4f84342afa0a2affebfaa84b01b978a02ecaa7 \
-                    size    320473
+checksums           rmd160  ef44aecd11955d415733fbb4f8ff11e52c127a0f \
+                    sha256  1d8ce29db189191fb55338ee6d0387d82ab59f3d00eac103412d64e0ebd0c588 \
+                    size    317095
 
-python.versions     27 35 36 37 38 39 310
+python.versions     27 35 36 37 38 39 310 311
 
 if {${name} ne ${subport}} {
     if {${python.version} in "27 35 36"} {
@@ -31,6 +32,7 @@ if {${name} ne ${subport}} {
     }
 
     test.run        yes
+    python.test_framework
     test.dir        ${build.dir}/pytz/tests
     test.cmd        ${python.bin} test_lazy.py && ${python.bin} test_tzinfo.py
     test.target

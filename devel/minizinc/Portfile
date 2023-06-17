@@ -9,7 +9,7 @@ PortGroup           legacysupport 1.0
 
 legacysupport.newest_darwin_requires_legacy 10
 
-github.setup        MiniZinc libminizinc 2.6.3
+github.setup        MiniZinc libminizinc 2.7.5
 github.tarball_from archive
 name                minizinc
 revision            0
@@ -35,12 +35,17 @@ maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 platforms           darwin linux
 
-checksums           rmd160  bcf1053e1ab96ebed10816ea1d3c7280436dabea \
-                    sha256  740884d4eb8e7acf366efaad82efa0ca46dc4342afa5a6ecc1d749fcc4f96dd4 \
-                    size    12967548
+checksums           rmd160  237583e2fa09ee69c1ce26e7d03b42370472b86f \
+                    sha256  888ade5d682f6d7463d4fb0e408e363b9928a280843f33f6b5e124045e25ec0d \
+                    size    13055191
 
 depends_build-append \
                     port:bison
+
+depends_lib-append  port:zlib
+
+compiler.cxx_standard \
+                    2014
 
 configure.args-append \
                     -DUSE_CCACHE=OFF

@@ -3,13 +3,14 @@
 PortSystem          1.0
 PortGroup           app 1.0
 PortGroup           active_variants 1.1
+PortGroup           perl5 1.0
 
 name                pspp-devel
-set buildstamp      20220410085221
-set buildhash       g435b06
+set buildstamp      20230531143312
+set buildhash       gfa6bce
 epoch               1
-version             1.5.4
-revision            1
+version             2.0.0-pre1
+revision            18
 categories          math
 license             GPL-3+
 maintainers         {snc @nerdling}
@@ -25,7 +26,9 @@ homepage            https://www.gnu.org/software/pspp/
 platforms           darwin
 
 master_sites        http://pspp.benpfaff.org/~blp/pspp-master/${buildstamp}/source
-distname            pspp-${version}-${buildhash}
+distname            pspp-${version}${buildhash}
+
+perl5.branches      5.34
 
 depends_lib-append  path:lib/pkgconfig/cairo.pc:cairo \
                     port:fontconfig \
@@ -38,9 +41,9 @@ depends_lib-append  path:lib/pkgconfig/cairo.pc:cairo \
                     port:libxml2 \
                     path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
                     port:ncurses \
-                    port:perl5.30 \
+                    port:perl${perl5.major} \
                     path:lib/pkgconfig/pango.pc:pango \
-                    port:python310 \
+                    port:python311 \
                     port:readline \
                     port:spread-sheet-widget \
                     port:texinfo \
@@ -48,14 +51,14 @@ depends_lib-append  path:lib/pkgconfig/cairo.pc:cairo \
 
 depends_build-append    \
                         port:pkgconfig \
-                        port:p5.30-text-diff \
+                        port:p${perl5.major}-text-diff \
                         path:libexec/coreutils/libstdbuf.so:coreutils
 
-depends_test-append port:p5.30-text-diff path:libexec/coreutils/libstdbuf.so:coreutils
+depends_test-append port:p${perl5.major}-text-diff path:libexec/coreutils/libstdbuf.so:coreutils
 
-checksums           rmd160  35c4c3a3038fea3177bcdcd5d5c1486f51b23e30 \
-                    sha256  a7a223d9e071445bef3c08184a3b910e8c5cc2e28ec3ad8c24389ad5b02cd450 \
-                    size    9226769
+checksums           rmd160  e74d35d79d634dc8e048fe76c5cb320503a798f4 \
+                    sha256  b5a6e45fbaa53ca1e172f7dddba7b2e89a7878df3865433a9dcf2119c554adcc \
+                    size    10602633
 
 post-extract {
     if {[variant_isset gui]} {
@@ -64,7 +67,6 @@ post-extract {
     }
 }
 
-patchfiles          dynamic_lookup-11.patch
 post-patch {
     if {[variant_isset gui]} {
         reinplace s|@@PREFIX@@|${prefix}| ${worksrcpath}/PSPP
@@ -85,8 +87,8 @@ platform darwin 8 {
 }
 
 #configure.cflags-append -g
-configure.python    ${prefix}/bin/python3.10
-configure.perl      ${prefix}/bin/perl5.30
+configure.python    ${prefix}/bin/python3.11
+configure.perl      ${perl5.bin}
 configure.env-append    PYTHON3=${configure.python}
 configure.args-append   --disable-rpath \
                         --without-libpq \

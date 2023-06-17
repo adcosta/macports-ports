@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                libstdcxx-docs
-version             11.2.0
+version             12.2.0
 revision            0
 conflicts           stdman
 categories          lang
@@ -17,16 +17,16 @@ long_description    Manpages for the C++ library.
 
 homepage            https://gcc.gnu.org/onlinedocs/libstdc++/
 
-depends_build       port:doxygen path:bin/dot:graphviz
+depends_build       path:bin/doxygen:doxygen path:bin/dot:graphviz
 
 master_sites        gnu:gcc/gcc-${version}
 distname            gcc-${version}
 set major           [lindex [split ${version} .] 0]
 dist_subdir         gcc${major}
 
-checksums           rmd160  0fdd0b2c0954ccbd32e24f027d7b55fd26dcc627 \
-                    sha256  d08edc536b54c372a1010ff6619dd274c0f1603aa49212ba20f7aa2cda36fa8b \
-                    size    80888824
+checksums           rmd160  76d30c411227d6c3e87dd4f0a8ea1ae5d8ab9ffd \
+                    sha256  e549cf9cf3594a00e27b6589d4322d70e0720cdd213f39beb4181e06926230ff \
+                    size    84645292
 
 use_xz              yes
 

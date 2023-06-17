@@ -4,21 +4,25 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-typer
-version             0.4.0
+version             0.6.1
 revision            0
+
 categories-append   devel
 license             MIT
 maintainers         nomaintainer
 supported_archs     noarch
+platforms           {darwin any}
 
 description         Typer, build great CLIs. Easy to code. Based on Python type hints.
 long_description    {*}${description}
 
-python.versions     37 38 39 310
+homepage            https://github.com/tiangolo/typer
 
-checksums           rmd160  091fbdfdf0e8489c6569d70382d31a7f3818b797 \
-                    sha256  63c3aeab0549750ffe40da79a1b524f60e08a2cbc3126c520ebf2eeaf507f5dd \
-                    size    218979
+python.versions     37 38 39 310 311
+
+checksums           rmd160  0a029f940e6c828fd826cb23214157583ba2f041 \
+                    sha256  2d5720a5e63f73eaf31edaa15f6ab87f35f0690f8ca233017d7d23d743a91d73 \
+                    size    249789
 
 if {${name} ne ${subport}} {
     python.pep517   yes
@@ -40,9 +44,4 @@ if {${name} ne ${subport}} {
     patchfiles      patch-pyproject.toml.diff
 
     test.run        yes
-    test.cmd        py.test-${python.branch}
-    test.target     tests
-    test.env        PYTHONPATH=${worksrcpath}/build/lib
-
-    livecheck.type  none
 }

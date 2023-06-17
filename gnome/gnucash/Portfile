@@ -8,8 +8,9 @@ PortGroup         boost 1.0
 name              gnucash
 conflicts         gnucash gnucash-devel
 conflicts-delete  ${subport}
-version           4.9
-perl5.branches    5.28
+version           5.0
+revision          1
+perl5.branches    5.34
 categories        gnome x11
 license           GPL-2+
 maintainers       {dports @drkp} openmaintainer
@@ -35,11 +36,10 @@ use_bzip2         yes
 distname          ${name}-${version}
 worksrcdir        ${name}-${version}
 
-checksums         rmd160  edaa3c22b33c9fcfe94f588a7a5c1d3019eea9c9 \
-                  sha256  9a551c30c1b712199fc2227a109afb984d7bef18e138170bbc7225c6c1fab72d \
-                  size    14735314
+checksums           rmd160  75aba37909f10e2c83c3bdd35a3d5349b53d24d1 \
+                    sha256  cfc13bab31aed8e4962805ef56530f9772889604910b5678cb5c79c283138824 \
+                    size    14762814
 
-patchfiles-append patch-python-include-dirs-typo-fix.diff
 #patchfiles-append patch-gnucash-remove-test-failing-to-build.diff
 post-patch {
     reinplace "s|set(HAVE_OSX_KEYCHAIN 1)||" ${worksrcpath}/CMakeLists.txt
@@ -61,7 +61,7 @@ boost.version               1.71
 
 compiler.cxx_standard       2017
 
-set py_ver                  3.6
+set py_ver                  3.10
 set py_ver_nodot            [string map {. {}} ${py_ver}]
 
 configure.cppflags-delete   -I${prefix}/include
@@ -76,7 +76,7 @@ depends_build-append     port:pkgconfig \
                          port:gtest \
                          port:swig-guile \
                          port:swig-python \
-                         port:webkit2-gtk
+                         path:lib/pkgconfig/webkit2gtk-4.0.pc:webkit2-gtk
          
 depends_lib       port:guile \
                   port:perl${perl5.major} \
@@ -88,7 +88,7 @@ depends_lib       port:guile \
                   port:aqbanking6-gtk3 \
                   port:libofx \
                   port:python${py_ver_nodot} \
-                  port:icu \
+                  path:lib/pkgconfig/icu-uc.pc:icu \
                   port:libxml2
 
 depends_run       port:gnucash-docs
@@ -104,7 +104,7 @@ configure.args    -DENABLE_BINRELOC=OFF \
 
 # force use of the requested python
 configure.args-append -DPYTHON_EXECUTABLE:FILEPATH=${prefix}/bin/python${py_ver}
-configure.args-append -DPYTHON_INCLUDE_DIR:PATH=${frameworks_dir}/Python.framework/Versions/${py_ver}/include/python${py_ver}m
+configure.args-append -DPYTHON_INCLUDE_DIR:PATH=${frameworks_dir}/Python.framework/Versions/${py_ver}/include/python${py_ver}
 configure.args-append -DPYTHON_LIBRARY:FILEPATH=${frameworks_dir}/Python.framework/Versions/${py_ver}/lib/libpython${py_ver}.dylib
 
 post-destroot {

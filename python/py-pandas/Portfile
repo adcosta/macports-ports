@@ -2,14 +2,16 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
+PortGroup           compiler_blacklist_versions 1.0
 
 name                py-pandas
-version             1.4.2
+version             1.5.3
 revision            0
 categories-append   science
 license             BSD
 
-python.versions     27 37 38 39 310
+python.versions     27 37 38 39 310 311
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -19,9 +21,13 @@ long_description    ${description}
 
 homepage            https://pandas.pydata.org
 
-checksums           rmd160  e36627b0dbbc7dd03100732e594df892485697fb \
-                    sha256  92bc1fc585f1463ca827b45535957815b7deb218c549b7c18402c322c7549a12 \
-                    size    4940242
+checksums           rmd160  7119e0a0bb95117c9323840bdcf77ad56371cb04 \
+                    sha256  74a3fd7e5a7ec052f183273dc7b0acd3a863edf7520f5d3a1765c04ffdb3b0b1 \
+                    size    5203060
+
+# error: use of undeclared identifier 'signbit'; did you mean 'std::signbit'?
+compiler.blacklist-append \
+                    {clang < 600}
 
 if {${name} ne ${subport}} {
     if {${python.version} eq 27} {
@@ -31,9 +37,13 @@ if {${name} ne ${subport}} {
         checksums           rmd160  a4b18e58b6be7bf13893dbccaf73542918dda1c8 \
                             sha256  4f919f409c433577a501e023943e582c57355d50a724c589e78bc1d551a535a2 \
                             size    11837693
+        python.pep517       no
 
         # fix implicit declaration of tolower_ascii()
         patchfiles-append   patch-a3c158dad2.diff
+
+        depends_build-append \
+                        port:py${python.version}-setuptools
 
         depends_lib-append  port:py${python.version}-scipy \
                             port:py${python.version}-tables \
@@ -47,10 +57,17 @@ if {${name} ne ${subport}} {
         checksums           rmd160  b8bba96dcc34dcea8a7b5a27a1a00fdd5ce925c5 \
                             sha256  1e4285f5de1012de20ca46b188ccf33521bff61ba5c5ebd78b4fb28e5416a9f1 \
                             size    4736591
+        python.pep517       no
+
+        depends_build-append \
+                        port:py${python.version}-setuptools
+    } else {
+        post-patch {
+            reinplace {s|oldest-supported-numpy>=2022\.8\.16|numpy|g} ${worksrcpath}/pyproject.toml
+        }
     }
 
     depends_build-append \
-                        port:py${python.version}-setuptools \
                         port:py${python.version}-cython
 
     depends_lib-append  port:py${python.version}-dateutil \

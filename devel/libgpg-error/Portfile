@@ -2,19 +2,20 @@
 
 PortSystem      1.0
 PortGroup       conflicts_build 1.0
+PortGroup       gnu_info 1.0
 
 # we will only use the muniversal PG on < 10.14
 set using_muniversal_PG false
 if {${os.platform} eq "darwin" && ${os.major} < 18} {
 
-	set using_muniversal_PG true
-	PortGroup muniversal 1.0
+    set using_muniversal_PG true
+    PortGroup muniversal 1.0
 
-	merger_must_run_binaries yes
+    merger_must_run_binaries yes
 }
 
 name            libgpg-error
-version         1.45
+version         1.47
 revision        0
 categories      devel
 license         LGPL-2.1+
@@ -31,9 +32,9 @@ master_sites    gnupg
 
 use_bzip2       yes
 
-checksums       rmd160  074680bf2152e5778d0c8231c9bf9e26e3f7c309 \
-                sha256  570f8ee4fb4bff7b7495cff920c275002aea2147e9a1d220c068213267f80a26 \
-                size    1015954
+checksums       rmd160  e7e81719f4ab5d2c66f6837ab0688a64315b0959 \
+                sha256  9e3c670966b96ecc746c28c2c419541e3bcb787d1a73930f5e5f5e1bcbbb9bdb \
+                size    1020862
 
 depends_build   port:gettext
 
@@ -43,14 +44,26 @@ depends_lib     port:gettext-runtime \
 # build with gawk 5.0.0 is broken see https://trac.macports.org/ticket/58356
 configure.awk   /usr/bin/awk
 
+# enable install of deprecated gpg-error-config
+# currently required to configure libgcrypt
+# can be removed when this is no longer necessary
+# see libgpg-error NOTES for more details
+configure.args  --enable-install-gpg-error-config
+
 # fix build on Tiger see https://trac.macports.org/ticket/55145
 platform darwin 8 {
     configure.cppflags-append -D__DARWIN_UNIX03
 }
 
-if {![info exists universal_possible]} {
-    set universal_possible [expr {${os.universal_supported} && [llength ${configure.universal_archs}] >= 2}]
+platform darwin 10 {
+    # Rosetta misdetects the arch, which creates a problem for dependent libgcrypt.
+    # *** The config script "/opt/local/bin/gpgrt-config --libdir=/opt/local/lib gpg-error" was
+    # *** built for x86_64-apple-darwin10.8.0 and thus may not match the used host powerpc-apple-darwin10.
+    if {${build_arch} eq "ppc"} {
+        configure.args-append --build=powerpc-apple-darwin${os.major}
+    }
 }
+
 if {${universal_possible} && [variant_isset universal] && ${using_muniversal_PG}} {
     # muniversal's *.h merger does not handle \-continued lines properly
     patchfiles-append           patch-gen-posix-lock-obj_c.diff
@@ -66,6 +79,8 @@ post-destroot {
     xinstall -m 0644 -W ${worksrcpath} ABOUT-NLS AUTHORS COPYING COPYING.LIB NEWS README \
         THANKS VERSION ${destroot}${docdir}
 }
+
+gnu_info.name   gpgrt
 
 livecheck.type  regex
 livecheck.url   https://gnupg.org/ftp/gcrypt/${name}/

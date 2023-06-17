@@ -51,7 +51,12 @@ proc linalg.setup {args} {
 }
 
 if {![variant_isset accelerate] && ![variant_isset atlas] && ![variant_isset openblas]} {
-    default_variants-append +accelerate
+    if {${os.platform} eq "darwin" && ${os.major} < 21} {
+        # see https://trac.macports.org/ticket/65260
+        default_variants-append +accelerate
+    } else {
+        default_variants-append +openblas
+    }
 }
 
 # choose one of the following for serial linear algebra

@@ -14,10 +14,10 @@ universal_variant no
 # https://www.azul.com/downloads/?version=java-11-lts&os=macos&package=jdk
 supported_archs  x86_64 arm64
 
-version      11.56.19
+version      11.64.19
 revision     0
 
-set openjdk_version 11.0.15
+set openjdk_version 11.0.19
 
 description  Azul Zulu Community OpenJDK 11 (Long Term Support)
 long_description Azul® Zulu® is a Java Development Kit (JDK), and a compliant implementation of the Java Standard Edition (SE)\
@@ -29,14 +29,14 @@ master_sites https://cdn.azul.com/zulu/bin/
 
 if {${configure.build_arch} eq "x86_64"} {
     distname     zulu${version}-ca-jdk${openjdk_version}-macosx_x64
-    checksums    rmd160  012f063dd25db637f7ed45d3919c1b3627e9f35d \
-                 sha256  2614e5c5de8e989d4d81759de4c333aa5b867b17ab9ee78754309ba65c7f6f55 \
-                 size    193550721
+    checksums    rmd160  5f0696c379c1dcde166d36258451c9f7a53cd803 \
+                 sha256  222630bd333f901f53cd0d2341975ec9a31fd6846166d4ce86e8a57a3d734ac5 \
+                 size    194038289
 } elseif {${configure.build_arch} eq "arm64"} {
     distname     zulu${version}-ca-jdk${openjdk_version}-macosx_aarch64
-    checksums    rmd160  8a0f7adca8377f7ace5f5cf05e00fdc90d6d1349 \
-                 sha256  6bb0d2c6e8a29dcd9c577bbb2986352ba12481a9549ac2c0bcfd00ed60e538d2 \
-                 size    191059414
+    checksums    rmd160  b6550b7fcd364566038c98ab5560c2ce6974fcdf \
+                 sha256  f0d84d5f1ae9d67bbb28d4e97fe365692fcdf8f5ad49c57b525281ebb5807577 \
+                 size    192155959
 }
 
 worksrcdir   ${distname}/zulu-11.jdk
@@ -53,7 +53,9 @@ if {${os.platform} eq "darwin" && ${os.major} < 18} {
 
 homepage     https://www.azul.com/downloads/
 
-livecheck.type  none
+livecheck.type      regex
+livecheck.url       https://cdn.azul.com/zulu/bin/
+livecheck.regex     zulu(11\.\[0-9\.\]+)-ca-jdk\[0-9\.\]+-macosx_.*\.tar\.gz
 
 use_configure    no
 build {}

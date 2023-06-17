@@ -4,15 +4,15 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                scons
-version             3.1.2
+version             4.5.2
 revision            0
-checksums           rmd160  6052ef4ebd702ce7dc9888d50c163664201c377f \
-                    sha256  7801f3f62f654528e272df780be10c0e9337e897650b62ddcee9f39fde13f8fb \
-                    size    668298
+checksums           rmd160  2c3a91e7ec832b8384d17b659134c2c457232b3e \
+                    sha256  ce26aac95d350a79a4192196b0beac3cb24f4ccabce0123eb28d3370f576f072 \
+                    size    3194724
 
 categories          devel python
-platforms           darwin
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         {ryandesign @ryandesign} openmaintainer
 
@@ -23,28 +23,30 @@ long_description    SCons is an Open Source software construction \
                     for the classic Make utility with integrated \
                     functionality similar to autoconf/automake and \
                     compiler caches such as ccache.
-homepage            http://www.scons.org/
 
-python.default_version 27
-
+homepage            https://www.scons.org
 master_sites        sourceforge:project/scons/scons/${version}
+distname            SCons-${version}
 
-patchfiles          manpath.patch \
-                    python-interp.patch
+python.default_version \
+                    311
+
+patchfiles          python-interp.patch
 post-patch {
-    reinplace -W ${worksrcpath}/script "s|__PYTHON__|${python.bin}|" \
-        scons scons-configure-cache scons-time sconsign
+    reinplace -W ${worksrcpath}/SCons/Utilities "s|__PYTHON__|${python.bin}|" \
+        ConfigureCache.py sconsign.py
 }
 
-destroot.args       --install-man \
-                    --no-version-script
 post-destroot {
     xinstall -m 0755 -d \
         ${destroot}${prefix}/share/doc/${name}
     xinstall -m 0644 -W ${worksrcpath} \
-        CHANGES.txt LICENSE.txt README.txt RELEASE.txt \
+        LICENSE README.rst \
         ${destroot}${prefix}/share/doc/${name}
-    foreach manfile [glob -tails -directory ${destroot}${python.prefix}/share/man/man1 *] {
+    file mkdir ${destroot}${python.prefix}/share/man/man1
+    foreach manfile [glob -tails -directory ${destroot}${python.prefix} *.1] {
+        move ${destroot}${python.prefix}/${manfile} \
+            ${destroot}${python.prefix}/share/man/man1/${manfile}
         ln -s ${python.prefix}/share/man/man1/${manfile} \
             ${destroot}${prefix}/share/man/man1/${manfile}
     }

@@ -9,13 +9,13 @@ PortGroup           makefile 1.0
 # clock_gettime
 legacysupport.newest_darwin_requires_legacy 15
 
-github.setup        vlang v weekly.2022.16
+github.setup        vlang v 0.3.4
 github.tarball_from archive
-revision            1
+revision            0
 
 name                vlang
 # Remove weekly from version number
-version             [string range ${version} 7 end]
+#version             [string range ${version} 7 end]
 homepage            https://vlang.io/
 
 description         Simple, fast, safe, compiled language for developing maintainable software
@@ -28,7 +28,7 @@ maintainers         {harens @harens} openmaintainer
 
 # Install the V compiler as a separate distfile.
 # Based on https://github.com/macports/macports-ports/blob/master/games/minetest/Portfile
-set vc_commit       4505557b56638eb931182f764580767e22cf110d
+set vc_commit       6be6daffdbd8227595aea70cc981bf4c634decb7
 set main_distfile   ${distfiles}
 set vc_distfile     ${vc_commit}${extract.suffix}
 set vc_mastersite   https://github.com/vlang/vc/archive
@@ -40,16 +40,15 @@ master_sites        ${github.master_sites}:main \
                     ${vc_mastersite}:vc
 
 checksums           ${main_distfile} \
-                    rmd160  76d3912525735076f2c498e2361dd9fa3c52a95e \
-                    sha256  d6088e945a2d55f87263bf83ff422494d2f598f6c92f405a54307587a25befab \
-                    size    4172510 \
+                    rmd160  ab7cc790d675588d687ec86952b89ddcd83b4b78 \
+                    sha256  7e251dd1748d16090348da4a29abd85dfe8c48aebc47bd9c23e91ed18e0c5ba1 \
+                    size    6714098 \
                     ${vc_distfile} \
-                    rmd160  59cd41e6a47f2182cadd8eea17ce17c5cd5671db \
-                    sha256  f610ca3c078286e8287e691a91b1c8ad42337a880bf9626cafdbfe2d7abe1e7b \
-                    size    1364231
+                    rmd160  fb9448443c918b664a803617e258db71035618b5 \
+                    sha256  97d38392c906195b60814e2387966fa94eb6f7779d3b9efb66a57f3f05a54bb0 \
+                    size    1675380
 
-# Optional runtime dependency to use the net.http and net.websocket modules
-depends_run         path:lib/libssl.dylib:openssl
+depends_lib         port:boehmgc
 
 # https://trac.macports.org/ticket/64913
 if {${build_arch} in "ppc ppc64"} {
@@ -57,7 +56,12 @@ if {${build_arch} in "ppc ppc64"} {
 }
 
 # Path to V compiler
-set vc_path ${workpath}/vc-${vc_commit}
+set vc_path ${worksrcpath}/vc
+
+pre-patch {
+    # Allows us to patch vc
+    move ${workpath}/vc-${vc_commit} ${vc_path}
+}
 
 # ./thirdparty/stdatomic/nix/atomic.h:12:10: fatal error: 'stdatomic.h' file not found
 # Based on cmus port: compatible compilers are Xcode > Xcode 7, clang > 3.7, and gcc > 4.8
@@ -66,13 +70,24 @@ compiler.blacklist-append {clang < 700} macports-clang-3.*
 
 # Stop V from looking in Homebrew directories, and remove hardcoded MacPorts prefix.
 # V has built-in font rendering, but users can optionally use freetype.
-patchfiles          patch-freetype2-prefix.diff \
-                    patch-openssl-prefix.diff
+patchfiles          patch-boehmgc-prefix.diff \
+                    patch-freetype2-prefix.diff \
+                    patch-openssl-prefix.diff \
+                    patch-pkgconfig-prefix.diff \
+                    patch-postgresql-prefix.diff \
+                    patch-ptrace.diff
 
-# Use LegacySupport with the time module
 # See https://github.com/vlang/v/issues/6605
+# Header file <sys/errno.h>, needed for module `sync` was not found
 if { ${os.major} <= [option legacysupport.newest_darwin_requires_legacy] } {
-    patchfiles-append patch-clock-gettime.diff
+    # Use LegacySupport with the time module
+    patchfiles-append patch-clock-gettime.diff \
+                      patch-legacysupport-makefile.diff
+
+    # Header file <sys/errno.h>, needed for module `sync` was not found
+    if { ${os.major} <= 9 } {
+        patchfiles-append patch-errno-header.diff
+    }
 }
 
 post-patch {
@@ -84,8 +99,8 @@ post-patch {
     # Disable vlang self update feature.
     copy -force ${filespath}/vup.v ${worksrcpath}/cmd/tools
 
-    foreach f [list vlib/net/openssl/c.v vlib/fontstash/a_d_use_freetype.v] {
-        reinplace -W ${worksrcpath} "s|@PREFIX@|${prefix}|g" ${f}
+    foreach f [list net/openssl/c.v fontstash/a_d_use_freetype.v pg/pg.v v/pkgconfig/pkgconfig.v builtin/builtin_d_gcboehm.c.v] {
+        reinplace -W ${worksrcpath} "s|@PREFIX@|${prefix}|g" vlib/${f}
     }
 
     if { ${os.major} <= [option legacysupport.newest_darwin_requires_legacy] } {
@@ -141,4 +156,13 @@ The Vlang library directory is group _developer writable. You need to be a membe
 _developer group to use Vlang. If you are not, run:
 
 sudo dscl . append /Groups/_developer GroupMembership <username>
+
+Optionally, to use the V PostgreSQL module, install PostgreSQL and set the POSTGRESQL_VERSION
+environment variable. For PostgreSQL 14:
+
+export POSTGRESQL_VERSION=14
 "
+
+# Check for weekly versions only
+#livecheck.version ${version}
+#livecheck.regex weekly.(\[0-9.\]+\[0-9\])

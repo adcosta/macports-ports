@@ -2,12 +2,13 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
+PortGroup           compiler_blacklist_versions 1.0
 
 # normally update mediainfo port at the same time
-github.setup        MediaArea MediaInfoLib 22.03 v
-checksums           rmd160  d891f471de67478419b768ab83451a032ea826db \
-                    sha256  af001f352b199d5efea7cb250d20b38f16d8b12506dc1b85084ee8c23ccaddfe \
-                    size    2682168
+github.setup        MediaArea MediaInfoLib 23.03 v
+checksums           rmd160  0fa889884c5a04a7ab2c86075ef52d19fdc7a8b8 \
+                    sha256  9764748df71b713dfdf5e738668853f9cd24dda76ffd95c83d7348a91d8e44bb \
+                    size    2778786
 
 name                mediainfolib
 description         Supplies technical and tag information about a video or audio file
@@ -35,3 +36,7 @@ depends_lib-append      port:curl \
                         port:zlib
 
 worksrcdir          ${worksrcdir}/Project/GNU/Library
+
+compiler.cxx_standard 2011
+# see https://trac.macports.org/ticket/67223
+compiler.blacklist-append {clang < 900}

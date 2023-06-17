@@ -8,10 +8,10 @@ PortGroup                       compiler_blacklist_versions 1.0
 
 name                            graphviz-devel
 set my_name                     graphviz
-version                         3.0.0
-checksums                       rmd160  ef802c0a93f607df1636d97d9bfff0dcb3902e40 \
-                                sha256  e6f0ac0b975bcadc000559d5a767111737d0a03919dfc0e47ce6450c877c7834 \
-                                size    29483148
+version                         8.0.4
+checksums                       rmd160  9780fe2f617148f9649c9e94500b30350fcf0246 \
+                                sha256  0253e62bbf5803405f0d02d39cc6913ec7bc03fcd90565bddc583d9d7d42ce93 \
+                                size    27486983
 
 set thisbranch                  [strsed ${name} "g/^${my_name}//"]
 set otherbranch                 [expr {${thisbranch} eq {} ? {-devel} : {}}]
@@ -20,7 +20,6 @@ maintainers                     {ryandesign @ryandesign} {mascguy @mascguy}
 license                         EPL-1
 homepage                        https://www.graphviz.org/
 master_sites                    https://gitlab.com/api/v4/projects/4207231/packages/generic/graphviz-releases/${version}/
-platforms                       darwin
 use_parallel_build              yes
 dist_subdir                     ${my_name}
 distname                        ${my_name}-${version}
@@ -54,11 +53,25 @@ compiler.blacklist-append       \
 compiler.cxx_standard           2011
 
 if {${name} eq ${subport}} {
+PortGroup                       legacysupport 1.1
+
+# strndup
+legacysupport.newest_darwin_requires_legacy 10
+
 revision                        0
 
 conflicts                       graphviz${otherbranch}
 
+platform darwin {
+    # FIXME: Temporary fix for 10.6 builds; need to follow-up with upstream
+    # See: https://trac.macports.org/ticket/60962
+    if {${os.major} == 10 && ${build_arch} ne "ppc"} {
+        compiler.whitelist          macports-clang-9.0
+   }
+}
+
 depends_build                   port:pkgconfig \
+                                port:gettext \
                                 port:autoconf-archive
 
 depends_lib                     path:include/turbojpeg.h:libjpeg-turbo \
@@ -71,7 +84,7 @@ depends_lib                     path:include/turbojpeg.h:libjpeg-turbo \
                                 port:gts \
                                 port:libtool \
                                 port:zlib \
-                                port:gettext
+                                port:gettext-runtime
 
 depends_run                     port:urw-fonts
 
@@ -107,6 +120,7 @@ configure.args                  --disable-silent-rules \
                                 --disable-io \
                                 --disable-java \
                                 --disable-lua \
+                                --disable-man-pdfs \
                                 --disable-ocaml \
                                 --disable-perl \
                                 --disable-php \
@@ -120,6 +134,7 @@ configure.args                  --disable-silent-rules \
                                 ac_cv_prog_AWK=/usr/bin/awk
 
 # Teach glibtool about -stdlib=libc++
+# Also we are patching Makefile.am.
 use_autoreconf  yes
 autoreconf.args -fvi
 configure.checks.implicit_function_declaration.whitelist-append strchr
@@ -270,7 +285,7 @@ variant pangocairo description {Add pangocairo support (antialiased bitmapped ou
 
 # This is not a default variant because its license would make Graphviz undistributable.
 variant poppler description {Add poppler support} {
-    depends_lib-append          port:poppler
+    depends_lib-append          path:lib/pkgconfig/poppler.pc:poppler
     configure.args-replace      --without-poppler --with-poppler
 }
 
@@ -329,6 +344,17 @@ subport graphviz-gui${thisbranch} {
         # This port does not build with the new Xcode build system at present
         build.pre_args          -UseNewBuildSystem=NO
         destroot.pre_args       -UseNewBuildSystem=NO
+    }
+
+    # When building for 10.11, with the 10.12 SDK, builds fail due to:
+    # - Unknown type name 'NSToolbarItemIdentifier'
+    # That identifier must be replaced with 'NSString *' for this scenario.
+    # See: https://trac.macports.org/ticket/63597
+    if { (${os.major} == 15) && [vercmp ${xcodeversion} 8] >= 0} {
+        ui_debug "Building for 10.11 with 10.12 SDK; enabling patch for NSToolbarItemIdentifer"
+        pre-patch {
+            reinplace "s|NSToolbarItemIdentifier|NSString *|g" macosx/GVAttributeInspectorController.h
+        }
     }
 
     xcode.configuration         Release

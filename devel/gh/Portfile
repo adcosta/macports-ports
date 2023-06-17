@@ -2,8 +2,8 @@
 
 PortSystem          1.0
 
-version             2.9.0
-revision            1
+version             2.30.0
+revision            0
 
 # Github CLI is failing to build on 10.12 and below.
 # So in that case, use the pre-built binary tarball.
@@ -54,9 +54,9 @@ if ${source_build} {
 
     use_parallel_build  no
 
-    checksums       rmd160  5da23010615c0fc49b8d936fee493dbcc1361c53 \
-                    sha256  730b600d33afb67d84af4dca1af80cb1fbff79d302ac4f840fc8e9e4c25fceb7 \
-                    size    705077
+    checksums           rmd160  3a86f14915749fe2fbd4df6ce899a67b19bb612f \
+                        sha256  5e66be97f51559dcea3621c8cc3cf2f67bf47bf2e1902014b3ec5689ab4e8add \
+                        size    849083
 
     github.tarball_from archive
 
@@ -70,17 +70,18 @@ if ${source_build} {
     }
 
 } else {
+    github.tarball_from releases
+
     build {}
 
     distname        gh_${version}_macOS_amd64
 
-    checksums       rmd160  d094d3355609a557d598ad1b5b79f78f0fb4c0a2 \
-                    sha256  868355c87793f07b8a189062f5853b2aa7fb0a9cce423d1d0d4326566628460a \
-                    size    7883546
-
-    github.tarball_from releases
+    checksums       rmd160  e3d2806b182e43b759926badbdced251c57d73df \
+                    sha256  6b91c446586935de0e9df82da58309b2d1b83061cfcd4cc173124270f1277ca7 \
+                    size    10749524
 
     use_configure   no
+    use_zip         yes
 }
 
 destroot {

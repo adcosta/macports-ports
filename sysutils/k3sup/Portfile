@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/alexellis/k3sup 0.11.3
+go.setup            github.com/alexellis/k3sup 0.12.13
 github.tarball_from archive
 revision            0
 
@@ -11,10 +11,10 @@ homepage            https://k3sup.dev
 
 description         bootstrap Kubernetes with k3s over SSH \< 1 min
 
-long_description    ${name} is a light-weight utility to get from zero to \
-                    KUBECONFIG with k3s on any local or remote VM. All you \
-                    need is ssh access and the k3sup binary to get kubectl \
-                    access immediately.
+long_description    \
+    ${name} is a light-weight utility to get from zero to KUBECONFIG with k3s \
+    on any local or remote VM. All you need is ssh access and the k3sup \
+    binary to get kubectl access immediately.
 
 categories          sysutils
 installs_libs       no
@@ -22,41 +22,48 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
+patchfiles          patch-Makefile.diff
+
+build.cmd           make
 build.pre_args-append \
-    -ldflags \" \
-        -s -w \
-        -X ${go.package}/cmd.Version=${version} \" \
-    -installsuffix cgo
+                    GitCommit="" \
+                    Version=${version}
+build.args          dist
 
 destroot {
-    xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+    xinstall -m 0755 ${worksrcpath}/bin/${name} ${destroot}${prefix}/bin/
 }
 
 checksums           ${distname}${extract.suffix} \
-                        rmd160  a4d85b82e9961c4322da9942405b7be5ef143d58 \
-                        sha256  5e69f7fd5f2b55d4a77b741cef9dd8c44847faf1c95390fb115649148a486f85 \
-                        size    2558953
+                        rmd160  6148ad3945cb2a5b3e3639978d60fb6edc0cc6a4 \
+                        sha256  e44567e92aec1f8f1e7709d5801eedf7bf68e86eba4f3df0dd841217ba84cbb6 \
+                        size    1281780
 
-go.vendors          golang.org/x/sys \
-                        lock    981b61492c35 \
-                        rmd160  606ed215b91d9e0e361a5c9b1e38d91a3ecf920d \
-                        sha256  4c628b4b0f12d6f35b3200029f099ca392b0d9dde51cb5b3c113e0cb8aac5892 \
-                        size    1054654 \
+go.vendors          golang.org/x/term \
+                        lock    a9ba230a4035 \
+                        rmd160  2011606ab7a7f34f3deffe211d32ef2c89ebb195 \
+                        sha256  3f372803b6ee7e65988d483eaf3696ec479b2cc3e42873e8d8e147c9600e40e2 \
+                        size    14845 \
+                    golang.org/x/sys \
+                        lock    c680a09ffe64 \
+                        rmd160  a888af516046d59ceae0983ef656b6ea0a616ca5 \
+                        sha256  1c542763a49b094dedec13fc2b650d12b141a46d9237c947640745c47f72fefa \
+                        size    1358410 \
                     golang.org/x/crypto \
-                        lock    70a84ac30bf9 \
-                        rmd160  a4669e7e76a0b9e1ff0a29da7637344dba930556 \
-                        sha256  4076b95aeea5ba2226471c2ae2f61cf5df589d92d9d75064df3550c4c2fb2960 \
-                        size    1729956 \
+                        lock    5757bc0c5503 \
+                        rmd160  7801f01799b968e407da8049ab06431863fecd94 \
+                        sha256  2f8168cf7cfdfd0c47bf073b3721a67b6ef2d3e100591f821b981727a28bec81 \
+                        size    1631274 \
                     github.com/spf13/pflag \
                         lock    v1.0.5 \
                         rmd160  2ce81608a38c6f383a35bccd24d64361df5828c9 \
                         sha256  7f41acdcba65b1fab5b9b633947a139f9915b60f94bdab486cdbe9d90c54f61e \
                         size    50815 \
                     github.com/spf13/cobra \
-                        lock    v1.0.0 \
-                        rmd160  73602c4d37ad508ba8b35812c793e1df3eda7bb9 \
-                        sha256  6cdf3f445559b8f41f5288366a4c26e8d1b1601dac6924af091a49f1f6b11396 \
-                        size    128931 \
+                        lock    v1.5.0 \
+                        rmd160  18a2771699cf666feee7566f27bf7122143209fd \
+                        sha256  64c60a9946f3daf9d26ed266ec31b81afa07357058b602b463fef82155430dad \
+                        size    104886 \
                     github.com/pkg/errors \
                         lock    v0.9.1 \
                         rmd160  dc065c655f8a24c6519b58f9d1202eb266ecda40 \
@@ -73,12 +80,12 @@ go.vendors          golang.org/x/sys \
                         sha256  024c8a57316c7fbc0eb23cdbfd57f72a74b51beb83d714034d67ee9aba48100c \
                         size    3366 \
                     github.com/inconshreveable/mousetrap \
-                        lock    v1.0.0 \
-                        rmd160  5c617a09f1432fc543672a0e0c1e13d3752030c2 \
-                        sha256  0e6bae2849f13d12fe361ecac087728e4e97f3482f4cec44f6e7a2c53bb9cd0c \
-                        size    2291 \
+                        lock    v1.0.1 \
+                        rmd160  d5dd7c9ef19fef8876014ae3b08a3f6a2a813bf7 \
+                        sha256  57bdbba1b25456bc66319f0ad5ba00b92dcfddd8431df9152e046fe079ad85b2 \
+                        size    5944 \
                     github.com/alexellis/go-execute \
-                        lock    8697e4e28c5e \
-                        rmd160  1a342ecfb7a4a004f8c59fc82fd511685413859a \
-                        sha256  d50a1825924c21a202bedc6c4be0a6ca345133059e9a703b952e74009efb17b3 \
-                        size    3987
+                        lock    v0.5.0 \
+                        rmd160  a1b5182c972940910951be4037c716b5e62bd9ab \
+                        sha256  10c440acd480c07577c2657d4e55aded9c870460e07c9bdbd4f73829fde5aa46 \
+                        size    4243

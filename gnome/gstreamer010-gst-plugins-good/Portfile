@@ -9,7 +9,7 @@ PortGroup           compiler_blacklist_versions 1.0
 name                gstreamer010-gst-plugins-good
 set my_name         gst-plugins-good
 version             0.10.31
-revision            13
+revision            14
 description         \
     A set of good-quality plug-ins for GStreamer under GStreamer's preferred \
     license, LGPL.
@@ -21,7 +21,6 @@ long_description    \
 maintainers         nomaintainer
 categories          gnome
 license             LGPL-2+
-platforms           darwin
 homepage            https://gstreamer.freedesktop.org/modules/${my_name}.html
 master_sites        https://gstreamer.freedesktop.org/src/${my_name}/ gnome:sources/${my_name}/0.10/
 use_bzip2           yes
@@ -46,7 +45,7 @@ depends_lib     \
     port:libdv \
     path:include/turbojpeg.h:libjpeg-turbo \
     port:libshout2 \
-    port:libsoup \
+    path:lib/pkgconfig/libsoup-2.4.pc:libsoup \
     path:lib/libspeex.dylib:speex \
     port:taglib \
     port:wavpack

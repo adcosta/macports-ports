@@ -42,7 +42,7 @@ proc octave.set_module {opt action args} {
     }
 }
 
-default categories   "math science"
+default categories   "octave math science"
 default master_sites [list sourceforge:project/octave/Octave%20Forge%20Packages/Individual%20Package%20Releases \
                         sourceforge:octave]
 default distname     {${octave.module}-${version}}
@@ -90,6 +90,9 @@ post-extract {
         delete ${workpath}/${octave.module}
         move [glob ${workpath}/*-*] ${workpath}/${octave.module}
     }
+    if {[exec /bin/ls ${workpath} | grep -c "-"] == 2 && ![string match [glob ${workpath}/*-*] ${workpath}/${octave.module}]} {
+        move [glob ${workpath}/*-*] ${workpath}/${octave.module}
+    }
 
 #     set worksrcdir_name [exec /bin/ls ${workpath} | grep -v -E "^\\."]
 #     if {[string equal ${worksrcdir_name} ${octave.module}] == 0} {
@@ -130,7 +133,7 @@ pre-configure {
             "'try; pkg build -verbose -nodeps ${workpath}/tmp-build ${workpath}/${distname}.tar.gz; catch; disp(lasterror.message); exit(1); end_try_catch;'"
 
         # fortran arch flag is not set automatically
-        if {${configure.build_arch} eq "x86_64" || ${configure.build_arch} eq "ppc64"} {
+        if {${configure.build_arch} in [list arm64 ppc64 x86_64]} {
             configure.fflags-append -m64
         } else {
             configure.fflags-append -m32

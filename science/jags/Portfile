@@ -4,23 +4,23 @@ PortSystem          1.0
 PortGroup           compilers 1.0
 
 name                jags
-version             4.3.0
-revision            1
+version             4.3.2
+revision            0
 set major           [lindex [split ${version} .] 0]
-categories          science
+categories          science math
 license             GPL-2
-platforms           darwin
-maintainers         nomaintainer
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 description         Just Another Gibbs Sampler
 long_description    JAGS is a program for analysis of Bayesian hierarchical \
                     models using Markov Chain Monte Carlo (MCMC) simulation, \
                     not wholly unlike BUGS.
-homepage            http://mcmc-jags.sourceforge.net/
+homepage            https://mcmc-jags.sourceforge.net/
 master_sites        sourceforge:project/mcmc-jags/JAGS/${major}.x/Source
 distname            JAGS-${version}
 
-checksums           rmd160  fd89f4b34d8866f19b1a72e181b56f1675d27b07 \
-                    sha256  8ac5dd57982bfd7d5f0ee384499d62f3e0bb35b5f1660feb368545f1186371fc
+checksums           rmd160  35e7695072b6bb5a6dfb60d789ac0474eafb92a5 \
+                    sha256  871f556af403a7c2ce6a0f02f15cf85a572763e093d26658ebac55c4ab472fc8 \
+                    size    2032834
 
 # test deps pkgconfig and cppunit have to be added in build to work
 depends_build-append    path:libexec/coreutils/libstdbuf.so:coreutils \

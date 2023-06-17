@@ -3,11 +3,11 @@
 PortSystem              1.0
 PortGroup               github 1.0
 
-github.setup            samtools htslib 1.15.1
+github.setup            samtools htslib 1.17
 revision                0
-checksums               rmd160  9a4e290d3775b5cc75d1906608993a3871db12d5 \
-                        sha256  8d7f8bf9658226942eeab70af2a22aca618577eaa8fe2ed9416ee306d5351aa1 \
-                        size    4141140
+checksums               rmd160  e88a2615ece3e417a7db334c072cfed2a12e9c54 \
+                        sha256  763779288c40f07646ec7ad98b96c378c739171d162ad98398868783b721839f \
+                        size    4619884
 
 categories              science
 maintainers             {ryandesign @ryandesign} openmaintainer

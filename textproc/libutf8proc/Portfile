@@ -3,25 +3,27 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        JuliaStrings utf8proc 2.6.1 v
+github.setup        JuliaStrings utf8proc 2.8.0 v
 revision            0
 name                libutf8proc
 categories          textproc
 platforms           darwin
 license             MIT
-maintainers         nomaintainer
+maintainers         {judaew @judaew} openmaintainer
 description         library for processing UTF-8 encoded Unicode strings
 long_description    ${description}
 
 homepage            https://julialang.org/utf8proc/
 
-checksums           rmd160  560c11179579f152baac89c1ad0e47e6cd336c18 \
-                    sha256  130c67add02559f7b04b96bc11a3529a41d078f0b5acf2047aa92438d10b206d \
-                    size    182914
+checksums           rmd160  77a542977efcb5d8eab04497a24cda7b14d0fc39 \
+                    sha256  573f552e95f00612fe801ea77bc8a1e08c597975386b19e24d975174de1f0455 \
+                    size    190342
 
 use_configure       no
 
 variant universal   {}
+
+patchfiles          remove-Wsign-conversion.diff
 
 build.args          prefix="${prefix}" \
                     CC=${configure.cc} \

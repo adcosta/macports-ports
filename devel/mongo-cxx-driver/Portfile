@@ -6,11 +6,11 @@ PortGroup           github 1.0
 PortGroup           compiler_blacklist_versions 1.0
 
 epoch               1
-github.setup        mongodb mongo-cxx-driver 3.6.7 r
+github.setup        mongodb mongo-cxx-driver 3.7.1 r
 revision            0
-checksums           rmd160  fa0929a4be9c918ed6924fc108af3c9257b99814 \
-                    sha256  2c58005d4fe46f1973352fba821f7bb37e818cefc922377ce979a9fd1bff38ac \
-                    size    1396521
+checksums           rmd160  88e731041746437380f8e87f7defa96ee7464225 \
+                    sha256  ff5ca5aa8966fef9174acab18cc221738500f26102d5e9c4bba508a2267f6214 \
+                    size    1444893
 
 license             Apache-2
 categories          devel databases
@@ -30,6 +30,7 @@ depends_lib-append  port:mnmlstc-core \
                     port:mongo-c-driver
 
 compiler.cxx_standard 2011
+compiler.thread_local_storage yes
 
 # Segmentation fault observed during build for Xcode 6.2
 compiler.blacklist-append {clang == 600.0.57}

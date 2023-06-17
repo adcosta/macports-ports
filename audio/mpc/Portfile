@@ -13,7 +13,7 @@ checksums           rmd160  b5c6e7279aed751891333a293f753d4ce96f0bbf \
 
 set branch          [join [lrange [split ${version} .] 0 0] .]
 categories          audio
-maintainers         {lbschenkel @lbschenkel} openmaintainer
+maintainers         nomaintainer
 license             GPL-2+
 
 description         a command line tool for MPD
@@ -27,9 +27,8 @@ long_description    mpc is a simple command line client for MPD.\
 
 homepage            https://www.musicpd.org/clients/${name}/
 master_sites        https://www.musicpd.org/download/${name}/${branch}/
-platforms           darwin
 
-set python_branch   3.9
+set python_branch   3.10
 set python_version  [string map {. {}} ${python_branch}]
 
 depends_build-append \

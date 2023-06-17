@@ -4,8 +4,8 @@ PortSystem              1.0
 PortGroup               github 1.0
 PortGroup               java 1.0
 
-github.setup            plantuml plantuml 1.2022.4 v
-github.tarball_from     archive
+github.setup            plantuml plantuml 1.2023.9 v
+github.tarball_from     releases
 revision                0
 
 categories              java editors
@@ -17,39 +17,58 @@ description             PlantUML is a tool for generating UML diagrams from \
 long_description        ${description}
 homepage                https://plantuml.com/
 
-checksums               rmd160  e1a743f108322427b2fe0cfd7a098b50cce8134d \
-                        sha256  635ce0343bc188be3c0f0b6afc344960c575f0157b8564d060f749ac4b623a1c \
-                        size    5603041
+distfiles               ${name}-${version}.jar
 
-depends_build           bin:ant:apache-ant \
-                        port:jlatexmath
+checksums               ${name}-${version}.jar \
+                        rmd160  62376a9cf5e93fe074a15b0d684eb8303910e7ea \
+                        sha256  dbc4fe71dd3d50792a4f631f0a6c7dee7644563cd3daf0a3da39c1f112c08bf0 \
+                        size    11561758
+
+extract.only
 
 java.version            1.7+
-java.fallback           openjdk18
+java.fallback           openjdk17
 
 use_configure           no
-
-build.cmd               ant
-build.target            dist
+build {}
 
 set javadir             ${destroot}${prefix}/share/java
-set jarname             ${name}.jar
-
-post-extract {
-    copy ${filespath}/${name}.in ${worksrcpath}/${name}
-}
-
-patchfiles              patch-jlatexmath-name.diff
-
-post-patch {
-    reinplace "s|__PLANTUML_LAUNCHER_PATH__|${prefix}/share/java/${jarname}|g" \
-        ${worksrcpath}/${name}
-}
 
 destroot {
-    xinstall -d -m 0755 ${javadir}
-    xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin
-    xinstall -m 0644 ${worksrcpath}/${jarname} ${javadir}
+    xinstall -d -m 0755 ${javadir}/${name}
+    xinstall -m 0755 ${filespath}/${name} ${destroot}${prefix}/bin
+    reinplace "s|@@PREFIX@@|${prefix}|g" ${destroot}${prefix}/bin/${name}
+    xinstall -m 0644 ${distpath}/${name}-${version}.jar \
+        ${javadir}/${name}/${name}.jar
+}
+
+variant pdf description {Include PDF Support} {
+    distfiles-append        ${name}-pdf-${version}.jar
+    checksums-append        ${name}-pdf-${version}.jar \
+                            rmd160  fb4995c372dc7338e81fa5413d0b16e560a22047 \
+                            sha256  fd7dde28b97e9d7916223301df0f6828131f109bdd21dae579a6103052685cad \
+                            size    23432241
+
+    post-destroot {
+        xinstall -m 0644 ${distpath}/${name}-pdf-${version}.jar \
+            ${javadir}/${name}/${name}-pdf.jar
+    }
+}
+
+variant jlatexmath description {Plantuml language extension to allow use AsciiMath or JLaTeXMath notation} {
+    master_sites-append http://beta.plantuml.net/
+    distfiles-append    ${name}-jlatexmath.zip
+
+    checksums-append    ${name}-jlatexmath.zip \
+                        rmd160  bf99090e005f0d5e027427b41b40b69d7d2fc872 \
+                        sha256  e041164c6dce5dec3377242a0664c1855d863094dd51c28880888f59820fc7e2 \
+                        size    3837373
+
+    depends_extract     port:unzip
+
+    post-destroot {
+        system "cd ${javadir}/${name} && ${prefix}/bin/unzip ${distpath}/${name}-jlatexmath.zip"
+    }
 }
 
 notes "
@@ -57,4 +76,9 @@ graphviz port is optional -- you don't need this if you only need sequence
 and activity diagrams. Otherwise, install with
 
     sudo port install graphviz
+
+JLatexMath support is optional -- you don't need this if you don't use
+JLaTeXMath notation. Otherwise, enable with
+
+    sudo port install plantuml +jlatexmath
 "

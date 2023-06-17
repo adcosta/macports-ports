@@ -4,16 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                borgbackup
-version             1.2.0
+version             1.2.4
 revision            0
-
-checksums           rmd160  8d5aaf269b4085519cb963a4b65d555d5293888e \
-                    sha256  e39a5547902ef456101aa4c779fa66b345bda70d16788e8bd18e458f93af7f67 \
-                    size    4020793
 
 categories          sysutils
 license             BSD
-maintainers         nomaintainer
+maintainers         {judaew @judaew} openmaintainer
 
 description         Deduplicating backup program
 long_description    BorgBackup (short: Borg) is a deduplicating backup \
@@ -26,6 +22,10 @@ long_description    BorgBackup (short: Borg) is a deduplicating backup \
                     backups to not fully trusted targets.
 
 homepage            https://www.borgbackup.org/
+
+checksums           rmd160  c637ce9c9ed2451b95a248ae55f39b4579b27487 \
+                    sha256  a4bd54e9469e81b7a30a6711423115abc818d9cd844ecb1ca0e6104bc5374da8 \
+                    size    4056513
 
 python.default_version  310
 

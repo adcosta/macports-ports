@@ -4,10 +4,10 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                pipenv
-version             2022.4.21
+version             2023.5.19
 revision            0
 categories-append   devel
-platforms           darwin
+platforms           {darwin any}
 license             MIT
 supported_archs     noarch
 
@@ -15,7 +15,7 @@ maintainers         {danchr @danchr} openmaintainer
 
 description         The officially recommended Python packaging tool.
 
-long_description    ${description} \
+long_description    {*}${description} \
                     Pipenv -- Python Dev Workflow for Humans -- is a \
                     tool that aims to bring the best of \
                     all packaging worlds (bundler, composer, npm, \
@@ -34,14 +34,13 @@ master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
 
 distname            ${python.rootname}-${version}
 
-checksums           rmd160  3e7ec1eee820c6380a710c6e99add8d5d0bd0e43 \
-                    sha256  3f93229de25a4c3a658249f48407b80f347f076640a9fd50c476a2876212f781 \
-                    size    5725011
+checksums           rmd160  3d84f9b8972d8b0ece97ea41938e5bd9b8b2a60f \
+                    sha256  1a9d37cc03e9c0d92ae646a79c40aa2d9c3bf529c7878533e74a7c56f2076179 \
+                    size    4759549
 
-python.default_version 310
+python.default_version 311
 
 depends_lib-append \
-    port:py${python.version}-pip \
     port:py${python.version}-certifi \
     port:py${python.version}-setuptools \
     port:py${python.version}-virtualenv \

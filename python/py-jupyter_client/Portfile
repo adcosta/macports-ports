@@ -4,13 +4,16 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-jupyter_client
-version             7.1.2
+version             7.3.4
 revision            0
 
 license             BSD
 supported_archs     noarch
+platforms           {darwin any}
 
-python.versions     27 35 36 37 38 39 310
+python.versions     37 38 39 310 311
+python.pep517       yes
+python.pep517_backend   hatch
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -19,9 +22,9 @@ long_description    {*}${description}
 
 homepage            https://jupyter.org
 
-checksums           rmd160  f65e01f7c2715624a05e0366bb90f18aa9ff5ba0 \
-                    sha256  4ea61033726c8e579edb55626d8ee2e6bf0a83158ddf3751b8dd46b2c5cd1e96 \
-                    size    326163
+checksums           rmd160  0e27a012764dd60e5985b0afe83f7cd9768c3589 \
+                    sha256  aa9a6c32054b290374f95f73bb0cae91455c58dfb84f65c8591912b8f65e6d56 \
+                    size    329871
 
 if {${name} ne ${subport}} {
     depends_build-append  port:py${python.version}-setuptools
@@ -33,19 +36,4 @@ if {${name} ne ${subport}} {
                         port:py${python.version}-tornado \
                         port:py${python.version}-traitlets \
                         port:py${python.version}-zmq
-
-    if {${python.version} <= 35} {
-        version             5.3.4
-        revision            0
-        distname            ${python.rootname}-${version}
-        checksums           rmd160  8dc84b386f1d095f79da23e6953b7f793e71e7b3 \
-                            sha256  60e6faec1031d63df57f1cc671ed673dced0ed420f4377ea33db37b1c188b910 \
-                            size    275850
-
-        depends_run-append  port:py${python.version}-setuptools
-        depends_lib-delete  port:py${python.version}-entrypoints \
-                            port:py${python.version}-nest_asyncio
-    }
-
-    livecheck.type      none
 }

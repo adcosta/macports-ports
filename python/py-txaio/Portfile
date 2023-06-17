@@ -13,6 +13,7 @@ checksums           rmd160  ce69a794e9605d1afab3b9a77d61fbbc1ee2bb21 \
 maintainers         nomaintainer
 license             MIT
 supported_archs     noarch
+platforms           {darwin any}
 
 description         Compatibility API between asyncio/Twisted/Trollius
 long_description    txaio is a helper library for writing code that runs \
@@ -20,7 +21,7 @@ long_description    txaio is a helper library for writing code that runs \
 
 homepage            https://github.com/crossbario/txaio
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \

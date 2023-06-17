@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           cargo   1.0
 PortGroup           github  1.0
 
-github.setup        grego blades 0.3.0 v
+github.setup        grego blades 0.5.0 v
 github.tarball_from archive
 revision            0
 
@@ -33,9 +33,9 @@ maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
 checksums           ${distname}${extract.suffix} \
-                    rmd160  3c4df1e0986e4d46aa59e0003c67b8e3e404a816 \
-                    sha256  3c521b1bbcb664572b05ee6c73d14c64ee8e67c9213fff9020aaca6610312c0b \
-                    size    46163
+                    rmd160  d2721e2f0d2460cf3c819f917038e0ceb4c60dd0 \
+                    sha256  e9ee64ead54e1942397ea5d6fcfd6ba928a888c1f4c127b11dec9fbadd283cc2 \
+                    size    44670
 
 build.pre_args-delete   --frozen
 

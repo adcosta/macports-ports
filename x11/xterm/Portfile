@@ -3,11 +3,11 @@
 PortSystem          1.0
 
 name                xterm
-version             372
+version             382
 revision            0
-checksums           rmd160  fad4cacc6fad27df23a339ba61e23375c3177b26 \
-                    sha256  c6d08127cb2409c3a04bcae559b7025196ed770bb7bf26630abcb45d95f60ab1 \
-                    size    1507107
+checksums           rmd160  4ec84d67808d94006f2603c2223d5723dbc92705 \
+                    sha256  0cd0bcf3d0aa746a840ea3f1366ea29a74263694d535b5c777f27eb65d7fceed \
+                    size    1536637
 
 categories          x11
 license             X11
@@ -32,8 +32,7 @@ depends_lib         port:ncurses \
                     port:xorg-libXaw \
                     port:Xft2
 
-patchfiles          PR-7191532.patch \
-                    TMPDIR.patch
+patchfiles          PR-7191532.patch
 
 configure.args      --mandir=${prefix}/share/man --enable-luit \
                     --enable-logging --enable-wide-chars \

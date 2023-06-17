@@ -13,15 +13,14 @@ description         GUI Application for FreeDV - an open source digital \
     voice protocol that integrates the modems, codecs, and FEC
 long_description    ${description}
 
-github.setup        drowe67 freedv-gui c820bf5a8f85974cb22abf0f3a3fedc119e9ef00
-version             20220418-[string range ${github.version} 0 7]
-checksums           rmd160  a628e89ab742b765f43e954b1827787c6b0096cd \
-                    sha256  4e3064eb10991f1557694678443fc8b7252986acbd4e217062c0154834bc72da \
-                    size    9480009
+github.setup        drowe67 freedv-gui 1.8.9 v
+checksums           rmd160  eb1aedafc7d109a7dcd857e1e75d85631068d9c0 \
+                    sha256  13dd3d2900f5c646af9df12f5194d8f6a37a7c2ecb87a915d22a50ac15da4571 \
+                    size    11257198
 revision            0
 
 # move from commit to version
-epoch               1
+epoch               2
 
 depends_build-append \
     port:pkgconfig

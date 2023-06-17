@@ -2,12 +2,11 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
-PortGroup           compiler_blacklist_versions 1.0
 
-github.setup        crystal-lang crystal 1.4.0
+github.setup        crystal-lang crystal 1.8.2
+github.tarball_from archive
 revision            0
 categories          lang
-platforms           darwin
 supported_archs     x86_64 arm64
 license             Apache-2
 maintainers         {outlook.com:mohd.akram @mohd-akram} openmaintainer
@@ -19,7 +18,7 @@ long_description    Crystal is a fast, compiled programming language with a \
 
 homepage            https://crystal-lang.org
 
-set llvm_version    14
+set llvm_version    15
 
 depends_lib         port:boehmgc \
                     port:gmp \
@@ -41,13 +40,13 @@ master_sites-append https://github.com/crystal-lang/${name}/releases/download/${
 distfiles-append    ${name}-${cr_full_ver}-${os.platform}-universal${extract.suffix}:bootstrap
 
 checksums           ${distname}${extract.suffix} \
-                    rmd160  78c30f96372c0f1eb505aa986c9977a082e44c56 \
-                    sha256  dfc18bf6dcf7521a0a877c5292fdc46fbaf3971523bb52c9c5e0b6ab33537fc4 \
-                    size    2879470 \
+                    rmd160  1edb7e53346a08bb13059623b23e44bba0594b82 \
+                    sha256  6e722e3239a8c467ba42a8838916788a4795b0ceaa2d1e2e98616cedeb540605 \
+                    size    3171583 \
                     ${name}-${cr_full_ver}-${os.platform}-universal${extract.suffix} \
-                    rmd160  aa4bb61aef943491b782e3f78cc5b969905e10de \
-                    sha256  def18c529bb35b23870f70bf6663b9395458db47551f8a77a1776909ec00bf43 \
-                    size    46119268
+                    rmd160  a4647e9838b3210d9670c7d1d0abe09112646672 \
+                    sha256  58ebc5289ed2dbedf80fd0d36fadffeff634b4801a4d739d42737e4b56140e38 \
+                    size    57525607
 
 patchfiles          patch-static.diff
 
@@ -63,14 +62,9 @@ configure.pre_args  > Makefile.local
 
 set llvm_config     LLVM_CONFIG=llvm-config-mp-${llvm_version}
 
-# Use MP's clang based on above LLVM version
-compiler.blacklist-append *gcc* clang
-compiler.fallback   macports-clang-${llvm_version}
-compiler.whitelist  macports-clang-${llvm_version}
+compiler.cxx_standard  2014
 
-compiler.cxx_standard  2011
-
-build.args          release=1 FLAGS=--no-debug \
+build.args          release=1 interpreter=1 FLAGS=--no-debug \
                     CRYSTAL_CONFIG_LIBRARY_PATH=${prefix}/lib
 
 build.env           ${llvm_config} \

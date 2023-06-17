@@ -3,12 +3,13 @@
 PortSystem          1.0
 
 name                privoxy
-version             3.0.33
-revision            3
+version             3.0.34
+revision            0
 categories          www security net
 platforms           darwin
 license             GPL-2
 maintainers         {ieee.org:s.t.smith @essandess} openmaintainer
+supported_archs     arm64 x86_64
 
 description         Advanced filtering web proxy
 
@@ -31,6 +32,24 @@ set privoxyGroup    privoxy
 set privoxyUser     privoxy
 add_users           ${privoxyUser} group=${privoxyGroup}
 
+# https://trac.macports.org/ticket/45461
+configure.asroot    yes
+pre-configure {
+    # ${prefix}/var/macports/sources/rsync.macports.org/macports/release/tarballs/base/src/port1.0/portutil.tcl
+    if {[getuid] != 0} {
+        ui_warn "dscl only works when running as root."
+        ui_warn "The PrimaryGroupID of '$privoxyUser' was not changed."
+    } elseif {${os.platform} eq "darwin" \
+        && [existsuser ${privoxyUser}] != -1 \
+        && [existsgroup ${privoxyGroup}] != -1} {
+        set dscl [findBinary dscl $portutil::autoconf::dscl_path]
+        set privoxyUser_gid [strsed [exec -ignorestderr $dscl . -read /Users/${privoxyUser} PrimaryGroupID] {g|^PrimaryGroupID: ||}]
+        if {${privoxyUser_gid} ne [existsgroup ${privoxyGroup}]} {
+            exec -ignorestderr $dscl . -change /Users/${privoxyUser} PrimaryGroupID ${privoxyUser_gid} [existsgroup ${privoxyGroup}]
+        }
+    }
+}
+
 proc plutil_startup {plcmds label} {
     global prefix startupitem.location
     foreach cmd ${plcmds} {
@@ -49,9 +68,9 @@ if {${name} eq ${subport}} {
     extract.only    ${distname}${extract.suffix}
 
     checksums       ${distname}${extract.suffix} \
-                    rmd160  4d01969cc52686c268a5e07e74e48c36bc4aa10b \
-                    sha256  04b104e70dac61561b9dd110684b250fafc8c13dbe437a60fae18ddd9a881fae \
-                    size    1579540
+                    rmd160  8ca1e475c112bfad1e8d556b12e5a6b51a122c47 \
+                    sha256  e6ccbca1656f4e616b4657f8514e33a70f6697e9d7294356577839322a3c5d2c \
+                    size    1589785
 
     gpg_verify.use_gpg_verification \
                     yes
@@ -71,10 +90,9 @@ if {${name} eq ${subport}} {
         }
     }
 
-    set perl5_major_min 5.28
-    if {${perl5.major} eq "" || ${perl5.major} < ${perl5_major_min}} {
-        perl5.major ${perl5_major_min}
-    }
+    # Please use MacPorts default perl5 version in:
+    # https://github.com/macports/macports-ports/blob/master/_resources/port1.0/group/perl5-1.0.tcl
+    perl5.major     5.34
 
     worksrcdir      ${name}-${version}-stable
 
@@ -547,7 +565,11 @@ TLS_PRIVOXY_ROOT_CA
 }
 
 subport ${name}-pki-bundle {
+    # Please increase the revision whenever curl-ca-bundle contents change
+    revision        0
+
     license         MIT
+    supported_archs noarch
 
     description     PKI Bundle for ${name}
     long_description \
@@ -559,7 +581,7 @@ subport ${name}-pki-bundle {
 
     depends_lib-append \
                     port:apple-pki-bundle \
-                    port:curl-ca-bundle
+                    path:share/curl/curl-ca-bundle.crt:curl-ca-bundle
 
     use_configure   no
     build           {}
@@ -606,6 +628,13 @@ subport ${name}-pki-bundle {
     }
     destroot.keepdirs-append \
                     ${destroot}${privoxy_ca_dir}
+
+    # Please remove this pre-activate block after 2023-07-01; see https://trac.macports.org/ticket/65367
+    pre-activate {
+        if {[file exists ${privoxy_ca_dir}/trustedCAs.pem]} {
+            delete  ${privoxy_ca_dir}/trustedCAs.pem
+        }
+    }
 
     variant user_pki_bundle \
         description "Add user PKI certificates from ${user_pki_bundle}" {

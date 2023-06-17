@@ -5,7 +5,7 @@ PortGroup           python 1.0
 
 # also update py-pycryptodomex
 name                py-pycryptodome
-version             3.14.1
+version             3.18.0
 revision            0
 
 homepage            https://www.pycryptodome.org
@@ -21,11 +21,11 @@ long_description    PyCryptodome is a self-contained Python package of \
                     low-level cryptographic primitives. \
                     PyCryptodome is a fork of PyCrypto.
 
-python.versions     27 35 36 37 38 39 310
+python.versions     27 35 36 37 38 39 310 311
 
-checksums           rmd160  2a2e4afe81285212d84682c104bf1e51ece2a91f \
-                    sha256  e04e40a7f8c1669195536a37979dd87da2c32dbdc73d6fe35f0077b0c17c803b \
-                    size    3372425
+checksums           rmd160  71faf56f508a7191259fe6b7683955882b70bb19 \
+                    sha256  c9adee653fc882d98956e33ca2c1fb582e23a8af7ac82fee75bd6113c55a0413 \
+                    size    4639231
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -34,19 +34,6 @@ if {${name} ne ${subport}} {
     livecheck.type      none
 
     test.run            yes
-
-    set pycrypto_name   py${python.version}-crypto
-} else {
-    set pycrypto_name   py-crypto
-}
-
-#------------------------------------------------------------------------------
-# NOTE: Remove this logic - along with declaration of 'pycrypto_name', above,
-#   when obsolete port 'py-crypto' is ultimately deleted.
-#------------------------------------------------------------------------------
-pre-activate {
-    # Deactivate obsolete port 'py-crypto', if installed
-    if {![catch {set installed [lindex [registry_active ${pycrypto_name}] 0]}]} {
-        registry_deactivate_composite ${pycrypto_name} "" [list ports_nodepcheck 1]
-    }
+    test.cmd            ${python.bin} setup.py test
+    test.args
 }

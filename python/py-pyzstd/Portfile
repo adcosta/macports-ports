@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pyzstd
-version             0.15.2
+version             0.15.8
 revision            0
 
 platforms           darwin
@@ -16,21 +16,15 @@ long_description    ${description}
 
 homepage            https://github.com/animalize/pyzstd
 
-checksums           rmd160  82fe2ffc964ca84bd5230d8977aa239fcab339d4 \
-                    sha256  eda9d2874a8f3823eea882125f304620f592693b3af0101c484bfc75726c8c59 \
-                    size    758067
+checksums           rmd160  7abc4fd6152c7a998582d889850f5f3b608a94d1 \
+                    sha256  ad709f6126d0c561fbe6f0afeea16ce1273496706e1a5995f86d2b65279c6eed \
+                    size    786260
 
-python.versions     38 39 310
+python.versions     38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \
                     port:py${python.version}-setuptools
 
-    pre-test {
-        test.env    PYTHONPATH=[glob -nocomplain ${worksrcpath}/build/lib*]
-    }
-
     test.run        yes
-
-    livecheck.type  none
 }

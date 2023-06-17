@@ -2,30 +2,37 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
+PortGroup           compiler_wrapper 1.0
 
 name                py-msgpack
-version             1.0.3
+version             1.0.5
 revision            0
 categories-append   devel
-platforms           darwin
 license             Apache
 
-python.versions     27 35 36 37 38 39 310
+python.versions     27 37 38 39 310 311
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         MessagePack (de)serializer for Python.
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://msgpack.org/
 
-checksums           rmd160  03bf4bb0a66b8e58bea395293dbda300d2e2f9cf \
-                    sha256  51fdc7fb93615286428ee7758cecc2f374d5ff363bdd884c7ea622a7a327a81e \
-                    size    123830
+checksums           rmd160  44d092ee572b7cb3ac8555e2224a412a61f2e08e \
+                    sha256  c075544284eadc5cddc70f4757331d99dcbc16b2bbd4849d15f8aae4cf36d31c \
+                    size    127834
 
 if {${name} ne ${subport}} {
     depends_build-append \
-                        port:py${python.version}-setuptools
+                    port:py${python.version}-cython
 
-    livecheck.type      none
+    if {${python.version} eq 27} {
+        python.pep517       no
+        depends_build-append \
+                            port:py${python.version}-setuptools
+        depends_build-delete \
+                            port:py${python.version}-cython
+    }
 }

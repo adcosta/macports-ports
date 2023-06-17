@@ -4,12 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-openpyxl
-version             3.0.9
+version             3.1.2
 revision            0
 categories-append   textproc
 license             MIT
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -20,17 +20,18 @@ long_description    openpyxl is a pure python reader and writer of Excel \
 
 homepage            https://openpyxl.readthedocs.org
 
-checksums           rmd160  5d957af4adc6de49e54ba2274e5f2f5229160380 \
-                    sha256  40f568b9829bf9e446acfffce30250ac1fa39035124d55fc024025c41481c90f \
-                    size    179880
+checksums           rmd160  b33a3e9bc18dc600f88ded7563a033c24726e397 \
+                    sha256  a6f5977418eff3b2d5500d54d9db50c8277a368436f4e4f8ddb1be3422870184 \
+                    size    185977
 
 if {${name} ne ${subport}} {
     depends_build-append \
                         port:py${python.version}-setuptools \
                         port:py${python.version}-cython
 
-    depends_lib-append  port:py${python.version}-jdcal \
-                        port:py${python.version}-et_xmlfile
+    depends_lib-append  port:py${python.version}-et_xmlfile
+
+    python.pep517       no
 
     build.args-append   --with-cython
     destroot.args-append \

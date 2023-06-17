@@ -3,8 +3,14 @@
 PortSystem          1.0
 PortGroup           cmake 1.1
 PortGroup           github 1.0
+PortGroup           legacysupport 1.1
+PortGroup           compiler_blacklist_versions 1.0
 
-github.setup        abseil abseil-cpp 20211102.0
+# MAP_ANONYMOUS
+legacysupport.newest_darwin_requires_legacy 14
+
+# Ports that depend on this port must be revbump after update.
+github.setup        abseil abseil-cpp 20230125.3
 name                abseil
 revision            0
 categories          devel
@@ -18,28 +24,47 @@ long_description    Abseil is an open-source collection of C++ library \
                     Google's own C++ code base, has been extensively \
                     tested and used in production.
 
-if {${os.major} < 11} {
+checksums           rmd160  18ea059168c7f8b5dbaeea433e71c57e9644b157 \
+                    sha256  0195e85f858b38f4563a6f2912e30bfc45dfad4815fbf97d273ed1cae9bbca94 \
+                    size    2119590
 
-    # NB this port builds with < darwin 11 if libcxx is installed
-    # with the emulated_tls variant to enable thread_local_storage
+patchfiles          patch-remove-Xarch-from-pkg-config.diff
 
-    # https://abseil.io/docs/cpp/platforms/platforms
-    known_fail      yes
-    pre-fetch {
-        ui_error "${name} @${version} requires macOS 10.7 or later."
-        return -code error "incompatible OS X version"
+platform darwin {
+    if {${build_arch} in [list ppc ppc64]} {
+        patchfiles-append patch-darwin-ppc.diff
+    }
+    if {[string match *gcc* ${configure.compiler}]} {
+        configure.ldflags-append \
+                    -latomic
     }
 }
-
-checksums           rmd160  59c40a461598c426cffcbb6b8a9f5bac3811de92 \
-                    sha256  2cf1c118890ac20623a558d2974d5f0d4a248566281fc7be9c6dfe73d80c0fea \
-                    size    1884039
 
 # ignore pre releases
 github.livecheck.regex  {([0-9.]+)}
 
 compiler.cxx_standard   2014
 
+# https://trac.macports.org/ticket/67553
+# error: default initialization of an object of const type 'const absl::lts_20230125::Condition'
+#   without a user-provided default constructo
+compiler.blacklist-append \
+                    {clang < 900}
+
 configure.args-append \
                     -DBUILD_SHARED_LIBS=ON \
-                    -DCMAKE_CXX_STANDARD=14
+                    -DCMAKE_CXX_STANDARD=14 \
+                    -DABSL_PROPAGATE_CXX_STD=ON
+
+variant test description "Provide testing" {
+    configure.args-append \
+                    -DBUILD_SHARED_LIBS=OFF \
+                    -DABSL_BUILD_TESTING=ON \
+                    -DABSL_USE_EXTERNAL_GOOGLETEST=ON \
+                    -DABSL_LOCAL_GOOGLETEST_DIR=${prefix}/src/googletest
+
+    depends_test    port:gtest
+
+    test.run        yes
+    test.target     test
+}

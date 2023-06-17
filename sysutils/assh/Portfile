@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/moul/assh 2.12.2 v
+go.setup            github.com/moul/assh 2.15.0 v
 go.package          moul.io/assh/v2
 github.tarball_from archive
 revision            0
@@ -23,9 +23,9 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  7701317e0c7388f5a6cade0e53f1bd60a4ce23af \
-                    sha256  bc22b229cac9f5c1f43b534788cfa0a024b6b70ed62eb215f81d443d571e10e8 \
-                    size    376639
+checksums           rmd160  c67e756adad7d5256ac3a878049699527c9e2e9c \
+                    sha256  ff80cb7dc818af1bd2d7a031058cb2d4074b0f4af6f7d3077619901689744387 \
+                    size    377810
 
 # Allow deps to be fetched at build time.
 build.env-delete    GO111MODULE=off GOPROXY=off

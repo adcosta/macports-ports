@@ -4,8 +4,8 @@ PortSystem  1.0
 PortGroup           muniversal 1.0
 
 name                nspr
-version             4.33
-revision            1
+version             4.35
+revision            0
 categories          devel
 maintainers         nomaintainer
 license             {MPL-1.1 GPL-2+ LGPL-2.1+}
@@ -14,11 +14,11 @@ description         A platform-neutral API for system level and libc like functi
 long_description    {*}${description}
 
 homepage            https://www.mozilla.org/projects/nspr
-master_sites        https://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v${version}/src/
+master_sites        https://ftp.mozilla.org/pub/nspr/releases/v${version}/src/
 
-checksums           rmd160  83edfbdda00e42254da1eec9f6d02d3dab942c4e \
-                    sha256  b23ee315be0e50c2fb1aa374d17f2d2d9146a835b1a79c1918ea15d075a693d7 \
-                    size    1078948
+checksums           rmd160  4dee99094cf48c3247bd3cc34f9c9de745460bfc \
+                    sha256  7ea3297ea5969b5d25a5dd8d47f2443cda88e9ee746301f6e1e1426f8a6abc8f \
+                    size    1096974
 
 worksrcdir          ${worksrcdir}/nspr
 
@@ -41,6 +41,13 @@ platform darwin 9 {
         copy ${worksrcpath}/pr/src/md/unix/os_Darwin_ppc.s ${worksrcpath}/pr/src/md/unix/os_Darwin_ppc64.s
         }
     patchfiles-append      patch-darwin-ppc64.diff
+    }
+}
+
+platform darwin 10 {
+    if {${build_arch} eq "ppc"} {
+    # Otherwise Intel flags are used on Rosetta: https://trac.macports.org/ticket/64900
+        configure.args-append --build=powerpc-apple-darwin${os.major}
     }
 }
 
@@ -76,5 +83,5 @@ post-destroot {
 
 livecheck.type      regex
 #livecheck.url   [lindex ${master_sites} 0]
-livecheck.url       https://ftp.mozilla.org/pub/mozilla.org/nspr/releases/
+livecheck.url       https://ftp.mozilla.org/pub/nspr/releases/
 livecheck.regex     "v(\\d+(?:\\.\\d+)*)"

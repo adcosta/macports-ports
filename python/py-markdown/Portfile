@@ -5,14 +5,15 @@ PortGroup           python 1.0
 
 name                py-markdown
 python.rootname     Markdown
-version             3.3.6
+version             3.4.3
 revision            0
 categories-append   textproc
-platforms           darwin
 license             BSD
 supported_archs     noarch
+platforms           {darwin any}
 
-python.versions     27 35 36 37 38 39 310
+python.versions     27 37 38 39 310 311
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -25,9 +26,9 @@ long_description    This is a Python implementation of John Gruber’s \
 
 homepage            https://python-markdown.github.io/
 
-checksums           rmd160  70a69ae458be68690489cd558ef67015d435dfa6 \
-                    sha256  76df8ae32294ec39dcf89340382882dfa12975f87f45c3ed1ecdb1e8cefc7006 \
-                    size    323584
+checksums           rmd160  29a558070df6903ff3c383e0527d977ebbc90e9a \
+                    sha256  8bf101198e004dc93e84a12a7395e31aac6a9c9942848ae1d99b9d72cf9b3520 \
+                    size    322175
 
 if {${name} ne ${subport}} {
 
@@ -38,10 +39,10 @@ if {${name} ne ${subport}} {
         checksums           rmd160  770c41f726e57b64e2c27266e6b0cf8b7bf895ab \
                             sha256  2e50876bcdd74517e7b71f3e7a76102050edec255b3983403f1a63e7c8a41e7a \
                             size    294136
+        python.pep517       no
         # Uses pkg_resources at runtime
         depends_lib-append  port:py${python.version}-setuptools
     } else {
-        depends_build-append    port:py${python.version}-setuptools
         if {${python.version} < 310} {
             depends_lib-append  port:py${python.version}-importlib-metadata
         }

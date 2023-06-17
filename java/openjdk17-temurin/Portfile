@@ -5,7 +5,7 @@ PortSystem       1.0
 name             openjdk17-temurin
 categories       java devel
 maintainers      {breun.nl:nils @breun} openmaintainer
-platforms        darwin
+platforms        {darwin any}
 # This port uses prebuilt binaries; 'NoMirror' makes sure MacPorts doesn't mirror/distribute these third-party binaries
 license          GPL-2 NoMirror
 # This port uses prebuilt binaries for a particular architecture; they are not universal binaries
@@ -14,14 +14,8 @@ universal_variant no
 # https://adoptium.net/temurin/releases/
 supported_archs  x86_64 arm64
 
-if {${configure.build_arch} eq "x86_64"} {
-    version      17.0.3
-    set build    7
-} elseif {${configure.build_arch} eq "arm64"} {
-    version      17.0.2
-    set build    8
-}
-
+version      17.0.7
+set build    7
 revision     0
 
 description  Eclipse Temurin, based on OpenJDK 17
@@ -31,14 +25,14 @@ master_sites https://github.com/adoptium/temurin17-binaries/releases/download/jd
 
 if {${configure.build_arch} eq "x86_64"} {
     distname     OpenJDK17U-jdk_x64_mac_hotspot_${version}_${build}
-    checksums    rmd160  2ab1be7abe66d2f1fcdc75853098981bf2debb50 \
-                 sha256  a5db5927760d2864316354d98ff18d18bec2e72bfac59cd25a416ed67fa84594 \
-                 size    187277835
+    checksums    rmd160  211c719fba6b08f28e5056c8da6abaceb699e80d \
+                 sha256  50d0e9840113c93916418068ba6c845f1a72ed0dab80a8a1f7977b0e658b65fb \
+                 size    187285514
 } elseif {${configure.build_arch} eq "arm64"} {
     distname     OpenJDK17U-jdk_aarch64_mac_hotspot_${version}_${build}
-    checksums    rmd160  e4063da6a1139c137af930c8cf5c5988bb75354d \
-                 sha256  157518e999d712b541b883c6c167f8faabbef1d590da9fe7233541b4adb21ea4 \
-                 size    182550014
+    checksums    rmd160  90803dc1a390b4fecb57f86bc12aa374b2b76ff2 \
+                 sha256  1d6aeb55b47341e8ec33cc1644d58b88dfdcce17aa003a858baa7460550e6ff9 \
+                 size    177451420
 }
 
 worksrcdir   jdk-${version}+${build}
@@ -55,7 +49,9 @@ if {${os.platform} eq "darwin" && ${os.major} < 16} {
 
 homepage     https://adoptium.net
 
-livecheck.type  none
+livecheck.type      regex
+livecheck.url       https://github.com/adoptium/temurin17-binaries/releases
+livecheck.regex     OpenJDK17U-jdk_.*_mac_hotspot_(\[0-9\.\]+)_\[0-9\]+.tar.gz
 
 use_configure    no
 build {}

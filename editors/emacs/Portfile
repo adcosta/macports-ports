@@ -10,7 +10,7 @@ legacysupport.newest_darwin_requires_legacy 13
 name            emacs
 categories      editors
 license         GPL-3+
-maintainers     {dports @drkp} openmaintainer
+maintainers     {dports @drkp} {@catap korins.ky:kirill} openmaintainer
 description     The GNU Emacs text editor
 long_description \
     GNU Emacs is a self-documenting, customizable, extensible real-time \
@@ -56,15 +56,10 @@ configure.args  --disable-silent-rules \
 depends_build-append   port:pkgconfig \
                        port:texinfo
 depends_lib-append     port:gmp \
-                       port:gnutls \
+                       path:lib/pkgconfig/gnutls.pc:gnutls \
                        port:jansson \
                        port:libxml2 \
                        port:ncurses
-
-if {$subport eq "emacs" || $subport eq "emacs-app"} {
-    patchfiles-append  patch-lib_verify.h.diff \
-                       patch-src_sysdep.c.diff
-}
 
 post-destroot {
     xinstall -d ${destroot}${prefix}/share/emacs/${version}/leim
@@ -86,36 +81,43 @@ platform darwin {
         } elseif {${os.major} > 10} {
             configure.ldflags-append -Wl,-no_pie
         }
+        # Without this flag, there are more than 90000 warnings if the
+        # system's `clang` compiler is used, increasing the log file
+        # size by a factor of 200, see
+        # https://debbugs.gnu.org/cgi/bugreport.cgi?bug=56736
+        if {${os.major} >= 11 || ${os.major} <= 12} {
+            configure.cflags-append -Wno-attributes
+        }
     }
 }
 
 if {$subport eq $name || $subport eq "emacs-app"} {
-    version         28.1
-    revision        0
+    version         28.2
+    revision        1
 
-    checksums       rmd160  989dc9e81924efb940434d5843616d1e70424a3d \
-                    sha256  1439bf7f24e5769f35601dbf332e74dfc07634da6b1e9500af67188a92340a28 \
-                    size    71292728
+    checksums       rmd160  4690d9ab3e7878cbb25eb19c2931c587f971b3bd \
+                    sha256  a6912b14ef4abb1edab7f88191bfd61c3edd7085e084de960a4f86485cb7cad8 \
+                    size    71332149
 }
 
 if {$subport eq "emacs-devel" || $subport eq "emacs-app-devel"} {
-    set date        2022-04-16
+    PortGroup       github 1.0
+
+    github.setup    emacs-mirror emacs 7ca1d782f5910d0c3978c6798a45c6854ec668c7
     epoch           5
-    version         [string map {- {}} ${date}]
+    version         20230605
     revision        0
 
-    fetch.type      git
-    git.url         --shallow-since=${date}T00:00:00 https://github.com/emacs-mirror/emacs.git
-    git.branch      6815db492ff899e77b45be98414567ad96a8177c
+    master_sites    ${github.master_sites}
 
-    # --shallow-since needs a newer version of git than on some older systems
-    # So use MacPorts version
-    depends_fetch-append port:git
-    git.cmd         ${prefix}/bin/git
+    checksums       rmd160  565e858d430340d8651dda065dcdc8694cb00045 \
+                    sha256  208034a1da387b416d8126a9c1b20822aef084f22d81c669d911b4d062f60f5a \
+                    size    48313689
 
     configure.args-append \
         --with-sqlite3 \
-        --with-webp
+        --with-webp \
+        --without-tree-sitter
 
     depends_lib-append \
         port:sqlite3 \
@@ -126,6 +128,34 @@ if {$subport eq "emacs-devel" || $subport eq "emacs-app-devel"} {
     }
 
     livecheck.type none
+
+    variant treesitter description {Builds emacs with tree-sitter support} {
+        configure.args-delete   --without-tree-sitter
+        configure.args-append   --with-tree-sitter
+        depends_lib-append  port:tree-sitter
+        depends_run-append  port:tree-sitter-typescript \
+            port:tree-sitter-javascript \
+            port:tree-sitter-tsx \
+            port:tree-sitter-c \
+            port:tree-sitter-cpp \
+            port:tree-sitter-java \
+            port:tree-sitter-python \
+            port:tree-sitter-css \
+            port:tree-sitter-json \
+            port:tree-sitter-c-sharp \
+            port:tree-sitter-bash \
+            port:tree-sitter-dockerfile \
+            port:tree-sitter-cmake \
+            port:tree-sitter-toml \
+            port:tree-sitter-go \
+            port:tree-sitter-go-mod \
+            port:tree-sitter-yaml \
+            port:tree-sitter-rust \
+            port:tree-sitter-ruby \
+            port:tree-sitter-html
+    }
+
+    default_variants-append +treesitter
 } else {
     livecheck.type  regex
     livecheck.url   https://ftp.gnu.org/gnu/emacs/?C=M&O=D
@@ -266,15 +296,19 @@ if {$subport eq "emacs-app" || $subport eq "emacs-app-devel"} {
 }
 
 variant nativecomp description {Builds emacs with native compilation support} {
-    depends_lib-append       port:gcc11
+    set gcc_v                      12
+    depends_lib-append             port:gcc${gcc_v}
+    configure.args-append          --with-native-compilation
+    compiler.cpath-prepend         ${prefix}/include/gcc${gcc_v}
+    compiler.library_path-prepend  ${prefix}/lib/gcc${gcc_v}
+    configure.ldflags-append       "-Wl,-rpath ${prefix}/lib/gcc${gcc_v}"
 
-    configure.args-append    --with-native-compilation
-
-    compiler.cpath-prepend   ${prefix}/include/gcc11
-    compiler.library_path-prepend \
-                             ${prefix}/lib/gcc11
-
-    build.args-append        NATIVE_FULL_AOT=1
+    if {$subport eq "emacs-devel" || $subport eq "emacs-app-devel"} {
+        configure.args-replace     --with-native-compilation \
+                                   --with-native-compilation=aot
+    } else {
+        build.args-append          NATIVE_FULL_AOT=1
+    }
 }
 
 default_variants-append +nativecomp

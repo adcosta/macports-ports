@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           legacysupport 1.1
 
-github.setup        universal-ctags ctags 5.9.20220417.0 p
+github.setup        universal-ctags ctags 6.0.20230430.0 p
 name                universal-ctags
 epoch               1
 revision            0
@@ -24,21 +24,9 @@ long_description \
 
 homepage            https://ctags.io
 
-checksums           rmd160  0f54475ff9de451a92eaeddb040286917ea35925 \
-                    sha256  65cd5d8f6f8de0b3d202f54ce9b71dc120dd364193577e0f90e1f59ab5163eaa \
-                    size    2879691
-
-pre-patch {
-    if {![file exists ${prefix}/bin/rst2man.py]} {
-        set files [glob -directory ${prefix}/bin "rst2man-*.py"]
-        foreach f $files {
-            if {[regexp {rst2man-.*\.py} $f result]} {
-                reinplace "s|rst2man3.py|${result}|g" \
-                    ${worksrcpath}/configure.ac
-            }
-        }
-    }
-}
+checksums           rmd160  27de317531332295f520f32019950b516e17598f \
+                    sha256  5aa23897da5472acf89a441a0ab5dd008049480a405136722643fd0766f4f75d \
+                    size    3038318
 
 # LegacySupport is needed for strnlen before 10.7
 legacysupport.newest_darwin_requires_legacy 10
@@ -53,6 +41,7 @@ depends_build       port:autoconf \
                     port:libtool
 
 depends_lib         port:jansson \
+                    port:pcre2 \
                     port:libyaml
 
 universal_variant   no
@@ -79,5 +68,11 @@ variant libxml2 description {Extra support for XML based languages} {
 }
 
 variant manpages description {Enable documentation} {
-    depends_build-append    port:py-docutils
+    set python_branch       3.11
+    set python_version      [string map {. {}} ${python_branch}]
+
+    depends_build-append    port:py${python_version}-docutils
+
+    configure.args-append   --with-rst2man=${prefix}/bin/rst2man-${python_branch}.py \
+                            --with-rst2html=${prefix}/bin/rst2html-${python_branch}.py
 }

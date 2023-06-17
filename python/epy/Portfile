@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           python 1.0
+
+github.setup        wustho epy 2023.2.8 v
+github.tarball_from archive
+revision            0
+supported_archs     noarch
+platforms           {darwin any}
+license             GPL-3
+
+python.default_version  310
+
+maintainers         {gmail.com:srirangav @srirangav} openmaintainer
+
+description         CLI ebook Reader
+long_description    A CLI ebook reader that supports epub (.epub, .epub3), \
+                    FictionBook (.fb2), Mobi, and AZW3 (.azw, .azw3)
+
+homepage            https://github.com/wustho/epy
+
+checksums           rmd160  537b748d5ab601b3c06a7f58a91ab1148d3b20b5 \
+                    sha256  22404cb30a4886d1fa7f75c6792b81a280ccb1d458ac56e0ec08adc864e507ff \
+                    size    198894
+
+depends_build-append \
+                    port:py${python.version}-setuptools

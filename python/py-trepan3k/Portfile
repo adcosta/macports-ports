@@ -5,12 +5,12 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-trepan3k
-version             1.2.7
+version             1.2.9
 revision            0
 
 categories-append   devel
-platforms           darwin
 supported_archs     noarch
+platforms           {darwin any}
 license             GPL-3+
 maintainers         {reneeotten @reneeotten} openmaintainer
 
@@ -21,11 +21,11 @@ long_description    This is a gdb-like debugger for Python. It is a rewrite of p
 
 homepage            https://github.com/rocky/python3-trepan
 
-checksums           rmd160  7b7fc27134b1b37fc9c853bc9e2203b14358e3ab \
-                    sha256  2d0b49f82ac50581e0bfa3e80bee57906587f7276b06fd91acd5ffd3b1081543 \
-                    size    516119
+checksums           rmd160  04ee0a50a27ed328b417f65269debef097c99b94 \
+                    sha256  d493c2d1b80788a7379e997177806e6c239a38738fb7dcd740c24d587a58f006 \
+                    size    518353
 
-python.versions     37 38 39
+python.versions     37 38 39 310
 
 if {${subport} ne ${name}} {
     depends_lib-append \
@@ -43,11 +43,10 @@ if {${subport} ne ${name}} {
                     port:trepan3k_select
 
     depends_test-append \
-                    port:py${python.version}-nose \
                     port:py${python.version}-pyficache
 
     test.run        yes
-    test.env        PYTHONPATH=${worksrcpath}/build/lib
+    python.test_framework nose
 
     select.group    trepan3k
     select.file     ${filespath}/trepan${python.version}
@@ -58,5 +57,4 @@ when you execute the commands without a version suffix, e.g. '${python.rootname}
 
 sudo port select --set ${select.group} [file tail ${select.file}]
 "
-    livecheck.type  none
 }

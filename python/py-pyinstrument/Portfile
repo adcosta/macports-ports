@@ -10,13 +10,13 @@ description         Call stack profiler for Python. Shows you why your code is s
 long_description    ${description}
 homepage            https://github.com/joerick/pyinstrument
 
-version             4.1.1
-checksums           rmd160  d32693e382385572e3e4aac388e99e5abb4f7282 \
-                    sha256  1dc2791d2cd2fd3459cb55010004a5cc2a9a8b4625a0cbea45a4b1aebbe2c3a2 \
-                    size    368060
+version             4.4.0
+checksums           rmd160  6aa1b9f6b75273d8673431af571e69340bbef019 \
+                    sha256  be34a2e8118c14a616a64538e02430d9099d5d67d8a370f2888e4ac71e52bbb7 \
+                    size    378935
 revision            0
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \

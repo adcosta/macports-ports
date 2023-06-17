@@ -4,16 +4,17 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                buildbot-grid-view
-version             3.5.0
+version             3.7.0
 revision            0
-checksums           rmd160  26c1e001f889fb513823b28fb3c1f05f1489d724 \
-                    sha256  41c4bc409d7bbb30ef9329d37338f4e4ba23b884fa7de1a240d0b008449b54bc \
-                    size    13704
+checksums           rmd160  5681783a4b3bb0fea61c642d1405f38e7471188f \
+                    sha256  de91d2895a0e663da20867e2cfeb4c59630f1d2047e46829e9edfe6bcb68a6c8 \
+                    size    13712
 
 categories          devel
 maintainers         {ryandesign @ryandesign} {rajdeep @rajdeepbh} {mojca @mojca} openmaintainer
 license             GPL-2
 supported_archs     noarch
+platforms           {darwin any}
 
 description         grid view plugin for Buildbot web UI
 long_description    {*}${description}

@@ -17,11 +17,11 @@ post-extract {
 
 PortGroup           golang 1.0
 
-go.setup            github.com/mongodb/mongo-tools 100.5.2
+go.setup            github.com/mongodb/mongo-tools 100.7.0
 revision            0
-checksums           rmd160  cf255ef8a6a5ca668bad5812a6c29afc7985f97e \
-                    sha256  1a37212e2581e0d3cbaa34b87191f2febb7018a734d781bbe2a1f5870b3aa5a6 \
-                    size    3803965
+checksums           rmd160  042df1696e9fda73911b57d4c4eab3a39169430b \
+                    sha256  99c28c40ba656ffe64909eb3a5dff275f93d2ae062977e9617afd7ec680e3967 \
+                    size    4415128
 
 categories          devel
 maintainers         {ryandesign @ryandesign} openmaintainer
@@ -44,6 +44,7 @@ long_description    mongo-tools is a collection of utilities for working with \
                     \n* mongotop: Monitor read/write activity on a mongo server \
                     \n* mongoreplay: Inspect and record commands sent to a MongoDB instance, and then replay the commands back onto another host at a later time
 
+extract.rename      no
 dist_subdir         ${name}
 
 patchfiles          deployment_target.patch \

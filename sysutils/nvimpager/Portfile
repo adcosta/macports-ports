@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        lucc nvimpager 0.10.4 v
+github.setup        lucc nvimpager 0.12.0 v
 github.tarball_from archive
 revision            0
 
@@ -16,12 +16,13 @@ description         Using neovim as a pager to view man pages, git diffs,\
                     whatnot with neovim's syntax highlighting and mouse support.
 long_description    {*}${description}
 
-checksums           rmd160  ef67c10d8242ca3e8710f96a2890a5112c5575e4 \
-                    sha256  946b3d54ee652b597bdf50781c94b41c476582a144bfd196bbf9979f94f1cc9d \
-                    size    25696
+checksums           rmd160  9489ec40cfde8a0f6fce1c194f83b199f2b24411 \
+                    sha256  57c8e15b24c07d462c05268a5a7d6c4eb4ebdc6a83af00d4fdc634836ba45d74 \
+                    size    28654
 
 depends_build       port:scdoc
-depends_run         port:bash port:neovim
+depends_run         port:bash \
+                    path:bin/nvim:neovim
 
 use_configure       no
 build.pre_args      DESTDIR=${destroot} PREFIX=${prefix} VERSION=${version}

@@ -5,23 +5,22 @@ PortGroup           perl5 1.0
 
 epoch               5
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         DateTime-TimeZone 2.52 ../../authors/id/D/DR/DROLSKY
+perl5.setup         DateTime-TimeZone 2.60 ../../authors/id/D/DR/DROLSKY
 revision            0
 maintainers         nomaintainer
 license             {Artistic-1 GPL}
-supported_archs     noarch
-
 description         Time zone object base class and factory
 long_description    This class is the base class for all time zone \
                     objects. A time zone is represented internally as \
                     a set of observances, each of which describes \
                     the offset from GMT for a given time period.
 
-platforms           darwin
+platforms           {darwin any}
+supported_archs     noarch
 
-checksums           rmd160  50d1c6a25f620bc64a94032d737f33a5da7c2cc7 \
-                    sha256  8bc5c42082874b0e9c9ef949fa19035ac9b6904ebcda1931aa2d8a13f3950d8f \
-                    size    1014756
+checksums           rmd160  44628ab82b8b55075346d96547c4172e46a97cde \
+                    sha256  f0460d379323905b579bed44e141237a337dc25dd26b6ab0c60ac2b80629323d \
+                    size    948447
 
 if {${perl5.major} != ""} {
     depends_build-append \

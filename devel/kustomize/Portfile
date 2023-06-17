@@ -3,14 +3,16 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/kubernetes-sigs/kustomize 4.5.4 kustomize/v
+go.setup            github.com/kubernetes-sigs/kustomize 5.0.3 kustomize/v
+github.tarball_from archive
 revision            0
 
 categories          devel
 installs_libs       no
-maintainers         {breun.nl:nils @breun} openmaintainer
-platforms           darwin
 license             Apache-2
+maintainers         {breun.nl:nils @breun} \
+                    {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
 
 description         Customize raw, template-free YAML files for multiple purposes, like Kubernetes
 
@@ -23,9 +25,9 @@ long_description    kustomize lets you customize raw, template-free YAML files f
 
 homepage            https://kustomize.io
 
-checksums           rmd160  a6dcc22c9941ede08d3fe42b4a05e0316ac3c1d6 \
-                    sha256  7fbf59db6880a1c088cd394668078c48c3949d31331b0821001833170d8eae1f \
-                    size    4711002
+checksums           rmd160  35fe997c239f4cc62a2e2336568a71ab60e382bf \
+                    sha256  c1c4911045aac9b7d59cac64c60d857abb67c0d6f7704e50c35d9e70be0d1dc2 \
+                    size    3476104
 
 build.dir           ${worksrcpath}/${name}
 
@@ -40,8 +42,6 @@ build.args          -ldflags \" \
 # dependencies during the build phase. See
 # https://trac.macports.org/ticket/61192
 build.env-delete    GOPROXY=off GO111MODULE=off
-
-github.tarball_from archive
 
 destroot {
     xinstall -m 0755 ${build.dir}/${name} ${destroot}${prefix}/bin/

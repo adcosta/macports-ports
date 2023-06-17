@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                podman-compose
-version             1.0.3
+version             1.0.6
 revision            0
 
 categories-append   devel
@@ -12,15 +12,17 @@ supported_archs     noarch
 license             GPL-2
 maintainers         {judaew @judaew} openmaintainer
 
+conflicts           podman-compose-devel
+
 description         a script to run docker-compose.yml using podman
 long_description    {*}${description}
 homepage            https://github.com/containers/podman-compose
 
-checksums           rmd160  dd21ace3714b9baa9113a9a48fded2ab65f1a2c8 \
-                    sha256  9c9fe8249136e45257662272ade33760613e2d9ca6153269e1e970400ea14675 \
-                    size    21424
+checksums           rmd160  2730804231d82eaba1f03bb9717fda8669896a02 \
+                    sha256  2db235049fca50a5a4ffd511a917808c960dacb8defd5481dd8b36a77d4da2e5 \
+                    size    34063
 
-python.default_version 39
+python.default_version 310
 
 depends_build-append \
                 port:py${python.version}-setuptools
@@ -29,3 +31,18 @@ depends_run-append \
                 port:podman \
                 port:py${python.version}-python-dotenv \
                 port:py${python.version}-yaml
+
+subport podman-compose-devel {
+    PortGroup           github 1.0
+
+    github.setup        containers podman-compose 3890eacf57c0643cad6911a0ab23e7e6220c7468
+    name                podman-compose-devel
+    version             2023-06-16
+    revision            0
+
+    conflicts           podman-compose
+
+    checksums           rmd160  2157af93e6fc03c7ea1c11047bb6d4a585b9212d \
+                        sha256  2eb0e741dbacc1bbb39522d7a76dbd0279468c5962e3f6c83ffbdb14b838048b \
+                        size    63259
+}

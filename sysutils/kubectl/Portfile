@@ -11,7 +11,6 @@ homepage                https://kubectl.docs.kubernetes.io/
 installs_libs           no
 
 maintainers             {@patarra gmail.com:patarra} \
-                        {lbschenkel @lbschenkel} \
                         @pedrohdz \
                         {gmail.com:herby.gillot @herbygillot} \
                         openmaintainer
@@ -21,52 +20,85 @@ subport kubectl_select {}
 set source_build        no
 
 # *NOTE* Remember to update `latestVersion` on a version upgrade.
-set latestVersion       kubectl-1.24
+set latestVersion       kubectl-1.27
 
 # When source_build is yes, the checksum should be the one for the
 # kubernetes source tarball, instead of the zipped pre-built binary.
+
+subport kubectl-1.27 {
+    set source_build    yes
+    supported_archs     x86_64 arm64
+
+    set patchNumber     3
+    revision            0
+    checksums           rmd160  85ad551f86ba750f6f96c272b8bd2d7e979a1429 \
+                        sha256  8ef07217229e1c0dab21cc014ee05f79dffd31d3bf13a8ff3c730e031973f3e8 \
+                        size    38121196
+}
+
+subport kubectl-1.26 {
+    set source_build    yes
+    supported_archs     x86_64 arm64
+
+    set patchNumber     6
+    revision            0
+    checksums           rmd160  2140477a3073f0fe4f39a1d0351e519da1d96f28 \
+                        sha256  05011ef576dac9557a6748adadc8fa46b1f4ca2db8873605965705e99a0b3f9b \
+                        size    38489671
+}
+
+subport kubectl-1.25 {
+    set source_build    yes
+    supported_archs     x86_64 arm64
+
+    set patchNumber     11
+    revision            0
+    checksums           rmd160  af638ac134d3ffa99a1fa07e13aebca0633d76c0 \
+                        sha256  5660a63cb2e4ca5086bc30ba3278f7f6e1a8bb11ebaec2a40a01f44fbe65562f \
+                        size    38468419
+}
 
 subport kubectl-1.24 {
     set source_build    yes
     supported_archs     x86_64 arm64
 
-    set patchNumber     0
+    set patchNumber     15
     revision            0
-    checksums           rmd160  56e0ae887b7e3f04ff93ba08e88f7242f66c6410 \
-                        sha256  33cafd0a8bb5af15c018e9478900538d9f1bdab36210556288ee26d91763ce05 \
-                        size    39810384
+    checksums           rmd160  e537d7ea1bdeae663519cf443f0b61cacd6bb33d \
+                        sha256  0e2a19acd55ad1a9a1a51846d1de7d13ee0aafe4229968f1ddff384c1075863c \
+                        size    38151496
 }
 
 subport kubectl-1.23 {
     set source_build    yes
     supported_archs     x86_64 arm64
 
-    set patchNumber     6
+    set patchNumber     17
     revision            0
-    checksums           rmd160  1837699a11e6ebbe6761c7344d283ab3d5191238 \
-                        sha256  514862e96196cf401af245904c98cb5e9b949a1a798a5e4847dcddde1220462a \
-                        size    38205803
+    checksums           rmd160  b7f36ce95472e256c5dd5d2f4fee1fa08502d184 \
+                        sha256  def840469468254f2b437cb21404b0a76a81b8ee2112583d7f0bdb52e0de1c18 \
+                        size    38135738
 }
 
 subport kubectl-1.22 {
     set source_build    yes
     supported_archs     x86_64 arm64
 
-    set patchNumber     9
+    set patchNumber     17
     revision            0
 
-    checksums           rmd160  02b99fd0355ef69bdf0d49858027294d5baa8ad0 \
-                        sha256  46fb534f79e7076f6b5beb21729917f9284feb977e8aa0599031d80bcbce8a4b \
-                        size    36068589
+    checksums           rmd160  aed0b0cff951dcdebb692f69e932f133b82aa364 \
+                        sha256  d6082dfe3048339921736085167f8878abcec09c839d05ba2e3a8248adfccb11 \
+                        size    36116829
 }
 
 subport kubectl-1.21 {
-    set patchNumber     12
+    set patchNumber     14
     revision            0
 
     # Use pre-built version to resolve https://trac.macports.org/ticket/63503
-    checksums           rmd160  e1d66c8c9ea7c020dd55b316a631ee698de3749f \
-                        sha256  014d92af39ea8d3e57f01581c9ce44ea2b107c55d8cdeb838494014d034a6c17 \
+    checksums           rmd160  15e92202b68b15776bcc045f753985541ff60339 \
+                        sha256  30c529fe2891eb93dda99597b5c84cb10d2318bb92ae89e1e6189b3ae5fb6296 \
                         size    52867344
 }
 
@@ -167,13 +199,14 @@ if {${subport} == ${name}} {
     PortGroup           obsolete 1.0
 
     replaced_by         ${latestVersion}
-    version             1.16.0
-    revision            2
+    version             1.27.3
+    revision            0
 
 } elseif {${subport} == "kubectl_select"} {
     version             0.0.0
-    revision            0
+    revision            1
     supported_archs     noarch
+    platforms           any
 
     description         Common files for selecting the default kubectl version
     long_description    This port installs files that allow 'port select' \
@@ -190,6 +223,8 @@ if {${subport} == ${name}} {
         select::install kubectl ${filespath}/base
         select::install kubectl ${filespath}/none
     }
+
+    destroot.keepdirs-append ${destroot}${prefix}/share/bash-completion/completions
 
     livecheck.type     none
 

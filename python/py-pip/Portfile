@@ -5,12 +5,12 @@ PortGroup           python 1.0
 PortGroup           select 1.0
 
 name                py-pip
-version             22.0.4
+version             23.1.2
 revision            0
 categories-append   www
-platforms           darwin
 license             MIT
 supported_archs     noarch
+platforms           {darwin any}
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -23,12 +23,12 @@ long_description    pip is a replacement for easy_install. It uses mostly the \
 
 homepage            http://www.pip-installer.org/
 
-checksums           rmd160  c1b1863e476bca0a9e3d4113f09518f2ae7d5859 \
-                    sha256  b3a9de2c6ef801e9247d1527a4b16f92f2cc141cd1489f3fffaf6a9e96729764 \
-                    size    2090742
+checksums           rmd160  df6e0ff78163aacba6867c509021dbf15aa38fa1 \
+                    sha256  0e7c86f486935893c708287b30bd050a36ac827ec7fe5e43fe7cb198dd835fba \
+                    size    2087568
 
 # keep older Python versions here, do add the EOL version to the list below
-python.versions     26 27 33 34 35 36 37 38 39 310
+python.versions     26 27 33 34 35 36 37 38 39 310 311
 
 if {${name} ne ${subport}} {
     # add EOL warnings

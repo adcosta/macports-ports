@@ -3,8 +3,8 @@
 PortSystem          1.0
 
 name                openconnect
-version             8.10
-revision            1
+version             9.12
+revision            0
 categories          net
 platforms           darwin
 maintainers         nomaintainer
@@ -30,17 +30,10 @@ depends_lib         port:gettext \
 
 master_sites        ftp://ftp.infradead.org/pub/openconnect/
 
-# md5 is needed for http master_site below
-checksums           md5     d772c3c68afae12252a5377a99352b97 \
-                    rmd160  775b1d6e16605c5437d5d52db08720f6634704f5 \
-                    sha256  30e64c6eca4be47bbf1d61f53dc003c6621213738d4ea7a35e5cf1ac2de9bab1 \
-                    size    2084534
+checksums           rmd160  22c51e330684999897c1c42303d89f054f548de3 \
+                    sha256  a2bedce3aa4dfe75e36e407e48e8e8bc91d46def5335ac9564fbf91bd4b2413e \
+                    size    2843115
 
-foreach {type checksum} ${checksums} {
-    if {${type} == "md5"} {
-        master_sites-append https://src.fedoraproject.org/lookaside/pkgs/openconnect/${distfiles}/${checksum}
-    }
-}
 
 configure.args      --disable-silent-rules \
                     --with-vpnc-script=${prefix}/etc/vpnc-scripts/vpnc-script \
@@ -58,7 +51,7 @@ variant ssl conflicts gnutls description {Allow secure connections using OpenSSL
 }
 
 variant gnutls conflicts ssl description {Allow secure connections using GNUTLS} {
-    depends_lib-append      port:gnutls
+    depends_lib-append      path:lib/pkgconfig/gnutls.pc:gnutls
     configure.args-replace  --without-gnutls --with-gnutls
 }
 

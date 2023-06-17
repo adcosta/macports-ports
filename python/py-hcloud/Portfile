@@ -4,10 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-hcloud
-version             1.16.0
+version             1.20.0
 revision            0
 
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         {judaew @judaew} openmaintainer
 
@@ -15,9 +16,9 @@ description         ${name} is a library for the Hetzner Cloud API.
 long_description    {*}${description}
 homepage            https://github.com/hetznercloud/hcloud-python
 
-checksums           rmd160  0128a9763400240f311f167c0850caa88a6893f5 \
-                    sha256  c8b94557d93bcfe437f20a8176693ea4f54358b74986cc19d94ebc23f48e40cc \
-                    size    93682
+checksums           rmd160  ead0b026ac6737113612acdba8a10cb315ec74aa \
+                    sha256  b389770d974a7f20b512edcfc0b40742975c230e32bc4511c518e0c4995a5ec8 \
+                    size    99875
 
 python.versions     37 38 39 310
 

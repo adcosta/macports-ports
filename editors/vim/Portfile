@@ -6,10 +6,28 @@ PortGroup           github 1.0
 # The vim port should always follow the patch level used in the MacVim port. This
 # is because they both share the same set of configuration files and ensures
 # that the user's configuration files will always work with both.
-set vim_version     8.2
-set vim_patchlevel  4324
+set vim_version     9.0
+
+if {${os.platform} eq "darwin" && ${os.major} <= 14} {
+    # Fallback to previous port version, for 10.10 and earlier
+    # https://trac.macports.org/ticket/67209
+    set vim_patchlevel 0472
+    set port_revision  0
+
+    checksums       rmd160  ee809eb300deaf735c86b6e5b7f4bc4a8fe79a41 \
+                    sha256  7185577d6cd3708b62b2079b69a29215bb6a6048070d34e960d2d565c18b8a9b \
+                    size    16851486
+} else {
+    set vim_patchlevel 1499
+    set port_revision  0
+
+    checksums       rmd160  10d9edf0b19197771722e4a2fcf2e36021c34fa6 \
+                    sha256  3db98ddcbb8628ec9818da50353c4dd08d62938c80c71d38062250205310cdc3 \
+                    size    17010976
+}
+
 github.setup        vim vim ${vim_version}.${vim_patchlevel} v
-revision            0
+revision            ${port_revision}
 
 categories          editors
 platforms           darwin freebsd
@@ -23,11 +41,9 @@ long_description    Vim is an advanced text editor that seeks to provide the\
 
 homepage            https://www.vim.org/
 
-checksums           rmd160  ca008ee7734fd1753bbc7e91a2d498a5177ae642 \
-                    sha256  a2b842f258fda87446504df911c27fa4ea54084e5112722d419a8b63b2bd8027 \
-                    size    15981311
 
-depends_lib         port:ncurses \
+depends_lib-append \
+                    port:ncurses \
                     port:gettext \
                     port:libiconv
 
@@ -42,7 +58,8 @@ autoconf.pre_args
 autoconf.args
 autoconf.dir ${worksrcpath}/src
 
-configure.args      --disable-gui \
+configure.args-append \
+                    --disable-gui \
                     --without-x \
                     --without-local-dir \
                     --disable-gpm \
@@ -50,7 +67,7 @@ configure.args      --disable-gui \
                     --mandir=${prefix}/share/man \
                     --with-tlib=ncurses \
                     --enable-multibyte \
-                    --with-developer-dir=${developer_dir} \
+                    --with-developer-dir=${configure.developer_dir} \
                     --enable-fail-if-missing \
                     --with-compiledby="MacPorts"
 
@@ -110,7 +127,7 @@ variant perl description {Enable Perl scripting} {
     depends_lib-append      path:bin/perl:perl5
 }
 
-set pythons_suffixes {27 36 37 38 39 310}
+set pythons_suffixes {27 36 37 38 39 310 311}
 
 set pythons_ports {}
 foreach s ${pythons_suffixes} {
@@ -139,45 +156,50 @@ foreach s ${pythons_suffixes} {
 }
 
 variant ruby requires ruby18 description {Compatibility variant, requires +ruby18} {}
-variant ruby18 conflicts ruby19 ruby20 ruby21 ruby22 ruby23 ruby24 ruby25 description {Enable Ruby scripting} {
+variant ruby18 conflicts ruby19 ruby20 ruby21 ruby22 ruby23 ruby24 ruby25 ruby30 description {Enable Ruby scripting} {
     configure.args-append   --enable-rubyinterp
     configure.args-append   --with-ruby-command=${prefix}/bin/ruby1.8
     depends_lib-append      port:ruby
 }
-variant ruby19 conflicts ruby18 ruby20 ruby21 ruby22 ruby23 ruby24 ruby25 description {Enable Ruby scripting} {
+variant ruby19 conflicts ruby18 ruby20 ruby21 ruby22 ruby23 ruby24 ruby25 ruby30 description {Enable Ruby scripting} {
     configure.args-append   --enable-rubyinterp
     configure.args-append   --with-ruby-command=${prefix}/bin/ruby1.9
     depends_lib-append      port:ruby19
 }
-variant ruby20 conflicts ruby18 ruby19 ruby21 ruby22 ruby23 ruby24 ruby25 description {Enable Ruby scripting} {
+variant ruby20 conflicts ruby18 ruby19 ruby21 ruby22 ruby23 ruby24 ruby25 ruby30 description {Enable Ruby scripting} {
     configure.args-append   --enable-rubyinterp
     configure.args-append   --with-ruby-command=${prefix}/bin/ruby2.0
     depends_lib-append      port:ruby20
 }
-variant ruby21 conflicts ruby18 ruby19 ruby20 ruby22 ruby23 ruby24 ruby25 description {Enable Ruby scripting} {
+variant ruby21 conflicts ruby18 ruby19 ruby20 ruby22 ruby23 ruby24 ruby25 ruby30 description {Enable Ruby scripting} {
     configure.args-append   --enable-rubyinterp
     configure.args-append   --with-ruby-command=${prefix}/bin/ruby2.1
     depends_lib-append      port:ruby21
 }
-variant ruby22 conflicts ruby18 ruby19 ruby20 ruby21 ruby23 ruby24 ruby25 description {Enable Ruby scripting} {
+variant ruby22 conflicts ruby18 ruby19 ruby20 ruby21 ruby23 ruby24 ruby25 ruby30 description {Enable Ruby scripting} {
     configure.args-append   --enable-rubyinterp
     configure.args-append   --with-ruby-command=${prefix}/bin/ruby2.2
     depends_lib-append      port:ruby22
 }
-variant ruby23 conflicts ruby18 ruby19 ruby20 ruby21 ruby22 ruby24 ruby25 description {Enable Ruby scripting} {
+variant ruby23 conflicts ruby18 ruby19 ruby20 ruby21 ruby22 ruby24 ruby25 ruby30 description {Enable Ruby scripting} {
     configure.args-append   --enable-rubyinterp
     configure.args-append   --with-ruby-command=${prefix}/bin/ruby2.3
     depends_lib-append      port:ruby23
 }
-variant ruby24 conflicts ruby18 ruby19 ruby20 ruby21 ruby22 ruby23 ruby25 description {Enable Ruby scripting} {
+variant ruby24 conflicts ruby18 ruby19 ruby20 ruby21 ruby22 ruby23 ruby25 ruby30 description {Enable Ruby scripting} {
     configure.args-append   --enable-rubyinterp
     configure.args-append   --with-ruby-command=${prefix}/bin/ruby2.4
     depends_lib-append      port:ruby24
 }
-variant ruby25 conflicts ruby18 ruby19 ruby20 ruby21 ruby22 ruby23 ruby24 description {Enable Ruby scripting} {
+variant ruby25 conflicts ruby18 ruby19 ruby20 ruby21 ruby22 ruby23 ruby24 ruby30 description {Enable Ruby scripting} {
     configure.args-append   --enable-rubyinterp
     configure.args-append   --with-ruby-command=${prefix}/bin/ruby2.5
     depends_lib-append      port:ruby25
+}
+variant ruby30 conflicts ruby18 ruby19 ruby20 ruby21 ruby22 ruby23 ruby24 ruby25 description {Enable Ruby scripting} {
+    configure.args-append   --enable-rubyinterp
+    configure.args-append   --with-ruby-command=${prefix}/bin/ruby3.0
+    depends_lib-append      port:ruby30
 }
 
 variant tcl description {Enable Tcl scripting} {
@@ -192,9 +214,10 @@ variant tcl description {Enable Tcl scripting} {
 }
 
 variant lua description {Enable Lua scripting} {
+    PortGroup               lua 1.0
+
     configure.args-append   --enable-luainterp \
-                            --with-lua-prefix=${prefix}
-    depends_lib-append      port:lua
+                            --with-lua-prefix=${lua.dir}
 }
 
 variant cscope description {Enable source code browsing with cscope} {

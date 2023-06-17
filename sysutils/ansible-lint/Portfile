@@ -4,11 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        ansible-community ansible-lint 6.0.2 v
+github.setup        ansible-community ansible-lint 6.17.1 v
 revision            0
 
 categories          sysutils
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         artisancomputer.com:zdw \
                     {judaew @judaew} \
@@ -18,11 +19,12 @@ description         Best practices checker for Ansible playbooks
 long_description \
     ansible-lint checks playbooks for practices and behaviour that could potentially be improved
 
-checksums           rmd160  f1c2301da9979e304634ef4c4891b3303b376017 \
-                    sha256  9d726804ae6974f5797caef6aa71fa87792923af2865bd6d38df4bb59649871f \
-                    size    195102
+checksums           rmd160  a494bde668b29fdf9870c6ee74375df5208f29f2 \
+                    sha256  288f9eb09b04153cea4b6a47c707ef33e69e2d40df4ee977295c8764345341a3 \
+                    size    427049
 
-python.default_version      310
+# Keep Python version compatible with yamllint
+python.default_version      311
 python.link_binaries_suffix
 
 depends_build-append \
@@ -32,8 +34,12 @@ depends_build-append \
 
 depends_run-append  port:py${python.version}-ansible \
                     port:py${python.version}-ansible-compat \
+                    port:py${python.version}-black \
                     port:yamllint
+
 depends_lib-append  port:py${python.version}-enrich \
+                    port:py${python.version}-filelock \
+                    port:py${python.version}-jsonschema \
                     port:py${python.version}-packaging \
                     port:py${python.version}-ruamel-yaml \
                     port:py${python.version}-ruamel-yaml-clib \
@@ -43,13 +49,10 @@ depends_lib-append  port:py${python.version}-enrich \
 
 # Stop setuptools from using the scm version which doesn't exist in this context
 patchfiles          patch-disable_use_scm_version.diff
-post-patch {
-    reinplace "s|@@VERSION@@|${version}|g" ${worksrcpath}/setup.cfg
-}
 
 python.pep517       yes
 
-github.livecheck.regex  {([^"r-]+)}
+github.livecheck.regex  {([0-9.]+)}
 
 notes "
 Before using ansible-lint need to select the Python version of Ansible:

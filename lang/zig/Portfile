@@ -2,19 +2,19 @@
 
 PortSystem          1.0
 PortGroup           cmake 1.1
-PortGroup           compiler_blacklist_versions 1.0
 PortGroup           github 1.0
 PortGroup           legacysupport 1.1
 
 legacysupport.use_static  yes
 
-github.setup        ziglang zig 0.9.1
+github.setup        ziglang zig 0.10.1
 github.tarball_from archive
 revision            0
 
 categories          lang
 license             MIT
-maintainers         {@felix userspace.com.au:felix} openmaintainer
+maintainers         nomaintainer
+platforms           {darwin >= 20}
 
 description         Zig programming language
 
@@ -23,18 +23,22 @@ long_description    Zig is a general-purpose programming language designed for \
 
 homepage            https://ziglang.org/
 
-set llvm_version    13
+set llvm_version    15
 
-depends_lib-append  port:llvm-${llvm_version}
+depends_lib-append  port:clang-${llvm_version} \
+                    port:ncurses \
+                    port:libxml2 \
+                    port:zlib \
+                    port:zstd
+depends_build-append \
+                    port:llvm-${llvm_version}
 
-checksums           rmd160  0bee29c8a68f0bfb2bb0454783c8be8ff12f7080 \
-                    sha256  2a6ba6a72b9619b83dab77f5b6e2b6f0958bb0f85cded055be2c632386e0ff2d \
-                    size    22010374
+checksums           rmd160  207833bdb9fa9cfaf96894b360973c9b141e270e \
+                    sha256  b511709d5276eca9bd706924d7928c7477fe799ad62d5d37f5f90d7dceadfa2a \
+                    size    23135590
 
 set llvm_config     LLVM_CONFIG=llvm-config-mp-${llvm_version}
 
-compiler.blacklist-append \
-                    *gcc* clang
-compiler.fallback   macports-clang-${llvm_version}
 compiler.whitelist  macports-clang-${llvm_version}
-cmake.module_path   [list ${prefix}/libexec/llvm-${llvm_version}]
+cmake.module_path   ${prefix}/libexec/llvm-${llvm_version} \
+                    ${prefix}

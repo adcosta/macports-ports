@@ -5,7 +5,7 @@ PortGroup           cmake 1.1
 PortGroup           openssl 1.0
 
 name                zeek
-version             4.2.1
+version             5.0.9
 revision            0
 categories          net security
 maintainers         {mps @Schamschula} openmaintainer
@@ -22,19 +22,33 @@ homepage            https://www.zeek.org/
 master_sites        https://download.zeek.org/
 
 
-checksums           rmd160  6dc52775c4e7ee528ec7966e052086b319189464 \
-                    sha256  6b13489b30494c7c5dda453fc50981e5943d6715b6c9b5b7a85abb80bbe6d116 \
-                    size    34892689
+checksums           rmd160  09f1357138e797276821dcc5e6112af26feea3f7 \
+                    sha256  2d6247c667c1838d0efd8d860744baadde4b2e8721734dea250e37147899cfcd \
+                    size    42904019
 
-openssl.branch      1.1
+openssl.branch      3
+
+subport ${name} {
+    conflicts   ${name}-devel
+}
+
+subport ${name}-devel {
+    conflicts   ${name}
+
+    version         5.2.2
+    revision        0
+
+    checksums       rmd160  63c7cbb35b5038c46faf516e9ef53f1ff05fc225 \
+                    sha256  e0c24157cc96a72e4bbe4cb28a93997438d4e8557b17c20d73fcd675d44615c6 \
+                    size    59370476
+}
 
 depends_build-append \
+                    port:flex \
                     port:pkgconfig \
                     port:swig \
                     port:swig-python
 
-
-# use the system-provided flex
 depends_lib-append  port:bison \
                     port:curl \
                     port:libmagic \
@@ -44,32 +58,20 @@ depends_lib-append  port:bison \
                     port:readline \
                     port:zlib
 
+configure.args-append \
+                    -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=OFF
+
 variant universal   {}
 
 compiler.cxx_standard   2017
 
-platform darwin {
-    # see https://trac.macports.org/ticket/60252
-    if {${os.major} < 18} {
-        pre-fetch {
-            ui_error "${name} @${version} requires at least macOS 10.14 Mojave"
-            return -code error "incompatible macOS version"
-        }
-        known_fail  yes
-    }
-}
+# see https://trac.macports.org/ticket/60252
+platforms {darwin >= 18}
 
-configure.args      -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+configure.args-append \
+                    -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
 
-variant python37 conflicts python38 python39 python310 description {Build using Python 3.7} {
-    configure.args-append \
-                    -DPYTHON_EXECUTABLE=${prefix}/bin/python3.7 \
-                    -DPYTHON_CONFIG=${frameworks_dir}/Python.framework/Versions/3.7/lib/python3.7/config-3.7m-darwin/python-config.py
-    depends_lib-append  \
-                    port:python37
-}
-
-variant python38 conflicts python37 python39 python310 description {Build using Python 3.8} {
+variant python38 conflicts python311 python39 python310 description {Build using Python 3.8} {
     configure.args-append \
                     -DPYTHON_EXECUTABLE=${prefix}/bin/python3.8 \
                     -DPYTHON_CONFIG=${frameworks_dir}/Python.framework/Versions/3.8/lib/python3.8/config-3.8-darwin/python-config.py
@@ -77,7 +79,7 @@ variant python38 conflicts python37 python39 python310 description {Build using 
                     port:python38
 }
 
-variant python39 conflicts python37 python38 python310 description {Build using Python 3.9} {
+variant python39 conflicts python311 python38 python310 description {Build using Python 3.9} {
     configure.args-append \
                     -DPYTHON_EXECUTABLE=${prefix}/bin/python3.9 \
                     -DPYTHON_CONFIG=${frameworks_dir}/Python.framework/Versions/3.9/lib/python3.9/config-3.9-darwin/python-config.py
@@ -85,7 +87,7 @@ variant python39 conflicts python37 python38 python310 description {Build using 
                     port:python39
 }
 
-variant python310 conflicts python37 python38 python39 description {Build using Python 3.10} {
+variant python310 conflicts python311 python38 python39 description {Build using Python 3.10} {
     configure.args-append \
                     -DPYTHON_EXECUTABLE=${prefix}/bin/python3.10 \
                     -DPYTHON_CONFIG=${frameworks_dir}/Python.framework/Versions/3.10/lib/python3.10/config-3.10-darwin/python-config.py
@@ -93,9 +95,17 @@ variant python310 conflicts python37 python38 python39 description {Build using 
                     port:python310
 }
 
-if {![variant_isset python37] && ![variant_isset python38] && ![variant_isset python39]} {
+variant python311 conflicts python38 python39 python310 description {Build using Python 3.11} {
+    configure.args-append \
+                    -DPYTHON_EXECUTABLE=${prefix}/bin/python3.11 \
+                    -DPYTHON_CONFIG=${frameworks_dir}/Python.framework/Versions/3.11/lib/python3.11/config-3.11m-darwin/python-config.py
+    depends_lib-append  \
+                    port:python311
+}
+
+if {![variant_isset python38] && ![variant_isset python39] && ![variant_isset python310] } {
     default_variants \
-                    +python310
+                    +python311
 }
 
 post-destroot {
@@ -176,4 +186,8 @@ ${prefix}/logs -> ${prefix}/var/log/zeek
 
 livecheck.type      regex
 livecheck.url       https://zeek.org/get-zeek/
-livecheck.regex     org/${name}-(\[0-9a-z.\]+)${extract.suffix}
+if {${subport} eq ${name}} {
+    livecheck.regex     org/${name}-(5\.0\.\[0-9a-z.\]+)${extract.suffix}
+} else {
+    livecheck.regex     org/${name}-(\[0-9a-z.\]+)${extract.suffix}
+}

@@ -5,7 +5,7 @@ PortGroup           java 1.0
 
 name                NetBeans
 set name_lower      [string tolower ${name}]
-version             13
+version             18
 categories          aqua devel java
 license             Apache-2
 maintainers         openmaintainer {amake @amake}
@@ -21,21 +21,21 @@ long_description \
 
 homepage            https://netbeans.apache.org/
 
-platforms           darwin
+platforms           {darwin any}
 
 distname            ${name_lower}-${version}-bin
 master_sites        apache:${name_lower}/${name_lower}/${version}
 
-checksums           rmd160  9328aa75921c34332b622cd2d94d9122c5791f8e \
-                    sha256  59d8d57410c27429135a1594262673c6e07f47972b4f05f08225c9b56e2f6bd0 \
-                    size    447526123
+checksums           rmd160  9461d06aeeb60a8cb9b2d51b8b703032a8327d4a \
+                    sha256  09358e5b5bdddb4d2865962a0d14f8c2aaf8bf923700080472a03faa2f4879ff \
+                    size    489138594
 
 worksrcdir          ${name_lower}
 
 use_zip             yes
 use_configure       no
 
-java.version        1.8+
+java.version        1.11+
 
 build {}
 

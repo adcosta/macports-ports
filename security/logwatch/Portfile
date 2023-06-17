@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                logwatch
-version             7.6
+version             7.8
 revision            0
 distname            logwatch-${version}
 categories          security
@@ -23,12 +23,12 @@ long_description  \
 homepage            http://logwatch.sourceforge.net
 master_sites        sourceforge:project/logwatch/logwatch-${version}
 
-platforms           darwin
+platforms           any
 depends_lib         path:bin/perl:perl5
 
-checksums           rmd160  8d78c8490a9bbe2110f4895f67fe977afed433bb \
-                    sha256  689f3c68b99ef7af7d3c7007c3ff0a55d5674bdbf9c01f69a9f187726d6d4baf \
-                    size    488750
+checksums           rmd160  fd5e19a335c866fdad7d93c4dc8c4004706dc8aa \
+                    sha256  b1df31779306c2c87d595816305c89c19c382edf9ebbfce03143f567e580be42 \
+                    size    504628
 
 patchfiles          patch-scripts.logwatch.pl.diff \
                     patch-conf.logwatch.conf.diff \

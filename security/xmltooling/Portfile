@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           boost 1.0
 
 name                xmltooling
-version             3.2.1
+version             3.2.3
 revision            0
 categories          security textproc xml shibboleth
 license             Apache-2
@@ -25,12 +25,12 @@ depends_lib         port:curl \
                     port:zlib \
                     port:log4shib
 
-master_sites        http://shibboleth.net/downloads/c++-opensaml/${version}/
+master_sites        http://shibboleth.net/downloads/c++-opensaml/3.2.1/
 use_bzip2           yes
 
-checksums           rmd160  d440d28b94ecba6c6fb8234a0b12dfafd68d2c7e \
-                    sha256  ac974755e76f80e1a08294e7b984a57f2f8e2845f01a8b63cad81362e88626e3 \
-                    size    614678
+checksums           rmd160  9560d30886ed81316e5214d5713c6b19f11bc329 \
+                    sha256  95b8296ffb1facd86eaa9f24d4a895a7c55a3cd838450b4d20bc1651fdf45132 \
+                    size    620767
 
 configure.args      --disable-static \
                     --with-xmlsec

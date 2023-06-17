@@ -7,9 +7,9 @@ if { ${os.platform} eq "darwin" && ${os.major} >= 20 && ${build_arch} eq "x86_64
     universal_variant no
 } else {
     PortGroup       muniversal 1.0
+
 }
 
-PortGroup           xcodeversion 1.0
 PortGroup           gitlab 1.0
 PortGroup           legacysupport 1.1
 
@@ -36,24 +36,22 @@ homepage            https://cmake.org
 platforms           darwin freebsd
 gitlab.instance     https://gitlab.kitware.com
 
-gitlab.setup        cmake   cmake efe08e289466683b0945a5396f6848064dec5ae0
-version             20220412-3.23.1-[string range ${gitlab.version} 0 7]
-checksums           rmd160  115ee9b559dd7c715d7e5a78f6be856d7eedeaf3 \
-                    sha256  111d096d96de1791c9842a15a083b8a09bc6f942e107ed4ae06eab4ece21a061 \
-                    size    7672048
+gitlab.setup        cmake   cmake 454bfa77b2951cc53296da86928dce00885d4d5b
+version             20230308-3.26.0-rc6-[string range ${gitlab.version} 0 7]
+checksums           rmd160  14084f8407a6c6a189f443ebcbe5c5b6d9baa4cf \
+                    sha256  ce091ec5972ea67cb79efa63460b9a71623a75b7cb54ad5468ab077c5a54064f \
+                    size    8147049
 revision            0
 
-# switched from "3.23.0" to "date-ver-hash"
 epoch               1
 
 dist_subdir         ${my_name}
 
 compiler.cxx_standard \
-                    2011
+                    2014
 
 platform darwin {
-    if {!((${os.major} < 9) || ${build_arch} eq "ppc" ||
-          ${build_arch} eq "ppc64")} {
+    if {!((${os.major} < 9) || ${build_arch} eq "ppc" || ${build_arch} eq "ppc64")} {
         depends_lib-append port:libcxx
         configure.cxx_stdlib libc++
     }
@@ -70,7 +68,6 @@ long_description ${base_long_description} \
     The ${subport} release port is updated roughly every few months.
 
 patchfiles-append \
-    patch-Modules-noArchCheck.diff \
     patch-CMakeFindFrameworks.cmake.diff \
     patch-Source_Modules_FindLibUV.cmake.diff \
     patch-fix_cxx14_17_checks.diff \
@@ -78,7 +75,8 @@ patchfiles-append \
     patch-cmake-leopard-tiger.diff \
     patch-fix-clock_gettime-test.diff \
     patch-qt5gui.diff \
-    patch-cmake-cmInstallRuntime-initializer-fix.diff
+    patch-cmake-cmInstallRuntime-initializer-fix.diff \
+    patch-uv_spawn.diff
 
 depends_lib-append \
     port:curl \
@@ -101,15 +99,6 @@ configure.env-append \
     CMAKE_PREFIX_PATH=${prefix} \
     CMAKE_INCLUDE_PATH=${prefix}/include/ncurses \
     CMAKE_LIBRARY_PATH=${prefix}/lib
-
-# On Lion, Clang 3.3 produces bad stream reading code when using
-# libc++.  See https://trac.macports.org/ticket/44129 . Clang 3.4
-# works. But Clang 3.7 doesn't work.
-if {${os.platform} eq "darwin" && ${os.major} == 11 &&
-    ${configure.cxx_stdlib} eq "libc++"} {
-    compiler.whitelist \
-        macports-clang-3.4
-}
 
 # clang 3.4 can't build certain parts of the
 # cmake self-testing infrastructure
@@ -231,13 +220,6 @@ set subport_docs \
 subport ${subport_gui} {
     PortGroup qt5 1.0
 
-    # TODO: This subport is still a work-in-progress, and not yet functional
-    known_fail yes
-    pre-fetch {
-        ui_error "${subport} is not yet functional"
-        return -code error "subport not functional"
-    }
-
     description \
         CMake QT-based GUI
     long_description \
@@ -258,17 +240,16 @@ subport ${subport_gui} {
         remove_parent_contents \
             ${subport} \
             ${name}
+
+        # FIXME: Remove help files; disable generation instead?
+        foreach d [glob ${destroot}${prefix}/share/cmake*] {
+            ui_info "${subport}: deleting dir: ${d}"
+            delete ${d}
+        }
     }
 }
 
 subport ${subport_docs} {
-    # TODO: This subport is still a work-in-progress, and not yet functional
-    known_fail yes
-    pre-fetch {
-        ui_error "${subport} is not yet functional"
-        return -code error "subport not functional"
-    }
-
     description \
         CMake Documentation
     long_description \
@@ -279,7 +260,7 @@ subport ${subport_docs} {
     }
 
     # Supported pythons
-    set python_versions {27 35 36 37 38 39}
+    set python_versions {35 36 37 38 39 310 311}
 
     # declare all +python* variants, with conflicts
     foreach pyver ${python_versions} {
@@ -313,7 +294,7 @@ subport ${subport_docs} {
     # set default +python* variant if none were already selected
     if {!${python_isset}} {
         set python_isset true
-        default_variants +python39
+        default_variants +python311
     }
 
     # make sure one of the +python* variants is set
@@ -359,6 +340,12 @@ subport ${subport_docs} {
         remove_parent_contents \
             ${subport} \
             ${name}
+
+        # FIXME: Remove help files; disable generation instead?
+        foreach d [glob ${destroot}${prefix}/share/cmake*] {
+            ui_info "${subport}: deleting dir: ${d}"
+            delete ${d}
+        }
     }
 }
 

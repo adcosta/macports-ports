@@ -3,11 +3,11 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        jonas tig 2.5.5 tig-
+github.setup        jonas tig 2.5.8 tig-
 github.tarball_from releases
-checksums           rmd160  b1f9ce1c19f5da0c0681542d5be9fecbe09f12f1 \
-                    sha256  24ba2c8beae889e6002ea7ced0e29851dee57c27fde8480fb9c64d5eb8765313 \
-                    size    1175752
+checksums           rmd160  86b2c0cf87e704c7e8ff11108ce289f8138e2c71 \
+                    sha256  b70e0a42aed74a4a3990ccfe35262305917175e3164330c0889bd70580406391 \
+                    size    1179844
 
 categories          devel
 maintainers         {cal @neverpanic} \

@@ -1,0 +1,32 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-cloudflare
+version             2.11.6
+revision            0
+categories          python
+license             MIT
+maintainers         {mps @Schamschula} openmaintainer
+description         Python interface to the CloudFlare API.
+long_description    {*}${description}
+supported_archs     noarch
+platforms           {darwin any}
+homepage            https://github.com/cloudflare/python-cloudflare
+
+checksums           rmd160  d79cda0df3f78292d2c92477ab51f09550080138 \
+                    sha256  6531d4caf160baf304d09974251cf05a624e6963d4cf844578c1154efba96f5e \
+                    size    80666
+
+python.versions     37 38 39 310 311
+
+if {${name} ne ${subport}} {
+    python.pep517   yes
+
+    depends_lib-append  \
+                    port:py${python.version}-beautifulsoup4 \
+                    port:py${python.version}-jsonlines \
+                    port:py${python.version}-yaml \
+                    port:py${python.version}-requests
+}

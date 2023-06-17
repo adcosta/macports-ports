@@ -13,10 +13,10 @@ maintainers             {michaelld @michaelld} openmaintainer
 description             The core utilities for the scientific library scipy for Python
 long_description        ${description}
 
-github.setup            numpy numpy 1.22.3 v
-checksums               rmd160  534054b86fa7e8ee9876f38e4a35f82a8a6ba5c9 \
-                        sha256  a906c0b4301a3d62ccf66d058fe779a65c1c34f6719ef2058f96e1856f48bca5 \
-                        size    10525974
+github.setup            numpy numpy 1.24.1 v
+checksums               rmd160  dd2df59cb48926eb460143f617a552b8009af11d \
+                        sha256  2386da9a471cc00a1f47845e27d916d5ec5346ae9696e01a8a34760858fe9dd2 \
+                        size    10903184
 revision                0
 
 if {${name} ne ${subport}} {
@@ -26,7 +26,7 @@ if {${name} ne ${subport}} {
     pre-destroot { set_compilers }
 }
 
-python.versions         27 35 36 37 38 39 310
+python.versions         27 35 36 37 38 39 310 311
 
 # http://trac.macports.org/ticket/34562
 python.consistent_destroot yes
@@ -36,7 +36,7 @@ python.consistent_destroot yes
 #universal_variant no
 
 # some older Clang say they support SIMD when they don't
-compiler.blacklist-append {clang < 910}
+compiler.blacklist-append {clang < 1100}
 
 # require a C/C++11 compliant compiler, to match SciPy and allow some
 # older macOS to build this port.
@@ -90,6 +90,9 @@ if {${name} ne ${subport}} {
         livecheck.regex     {(1\.21(?:\.\d+)+)}
     } else {
         github.tarball_from releases
+        if {${python.pep517}} {
+            build.args      --skip-dependency-check
+        }
     }
 
     patchfiles-append       patch-numpy_core_setup.py${PATCH_PY_EXT}.diff \
@@ -106,7 +109,10 @@ if {${name} ne ${subport}} {
                             -gcc46 -gcc47 -gcc48 -g95
 
     depends_lib-append      port:fftw-3 \
-                            port:py${python.version}-cython
+                            path:bin/cython-${python.branch}:py${python.version}-cython
+
+    build.env-append        SETUPTOOLS_USE_DISTUTILS=stdlib
+    destroot.env-append     SETUPTOOLS_USE_DISTUTILS=stdlib
 
     pre-build {
         build.env-append        ARCHFLAGS=[get_canonical_archflags ld]
@@ -122,6 +128,9 @@ if {${name} ne ${subport}} {
 
     variant openblas conflicts atlas mkl description "Use MacPorts OpenBLAS Libraries" {
         depends_lib-append  path:lib/libopenblas.dylib:OpenBLAS
+
+        # See: https://trac.macports.org/ticket/66685
+        supported_archs     arm64 ppc ppc64 x86_64
     }
 
     variant mkl conflicts atlas openblas description "Use MacPorts MKL Libraries" {
@@ -140,9 +149,11 @@ if {${name} ne ${subport}} {
     # overcome issues with polyfit. see also:
     # https://trac.macports.org/ticket/56954
     # https://github.com/numpy/numpy/issues/12230
+    # However, +gfortran+openblas is broken on i386, see above
     if {![variant_isset atlas] &&
         ![variant_isset openblas] &&
-        ![variant_isset mkl]} {
+        ![variant_isset mkl] &&
+        ${configure.build_arch} ne "i386"} {
         default_variants-append +openblas
     }
 

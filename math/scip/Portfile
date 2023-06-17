@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           boost 1.0
+PortGroup           cmake 1.1
+PortGroup           compilers 1.0
+
+name                scip
+version             8.0.3
+revision            1
+categories          math
+license             Apache-2
+
+maintainers         {@catap korins.ky:kirill} openmaintainer
+
+description         Solving Constraint Integer Programs
+long_description    SCIP is currently one of the fastest non-commercial solvers for \
+                    mixed integer programming (MIP) and mixed integer nonlinear programming (MINLP).
+
+homepage            https://scipopt.org/
+master_sites        https://scipopt.org/download/release/
+extract.suffix      .tgz
+
+checksums           rmd160  faa34bb47c67cdb7d5789de2e59fc8b09c1cd1f1 \
+                    sha256  0dc6297a32e9ebe5fc9d0aa9f9168ec7ea3c2ce551596356c4076eab8a470850 \
+                    size    9526371
+
+compilers.setup     require_fortran
+
+compiler.cxx_standard 2014
+
+# NOTE: that TBB implementation should be the same that is used at PAPILO
+depends_lib-append  port:gmp \
+                    port:ipopt \
+                    port:onetbb \
+                    port:papilo \
+                    port:readline \
+                    port:soplex
+
+compiler.thread_local_storage yes
+
+# NOTE: that polymake requires that SCIP is built without ZIMPL
+configure.args      -DCMAKE_BUILD_TYPE=Release \
+                    -DGMP=ON \
+                    -DSYM=none \
+                    -DZIMPL=OFF \
+                    -DCOVERAGE=OFF \
+                    -DSHARED=ON \
+                    -DAUTOBUILD=OFF
+
+livecheck.type      regex
+livecheck.regex     SCIP version (\[0-9.\]+)

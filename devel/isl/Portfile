@@ -5,16 +5,16 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           muniversal 1.1
 
 name                isl
+conflicts           isl-devel
 
 # for library name changes, cross-compilers do *not* show up in traditional dependency searches
 # (e.g. port file all | sort -u | xargs grep -E ':isl( |$)' | cut -d / -f 13 | sort -u)
 # see https://lists.macports.org/pipermail/macports-dev/2019-May/040678.html
-epoch               3
+epoch               4
 version             0.24
 revision            1
 
 categories          devel math
-platforms           darwin
 license             MIT
 maintainers         {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
 

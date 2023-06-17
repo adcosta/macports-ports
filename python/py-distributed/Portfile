@@ -4,12 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-distributed
-version             2022.5.0
+version             2023.5.0
 revision            0
 categories-append   devel
 license             BSD
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -21,9 +21,9 @@ long_description    Dask.distributed is a lightweight library for distributed \
 
 homepage            https://distributed.readthedocs.io/en/latest/
 
-checksums           rmd160  af32546d9f68da8acb52553b8aa1e0c2faeb8f1f \
-                    sha256  bc8df614fb51c046875478e647c01539f5f41a00abf3d87ef2c6af00932dc509 \
-                    size    934072
+checksums           rmd160  ac888518d04116c9268599c4cd2d8047631d5e2c \
+                    sha256  74e3f7f68d4dc435a3591ae1ad8ce7d5a11211fd22692e39c7e50aa11bf7e385 \
+                    size    1053038
 
 if {${name} ne ${subport}} {
     depends_lib-append  port:py${python.version}-setuptools \

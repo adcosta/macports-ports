@@ -5,12 +5,10 @@ PortGroup           python 1.0
 PortGroup           github 1.0
 
 name                py-shapely
-github.setup        Toblerity Shapely 1.8.1
-revision            0
-python.versions     36 37 38 39 310
+github.setup        Toblerity Shapely 2.0.1
+revision            1
+python.versions     37 38 39 310 311
 categories-append   devel
-platforms           darwin
-supported_archs     noarch
 maintainers         {snc @nerdling} openmaintainer
 license             BSD
 homepage            https://shapely.readthedocs.io/en/stable/
@@ -27,10 +25,10 @@ long_description \
 #distname           Shapely-${version}
 #master_sites       pypi:S/Shapely
 
-checksums           md5     d257b40941a4be632a7ce138498b97f6 \
-                    rmd160  83a9cba3a5add046a4c8825446f3192d45e1d865 \
-                    sha256  f05bec39603b19f0c239494b72e472f6d496e0b7a8a387c5bf6a14c92245f4d1 \
-                    size    321805
+checksums           md5     43d3acf85a2b805cd1ba8edd65dd020e \
+                    rmd160  dfcc8b3674574e53218ea5f653473f698871b024 \
+                    sha256  44a61c30ce3c2f90c26d06d9c8450ffd69b07516c3f56efe3d04b23127629ec5 \
+                    size    325906
 
 if {${name} ne ${subport}} {
     depends_lib-append      port:geos
@@ -38,8 +36,8 @@ if {${name} ne ${subport}} {
                             port:py${python.version}-numpy \
                             port:py${python.version}-setuptools
 
+    patchfiles      patch-pyproject.toml.diff
     post-patch {
-        reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/shapely/geos.py
         reinplace s|\\\"cython\\\"|"${python.prefix}/bin/cython"| ${worksrcpath}/setup.py
     }
 

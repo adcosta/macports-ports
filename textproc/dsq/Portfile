@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/multiprocessio/dsq 0.16.0
+go.setup            github.com/multiprocessio/dsq 0.23.0 v
 github.tarball_from archive
 revision            0
 
@@ -18,9 +18,9 @@ license             Apache-2
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  39c5ff611af88e4c81f0775c8ff8bfcc68661bce \
-                    sha256  d8feb5a1fc195a30e6a6f5648d9ec678dbd51fb792197797819642b2b1c31453 \
-                    size    1489511
+checksums           rmd160  dd20068ab1f6a2450432e3d7232a29374293a16d \
+                    sha256  02c923f9089399bf66809bedcb3fec27022f11829e0ed2ac9c7ff87f72e85d8d \
+                    size    27646612
 
 # Allow Go to fetch deps during build
 build.env-delete    GO111MODULE=off GOPROXY=off

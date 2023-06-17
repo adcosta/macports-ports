@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Astro-FITS-CFITSIO 1.15
+perl5.setup         Astro-FITS-CFITSIO 1.17
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Interface to William Pence\'s cfitsio subroutine library
@@ -12,15 +12,15 @@ long_description    ${description}
 
 platforms           darwin
 
-checksums           rmd160  a1f8e69cc55fa7975be0f15ab98508490278c8ec \
-                    sha256  1f874d685466e24985c9d74c022cf0f1d7e26a94c9afe378cd0239811214c500 \
-                    size    355379
+checksums           rmd160  de84d8ac7bce66ff326be96e4059183db1c3ce1e \
+                    sha256  1444338b390e7bcdff33879ec8d0562869462ecb52fe8f2b5fd84315f358005d \
+                    size    356509
 
 if {${perl5.major} != ""} {
-    configure.env   CFITSIO=${prefix}
-    configure.args-append \
-                    OPTIMIZE=-O
+    depends_build-append \
+                    port:p${perl5.major}-test2-suite
 
     depends_lib-append \
-                    port:cfitsio
+                    port:p${perl5.major}-alien-build \
+                    port:p${perl5.major}-alien-cfitsio
 }

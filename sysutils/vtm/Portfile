@@ -3,46 +3,47 @@
 PortSystem              1.0
 PortGroup               github 1.0
 PortGroup               cmake 1.1
+PortGroup               legacysupport 1.1
 PortGroup               compiler_blacklist_versions 1.0
 
-github.setup            netxs-group vtm 0.7.5 v
+github.setup            netxs-group vtm 0.9.9m v
 github.tarball_from     archive
 revision                0
 
 categories              sysutils
 license                 MIT
-
-maintainers             {@aeiouaeiouaeiouaeiouaeiouaeiou outlook.com:aeioudev} openmaintainer
+maintainers             nomaintainer
 
 description             Monotty Desktopio - text-based desktop environment \
                         inside your terminal
-
 long_description        ${name} is a terminal multiplexer with window manager \
                         and session sharing.
 
-checksums               rmd160  f566cc8edd409985755b789338085e150f5708bb \
-                        sha256  2cf7e3fdd38bdc262db5f8ab8c06381756065201637eb6d070a8235a7ff7a957 \
-                        size    1269362
+checksums               rmd160  30b65c527665889b974860487b66fb258dba332e \
+                        sha256  916c184e95457b9d1175bc44e0f6f047b4171a045c5c149bf3706a7d7e94e57f \
+                        size    1382938
 
-# Requires a compiler with full C++20 support.
-# Clang may crash due to intensive memory leak:
-# https://github.com/netxs-group/vtm/issues/182
+# Requires a compiler with full C++20 support
+compiler.cxx_standard   2020
+# Avoid Xcode Clang, due to build issues; likely fixable, but needs more investigation
 compiler.blacklist-append \
-                        *clang*
-compiler.fallback-append \
-                        macports-gcc-11
+                        {clang}
 
-cmake.build_type        Release
+# Needed for std::filesystem and std::atomic_notify_all
+legacysupport.newest_darwin_requires_legacy 19
+legacysupport.use_mp_libcxx yes
 
-configure.cxx_stdlib    libstdc++
-configure.args-append   ${worksrcpath}/src
-
-variant demo description {Build with demo mode} {
-    depends_run-append      port:mc
-    post-patch {
-        reinplace "s|\"Demo mode\" OFF|\"Demo mode\" ON|g" ${worksrcpath}/src/CMakeLists.txt
-    }
+if {[variant_isset debug]} {
+    cmake.build_type    Debug
+    configure.optflags  -O0
+} else {
+    # For non-debug, let project dictate optimization level
+    # RelWithDebInfo uses O2; avoid Release, which enables O3
+    cmake.build_type    RelWithDebInfo
+    configure.optflags
 }
+
+configure.args-append   ${worksrcpath}/src
 
 notes "
 Recommended to use it in a terminal with mouse\

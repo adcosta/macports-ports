@@ -3,9 +3,11 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/roboll/helmfile 0.144.0 v
+go.setup            github.com/helmfile/helmfile 0.154.0 v
 github.tarball_from archive
 revision            0
+
+homepage            https://helmfile.readthedocs.io
 
 description         Deploy Kubernetes Helm Charts
 
@@ -24,11 +26,15 @@ maintainers         {gmail.com:herby.gillot @herbygillot} \
 # Allow Go to fetch dependencies at buld time
 build.env-delete    GO111MODULE=off GOPROXY=off
 build.cmd           make
-build.args          TAG=v${version} build
+build.pre_args-append \
+                    TAG=v${version}
+build.args          build
 
-checksums           rmd160  d129522c98668dc658f2011b9fc1659ddad8264e \
-                    sha256  fc767d10ec21ca464caaefd309f410d96685a985090c237907a22bd983112c62 \
-                    size    260943
+checksums           rmd160  d0a0664f62f36406d0959db4e3d93b219a980c82 \
+                    sha256  0f9c3ff65d226c11b1fab9b8c94ffe5e4a8a0605d317cea855469e683a217a42 \
+                    size    582663
+
+use_parallel_build  no
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/

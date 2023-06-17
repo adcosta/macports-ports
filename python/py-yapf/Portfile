@@ -5,24 +5,25 @@ PortGroup           github 1.0
 PortGroup           python 1.0
 PortGroup           select 1.0
 
-github.setup        google yapf 0.32.0 v
+github.setup        google yapf 0.40.0 v
 github.tarball_from archive
 revision            0
 name                py-yapf
 
 categories-append   devel
 supported_archs     noarch
+platforms           {darwin any}
 license             Apache-2
 maintainers         {reneeotten @reneeotten} openmaintainer
 
 description         A formatter for Python files
 long_description    YAPF is based off of 'clang-format', developed by Daniel Jasper.
 
-checksums           rmd160  155b231807d88737660b0c101befd3a2092f8f8d \
-                    sha256  410ed0f592c898d75d73f7792aee6569bdbc0b57bc72b417c722c17f41f66b12 \
-                    size    178621
+checksums           rmd160  5321791a9c0cec873b4983a80d3203e4c2d46291 \
+                    sha256  c295a4e9d259c189b74cafb34d645cc9acff73a1aa33589d8e175362c3164050 \
+                    size    226057
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 if {${subport} ne ${name}} {
     depends_lib-append \

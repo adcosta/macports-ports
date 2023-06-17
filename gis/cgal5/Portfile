@@ -17,7 +17,7 @@ long_description        The goal of the ${description} is to provide easy access
 
 platforms               darwin
 
-github.setup            CGAL cgal 5.3.1 v
+github.setup            CGAL cgal 5.5.1 v
 revision                0
 conflicts               cgal4
 github.tarball_from     releases
@@ -26,19 +26,18 @@ license                 LGPL-3+ GPL-3+
 categories              gis science
 maintainers             {vince @Veence}
 use_xz                  yes
-# switch to this (and remove worksrcdir) with the next version update
-#distname                CGAL-${version}
+distname                CGAL-${version}
 
 homepage                http://www.cgal.org/
 
-checksums               rmd160  ca512e541cc990793b2f7759d795685ec675c687 \
-                        sha256  ab76633b023d72ea3ca9ad22e2fa39ed3b5c8fb4e2c091a78035fabb5eb3fccf \
-                        size    23295932
+checksums               rmd160  8ed91fff47ef3dc3ed4912ba6816154699d99dd4 \
+                        sha256  091630def028facdcaf00eb5b68ad79eddac1b855cca6e87eef18a031566edfc \
+                        size    24164376
 
-worksrcdir              CGAL-${version}
 depends_lib-append      port:mpfr \
                         port:zlib \
                         port:gmp \
+                        port:boost \
                         path:include/eigen3/Eigen/Eigen:eigen3
 
 compiler.cxx_standard   2014

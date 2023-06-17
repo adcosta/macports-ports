@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-h5netcdf
-version             1.0.0
+version             1.2.0
 revision            0
 categories          python
 license             BSD
@@ -14,17 +14,31 @@ long_description    {*}${description} that reads and writes local or remote HDF5
                     directly via h5py or h5pyd, without relying on the Unidata netCDF l\
                     ibrary.
 supported_archs     noarch
+platforms           {darwin any}
+
 homepage            https://github.com/h5netcdf/h5netcdf
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
-checksums           rmd160  4e748f67dccdef1b03365a4107ea22f0e2ad03c9 \
-                    sha256  4bf07ac545e6e4ee372a8505ffcee5c83f2db8b9a5c4a510b9336d92c3d50fa6 \
-                    size    52916
+checksums           rmd160  871cc66dc340251561ba517389773ae306ffe03e \
+                    sha256  7f6b2733bde06ea2575b79a6450d9bd5c38918ff4cb2a355bf22bbe8c86c6bcf \
+                    size    57221
 
 if {${name} ne ${subport}} {
+    if {${python.version} <= 38} {
+        version     1.1.0
+        revision    0
+
+        checksums   rmd160  b1f023a951d7cb20209c7f1022b6ca196626c365 \
+                    sha256  932c3b573bed7370ebfc9e802cd60f1a4da5236efb11b36eeff897324d76bf56 \
+                    size    56385
+    } else {
+        python.pep517   yes
+    }
+
     depends_build-append \
-                    port:py${python.version}-setuptools_scm
+                    port:py${python.version}-setuptools_scm \
+                    port:py${python.version}-setuptools_scm_git_archive
 
     depends_lib-append  \
                     port:py${python.version}-h5py

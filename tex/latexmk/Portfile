@@ -3,14 +3,15 @@
 PortSystem          1.0
 
 name                latexmk
-version             4.77
+version             4.80
+revision            0
 
-checksums           rmd160  6017b112e6c591184649fb5176f158cc7d0b2e8f \
-                    sha256  2acd5ba06d8b2a8046379b41dc8b35ebe0f22203b7aa290e37f356a49e331949 \
-                    size    475933
+checksums           rmd160  c643ce8f67f4fa6f13d1397f2a85eeb9e37545ce \
+                    sha256  67425c2868f6ee7d79e08edd85b8a49bcdf61c86d3e6920e296639ffe3122c40 \
+                    size    515014
 
 categories          tex print
-platforms           darwin
+platforms           any
 maintainers         {cal @neverpanic} openmaintainer
 supported_archs     noarch
 license             GPL-2+

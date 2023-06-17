@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/snyk/driftctl 0.29.0 v
+go.setup            github.com/snyk/driftctl 0.39.0 v
 github.tarball_from archive
 revision            0
 
@@ -20,14 +20,16 @@ license             Apache-2
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  dd289547f853a969ad5020dffd2c387eed254bbf \
-                    sha256  3544e2937f11bdabba65e6e32cdc1d37dd81129002138a00cb72696b10125958 \
-                    size    16641825
+checksums           rmd160  36dfaa52b82b5eaee29e14ec886239f393aefd18 \
+                    sha256  384e9d675881546b635e0864a88139f02bae0602f0e2a935c84856840c5bba83 \
+                    size    1883273
 
 # Allow fetching dependencies at build time
 build.env-delete    GOPROXY=off GO111MODULE=off
 
 build.env-append    OS_ARCH=${os.platform}/${goarch}
+
+build.cmd           "${go.bin} generate ./... && ${go.bin} build"
 
 build.pre_args-append \
     -ldflags \" \

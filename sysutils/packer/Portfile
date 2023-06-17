@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/hashicorp/packer 1.8.0 v
+go.setup            github.com/hashicorp/packer 1.9.1 v
 github.tarball_from archive
 revision            0
 
@@ -27,9 +27,9 @@ maintainers         {gmail.com:newtonne.github @newtonne} \
                     {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  6c63cc672b815788cc835154fbd89f00b2ce384f \
-                    sha256  3df688cb488e746df529474f08a430adf0c7c839c4ed3de2022a094eadc515fd \
-                    size    2432874
+checksums           rmd160  5b35c49e4582a090ea0c6a6e087a6f1c1a00954b \
+                    sha256  1f3ae38fe9313a072547d1ce5674d74438ad5d59b042a87428534ac39bfd47b7 \
+                    size    2297254
 
 depends_build-append port:realpath
 
@@ -46,3 +46,6 @@ destroot {
     xinstall -m 0755 \
         ${worksrcpath}/bin/${name} ${destroot}${prefix}/bin/${name}
 }
+
+github.livecheck.regex \
+                    {([0-9.]+)}

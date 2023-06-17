@@ -4,26 +4,27 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-more-itertools
-version             8.13.0
+version             9.1.0
 revision            0
 categories-append   devel
 license             MIT
 supported_archs     noarch
+platforms           {darwin any}
 
-python.versions     27 35 36 37 38 39 310
+python.versions     27 35 36 37 38 39 310 311
 python.pep517       yes
 python.pep517_backend flit
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         More routines for operating on iterables, beyond itertools.
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://github.com/erikrose/more-itertools
 
-checksums           rmd160  8f907af3f05c3fc5d83652726c24438594d5461b \
-                    sha256  a42901a0a5b169d925f6f217cd5a190e32ef54360905b9c39ee7db5313bfec0f \
-                    size    101264
+checksums           rmd160  4c82a1cfcecb3acbb160546c0974b9a2031485a8 \
+                    sha256  cabaa341ad0389ea83c17a94566a53ae4c9d07349861ecb14dc6d0345cf9ac5d \
+                    size    107389
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -37,10 +38,30 @@ if {${name} ne ${subport}} {
                             sha256  38a936c0a6d98a38bcc2d03fdaaedaba9f412879461dd2ceff8d37564d6522e4 \
                             size    67359
         depends_lib-append  port:py${python.version}-six
+
+        python.pep517       no
+    } elseif {${python.version} eq 35} {
+        version             8.12.0
+        revision            0
+        epoch               1
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  92e25b8097001dbf10dffced771e4c74a3d8923d \
+                            sha256  7dc6ad46f05f545f900dd59e8dfb4e84a4827b97b3cfecb175ea0c7d247f6064 \
+                            size    108698
+
+        python.pep517       no
+    } elseif {${python.version} eq 36} {
+        version             8.14.0
+        revision            1
+        distname            ${python.rootname}-${version}
+        checksums           rmd160  12a70ca52a8c8c2650c962764b5523bad5648de5 \
+                            sha256  c09443cd3d5438b8dafccd867a6bc1cb0894389e90cb53d227456b0b0bccb750 \
+                            size    102642
     }
 
-    if {${python.version} < 37} {
-        python.pep517       no
+    if {${python.version} >= 36} {
+        test.run            yes
+        test.target         tests
     }
 
     livecheck.type      none

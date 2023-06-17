@@ -4,11 +4,12 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        miguelgrinberg python-engineio 4.3.2 v
+github.setup        miguelgrinberg python-engineio 4.4.1 v
 name                py-engineio
 revision            0
 
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         {judaew @judaew} openmaintainer
 
@@ -16,9 +17,9 @@ description         Python Engine.IO server and client
 long_description    \
     Python implementation of the Engine.IO realtime client and server.
 
-checksums           rmd160  d04b744893f352e5b659c852c854e62969712cf8 \
-                    sha256  f8fc0f19ccf908e7624cb4591361cfb7762bfb31488b7bc80696fdcaacb09242 \
-                    size    299814
+checksums           rmd160  2a7bd01b292f5e661e6563372a5b1a4a546e794a \
+                    sha256  233a90b0748bbcb67d050a8d7eeffd6afa67ce9976c9d84ee7aafc9863bfdd1e \
+                    size    309605
 
 python.versions     37 38 39
 

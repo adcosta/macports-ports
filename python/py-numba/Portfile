@@ -3,14 +3,16 @@
 PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
+PortGroup           compiler_wrapper 1.0
 
-github.setup        numba numba 0.53.1
+github.setup        numba numba 0.57.0
 name                py-numba
-revision            0
+revision            1
 categories-append   devel
 license             BSD
 
-python.versions     37 38 39
+python.versions     38 39 310 311
+python.pep517       yes
 
 maintainers         {stromnov @stromnov} openmaintainer
 
@@ -22,24 +24,20 @@ long_description    Numba is an Open Source NumPy-aware optimizing compiler \
 
 homepage            https://numba.pydata.org/
 
-checksums           rmd160  4d9831de01e02a0bcf146f71a5c5ec0de52e49b9 \
-                    sha256  3e1081eac904af3e59d4c41b0d64fd5f34d5cfb65ce7f9063cdb268e313ad0fc \
-                    size    2241482
+checksums           rmd160  f1e50c2151c27192ccbe2e4ffdec81132721535a \
+                    sha256  cb73720ede67635cfaef01254c108a9d2e0a322412efa3526a4de081fdab7dc6 \
+                    size    2614981
 
 variant tbb description "Add support for TBB" {
-    depends_lib-append  port:tbb
-    build.env-append    TBBROOT=${prefix}
+    depends_lib-append  port:onetbb
+    build.env-append    TBBROOT=${prefix}/libexec/onetbb
 }
 
 if {${name} ne ${subport}} {
-    use_parallel_build  no
-
-    depends_build-append \
-                        port:py${python.version}-setuptools
+    compiler.openmp_version 2.5
 
     depends_lib-append  port:py${python.version}-llvmlite \
                         port:py${python.version}-numpy
-
 } else {
     github.livecheck.regex  {([0-9.]+)}
 }

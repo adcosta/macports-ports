@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Socket 2.033 ../../authors/id/P/PE/PEVANS
+perl5.setup         Socket 2.037 ../../authors/id/P/PE/PEVANS
 revision            0
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
@@ -13,10 +13,6 @@ long_description    {*}${description}
 
 platforms           darwin
 
-checksums           rmd160  8c03d255ada381e47c26048b0ac7186bb6b685d2 \
-                    sha256  90268439127d303a00a20bf4104610449992ca621f55f474f19874084e5dfbfe \
-                    size    45088
-
-livecheck.type      regex
-livecheck.url       https://cpan.metacpan.org/authors/id/P/PE/PEVANS
-livecheck.regex     "${perl5.module}-(\\d+(?:\\.\\d+)*)"
+checksums           rmd160  2fb95b15aba3c4cb518f67565fba7918e938c19d \
+                    sha256  85448811e9e274374404634f3c208afa936ee4d223e76251ea9868315b0c812f \
+                    size    45999

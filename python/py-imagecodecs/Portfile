@@ -4,8 +4,9 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-imagecodecs
-version             2022.2.22
-revision            0
+version             2023.3.16
+revision            2
+epoch               1
 
 categories-append   graphics
 license             BSD
@@ -16,14 +17,17 @@ long_description    {*}${description}
 
 homepage            https://www.lfd.uci.edu/~gohlke/
 
-checksums           rmd160  0c8c2166942f04a9b2453caa951cbd4f96454aac \
-                    sha256  062bef6b003290a8163abed2744b406854238208dfdd41cf7165253c6e01c0bd \
-                    size    11441453
+checksums           rmd160  d6aa717b57501152a1d196429cea922da753ac43 \
+                    sha256  e39c2a63f7f5b9bee0ba4961db8c1e7f2518ce07d2fd10a56624d17f1407efc1 \
+                    size    22452941
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
+
+platforms {darwin >= 17}
 
 if {${name} ne ${subport}} {
     depends_build-append \
+                    path:bin/cython-${python.branch}:py${python.version}-cython \
                     port:py${python.version}-setuptools
 
      depends_lib-append \
@@ -34,10 +38,10 @@ if {${name} ne ${subport}} {
                     port:cfitsio \
                     port:charls \
                     port:giflib5 \
-                    path:include/turbojpeg.h:libjpeg-turbo \
                     port:libaec \
+                    port:libjpeg-turbo \
+                    port:libjxl \
                     port:openjpeg \
-                    port:py${python.version}-cython \
                     port:py${python.version}-numpy \
                     port:py${python.version}-pyobjc \
                     port:snappy \
@@ -46,10 +50,14 @@ if {${name} ne ${subport}} {
                     port:zopfli \
                     port:zstd
 
+    # disable 12-bit, 16-bit, and lossless code paths ( only)
+    # remove when libjpeg-turbo 3 is out of beta
+    # see: https://github.com/conda-forge/imagecodecs-feedstock/pull/79#issuecomment-1492667986
+    # see: https://github.com/macports/macports-ports/commit/d3ad9afba4a88e09ed128dc87ccb401e64bc665b
+    patchfiles      patch-imagecodecs-_jpeg8.pyx.diff
+
     post-patch {
         reinplace "s|%PREFIX%|${prefix}|g" \
             ${worksrcpath}/setup.py
     }
-
-    livecheck.type  none
 }

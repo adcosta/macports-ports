@@ -4,7 +4,8 @@ PortSystem          1.0
 PortGroup           active_variants 1.1
 
 name                gretl
-version             2022a
+version             2023a
+revision            0
 categories          math
 license             GPL-3
 maintainers         nomaintainer
@@ -20,9 +21,9 @@ homepage            http://gretl.sourceforge.net/
 master_sites        sourceforge
 use_xz              yes
 
-checksums           rmd160  8673df64bdb58b934c6854c0ecbb67ef2fdd14ec \
-                    sha256  27e25cb8275adb1609e5a573e945d1fa75a289de90c690edb780d795be8be140 \
-                    size    13322784
+checksums           rmd160  7b1563d0152933449dcd3ec57505b8b5f0c648b2 \
+                    sha256  4f5530421c3f4ebfe3b98a9524192cb762d10422173cbbd577437e40225c56d3 \
+                    size    14033140
 
 depends_build       port:pkgconfig \
                     port:gmake

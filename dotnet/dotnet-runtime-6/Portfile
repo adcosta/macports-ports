@@ -3,11 +3,12 @@
 PortSystem          1.0
 
 name                dotnet-runtime-6
-version             6.0.3
-revision            1
+version             6.0.18
+revision            0
 categories          dotnet
 license             MIT
-maintainers         {@tsabirgaliev gmail.com:tair.sabirgaliev} openmaintainer
+maintainers         {@tsabirgaliev gmail.com:tair.sabirgaliev} \
+                    {@judaew judaew} openmaintainer
 
 description         .NET is a cross-platform runtime for cloud, mobile, desktop, and IoT apps.
 
@@ -24,15 +25,15 @@ supported_archs     x86_64 arm64
 switch ${build_arch} {
     x86_64 {
         distname            dotnet-runtime-${version}-osx-x64
-        checksums           rmd160  f441ab8fb2762ea542de7684ad2ddac2b4a7c9a6 \
-                            sha256  7852d49ed7b6fa054efce7eade625cc56aae5265bc4f7e6f5c065da119269f44 \
-                            size    30077032
+        checksums           rmd160  6587be78be3c9d78950021a0cc795b82ac9fe3ff \
+                            sha256  5b5ea262f917ba62883227b9df812c8aed91fede45321d3d0abce9aec5fa5dfe \
+                            size    30081962
     }
     arm64 {
         distname            dotnet-runtime-${version}-osx-arm64
-        checksums           rmd160  e6944f5a32e22270b6f8feb3662447c758c82244 \
-                            sha256  eb5cc767c16c2b66c3c0bd69b3360b663920aaa1c254411cbd64b4b1081820fc \
-                            size    28169432
+        checksums           rmd160  a2184e2322db8e684c353c6afd558b55f3cc0291 \
+                            sha256  f1a9883bb31a3d94d76bf953f39dd7f5d3a68c639c54d9c98927e8aeae2612ab \
+                            size    28190996
     }
     default {
         known_fail yes
@@ -61,3 +62,7 @@ destroot {
 
     move ${worksrcpath}${runtime_dir}/${version} ${destroot}${dotnet_home}${runtime_dir}
 }
+
+livecheck.type      regex
+livecheck.url       https://dotnet.microsoft.com/en-us/download/dotnet/6.0
+livecheck.regex     ".NET Runtime (\\d+(?:\\.\\d+)*)"

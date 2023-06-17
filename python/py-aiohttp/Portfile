@@ -4,11 +4,12 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-aiohttp
-version             3.8.1
+version             3.8.4
+revision            1
 categories-append   devel
 license             Apache-2
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 maintainers         {ipglider.org:miguel @ipglider} openmaintainer
 
@@ -20,9 +21,9 @@ long_description    aiohttp key futures are the support for both client and \
 
 homepage            https://github.com/aio-libs/aiohttp
 
-checksums           rmd160  9c479c917062b19b9a301597b8d55e83b1582eb0 \
-                    sha256  fc5471e1a54de15ef71c1bc6ebe80d4dc681ea600e68bfd1cbce40427f0b7578 \
-                    size    7324180
+checksums           rmd160  0e462cf133be881718d1f5be3ad92c9c92002c91 \
+                    sha256  bf2e1a9162c1e441bf805a1fd166e249d574ca04e03b34f97e2928769e91ab5c \
+                    size    7338512
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools
@@ -32,7 +33,6 @@ if {${name} ne ${subport}} {
                             port:py${python.version}-async-timeout \
                             port:py${python.version}-attrs \
                             port:py${python.version}-brotli \
-                            port:py${python.version}-cchardet \
                             port:py${python.version}-charset-normalizer \
                             port:py${python.version}-frozenlist \
                             port:py${python.version}-multidict \
@@ -41,5 +41,9 @@ if {${name} ne ${subport}} {
     if {${python.version} < 38} {
         depends_lib-append  port:py${python.version}-asynctest \
                             port:py${python.version}-typing_extensions
+    }
+
+    if {${python.version} < 310} {
+        depends_lib-append  port:py${python.version}-cchardet
     }
 }

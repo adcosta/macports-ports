@@ -4,9 +4,9 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Curses 1.38
+perl5.setup         Curses 1.44
 revision            0
-license             Artistic-1
+license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         terminal screen handling and optimization
 long_description    Curses is the interface between Perl and your system's curses(3) library.\
@@ -14,11 +14,12 @@ long_description    Curses is the interface between Perl and your system's curse
                     consult your system's documentation, as such information invariably varies\
                     (:-) between different curses(3) libraries and operating systems.
 
-checksums           rmd160  d9229bb48e379f78276e4fc6dd8e691e7af6bbb0 \
-                    sha256  d521408298eb6413b209ef29d4ffcba6f5f58ee1abc60160739a17aafcb8f2f2 \
-                    size    135789
-
 platforms           darwin
+
+checksums           rmd160  086712d72ae5e3c35cc50de236b37d7a746605ef \
+                    sha256  a2efb8c7c886d692ffc4db21361c76809a065e588e43fad0d67e44ef9d42bd30 \
+                    size    139766
+
 if {${perl5.major} != ""} {
     depends_lib-append \
                     port:ncurses

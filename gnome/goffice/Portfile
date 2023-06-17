@@ -19,24 +19,26 @@ use_xz                  yes
 
 if {${name} eq ${subport}} {
     epoch               1
-    version             0.10.51
-    revision            0
+    version             0.10.55
+    revision            1
 
     license             {GPL-2 GPL-3}
 
-    checksums           rmd160  23f65a775bacbcd6884770854d149dcc48a6d9aa \
-                        sha256  2e8410884d6a51ae00c9420928abfa73f7a552c1aa222371df4f2dc5acc3cd23 \
-                        size    2432992
+    checksums           rmd160  98bc2430bef4fe7c70874ebfee7529ecbf65e566 \
+                        sha256  16a221191855a6a6c0d06b1ef8e481cf3f52041a654ec96d35817045ba1a99af \
+                        size    2455576
 
     depends_build       port:pkgconfig \
                         port:intltool \
+                        port:gettext \
                         port:gtk-doc \
                         port:autoconf \
                         port:automake \
                         port:libtool
 
-    depends_lib         path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
-                        port:icu \
+    depends_lib         port:gettext-runtime \
+                        path:lib/pkgconfig/gtk+-3.0.pc:gtk3 \
+                        path:lib/pkgconfig/icu-uc.pc:icu \
                         port:libgsf \
                         path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
                         port:libspectre \
@@ -81,7 +83,7 @@ if {${name} eq ${subport}} {
 subport goffice08 {
     epoch               1
     version             0.8.17
-    revision            5
+    revision            6
 
     checksums           sha256  165070beb67b84580afe80a8a100b674a81d553ab791acd72ac0c655f4fadb15 \
                         rmd160  91d1df371c8164c8c5c9860c7c9c87b9fb69f6c3 \

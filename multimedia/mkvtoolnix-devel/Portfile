@@ -5,6 +5,7 @@ PortGroup           legacysupport 1.1
 PortGroup           muniversal 1.0
 PortGroup           boost 1.0
 PortGroup           compiler_blacklist_versions 1.0
+PortGroup           qt5 1.0
 
 # Please keep the mkvtoolnix and mkvtoolnix-devel ports as similar as
 # possible.
@@ -29,11 +30,11 @@ homepage            https://mkvtoolnix.download
 master_sites        ${homepage}/sources/
 use_xz              yes
 
-version             67.0.0
+version             76.0
 revision            0
-    checksums       rmd160  bf0d57eb268ade36012ca41e889bc03e8bc26da8 \
-                    sha256  db68be91ee8a0b688d924cc00d3bac9349306d54c29ce44a555728c1abb7d3ec \
-                    size    7791720
+checksums           rmd160  d0ba9825793ab9501e424308cfca8a0bccf91f29 \
+                    sha256  6ace661b61a49d1026b1a97336051d7aa85d56fb34527f2ca97d8933f7efe90d \
+                    size    11021180
 
 distname            ${my_name}-${version}
 dist_subdir         ${my_name}
@@ -59,8 +60,13 @@ boost.depends_type \
 set version_ruby    2.7
 set version_ruby_mp [join [split $version_ruby "."] ""]
 
+qt5.depends_component \
+                    qtmultimedia \
+                    qttools
+
 depends_build       port:ruby${version_ruby_mp} \
                     port:docbook-xsl-nons \
+                    port:pkgconfig \
                     port:libxslt \
                     port:po4a
 
@@ -77,9 +83,12 @@ depends_lib         port:bzip2 \
                     port:pugixml \
                     port:cmark \
                     port:libdvdread \
-                    port:gmp
+                    port:gmp \
+                    port:nlohmann-json
 
 depends_run         port:ruby${version_ruby_mp}
+
+depends_test        port:gtest
 
 post-patch {
     fs-traverse f ${worksrcpath} {
@@ -104,6 +113,9 @@ build.target        default
 # disable silent rules
 build.args-append   V=1
 
+# NOTE: QT-related options changed significantly with v59.x and v58.x. And QT now required regardless, even when GUI disabled
+# See: https://gitlab.com/mbunkus/mkvtoolnix/-/blob/release-59.0.0/NEWS.md#build-system-changes
+# See: https://gitlab.com/mbunkus/mkvtoolnix/-/blob/release-58.0.0/NEWS.md#build-system-changes
 configure.args      --mandir=${prefix}/share/man \
                     --with-boost=[boost::install_area] \
                     --with-extra-libs=${prefix}/lib \
@@ -112,7 +124,10 @@ configure.args      --mandir=${prefix}/share/man \
                     --with-docbook-xsl-root=${prefix}/share/xsl/docbook-xsl-nons \
                     --with-po4a=${prefix}/bin/po4a \
                     --with-po4a-translate=${prefix}/bin/po4a-translate \
-                    --disable-qt \
+                    --disable-gui \
+                    --disable-qt6 \
+                    --enable-qt5 \
+                    --with-qmake=${qt_dir}/bin/qmake \
                     --disable-update-check
 
 configure.ldflags-append ${cxx_stdlibflags}
@@ -123,21 +138,15 @@ test.target         tests:unit
 
 variant qtgui description {Build with the qt5 GUI} {
     PortGroup       app 1.0
-    PortGroup       qt5 1.0
 
     app.name        MKVToolNix
     app.executable  mkvtoolnix-gui
     app.icon        ${worksrcpath}/share/icons/256x256/mkvtoolnix-gui.png
 
     depends_build-append port:makeicns
-    qt5.depends_component qtmultimedia
-    configure.args-delete --disable-qt
-    configure.args-append \
-                    --enable-qt \
-                    --with-qmake=${qt_dir}/bin/qmake \
-                    --with-moc=${qt_dir}/bin/moc \
-                    --with-uic=${qt_dir}/bin/uic \
-                    --with-rcc=${qt_dir}/bin/rcc
+    configure.args-replace \
+                    --disable-gui \
+                    --enable-gui
 }
 
 if {${os.platform} ne "darwin" || ${os.major} > 13} {

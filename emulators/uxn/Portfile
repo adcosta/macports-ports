@@ -2,15 +2,16 @@
 
 PortSystem              1.0
 PortGroup               sourcehut 1.0
+PortGroup               compiler_blacklist_versions 1.0
 
 name                    uxn
-sourcehut.setup         rabbits uxn fec233db2ab232a1ef3eaba7d954dcf2171337eb
-version                 20220418
+sourcehut.setup         rabbits uxn f07775a9a2e9c8f7dd0b78a1404ac67aaa3d697a
+version                 20230217
 revision                0
 
 categories              emulators
 license                 MIT
-maintainers             {@aeiouaeiouaeiouaeiouaeiouaeiou outlook.com:aeioudev} openmaintainer
+maintainers             nomaintainer
 
 description             An assembler and emulator for the Uxn \
                         stack-machine, written in ANSI C.
@@ -22,9 +23,9 @@ long_description        Uxn is a virtual machine with 32 instructions. \
 
 homepage                https://100r.co/site/uxn.html
 
-checksums               rmd160  2ffeb89ae7b776fb0203fa99fae8be078a6ae58c \
-                        sha256  8f0e2b9467d7c6e987a4ea0cc17962cb38293804a9cf381a0e31aefdc38f4893 \
-                        size    285647
+checksums               rmd160  859c5a4503d9519f39ea51231b3aafc9eff25eba \
+                        sha256  1ad8913c583162a9ab4a5d36a48cc27e4d68912c876e48d81e5cf8b177bf81ae \
+                        size    285968
 
 depends_lib             port:libsdl2
 
@@ -37,14 +38,30 @@ post-patch {
 
 use_configure           no
 
+compiler.blacklist-append \
+                        *gcc* {clang < 500}
+
 build.cmd               ${worksrcpath}/build.sh
 build.args              --no-run
+build.env               CC=${configure.cc} \
+                        "CFLAGS=${configure.cflags} [get_canonical_archflags cc]" \
+                        "LDFLAGS=${configure.ldflags} [get_canonical_archflags ld]"
 
 destroot {
-    xinstall -d ${destroot}${prefix}/share/examples/${name}/demos
-    xinstall -m 0644 ${worksrcpath}/bin/launcher.rom ${destroot}${prefix}/share/examples/${name}
-    xinstall -m 0644 {*}[glob ${worksrcpath}/projects/examples/demos/*.tal] \
-                ${destroot}${prefix}/share/examples/${name}/demos
+    set demos_dir       ${destroot}${prefix}/share/examples/${name}/demos
+    set doc_dir         ${destroot}${prefix}/share/doc/${name}
+
+    xinstall -d -m 0755 ${demos_dir} ${doc_dir}
+    xinstall -m 0644 ${build.dir}/bin/launcher.rom ${destroot}${prefix}/share/examples/${name}
+    xinstall -m 0644 {*}[glob ${worksrcpath}/projects/examples/demos/*.tal] ${demos_dir}
+    xinstall -m 0644 -W ${worksrcpath} LICENSE README.md ${doc_dir}
     xinstall -m 0755 ${build.dir}/bin/uxnasm ${build.dir}/bin/uxncli ${build.dir}/bin/uxnemu \
                 ${destroot}${prefix}/bin
 }
+
+notes "
+To get started, see ${prefix}/share/doc/${name}/README.md and
+${prefix}/share/examples/${name}/demos/.
+"
+
+livecheck.type          none

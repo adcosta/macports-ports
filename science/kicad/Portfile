@@ -6,17 +6,16 @@ PortGroup           gitlab 1.0
 PortGroup           boost 1.0
 
 name                kicad
-version             6.0.5
+version             6.0.11
 description         KiCad is an electronic design automation software suite
 long_description    KiCad is an EDA software suite for the creation of professional schematics \
                     and printed circuit boards up to 32 copper layers with additional technical layers.
 categories          science
-platforms           darwin
 license             GPL-3
 maintainers         {ra1nb0w @ra1nb0w} openmaintainer
 homepage            https://www.kicad.org/
 
-set python_version  3.9
+set python_version  3.10
 set py_ver_no_dot   [join [split ${python_version} "."] ""]
 set python_framework_dir ${frameworks_dir}/Python.framework/Versions/${python_version}
 
@@ -25,10 +24,11 @@ compiler.cxx_standard 2014
 if {${name} eq ${subport}} {
 
     gitlab.setup        kicad/code kicad ${version}
-    checksums           rmd160  11f116d87689ec3604a9fe0d84e87e5d57f84c17 \
-                        sha256  fc77bf07a9b9e7bb889208f9741d21134ad398391085d10d3cf4afd9204507ab \
-                        size    33903214
-    revision            0
+
+    checksums           rmd160  b13a0b899f0548ed8ff76c0c78d33f80c1ab7473 \
+                        sha256  f2b7ad72942c7e154bebb06d4e6d9fd7ea765f679edafb25b059b387860fbe5d \
+                        size    34083016
+    revision            2
 
     patchfiles-append \
         wxwidgets-4.1-deprecated.patch \
@@ -36,7 +36,7 @@ if {${name} eq ${subport}} {
         0001-cmake-adding-KICAD_MACOSX_APP_BUNDLE-option.patch
 
     depends_build-append \
-        port:doxygen \
+        path:bin/doxygen:doxygen \
         port:pkgconfig \
         port:swig \
         port:swig-python
@@ -76,8 +76,8 @@ if {${name} eq ${subport}} {
         -DDOXYGEN_DOT_EXECUTABLE=${prefix}/bin/dot \
         -DDOXYGEN_EXECUTABLE=${prefix}/bin/doxygen \
         -DNGSPICE_LIB_NAME=libngspice.0.dylib \
-        -DOCC_INCLUDE_DIR=${prefix}/include/opencascade \
-        -DOCC_LIBRARY_DIR=${prefix}/lib \
+        -DOCC_INCLUDE_DIR=${prefix}/libexec/opencascade/include/opencascade \
+        -DOCC_LIBRARY_DIR=${prefix}/libexec/opencascade/lib \
         -Wno-dev
 
     post-patch {
@@ -115,17 +115,18 @@ if {${name} eq ${subport}} {
 
 subport kicad-docs {
     supported_archs     noarch
+    platforms           any
     description         KiCad documentation
-    long_description    ${description}
+    long_description    {*}${description}
 
     # we use pre-compiled binary since it is very long to compile
     # and requires many big dependencies
     master_sites        https://kicad-downloads.s3.cern.ch/docs
     distname            ${name}-doc-${version}
 
-    checksums           rmd160  e0e8f9d795266e207dc791624ddb5beef493e387 \
-                        sha256  9e2959f0410e1262c868274d9a4dbddcf96113915fe288364066919661e31a7b \
-                        size    272088119
+    checksums           rmd160  206f25bc6d82b55e265625606664e92123226331 \
+                        sha256  141ef958e8cfd8daf489c8e61b245df64e971bd0b30b2a32857b3210c22f3f4a \
+                        size    278043986
 
     use_configure       no
 
@@ -139,56 +140,60 @@ subport kicad-docs {
 
 subport kicad-symbols {
     supported_archs     noarch
+    platforms           any
     description         Kicad symbols
-    long_description    ${description}
+    long_description    {*}${description}
 
     gitlab.setup        kicad/libraries kicad-symbols ${version}
 
-    checksums           rmd160  c989d779a5cc0c5ae0f965bac0ab01a9495ac91f \
-                        sha256  2ae9c33975510c8ffd89f0ad66f119e18e82bcafd02002f7bd30bbd369a46435 \
-                        size    2267911
+    checksums           rmd160  585801627bf07bf9ce514835c6d8208c38470e77 \
+                        sha256  b4b28ef9449ebce2cbab0555173994b2af6c0157e546ba1308d680ad6fa4a0ca \
+                        size    2291352
 
     patchfiles-append   kicad_libraries_cmakelists.txt.patch
 }
 
 subport kicad-footprints {
     supported_archs     noarch
+    platforms           any
     description         Kicad footprints
-    long_description    ${description}
+    long_description    {*}${description}
 
     gitlab.setup        kicad/libraries kicad-footprints ${version}
 
-    checksums           rmd160  3029b8c9bb93df6955c7e46f8f96f3487c5961ab \
-                        sha256  d3cf9eb72ebac152548c7dd595725827c5f7b52ee2e96fe951ed41637a178bb5 \
-                        size    23598615
+    checksums           rmd160  f063a0ae6b02d0cc95d5fad77cb1e7ddc30c2faa \
+                        sha256  6229296fb1f7fcd64424230128abcee008eb92c2590da6b40718f0a66810b614 \
+                        size    23763091
 
     patchfiles-append   kicad_libraries_cmakelists.txt.patch
 }
 
 subport kicad-packages3D {
     supported_archs     noarch
+    platforms           any
     description         Kicad package 3D
-    long_description    ${description}
+    long_description    {*}${description}
 
     gitlab.setup        kicad/libraries kicad-packages3D ${version}
 
-    checksums           rmd160  53ab4632d230db51a2cc6671ac24e56e0598c996 \
-                        sha256  af10545c315474495e8be2137f25172d16103430133e91437cd4cf4f9d382436 \
-                        size    730806845
+    checksums           rmd160  a41b961ff98d9f24488feb21b20f985009adeff0 \
+                        sha256  ca3291bcf54dc79b37bc8c0e15c3eb6d1a9eea0e391d0e34202bd26b451c6fcb \
+                        size    737065465
 
     patchfiles-append   kicad_libraries_cmakelists.txt.patch
 }
 
 subport kicad-templates {
     supported_archs     noarch
+    platforms           any
     description         Kicad templates
-    long_description    ${description}
+    long_description    {*}${description}
 
     gitlab.setup        kicad/libraries kicad-templates ${version}
 
-    checksums           rmd160  fb3ce480a33984908536b8da1032abe379522824 \
-                        sha256  d296e77b8106d772ef6a31747fa2bbece51dd7975573a39c865ed075ce3aa91a \
-                        size    2058263
+    checksums           rmd160  a58993f2d9044a8ba8e7079ef75166cf37eb0f37 \
+                        sha256  a8de6c4653ad7ba711a21d4b081797202e4f4e9954dc6d9fdca3ce2f392448d9 \
+                        size    934873
 
     patchfiles-append   kicad_libraries_cmakelists.txt.patch
 }

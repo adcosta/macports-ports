@@ -4,10 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                flynt
-version             0.76
+version             0.78
 revision            0
 
 categories-append   devel
+platforms           {darwin any}
 supported_archs     noarch
 license             MIT
 maintainers         {reneeotten @reneeotten} openmaintainer
@@ -17,17 +18,17 @@ long_description    ${description}
 
 homepage            https://github.com/ikamensh/flynt
 
-checksums           rmd160  e645ea7dd3d088f15fde0679700652928462df0d \
-                    sha256  7a99c5a550ea9e8c21203f6999ed8ce69cbad7bc8465268469777cf06413193a \
-                    size    31839
+checksums           rmd160  d0f5208fd62ee8badae3d0a71ede50b8955e91d7 \
+                    sha256  15082167a538ea56b6ce4ca6874c22c739710759832dda78d8f43b6079b7e646 \
+                    size    23611
 
-python.versions     310
-
-depends_build-append \
-                    port:py${python.version}-setuptools
+python.versions     311
+python.pep517       yes
+python.pep517_backend hatch
 
 depends_lib-append \
-                    port:py${python.version}-astor
+                    port:py${python.version}-astor \
+                    port:py${python.version}-tomli
 
 post-destroot {
     set docdir ${prefix}/share/doc/${subport}
@@ -36,10 +37,4 @@ post-destroot {
         ${destroot}${docdir}
 }
 
-depends_test-append \
-                    port:py${python.version}-pytest
-
-test.run            yes
-test.cmd            py.test-${python.branch}
-test.target
-test.env            PYTHONPATH=${worksrcpath}/build/lib
+test.run        yes

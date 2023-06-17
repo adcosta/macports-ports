@@ -4,14 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        mesonbuild meson 0.59.3
+github.setup        mesonbuild meson 1.1.1
 revision            0
 
 github.tarball_from releases
 license             Apache-2
 categories          devel python
 maintainers         {soap.za.net:git @SoapZA} openmaintainer
-platforms           darwin
 supported_archs     noarch
 installs_libs       no
 homepage            https://mesonbuild.com
@@ -23,14 +22,13 @@ long_description    Meson is a build system designed to optimize programmer prod
                     Valgrind, CCache and the like. It is both extremely fast, and, even more importantly, \
                     as user friendly as possible.
 
-checksums           rmd160  36994a8e29e15751a9a1977aad581057a52f3943 \
-                    sha256  0a35cfd4cb779a6a415ad3ccbf2d4143334e96139125585ce49915bec494da02 \
-                    size    1953620
+checksums           rmd160  31c1ea90b6b363ce2131c640a03f8d3d0f2194ce \
+                    sha256  d04b541f97ca439fb82fab7d0d480988be4bd4e62563a5ca35fadb5400727b1c \
+                    size    2125503
 
-# as of verison 0.45.0,requires python 3.5 or better
+# As of verison 0.62.0, requires python 3.7 or later
 
-python.versions         36 37 38 39
-python.default_version  39
+python.default_version  311
 python.link_binaries    no
 
 depends_build-append \
@@ -48,7 +46,7 @@ if {${os.platform} eq "darwin" && ${os.major} <= 9} {
 
 if {${os.platform} eq "darwin" && ${os.major} <= 10} {
     patchfiles-append \
-                    remove-Wl,-no_weak_imports.patch
+                    patch-meson-remove-Wl,-no_weak_imports.diff
 }
 
 # https://github.com/mesonbuild/meson/issues/6187
@@ -67,29 +65,30 @@ if {${os.platform} eq "darwin" && ${os.major} <= 13} {
     patchfiles-append   patch-meson-clang-unknown-optimization-error.diff
 }
 
+# add a search path for crossfiles in our prefix
+patchfiles-append   patch-meson-search-prefix-for-cross-files.diff
+
 platform darwin 8 {
 
     # this meson is modified for systems without @rpath support
     # and is therefore fragile. Keep pegged, and update occasionally
 
-    github.setup        mesonbuild meson 0.58.2
+    github.setup        mesonbuild meson 0.64.1
     github.tarball_from releases
     revision            0
-    checksums           rmd160  252d6261d3b8ecad345b1f966f8cfc60b52da6e1 \
-                        sha256  7634ec32955d3f897d623b88e9d2988451035f43d73c17a29caf767387baedb7 \
-                        size    1899464
+    checksums           rmd160  6ed7a0c8b1ac2a0de91d25aa253ad2efa132c6dc \
+                        sha256  3a8e030c2334f782085f81627062cc6d4a6771edf31e055ffe374f9e6b089ab9 \
+                        size    2089752
 
-    patchfiles-delete   patch-meson-clang-unknown-optimization-error.diff \
-                        patch-meson-objc-accept-gnu89.diff \
-                        patch-meson-32bit-apple.diff \
-                        patch-meson-gnome.diff
-    patchfiles-append   patch-meson57-tiger-no-rpath-fix.diff \
-                        patch-meson-32bit-apple-tiger.diff \
-                        patch-meson57-gnome.diff
+    patchfiles          patch-meson64-tiger-no-rpath-fix.diff \
+                        patch-meson64-remove-Wl,-no_weak_imports.diff \
+                        patch-meson64-32bit-apple.diff \
+                        patch-meson64-gcc-appleframeworks.diff \
+                        patch-meson64-gnome.diff \
+                        patch-meson64-clang-unknown-optimization-error.diff \
+                        patch-meson64-search-prefix-for-cross-files.diff
 }
 
-# add a search path for crossfiles in our prefix
-patchfiles-append   patch-meson-search-prefix-for-cross-files.diff
 post-patch {
     reinplace "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/data/shell-completions/bash/meson \
                                          ${worksrcpath}/mesonbuild/coredata.py
@@ -125,10 +124,6 @@ post-destroot {
         xinstall -d ${destroot}${vim_dir}/${d}
         xinstall -m 644 ${worksrcpath}/data/syntax-highlighting/vim/${d}/meson.vim ${destroot}${vim_dir}/${d}
     }
-
-    set emacs_lispdir ${prefix}/share/emacs/site-lisp
-    xinstall -d ${destroot}${emacs_lispdir}
-    xinstall -m 644 ${worksrcpath}/data/syntax-highlighting/emacs/meson.el ${destroot}${emacs_lispdir}
 }
 
 # the following block avoids requiring users to 'sudo port select python3 python37'
@@ -151,6 +146,7 @@ pre-test {
 }
 
 test.run            yes
+python.test_framework
 test.env            CXX=${configure.cxx} \
                     "CXXFLAGS=${configure.cxxflags} [get_canonical_archflags cxx]" \
                     CC=${configure.cc} \

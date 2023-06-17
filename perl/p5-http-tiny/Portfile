@@ -4,19 +4,19 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         HTTP-Tiny 0.080
+perl5.setup         HTTP-Tiny 0.084
 revision            0
-platforms           darwin
 maintainers         nomaintainer
 license             {Artistic-1 GPL}
-
 description         A small, simple, correct HTTP/1.1 client
+long_description    {*}${description}
 
-long_description    ${description}
+platforms           {darwin any}
+supported_archs     noarch
 
-checksums           rmd160  5098e8bfdfc06b7effb7ea8bca1ff8af9ab4c0ba \
-                    sha256  243c6d566aa8f160fa1c6b0b92e5752356136b341ffffdd3ec07b23b745fde15 \
-                    size    74191
+checksums           rmd160  f2088b596b233260ff69db0ea92fef9d07dcd6f2 \
+                    sha256  911c68457fbd3f09c67e5ac0f52c817bc889437f8da85552fd463e81c0cbb5c1 \
+                    size    77043
 
 if {${perl5.major} != ""} {
     depends_lib-append \
@@ -25,6 +25,4 @@ if {${perl5.major} != ""} {
                     port:p${perl5.major}-io-socket-ssl \
                     port:p${perl5.major}-mozilla-ca \
                     port:p${perl5.major}-net-ssleay
-
-    supported_archs noarch
 }

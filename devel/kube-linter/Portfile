@@ -3,9 +3,10 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/stackrox/kube-linter 0.2.6
+go.setup            github.com/stackrox/kube-linter 0.6.0
 github.tarball_from archive
 revision            0
+
 categories          devel
 maintainers         {judaew @judaew} openmaintainer
 license             Apache-2
@@ -27,9 +28,9 @@ long_description    {*}${description} \
     \nWhen a lint check fails, KubeLinter reports recommendations for how to \
     resolve any potential issues and returns a non-zero exit code.
 
-checksums           rmd160  855f987e19b105093de2963a470753cff3ced0c8 \
-                    sha256  2fa6a286f2a8563b0b80186e06100f9b00c7698f528bb7ef563b0b508c2d8458 \
-                    size    240704
+checksums           rmd160  116c6ce1e5bc9bc2980d14543e739beaa7b81b3e \
+                    sha256  7d56831e16f0a883713dbae5d9d83e566d1831e4ace87f99f35c68573cd87e2b \
+                    size    223065
 
 build.env-delete    GOPROXY=off GO111MODULE=off
 build.args          -o ${name} ./cmd/kube-linter

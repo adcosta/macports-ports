@@ -4,24 +4,25 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pytest-regressions
-version             2.3.1
+version             2.4.2
 revision            0
 
 categories-append   devel
 supported_archs     noarch
+platforms           {darwin any}
 license             MIT
 maintainers         {judaew @judaew} openmaintainer
 
 description         Fixtures to write regression tests.
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://github.com/ESSS/pytest-regressions
 
-checksums           rmd160  1509f7f809b1cb4fb3f71be6fa2f85aafd8ba71e \
-                    sha256  b3ec4cdb34e8f627606275d8b834c65e60e1a3073e326bb3727a427273d0221d \
-                    size    109616
+checksums           rmd160  bf3e9869c502e7469ed21ea64cd3ee8c0d9920b8 \
+                    sha256  eab89e7ba4aa339bdfe07b31047e8e6a70b1e7846e74a8bbfc31a588d01e7303 \
+                    size    111030
 
-python.versions     37 38 39 310
+python.versions     37 38 39 310 311
 
 if {${name} ne ${subport}} {
     depends_build-append \

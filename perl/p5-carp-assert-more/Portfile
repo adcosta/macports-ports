@@ -4,22 +4,21 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Carp-Assert-More 2.0.1
+perl5.setup         Carp-Assert-More 2.3.0
 revision            0
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         Convenience wrappers around Carp::Assert
-long_description    ${description}
+long_description    {*}${description}
 
-platforms           darwin
+platforms           {darwin any}
+supported_archs     noarch
 
-checksums           rmd160  ca9fa0aa64a001ae288a9ffda46309848da2e312 \
-                    sha256  96faa391380650271a7886b14123dd0b1454b5c6bf343b230d75b5bdba82b518 \
-                    size    16730
+checksums           rmd160  c79988d0c88f84105c23be1c48446299db25a13f \
+                    sha256  ff69ea09bda66a200fca088add91c5c30e6572ab7bba317a7f9f33c512b3cea7 \
+                    size    21086
 
 if {${perl5.major} != ""} {
     depends_lib-append \
                     port:p${perl5.major}-test-exception
-
-    supported_archs noarch
 }

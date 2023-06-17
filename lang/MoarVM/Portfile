@@ -9,35 +9,64 @@ PortGroup           legacysupport 1.1
 legacysupport.newest_darwin_requires_legacy 10
 
 name                MoarVM
-version             2022.02
-revision            1
+version             2023.02
+revision            0
 categories          lang devel
-platforms           darwin
 license             Artistic-2 MIT BSD ISC public-domain
 maintainers         {mojca @mojca} openmaintainer
-description         A virtual machine for Perl 6
-long_description    MoarVM is a virtual machine built especially for \
-                    Rakudo Perl 6 and the NQP Compiler Toolchain.
+description         A virtual machine for NQP And Rakudo
+long_description    MoarVM is a modern virtual machine built for the Rakudo \
+                    compiler implementing the Raku Programming Language, \
+                    and the NQP Compiler Toolchain.
+
 homepage            https://moarvm.org/
 master_sites        https://moarvm.org/releases/
 
-checksums           rmd160  e0cb196e59ceb09bae3a9d68b4b6d463173d93ce \
-                    sha256  4f93cdce6b8a565a32282bb38cc971cefeb71f5d022c850c338ee8145574ee96 \
-                    size    14640429
+checksums           rmd160  2fa9ea1374c0e6e2322b9c68b489c831519eb515 \
+                    sha256  67e214d44d5f626787ca7f04424043a639308a43a7777b6fa41926b7240e0dc5 \
+                    size    14917710
 
-depends_build       port:perl5 \
+depends_build-append \
+                    port:perl5 \
                     port:pkgconfig
 
 # libatomic_ops:    https://trac.macports.org/ticket/53171
-depends_lib         port:dyncall \
+depends_lib-append  port:dyncall \
                     port:libatomic_ops \
                     port:libtommath \
                     port:libuv
 
-patchfiles          patch-Configure.diff
+patchfiles          patch-Configure.diff \
+                    patch-dyncall.diff \
+                    patch-setup.pm.diff
+
+if {[string match *gcc* ${configure.compiler}]} {
+    patchfiles-append patch-gcc.diff
+}
+
+post-patch {
+    reinplace "s,/usr/local,${prefix},g" ${worksrcpath}/Configure.pl
+    # The following are not built, but better have them fixed nevertheless:
+    reinplace "s,/usr/local,${prefix},g" ${worksrcpath}/3rdparty/dyncall/configure
+    reinplace "s,/usr/local,${prefix},g" ${worksrcpath}/3rdparty/dyncall/configure.rc
+    reinplace "s,/usr/local,${prefix},g" ${worksrcpath}/3rdparty/libatomicops/configure
+    reinplace "s,/usr/local,${prefix},g" ${worksrcpath}/3rdparty/libtommath/makefile.unix
+    reinplace "s,/usr/local,${prefix},g" ${worksrcpath}/3rdparty/libtommath/makefile_include.mk
+}
+
+# Building nqp on PPC results in malloc errors (though build still succeeds):
+# malloc: *** error for object: incorrect checksum for freed object - object was probably modified after being freed.
+legacysupport.redirect_bins moar
 
 # https://trac.macports.org/ticket/53950
 compiler.blacklist  cc gcc-* apple-gcc-* llvm-gcc-*
+
+platform darwin 10 {
+    if {${build_arch} eq "ppc"} {
+        # Clang is broken on PPC, but Rosetta tries using it
+        compiler.blacklist-append *clang*
+    }
+}
 
 configure.cmd       ${prefix}/bin/perl Configure.pl
 configure.args      --cc=${configure.cc} \

@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/k1LoW/tbls 1.53.0 v
+go.setup            github.com/k1LoW/tbls 1.66.0 v
 github.tarball_from archive
 revision            0
 
@@ -20,9 +20,9 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  1cbea925a4ae2baececbbff0dc067579fc902083 \
-                    sha256  f83cf67414f8de5ce97b6994abcbbd64375b8439db43fbb3d83d5a6c0055e932 \
-                    size    4553925
+checksums           rmd160  44c48e40841b5f3e6fa61494e74409ffc49d18f6 \
+                    sha256  31f755d3d465842cb53be2b53cb46c93263cde0d0e0fbf0eafb0e39622bcb393 \
+                    size    4778406
 
 # Allow Go to download dependencies during build time
 build.env-delete    GO111MODULE=off GOPROXY=off

@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        DNS-OARC dnsperf 2.9.0 v
+github.setup        DNS-OARC dnsperf 2.13.0 v
 github.tarball_from archive
 revision            0
 
@@ -20,9 +20,9 @@ long_description    \
     benchmark their naming and addressing infrastructure and plan for upgrades.
 homepage            https://www.dns-oarc.net/tools/dnsperf
 
-checksums           rmd160  95df2cc8488e683c2b314e2ce2bcf0993186845f \
-                    sha256  4035f5d95f765a1b9fd4ceb6d4f613755e2b9d822ad6d10a8b099aa0333b009b \
-                    size    111037
+checksums           rmd160  3271289b275787d71b47768c3d44862c7e76cceb \
+                    sha256  196ab8dedf51ff200e331f132f402efbdd2e6c0a64ea559adee7fa0415db25cb \
+                    size    127857
 
 depends_build       port:libtool \
                     port:pkgconfig
