@@ -10,7 +10,7 @@ legacysupport.newest_darwin_requires_legacy 10
 name                git
 # NOTE: Update the DEVEL version first before updating this RELEASE version,
 #       to verify that the intended version builds on all platforms.
-version             2.41.0
+version             2.45.1
 revision            0
 
 description         A fast version control system
@@ -22,8 +22,9 @@ long_description    Git is a fast, scalable, distributed open source version \
 subport ${name}-devel {
     PortGroup           github  1.0
 
-    github.setup        git git 2.41.0 v
+    github.setup        git git 2.45.1 v
     github.tarball_from archive
+    revision            0
 
     description     \
         {*}${description} (Development Version)
@@ -57,13 +58,13 @@ if {${name} eq ${subport}} {
                     git-manpages-${version}${extract.suffix}
 
     checksums       git-${version}${extract.suffix} \
-                    rmd160  e984285a4c9d4b883095f57f4aa18f1eb9eb6aaa \
-                    sha256  e748bafd424cfe80b212cbc6f1bbccc3a47d4862fb1eb7988877750478568040 \
-                    size    7273624 \
+                    rmd160  01c15b33efad6c9af6ae7945583ef72d8ced03c5 \
+                    sha256  e64d340a8e627ae22cfb8bcc651cca0b497cf1e9fdf523735544ff4a732f12bf \
+                    size    7490268 \
                     git-manpages-${version}${extract.suffix} \
-                    rmd160  14c8dd2a0de9eaaf83288f84cd794b4f19568e26 \
-                    sha256  bc7a4c944492c76fc3cd766ce22e826d0241e43792c611d4fdc068e0df545877 \
-                    size    565060
+                    rmd160  ebd5fd36a006cd52889bf0bcdfe4e699dec43ed6 \
+                    sha256  e622d7ab1114b4f67cb9d8d4ab81f6e0fcf3d1291711569befda29172315d9f0 \
+                    size    576560
 
     extract.only    git-${version}${extract.suffix} \
                     git-manpages-${version}${extract.suffix}
@@ -76,9 +77,10 @@ if {${name} eq ${subport}} {
     # DEVELOPMENT VERSION
 
     checksums       ${distname}${extract.suffix} \
-                    rmd160  176350ba830625db1995f2cf7b6bd0a738b2ea93 \
-                    sha256  4f0b74bbde2800b00d3a50a7f389bcf1d59f1265b6986c00048d8ba4892ab01a \
-                    size    10804275
+                    rmd160  0f6ae206ec910f162e74b9963a50ac45ee188f2d \
+                    sha256  d98c8f70d58f49f7546d59b25e25f2deae6999eb036a33b0fe6f5d07c33f67c6 \
+                    size    11129527
+
 
     depends_build-append \
                     port:asciidoc \
@@ -111,7 +113,14 @@ patchfiles-append   patch-Makefile.diff \
                     patch-sha1dc-older-apple-gcc-versions.diff \
                     patch-gitk-git-gitk.diff
 
-patch.pre_args      -p1
+patch.pre_args-replace  -p0 -p1
+
+# Reverts breakage introduced by:
+# https://github.com/git/git/commit/51c15ac1b6ab15d8e29651d0bd364d8f62dc6509
+if {${os.platform} eq "darwin" && ${os.major} < 11} {
+    patchfiles-append \
+                patch-Revert-breaking-osxkeychain.diff
+}
 
 # Git 2.36.0 implements a new FSEvent listener that uses
 # the API available in Yosemite and newer.
@@ -124,6 +133,13 @@ if {${os.platform} eq "darwin" && ${os.major} < 14} {
 # See: https://trac.macports.org/ticket/67091
 if {${os.platform} eq "darwin" && ${os.major} < 12} {
     patchfiles-append   patch-disable-enhanced-basic-regex.diff
+}
+
+# Fix an extraction failure with some old versions of tar.
+# https://superuser.com/questions/1219214/permissions-cannot-be-restored-for-a-tar
+if {${os.platform} eq "darwin" && ${os.major} < 11} {
+    extract.post_args-append \
+                    -m --touch --no-overwrite-dir
 }
 
 use_configure       no
@@ -148,7 +164,9 @@ build.args          CFLAGS="${CFLAGS}" \
                     V=1
 
 if {[variant_isset ${perl5.variant}]} {
+    depends_lib-delete  port:perl${perl5.major}
     depends_run-append \
+                    port:perl${perl5.major} \
                     port:p${perl5.major}-authen-sasl \
                     port:p${perl5.major}-error \
                     port:p${perl5.major}-net-smtp-ssl \
@@ -255,9 +273,9 @@ variant doc description {Install HTML and plaintext documentation} {
         # RELEASE
         distfiles-append    git-htmldocs-${version}${extract.suffix}
         checksums-append    git-htmldocs-${version}${extract.suffix} \
-                            rmd160  d0fd291528d2b4973247876fe76cb4bdb2f2ebf1 \
-                            sha256  0cb2d4a09270eede7c1b686e2dfeac9bffef9e42c117a7e120f3cbb3e665d286 \
-                            size    1525692
+                            rmd160  288dd401ce1cb9c9c03e960091dd109bbc348e37 \
+                            sha256  f7095c4478028bc04afd63cd217ea5d4fa08ab819cbb66df40a1a12648edbf40 \
+                            size    1568812
 
         patchfiles-append   patch-git-subtree.html.diff
 
@@ -393,8 +411,8 @@ variant diff_highlight description {Install git diff-highlight utility from cont
 # This variant enables git to use MacPorts' Python as it builds these
 # additional tools.
 variant python description {Build with Python support} {
-    depends_lib-append  port:python311
-    build.args-append   PYTHON_PATH="${prefix}/bin/python3.11"
+    depends_lib-append  port:python312
+    build.args-append   PYTHON_PATH="${prefix}/bin/python3.12"
 }
 
 platform darwin 8 {

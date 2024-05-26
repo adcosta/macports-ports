@@ -6,8 +6,8 @@ PortGroup           legacysupport 1.1
 legacysupport.newest_darwin_requires_legacy     13
 
 name                skalibs
-version             2.13.1.1
-revision            0
+version             2.14.1.1
+revision            1
 categories          devel
 license             ISC
 maintainers         nomaintainer
@@ -25,9 +25,9 @@ long_description \
 homepage            https://skarnet.org/software/skalibs/
 master_sites        ${homepage}
 
-checksums           rmd160  683b763834b92be926754f06bc7cb100b686ecd0 \
-                    sha256  b272a1ab799f7fac44b9b4fb5ace78a9616b2fe4882159754b8088c4d8199e33 \
-                    size    229706
+checksums           rmd160  9d45a98965221f0680bf08a91135ac03708fc88b \
+                    sha256  b6b79b816f4ba0b6801676b0ed4179b59c8c7809eeffe26db672e404636befc3 \
+                    size    237220
 
 configure.args      --disable-shared
 

@@ -5,15 +5,16 @@ PortGroup           cmake 1.1
 PortGroup           compiler_blacklist_versions 1.0
 PortGroup           compilers 1.0
 PortGroup           github 1.0
-PortGroup           linear_algebra 1.0
 PortGroup           legacysupport 1.1
-PortGroup           qt4 1.0
+PortGroup           linear_algebra 1.0
 
 # _strnlen, getline
 legacysupport.newest_darwin_requires_legacy 10
 
-github.setup        ElmerCSC elmerfem 5b4143dc6574186a483c996b5a43c5cd660dd973
-version             2023.06.05
+# Remember to keep qt4 as a fallback until qt5 is available on old systems.
+
+github.setup        ElmerCSC elmerfem d43454ba4d468084421073dbcc24fc4ff63092c3
+version             2024.04.03
 revision            0
 categories          science
 license             GPL-2
@@ -23,11 +24,10 @@ long_description    {*}${description} making it an ideal tool for multiphysical 
                     It includes models for structural mechanics, fluid dynamics, heat transfer, \
                     electromagnetics and beyond. Elmer can also be used on massively parallel HPC platforms.
 homepage            https://www.elmerfem.org
-checksums           rmd160  9f095bea4ec55ac2eada97f13a8201a2f84c2cf1 \
-                    sha256  c42d7ce962e5d2bef0319afa47a3efecf0858d842e5a95dd78878b17f7a52bd9 \
-                    size    71119446
-
-depends_lib-append  port:qwt61
+checksums           rmd160  39e4fb5b23a26a5dfa0d8ef33a93fc0632944e57 \
+                    sha256  53f11eae67b8c705a4323df3a249a4f8a6267f927debcff3bb6a2fc8e74d2486 \
+                    size    72854303
+github.tarball_from archive
 
 compilers.choose    fc f90
 compilers.setup     require_fortran
@@ -50,25 +50,52 @@ post-patch {
     reinplace "s,CMAKE_SYSTEM_PROCESSOR,CMAKE_OSX_ARCHITECTURES,g" ${worksrcpath}/cpack/ElmerCPack.cmake
 }
 
-pre-configure {
-    configure.args-append ${cmake_linalglib}
-    if {[variant_isset openblas]} {
-        configure.args-append  \
-                    -DBLAS_LIBRARIES=${prefix}/lib/libopenblas.dylib \
-                    -DLAPACK_LIBRARIES=${prefix}/lib/libopenblas.dylib
-    }
-}
-
 # See: https://trac.macports.org/ticket/67502
 configure.pre_args-delete \
                     -DCMAKE_INSTALL_NAME_DIR="${cmake.install_prefix}/lib"
 
+pre-configure {
+    if {[variant_isset openblas]} {
+        configure.args-append  \
+                    -DBLAS_LIBRARIES=${prefix}/lib/libopenblas.dylib \
+                    -DLAPACK_LIBRARIES=${prefix}/lib/libopenblas.dylib
+    } elseif {[variant_isset accelerate]} {
+        configure.args-append  \
+                    -DBLAS_LIBRARIES="-framework Accelerate" \
+                    -DLAPACK_LIBRARIES="-framework Accelerate"
+    }
+}
+
 set qt4_dir         ${prefix}/libexec/qt4
-configure.args-append \
-                    -DCMAKE_Fortran_COMPILER=${configure.fc} \
+
+if {${os.platform} eq "darwin" && ${os.major} < 13} {
+    PortGroup       qt4 1.0
+
+    configure.args-append \
                     -DQt4_LIBRARIES=${qt4_dir}/lib \
                     -DQWT_INCLUDE_DIR=${qt4_dir}/include/qwt \
                     -DQWT_LIBRARY=${qt4_dir}/lib/libqwt.dylib \
+                    -DWITH_QT5=OFF
+
+    depends_lib-append  port:qwt61
+} else {
+    PortGroup       qt5 1.0
+
+    qt5.depends_component   qtscript qtsvg qttools
+
+    configure.args-append \
+                    -DQWT_INCLUDE_DIR=${qt_dir}/lib/qwt.framework/Versions/6/Headers \
+                    -DQWT_LIBRARY=${qt_dir}/lib/qwt.framework/qwt \
+                    -DWITH_QT5=ON
+
+    depends_lib-append  port:qwt-qt5
+}
+
+# TODO: add variant to support MPICH, Hypre and Mumps.
+configure.args-append \
+                    -DCMAKE_Fortran_COMPILER=${configure.fc} \
+                    -DGLX_INCLUDE_DIR=${prefix}/include \
+                    -DUSE_CONTIGUOUS=OFF \
                     -DWITH_CONTRIB=OFF \
                     -DWITH_ELMERGUI=ON \
                     -DWITH_ELMERGUITESTER=OFF \
@@ -76,7 +103,6 @@ configure.args-append \
                     -DWITH_ElmerIce=OFF \
                     -DWITH_ELMERPOST=OFF \
                     -DWITH_FETI4I=OFF \
-                    -DGLX_INCLUDE_DIR=${prefix}/include \
                     -DWITH_Hypre=OFF \
                     -DWITH_LUA=OFF \
                     -DWITH_MKL=OFF \
@@ -86,12 +112,10 @@ configure.args-append \
                     -DWITH_NETCDF=OFF \
                     -DWITH_OCC=OFF \
                     -DWITH_OpenMP=OFF \
-                    -DWITH_QT5=OFF \
                     -DWITH_QWT=ON \
                     -DWITH_Trilinos=OFF \
                     -DWITH_XIOS=OFF \
-                    -DWITH_Zoltan=OFF \
-                    -DUSE_CONTIGUOUS=OFF
+                    -DWITH_Zoltan=OFF
 
 if {[string match macports-gcc* ${configure.compiler}]} {
     configure.args-replace \
@@ -102,4 +126,14 @@ if {[string match *clang* ${configure.compiler}]} {
     # Load.c: error: call to undeclared function 'var_copy_transpose'; ISO C99 and later do not support implicit function declarations
     configure.cflags-append \
                     -Wno-error=implicit-function-declaration
+}
+
+variant ice description "Enable ElmerIce with support for NetCDF and HDF5" {
+    depends_lib-append \
+                    port:hdf5 \
+                    port:netcdf \
+                    port:netcdf-fortran
+    configure.args-replace \
+                    -DWITH_ElmerIce=OFF -DWITH_ElmerIce=ON \
+                    -DWITH_NETCDF=OFF -DWITH_NETCDF=ON
 }

@@ -2,9 +2,10 @@
 
 PortSystem          1.0
 PortGroup           python 1.0
+PortGroup           select 1.0
 
 name                py-panel
-version             1.1.0
+version             1.4.3
 revision            0
 categories-append   graphics devel
 license             BSD
@@ -17,43 +18,60 @@ supported_archs     noarch
 platforms           {darwin any}
 homepage            https://panel.holoviz.org
 
-python.versions     38 39 310 311
+python.versions     39 310 311 312
 
-checksums           rmd160  390945a670e519ff04585ee2b1e0825758f94db4 \
-                    sha256  76ba4eac8bb178d032e3dd2a9c966cc8c088425f86eb567b06ed13baa84b4eb0 \
-                    size    25709311
+checksums           rmd160  1f16266362af41954b24ab3d20d8e86d8a3c9383 \
+                    sha256  f898f28b92551ec5a2c73fae6c8974c7b5bd1f3b610320c149d5e88eb81a0cc5 \
+                    size    38429910
 
 if {${name} ne ${subport}} {
     python.pep517   yes
 
     depends_build-append \
-                    port:npm9
+                    port:npm10
 
     depends_run-append \
-                    path:bin/node:nodejs18 \
+                    path:bin/node:nodejs22 \
+                    port:panel_select \
                     port:py${python.version}-bleach \
                     port:py${python.version}-bokeh \
                     port:py${python.version}-linkify-it-py \
                     port:py${python.version}-markdown \
                     port:py${python.version}-markdown-it-py \
                     port:py${python.version}-mdit-py-plugins \
+                    port:py${python.version}-packaging \
                     port:py${python.version}-pandas \
                     port:py${python.version}-param \
                     port:py${python.version}-pyct \
                     port:py${python.version}-pyviz_comms \
                     port:py${python.version}-requests \
                     port:py${python.version}-tqdm \
-                    port:py${python.version}-typing_extensions
+                    port:py${python.version}-typing_extensions \
+                    port:py${python.version}-tzdata \
+                    port:py${python.version}-xyzservices
+
+    select.group    panel
+    select.file     ${filespath}/py${python.version}-panel
 
     platform darwin {
         if {${os.major} < 13} {
             depends_build-replace \
-                    port:npm9 \
+                    port:npm10 \
                     port:npm8
 
             depends_run-replace \
-                    path:bin/node:nodejs18 \
+                    path:bin/node:nodejs22 \
                     path:bin/node:nodejs14
+        }
+
+        if {${os.major} < 16} {
+            depends_build-replace \
+                    port:npm10 \
+                    port:npm9
+
+            depends_run-replace \
+                    path:bin/node:nodejs22 \
+                    path:bin/node:nodejs18
         }
     }
 }

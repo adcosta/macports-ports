@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           python 1.0
+
+name                py-asdf
+version             3.2.0
+revision            0
+license             BSD
+platforms           {darwin any}
+supported_archs     noarch
+maintainers         {mps @Schamschula} openmaintainer
+description         The Advanced Scientific Data Format (ASDF) is a next-generation interchange format for scientific data. 
+long_description    {*}${description} This package contains the Python implementation of the ASDF Standard. 
+homepage            https://github.com/asdf-format/asdf
+
+checksums           rmd160  5442c9ec56028a5caa2cf9ebde94a98f011d5f05 \
+                    sha256  f92de7246f8f12bb24e813c73784d3cd455d021d083c58723497bf129e2945f2 \
+                    size    794661
+
+python.versions     38 39 310 311 312
+
+if {${name} ne ${subport}} {
+    depends_build-append \
+                    port:py${python.version}-setuptools_scm
+
+    depends_lib-append  \
+                    port:py${python.version}-asdf-transform-schemas \
+                    port:py${python.version}-asdf-unit-schemas \
+                    port:py${python.version}-attrs \
+                    port:py${python.version}-importlib-metadata \
+                    port:py${python.version}-jmespath \
+                    port:py${python.version}-numpy \
+                    port:py${python.version}-packaging \
+                    port:py${python.version}-semantic_version \
+                    port:py${python.version}-yaml
+}
+

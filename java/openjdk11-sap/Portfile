@@ -5,7 +5,7 @@ PortSystem       1.0
 name             openjdk11-sap
 categories       java devel
 maintainers      {breun.nl:nils @breun} openmaintainer
-platforms        darwin
+platforms        {darwin any}
 # This port uses prebuilt binaries; 'NoMirror' makes sure MacPorts doesn't mirror/distribute these third-party binaries
 license          GPL-2 NoMirror
 # This port uses prebuilt binaries for a particular architecture; they are not universal binaries
@@ -14,7 +14,7 @@ universal_variant no
 # https://sap.github.io/SapMachine/latest/11
 supported_archs  x86_64 arm64
 
-version      11.0.19
+version      11.0.23
 revision     0
 
 description  OpenJDK 11 builds (Long Term Support) maintained and supported by SAP
@@ -24,14 +24,14 @@ master_sites https://github.com/SAP/SapMachine/releases/download/sapmachine-${ve
 
 if {${configure.build_arch} eq "x86_64"} {
     distname     sapmachine-jdk-${version}_macos-x64_bin
-    checksums    rmd160  0b9db762c251d352a4198b28a65545fc4773970f \
-                 sha256  6e57187b804f6614834db1b1cef5469e7e6c74aa9224b685b3fbf8cd99e0083d \
-                 size    187283662
+    checksums    rmd160  860c422a4e92858b96f809390536d8ade62d8ba0 \
+                 sha256  9492403416e4cd47c2428744fec680f4f0ad08316a01ceb7828a2f6a0cf129f3 \
+                 size    187762401
 } elseif {${configure.build_arch} eq "arm64"} {
     distname     sapmachine-jdk-${version}_macos-aarch64_bin
-    checksums    rmd160  a1e2c3ccf989519d8d18e56e20f945783e35e700 \
-                 sha256  be9a2446297f641d4cdbbd4083f08a8839b6881d9a0a9dccff6be5038589c029 \
-                 size    185411755
+    checksums    rmd160  dd29dc1d8b1cc719456b62e3ffc978d74bd871bc \
+                 sha256  0d9ec8a90dcc711e793a695574e1a271765b727262d715985994324f3b5ff755 \
+                 size    185872728
 }
 
 worksrcdir   sapmachine-jdk-${version}.jdk
@@ -73,17 +73,21 @@ test.args   -version
 # macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, which is not under ${prefix}.
 destroot.violate_mtree yes
 
-set target /Library/Java/JavaVirtualMachines/${name}
-set destroot_target ${destroot}${target}
+set jvms /Library/Java/JavaVirtualMachines
+set jdk ${jvms}/${name}
 
 destroot {
-    xinstall -m 755 -d ${destroot_target}
-    copy ${worksrcpath}/Contents ${destroot_target}
+    xinstall -m 755 -d ${destroot}${prefix}${jdk}
+    copy ${worksrcpath}/Contents ${destroot}${prefix}${jdk}
+
+    # macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, so let's create a symlink there
+    xinstall -m 755 -d ${destroot}${jvms}
+    ln -s ${prefix}${jdk} ${destroot}${jdk}
 }
 
 notes "
 If you have more than one JDK installed you can make ${name} the default\
 by adding the following line to your shell profile:
 
-    export JAVA_HOME=${target}/Contents/Home
+    export JAVA_HOME=${jdk}/Contents/Home
 "

@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github  1.0
+PortGroup           cmake   1.1
+
+github.setup        fastfetch-cli fastfetch 2.13.2
+github.tarball_from archive
+revision            0
+
+description         \
+    Fastfetch is a neofetch-like tool for fetching system information and \
+    displaying them in a pretty way.
+
+long_description    {*}${description}
+
+categories          sysutils
+installs_libs       no
+license             MIT
+platforms           any
+maintainers         {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
+
+checksums           rmd160  7c7577e43ac877f77bd430759a0926782e22e053 \
+                    sha256  69ff73a2f5da269bdfbde0a81182a427c6d141633a70cb4b69f7ad37e49726ba \
+                    size    1254865
+
+set py_version      312
+
+depends_build-append \
+                    port:pkgconfig
+
+depends_lib-append  port:chafa                  \
+                    port:python${py_version}    \
+                    port:sqlite3                \
+                    port:yyjson
+
+configure.args-append \
+                    -DENABLE_SYSTEM_YYJSON=ON

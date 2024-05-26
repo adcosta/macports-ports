@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             bioconductor YuLab-SMU ggtree 3.6.2
-revision            1
+R.setup             bioconductor YuLab-SMU ggtree 3.12.0
+revision            0
+categories-append   bioconductor
 maintainers         nomaintainer
 license             Artistic-2
 description         R package for visualization of tree and annotation data
 long_description    {*}${description}
 homepage            https://github.com/YuLab-SMU/ggtree
-checksums           rmd160  1dcd445e9be3dbbbd73f319c24992d8f30a98f0b \
-                    sha256  bdca865db5cfc5b4aa89f62e185b31d3f1de87658609a7bfe9e0769895c1f69c \
-                    size    359692
+checksums           rmd160  21abb3cbbc4c1c400ba8921e2e8fffb16b15f471 \
+                    sha256  b0d6682a3686d487471828c715747abb81c6dc59e51044b7946a61340d61a7ae \
+                    size    359019
 supported_archs     noarch
 
 depends_lib-append  port:R-ape \

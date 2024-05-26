@@ -3,17 +3,19 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github easystats easystats 0.6.0
+# Revert to GitHub once updated there.
+R.setup             cran easystats easystats 0.7.1
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3
-description         Framework for easy statistical modeling, visualization and reporting
+description         Framework for easy statistical modelling, \
+                    visualization and reporting
 long_description    {*}${description}
 homepage            https://easystats.github.io/easystats
-checksums           rmd160  3b79900bc31f87afd80c54f652427da447c8e2a1 \
-                    sha256  823ce264f7c3e891f844fec949bb7f844c91b1c8243981792d849d81d0a0f1e9 \
-                    size    157950629
+checksums           rmd160  b44d7e2f50d213ffbadedd753d059e329043a7c7 \
+                    sha256  e6b822b725dbd2ed5a129a3fb787a6ef378562b787e4411813bb375d4c1b2522 \
+                    size    1771445
 supported_archs     noarch
 
 depends_lib-append  port:R-bayestestR \
@@ -27,3 +29,15 @@ depends_lib-append  port:R-bayestestR \
                     port:R-performance \
                     port:R-report \
                     port:R-see
+
+depends_test-append port:R-DT \
+                    port:R-flexdashboard \
+                    port:R-jsonlite \
+                    port:R-knitr \
+                    port:R-mockery \
+                    port:R-rmarkdown \
+                    port:R-testthat \
+                    port:R-withr \
+                    port:R-xml2
+
+test.run            yes

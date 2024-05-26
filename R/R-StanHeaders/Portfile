@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran stan-dev StanHeaders 2.26.27
+R.setup             cran stan-dev StanHeaders 2.32.8
 revision            0
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,9 +11,9 @@ license             BSD
 description         C++ header files for Stan
 long_description    {*}${description}
 homepage            https://mc-stan.org
-checksums           rmd160  a360b32ca6a62c9661bbb605dd1557cee28a46a9 \
-                    sha256  70e06546eadc448fc272d4b790620304d02a181df28cc924380bb5f10f83c9b1 \
-                    size    2307044
+checksums           rmd160  5615d26f0a07d989023a057d2645a7c1e6c1f982 \
+                    sha256  1cfde4122607c6d56d61b1aba5b6fb70b721375be40508586e8bab344d68222e \
+                    size    2398455
 
 # Notice, this is not a header-only port, despite its name.
 

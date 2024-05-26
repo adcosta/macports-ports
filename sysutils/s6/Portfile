@@ -3,8 +3,8 @@
 PortSystem          1.0
 
 name                s6
-version             2.11.3.2
-revision            0
+version             2.12.0.4
+revision            1
 categories          sysutils
 license             ISC
 maintainers         nomaintainer
@@ -27,9 +27,9 @@ depends_build       port:execline \
                     port:skalibs
 depends_run         port:execline
 
-checksums           rmd160  44726ac9d1f93a050ddc85bc7a6fc0d7c5d064ef \
-                    sha256  7c16138ad2f0ffbe0ed2ae8dd0cecada9f7c787edd33a69084d219110693df74 \
-                    size    247882
+checksums           rmd160  443890246f956a6b350f7887ad21db06150fc331 \
+                    sha256  c95d51787602e0c8c8e4f92a710cbdaa4ee797ee886e71342727e2974f95c06b \
+                    size    255314
 
 configure.args      --disable-shared \
                     --with-lib=${prefix}/lib/execline \

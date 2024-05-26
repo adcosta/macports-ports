@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/twpayne/chezmoi 2.34.2 v
+go.setup            github.com/twpayne/chezmoi 2.48.1 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
 
@@ -20,12 +21,10 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  7c91d0f94bb70b16c8222824c9b80c91a9ba4116 \
-                    sha256  fc47d6e4cbe1b8f4762c204be28e30d9e9f3bcfa8c51ac276cbd1864804b2dc8 \
-                    size    2449116
+checksums           rmd160  43506802049053b12001866cdca13cc210e9844b \
+                    sha256  6c7647bd42dcda7370a85c3f744018667e4a122a227ac368373443dec694d6e9 \
+                    size    2454678
 
-# Allow Go to fetch dependencies at build time
-build.env-delete    GO111MODULE=off GOPROXY=off
 build.cmd           ${build.cmd} -ldflags \" \
                         -X main.version=v${version} -X main.builtBy=macports \
                     \" \&\& make completions

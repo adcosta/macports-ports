@@ -5,7 +5,8 @@ PortGroup           java 1.0
 
 name                NetBeans
 set name_lower      [string tolower ${name}]
-version             18
+version             21
+revision            1
 categories          aqua devel java
 license             Apache-2
 maintainers         openmaintainer {amake @amake}
@@ -26,16 +27,16 @@ platforms           {darwin any}
 distname            ${name_lower}-${version}-bin
 master_sites        apache:${name_lower}/${name_lower}/${version}
 
-checksums           rmd160  9461d06aeeb60a8cb9b2d51b8b703032a8327d4a \
-                    sha256  09358e5b5bdddb4d2865962a0d14f8c2aaf8bf923700080472a03faa2f4879ff \
-                    size    489138594
+checksums           rmd160  32388ec2e01bafd4eba2f23f2d4890b772eaab74 \
+                    sha256  7a71a9683c526a847c1ff43bc9403d5c01c50b739e3c5170feffb2aa7fbaf7fd \
+                    size    499656187
 
 worksrcdir          ${name_lower}
 
 use_zip             yes
 use_configure       no
 
-java.version        1.11+
+java.version        11+
 
 build {}
 
@@ -61,6 +62,17 @@ destroot {
     xinstall -m 0644 ${filespath}/${name_lower}.icns ${app}/Contents/Resources/
 
     reinplace "s|@@VERSION@@|${version}|g" ${app}/Contents/Info.plist
+
+    # rev-upgrade considers these two files to be broken on arm64. They are weirdly constructed; see
+    # https://github.com/apache/netbeans/blob/ba85468772292fd64f188f4022f9d49f77f00b89/profiler/lib.profiler/native/scripts/buildnative-mac.sh#L62-L92
+    #
+    # For some reason removing all architectures but x86_64 fixes the issue.
+    #
+    # TODO: When arm64 support is added to these files, see if this hack is still helpful
+    system -W ${destroot}${prefix}/share/java/netbeans/profiler/lib/deployed/jdk15/mac/ \
+        "lipo -thin x86_64 libprofilerinterface.jnilib -o libprofilerinterface.jnilib"
+    system -W ${destroot}${prefix}/share/java/netbeans/profiler/lib/deployed/jdk16/mac/ \
+        "lipo -thin x86_64 libprofilerinterface.jnilib -o libprofilerinterface.jnilib"
 }
 
 universal_variant   no

@@ -3,16 +3,25 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran blavaan 0.4-8
-revision            0
-categories-append   math
+R.setup             cran ecmerkle blavaan 0.5-4
+revision            1
+categories-append   math economics
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3+
 description         Bayesian latent variable analysis
 long_description    {*}${description}
-checksums           rmd160  33a54a77e9b28d1a2031bab6246606e053f9ad95 \
-                    sha256  872b52f5901c06a11b57c0963555a80e63c41e5a260797f6140b3fd29fc1044e \
-                    size    1581266
+homepage            https://ecmerkle.github.io/blavaan
+checksums           rmd160  33941c97c3e1dad7da01f8f5949fd96115a1e22d \
+                    sha256  0bcf7204cb191ccb0b69c734cdd9109730fcf4c124a68a11e5aa8161acd8033c \
+                    size    1654602
+
+# See: https://github.com/stan-dev/rstan/issues/1095
+if {${configure.build_arch} in [list i386 ppc]} {
+    # We cannot patch Makevars directly, since it is overwritten by rstantools.
+    # Instead, patch configure to pass the flag.
+    patchfiles-append \
+                    patch-32-bit.diff
+}
 
 depends_lib-append  port:R-bayesplot \
                     port:R-BH \

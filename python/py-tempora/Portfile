@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-tempora
-version             5.2.2
+version             5.5.1
 revision            0
 
 categories-append   devel
@@ -19,12 +19,11 @@ long_description    {*}${description}
 
 homepage            https://pypi.python.org/pypi/${python.rootname}
 
-checksums           rmd160  57c37502eb7373d3fe42e9bbbd0925dd9557d6b7 \
-                    sha256  98ee27bc528c91a236f9a5d612ede4ef391b01f7862bf11b483ce549053651c1 \
-                    size    20957
+checksums           rmd160  5b0ed7282894d0b61a8ed3eec2e885cbfa62ed95 \
+                    sha256  a2bb51e2121976d931347b3e433917c364b83fdd5f64ef27336c865bf1fb0f75 \
+                    size    21145
 
-python.versions     37 38 39 310 311
-python.pep517       yes
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools_scm
@@ -35,11 +34,7 @@ if {${name} ne ${subport}} {
                             port:py${python.version}-toml
 
     depends_test-append port:py${python.version}-py \
-                        port:py${python.version}-pytest \
                         port:py${python.version}-freezegun
+
     test.run            yes
-    test.args           -o addopts=''
-    test.env            PYTHONPATH=${worksrcpath}/build/lib
-    test.cmd            py.test-${python.branch}
-    test.target
 }

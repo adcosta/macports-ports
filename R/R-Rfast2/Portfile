@@ -3,22 +3,24 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran RfastOfficial Rfast2 0.1.4
-revision            2
+R.setup             cran RfastOfficial Rfast2 0.1.5.2
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Collection of efficient and extremely fast R functions – II
 long_description    {*}${description}
-checksums           rmd160  594edad4eb0330ffe11365adce20d874947e0f10 \
-                    sha256  494b777a86342aae0a6a5f0eb189337b846ef2929964672c0f010d93699d0d63 \
-                    size    162486
+checksums           rmd160  11cdc13e2587f14f2df1e536c243189f7d3297d2 \
+                    sha256  e1bae78e45409a590771e3a589978f48dba56a331d60cfaee42216402636b288 \
+                    size    177103
 
-depends_lib-append  port:R-RANN \
-                    port:R-Rcpp \
+depends_lib-append  port:R-Rcpp \
                     port:R-RcppArmadillo \
-                    port:R-Rfast
+                    port:R-RcppParallel \
+                    port:R-Rfast \
+                    port:R-Rnanoflann
 
 compilers.setup     require_fortran
+compiler.cxx_standard 2017
 
 test.run            yes

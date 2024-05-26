@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran frederic.gosselin runMCMCbtadjust 1.1.0
+revision            0
+categories-append   math
+maintainers         nomaintainer
+license             CeCILL-2.1
+description         Function runMCMC_btadjust() to use with JAGS, \
+                    R-nimble etc.
+long_description    {*}${description}
+checksums           rmd160  47ea0d78efd5dfb0eaace1dd5da3d5788f331d74 \
+                    sha256  c7ad9a2b5b1cd5b96cbf208ac0f0270bb2ddca50b00a3f448fadba42f61d8661 \
+                    size    77586
+supported_archs     noarch
+
+depends_lib-append  port:R-coda
+
+# Some optional deps are omitted.
+depends_test-append port:R-ggmcmc \
+                    port:R-Hmisc \
+                    port:R-knitr \
+                    port:R-markdown \
+                    port:R-nimble \
+                    port:R-nimbleAPT \
+                    port:R-R6 \
+                    port:R-rjags \
+                    port:R-rstan \
+                    port:R-runjags \
+                    port:R-testthat
+
+test.run            yes

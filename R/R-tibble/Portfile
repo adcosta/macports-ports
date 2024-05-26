@@ -3,16 +3,19 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github tidyverse tibble 3.2.1.9005 v
+R.setup             github tidyverse tibble 3.2.1.9018 v
 revision            0
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
 description         Modern re-imagining of the data frame
-long_description    {*}${description}
+long_description    Provides a 'tbl_df' class (the 'tibble') \
+                    with stricter checking and better formatting \
+                    than the traditional data frame.
 homepage            https://tibble.tidyverse.org
-checksums           rmd160  e163ac4309dba3efc752b6c1f9fcd826c8f6cf17 \
-                    sha256  352d65b5c90fe3e21cfa4e4d031ccb2c27324671bd82cfcb0b58157e09aa6204 \
-                    size    1231669
+checksums           rmd160  15c134acca6d7fa898fd183a1bffca1e4b5c2c62 \
+                    sha256  47b3f721c7b4b0f77e791be0bcefd47d84564faaafb99601e880a47afbbc6bca \
+                    size    5164865
+github.tarball_from archive
 
 depends_lib-append  port:R-fansi \
                     port:R-lifecycle \
@@ -21,3 +24,36 @@ depends_lib-append  port:R-fansi \
                     port:R-pkgconfig \
                     port:R-rlang \
                     port:R-vctrs
+
+depends_test-append port:R-bench \
+                    port:R-bit64 \
+                    port:R-blob \
+                    port:R-brio \
+                    port:R-callr \
+                    port:R-cli \
+                    port:R-covr \
+                    port:R-crayon \
+                    port:R-DiagrammeR \
+                    port:R-dplyr \
+                    port:R-evaluate \
+                    port:R-formattable \
+                    port:R-ggplot2 \
+                    port:R-here \
+                    port:R-hms \
+                    port:R-htmltools \
+                    port:R-knitr \
+                    port:R-lubridate \
+                    port:R-mockr \
+                    port:R-nycflights13 \
+                    port:R-pkgbuild \
+                    port:R-pkgload \
+                    port:R-purrr \
+                    port:R-rmarkdown \
+                    port:R-stringi \
+                    port:R-testthat \
+                    port:R-tidyr \
+                    port:R-withr
+
+test.run            yes
+# https://github.com/tidyverse/tibble/issues/1575
+test.args-append    --ignore-vignettes

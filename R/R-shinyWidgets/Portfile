@@ -3,17 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github dreamRs shinyWidgets 0.7.6 v
-revision            1
+# Revert to GitHub once updated there.
+R.setup             cran dreamRs shinyWidgets 0.8.6 v
+revision            0
 categories-append   devel
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+maintainers         nomaintainer
 license             GPL-3
 description         Custom inputs widgets for Shiny
 long_description    {*}${description}
 homepage            https://dreamrs.github.io/shinyWidgets
-checksums           rmd160  325578cdf6abce28bc4ae2913421facbaf4025f6 \
-                    sha256  277f356d76950bc800fd1bfa16537e383134920eb4ae3fd06c30df6be9d3700b \
-                    size    840920
+checksums           rmd160  d9949626aac6f4e8b4f0a6bb8b18fef3e8036d4f \
+                    sha256  863c245891953795c50f3998d5b17335c5f2a0de9fe902ec6081f53c2e5f60b7 \
+                    size    816160
 supported_archs     noarch
 
 depends_lib-append  port:R-anytime \
@@ -23,3 +24,13 @@ depends_lib-append  port:R-anytime \
                     port:R-rlang \
                     port:R-sass \
                     port:R-shiny
+
+depends_test-append port:R-covr \
+                    port:R-DT \
+                    port:R-ggplot2 \
+                    port:R-scales \
+                    port:R-shinydashboard \
+                    port:R-shinydashboardPlus \
+                    port:R-testthat
+
+test.run            yes

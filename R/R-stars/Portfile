@@ -3,22 +3,21 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran r-spatial stars 0.6-1
-revision            0
+R.setup             cran r-spatial stars 0.6-5
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             Apache
 description         Spatiotemporal arrays, raster and vector data cubes
 long_description    {*}${description}
 homepage            https://r-spatial.github.io/stars
-checksums           rmd160  011e6ef04d0e97fac38800638f879411a900c87b \
-                    sha256  1f78db3adab9ebbfc9d98c6cc592708d893b5d7fd7fd876af454042ef42204a7 \
-                    size    3572040
+checksums           rmd160  17afe88971c39aebb9afccec159aaf2506b7f18b \
+                    sha256  4fcb12f25ce4351840d24489b8d6ca61eecc0da12f93bfab702701a430d0afac \
+                    size    3739727
 supported_archs     noarch
 
 depends_lib-append  port:R-abind \
                     port:R-classInt \
-                    port:R-lwgeom \
                     port:R-rlang \
                     port:R-sf \
                     port:R-units

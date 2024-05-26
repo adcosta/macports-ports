@@ -5,7 +5,7 @@ PortGroup           github 1.0
 PortGroup           ocaml 1.1
 
 name                ocaml-dune
-github.setup        ocaml dune 3.7.0
+github.setup        ocaml dune 3.14.0
 categories          ocaml devel
 license             MIT
 maintainers         {landonf @landonf} openmaintainer
@@ -13,9 +13,10 @@ maintainers         {landonf @landonf} openmaintainer
 description         Composable build system for OCaml
 long_description    Dune is a build system for OCaml and Reason.
 
-checksums           rmd160  6836cc8409a2cce1aa7914860af8c051679a919d \
-                    sha256  139789889d9ddc64ee72535904cb220eef2d3111323dc64e7b7ac9414e2299f4 \
-                    size    2010104
+checksums           rmd160  7784eb82f95314e2366f44de43832beade706d4a \
+                    sha256  6307ba1bc47946f8d437153cb1a5e8145e47aedce26af4064a7cd0af7a439cce \
+                    size    2936923
+github.tarball_from archive
 
 if { ${subport} eq ${name} } {
     depends_lib         port:ocaml-findlib
@@ -28,8 +29,17 @@ if { ${subport} eq ${name} } {
                         --mandir ${prefix}/share/man \
                         --sbindir ${prefix}/sbin
 
+    # See: https://github.com/ocaml/dune/issues/8941
+    if {${os.major} < 11} {
+        build.cmd-prepend \
+                        DUNE_CONFIG__COPY_FILE=portable
+    }
     build.target        release
 }
+
+# See: https://trac.macports.org/ticket/68463
+# Fix suggested by upstream: https://github.com/ocaml/dune/issues/8941
+patchfiles-append       patch-copyfile_stubs.c-define-COPYFILE_CLONE.diff
 
 subport ocaml-dune-configurator {
     # https://github.com/ocaml/dune/issues/6156
@@ -38,4 +48,12 @@ subport ocaml-dune-configurator {
     }
     ocaml.build_type    dune
     depends_lib-append  port:ocaml-csexp
+}
+
+subport ocaml-dune-build-info {
+    ocaml.build_type    dune
+}
+
+subport ocaml-xdg {
+    ocaml.build_type    dune
 }

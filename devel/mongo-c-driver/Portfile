@@ -3,17 +3,27 @@
 PortSystem          1.0
 PortGroup           cmake 1.1
 PortGroup           github 1.0
+PortGroup           legacysupport 1.1
 
-github.setup        mongodb mongo-c-driver 1.23.4
-checksums           rmd160  d4fdebca53980a5b19d9312468b7b422f20175f2 \
-                    sha256  209406c91fcf7c63aa633179a0a6b1b36ba237fb77e0470fd81f7299a408e334 \
-                    size    7795336
+# clock_gettime
+legacysupport.newest_darwin_requires_legacy 15
+
+github.setup        mongodb mongo-c-driver 1.26.2
+checksums           rmd160  e114fd6e6e12f63fa250d017fa316ce4e9602f06 \
+                    sha256  7084c488a758bf226cc0b3d500e7e001f0e2e37391cbeecd341050a9a899857d \
+                    size    7318005
 
 categories          devel
 maintainers         {ryandesign @ryandesign} openmaintainer
 license             Apache-2
 
-github.tarball_from releases
+# As of 1.25.0 a release download is no longer provided.
+github.tarball_from archive
+
+# It cannot figure out its own version when not in a git repository.
+# https://jira.mongodb.org/browse/CDRIVER-4767
+configure.args-append \
+                    -DBUILD_VERSION=${version}
 
 configure.args-append \
                     -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF \
@@ -24,11 +34,6 @@ configure.args-append \
 
 if {${subport} eq ${name}} {
     revision        0
-
-    PortGroup       legacysupport 1.1
-
-    # strndup
-    legacysupport.newest_darwin_requires_legacy 10
 
     categories-append \
                     databases
@@ -41,7 +46,7 @@ if {${subport} eq ${name}} {
                     ${subport} provides libmongoc, a ${description}.
 
     depends_build-append \
-                    port:pkgconfig
+                    path:bin/pkg-config:pkgconfig
 
     depends_lib-append \
                     port:cyrus-sasl2 \
@@ -50,18 +55,16 @@ if {${subport} eq ${name}} {
                     port:snappy \
                     port:zlib
 
-    patchfiles-append \
-                    overlinking.patch
-
     configure.args-append \
-                    -DENABLE_BSON=SYSTEM \
                     -DENABLE_ICU=ON \
                     -DENABLE_MONGOC=ON \
                     -DENABLE_SASL=CYRUS \
                     -DENABLE_SNAPPY=ON \
-                    -DENABLE_ZLIB=SYSTEM
+                    -DENABLE_ZLIB=SYSTEM \
+                    -DUSE_SYSTEM_LIBBSON=TRUE
 
-    if {${os.platform} eq "darwin" && ${os.major} > 12} {
+    # error: implicit declaration of function 'SecKeyCreateSignature' is invalid in C99
+    if {${os.platform} eq "darwin" && ${os.major} >= 16} {
         configure.args-append \
                     -DENABLE_SSL=DARWIN
     } else {
@@ -95,9 +98,4 @@ subport libbson {
     configure.args-append \
                     -DENABLE_BSON=ON \
                     -DENABLE_MONGOC=OFF
-
-    # error: implicit declaration of function 'arc4random_buf' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
-    # https://jira.mongodb.org/browse/CDRIVER-4233
-    configure.cflags-append \
-                    -D_DARWIN_C_SOURCE
 }

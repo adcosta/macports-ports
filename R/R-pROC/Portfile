@@ -4,17 +4,17 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # Revert to GitHub once updated there.
-R.setup             cran xrobin pROC 1.18.2
-revision            0
+R.setup             cran xrobin pROC 1.18.5
+revision            1
 categories-append   math
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+maintainers         nomaintainer
 license             GPL-3
 description         Display and analyze ROC curves
 long_description    {*}${description}
 homepage            http://expasy.org/tools/pROC
-checksums           rmd160  bb7635246692c398bd480c71030b3aa73eef4187 \
-                    sha256  1f82eaa26736ddb31ca89ac8e0473ec480d5b6835598e6fbb1ee5af1c4c60507 \
-                    size    435091
+checksums           rmd160  50905d9184f0af501eeef9b3ed7d0d7b3598e004 \
+                    sha256  5593c841a6df5a2f2d209d0c14401971eb9427092ed9c3ac2059273807b42c89 \
+                    size    696162
 
 depends_lib-append  port:R-plyr \
                     port:R-Rcpp
@@ -23,6 +23,7 @@ depends_test-append port:R-doParallel \
                     port:R-ggplot2 \
                     port:R-logcondens \
                     port:R-microbenchmark \
+                    port:R-rlang \
                     port:R-testthat \
                     port:R-vdiffr
 

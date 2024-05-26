@@ -1,0 +1,25 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran cran rsm 2.10.4
+revision            1
+maintainers         nomaintainer
+license             MIT
+description         Response-surface analysis
+long_description    {*}${description}
+checksums           rmd160  53c14afc3524e4ec091ab51f672597f81ce88258 \
+                    sha256  505445b2f06b4e306fdacfaecc0c26327b96e2828ffab4e1ccfa8320c19d02ae \
+                    size    701010
+supported_archs     noarch
+
+depends_lib-append  port:R-estimability
+
+depends_test-append port:R-conf.design \
+                    port:R-DoE.base \
+                    port:R-emmeans \
+                    port:R-FrF2 \
+                    port:R-Vdgraph
+
+test.run            yes

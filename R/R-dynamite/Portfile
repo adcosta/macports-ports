@@ -4,16 +4,17 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version is outdated.
-R.setup             cran ropensci dynamite 1.4.3
-revision            0
+R.setup             cran ropensci dynamite 1.4.9
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3+
 description         Bayesian modeling and causal inference for multivariate longitudinal data
 long_description    {*}${description}
-checksums           rmd160  d3f6bc6e37622ab879c2c3c85953d844db60a14e \
-                    sha256  b0c8c5c2fc41ee233a5f5e5b83e826a5135767a70f04892a60f8e58b49e26dcd \
-                    size    4702139
+homepage            https://docs.ropensci.org/dynamite
+checksums           rmd160  6873c7d4498f5cd43adad001d18f566e3270b1a5 \
+                    sha256  dc54a8b5c565574d0b239118d424d70429de7aa9ce2b4b377fec28d6b59deb2b \
+                    size    5114444
 supported_archs     noarch
 
 depends_lib-append  port:R-checkmate \

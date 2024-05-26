@@ -3,23 +3,27 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/gopasspw/git-credential-gopass 1.15.5 v
+go.setup            github.com/gopasspw/git-credential-gopass 1.15.13 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
+
 categories          security
-maintainers         {@sikmir disroot.org:sikmir} openmaintainer
+installs_libs       no
 license             MIT
+maintainers         {@sikmir disroot.org:sikmir} \
+                    {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
 
 description         Gopass git-credentials helper
 long_description    {*}${description}
 homepage            https://www.gopass.pw
 
-checksums           rmd160  eee1cdb183fef8ddb7833eab58627fa70318fe45 \
-                    sha256  58980709c0323acc1297d0a9c81c120b357c5b93cc86214fac99db417298e722 \
-                    size    23210
+checksums           rmd160  3b43020552e8b010bf605c3ba3184c67aebf4bb6 \
+                    sha256  4261fe2630ce8e9882dc0d163c3f406132b695c7fdd8cb6c7e2080e06b93afab \
+                    size    19323
 
-build.env-delete    GO111MODULE=off GOPROXY=off
-
+build.cmd           ${go.bin} mod tidy \&\& ${go.bin} build
 build.args          -ldflags '-X main.version=${version}'
 
 destroot {

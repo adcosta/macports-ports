@@ -8,7 +8,7 @@ PortGroup                   makefile 1.0
 PortGroup                   conflicts_build 1.0
 
 name                        mumps
-version                     5.6.0
+version                     5.6.2
 revision                    1
 categories                  math
 license                     CeCILL-C
@@ -22,14 +22,14 @@ depends_lib                 port:scotch \
                             port:metis \
                             port:parmetis
 
-homepage                    http://mumps-solver.org
+homepage                    https://mumps-solver.org
 master_sites                ${homepage}
 
 distname                    MUMPS_${version}
 
-checksums                   rmd160  7e3bb4d1a95e257b43401278de630b78ea1fa4a5 \
-                            sha256  3e08c1bdea7aaaba303d3cf03059f3b4336fa49bef93f4260f478f067f518289 \
-                            size    4337674
+checksums                   rmd160  c47ecc4f0868dba41c011196036c7f5ae755b573 \
+                            sha256  13a2c1aff2bd1aa92fe84b7b35d88f43434019963ca09ef7e8c90821a8f1d59a \
+                            size    4341079
 
 conflicts_build-append      ${name}
 

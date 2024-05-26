@@ -6,13 +6,13 @@ PortGroup           github 1.0
 PortGroup           legacysupport 1.1
 PortGroup           compiler_blacklist_versions 1.0
 
-# MAP_ANONYMOUS
-legacysupport.newest_darwin_requires_legacy 14
+# MAP_ANONYMOUS and clock_gettime
+legacysupport.newest_darwin_requires_legacy 15
 
 # Ports that depend on this port must be revbump after update.
-github.setup        abseil abseil-cpp 20230125.3
+github.setup        abseil abseil-cpp 20240116.2
 name                abseil
-revision            0
+revision            1
 categories          devel
 maintainers         {judaew @judaew} openmaintainer
 license             Apache-2
@@ -24,11 +24,15 @@ long_description    Abseil is an open-source collection of C++ library \
                     Google's own C++ code base, has been extensively \
                     tested and used in production.
 
-checksums           rmd160  18ea059168c7f8b5dbaeea433e71c57e9644b157 \
-                    sha256  0195e85f858b38f4563a6f2912e30bfc45dfad4815fbf97d273ed1cae9bbca94 \
-                    size    2119590
+checksums           rmd160  201d3e068662fd8305cd65a5391c712ecdcc8d8e \
+                    sha256  e2ceb7f9c6a7f5768f93b64655f8b228a03788cce43a367b38b5affc4d776d8c \
+                    size    2151740
 
 patchfiles          patch-remove-Xarch-from-pkg-config.diff
+
+# Abseil broken for 10.4-10.5, it's the pthread issue.
+# See https://github.com/macports/macports-ports/pull/19905#issuecomment-1679652939
+patchfiles-append   patch-pthread.diff
 
 platform darwin {
     if {${build_arch} in [list ppc ppc64]} {
@@ -40,10 +44,21 @@ platform darwin {
     }
 }
 
+platform darwin {
+    if {${os.major} >= 11 && ${os.major} <= 12} {
+        # some functions in xlocale.h are hidden without this define
+        # https://trac.macports.org/ticket/67988
+        configure.cxxflags-append -D_DARWIN_C_SOURCE
+    }
+}
+
 # ignore pre releases
 github.livecheck.regex  {([0-9.]+)}
 
-compiler.cxx_standard   2014
+# Use C++17 standard for using std:meta, std:strings and std:types instead
+# abseil implementation this types for C++14 standard
+# See https://trac.macports.org/ticket/69578
+compiler.cxx_standard   2017
 
 # https://trac.macports.org/ticket/67553
 # error: default initialization of an object of const type 'const absl::lts_20230125::Condition'
@@ -53,7 +68,7 @@ compiler.blacklist-append \
 
 configure.args-append \
                     -DBUILD_SHARED_LIBS=ON \
-                    -DCMAKE_CXX_STANDARD=14 \
+                    -DCMAKE_CXX_STANDARD=17 \
                     -DABSL_PROPAGATE_CXX_STD=ON
 
 variant test description "Provide testing" {

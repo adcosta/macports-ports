@@ -3,19 +3,20 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran psychTools 2.3.3
+R.setup             cran revelle psychTools 2.4.3
 revision            1
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
-description         Tools to accompany the psych package for psychological research
+maintainers         nomaintainer
+license             GPL-2+
+description         Tools to accompany the R-psych package for psychological research
 long_description    {*}${description}
 homepage            https://personality-project.org/r/psych
-checksums           rmd160  9e9a0f77cfc97f4a182ea515547741e492e4630f \
-                    sha256  cbe0db0505c02d6d459451c99b61b08741d2342b71e5f6e72b6887fe1bada3c4 \
-                    size    3115947
+checksums           rmd160  3a016a90098897ebb9f8d1c66185c83fce18d148 \
+                    sha256  e84c86a33683638ff3650a69ab8114571e5732a026e29ff3335832128e3b1392 \
+                    size    3109330
 supported_archs     noarch
 
-depends_lib-append  port:R-psych
+depends_lib-append  port:R-psych \
+                    port:R-rtf
 
 depends_test-append port:R-GPArotation \
                     port:R-knitr \

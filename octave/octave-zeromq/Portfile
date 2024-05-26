@@ -3,16 +3,21 @@
 PortSystem          1.0
 PortGroup           octave 1.0
 
-octave.setup        zeromq 1.5.5
-revision            1
-platforms           darwin
-license             GPL-2+
+octave.setup        github gnu-octave octave-zeromq 1.5.6 release-
+octave.module       zeromq
+revision            0
+license             GPL-3+
 maintainers         {mps @Schamschula} openmaintainer
 description         ZeroMQ bindings for GNU Octave
 long_description    {*}${description}
 
-checksums           rmd160  3e200732d5bfde005972c3eda6dc2545a8b2f6b7 \
-                    sha256  300644a5b56eada815b97acc27cab9fe3539713721a2c02dac047a1252f07ecb \
-                    size    410875
+supported_archs     noarch
+platforms           {darwin any}
+
+github.tarball_from releases
+
+checksums           rmd160  27be6d044b07ec38a85eade07f254d622a58087c \
+                    sha256  bb5383d89eb8e9ceb262207c51c4c905379ead391786fd83f85b3b92d237ca2f \
+                    size    65385
 
 depends_lib-append  port:zmq

@@ -7,17 +7,19 @@ PortGroup           compilers 1.0
 PortGroup           github 1.0
 
 name                fortran-stdlib
-github.setup        fortran-lang stdlib 04d8459f9beafd10303895c64f7cd31fb2c9fc60
-version             2023.06.16
+github.setup        fortran-lang stdlib 206f84a0915d1e7ac31e7d2ad254c2b88ada2695
+version             2024.05.13
 revision            0
 categories-append   lang fortran devel
 license             MIT
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 description         Fortran Standard Library
 long_description    {*}${description}
-checksums           rmd160  b5a83d78d79b35945f699b938f3d4bff3fa6e26d \
-                    sha256  b03455d93061ca68dc9355adc0506c385660708b61fe2b2a8114523192f7d4cf \
-                    size    385068
+checksums           rmd160  d4c01e3003e5d696cbe99a09bc198e414401e3d9 \
+                    sha256  84b41e5793f9279fdbc94458c8ef32b60211b146f9c9f8c83f6521df2c6f157b \
+                    size    3636592
+github.tarball_from archive
+
 cmake.generator     Ninja
 
 set py_ver          3.11
@@ -33,7 +35,7 @@ platform darwin {
     }
 }
 
-compilers.setup require_fortran -g95
+compilers.setup     require_fortran -g95
 compiler.blacklist-append \
                     {*gcc-[34].*} {macports-gcc-[58]} {clang < 500}
 
@@ -45,6 +47,8 @@ configure.args-append \
                     -DBUILD_SHARED_LIBS=ON \
                     -DBUILD_TESTING=OFF
 
+# TODO: add gcc13 after it is tested and confirmed to build fine.
+# The experimental port was added in https://github.com/macports/macports-ports/pull/20607
 platform darwin powerpc {
     # https://github.com/fortran-lang/stdlib/issues/690
     # This will normally fail, since atm GCC does not support ieee_arithmetic on Darwin PPC;
@@ -61,9 +65,12 @@ platform darwin powerpc {
     } elseif {[string match macports-gcc-12 ${configure.compiler}]} {
         set gcc_v_major 12
         set gcc_v_full  ${gcc_v_major}.3.0
+    } elseif {[string match macports-gcc-13 ${configure.compiler}]} {
+        set gcc_v_major 13
+        set gcc_v_full  ${gcc_v_major}.2.0
     } elseif {[string match macports-gcc-devel ${configure.compiler}]} {
         set gcc_v_major -devel
-        set gcc_v_full  13.0.1
+        set gcc_v_full  14.0.0
     }
     
     if {${build_arch} eq "ppc"} {

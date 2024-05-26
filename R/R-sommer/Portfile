@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran sommer 4.3.1
-revision            0
+R.setup             cran cova_ruber sommer 4.3.4
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Solving Mixed Model Equations in R
 long_description    {*}${description}
-checksums           rmd160  0521b683d4483c79f54b7d2b2c3249c3388e62ca \
-                    sha256  8d5793f08887b7b0980bce07c6c35445d28abaee3a7d88094fe51554bba46479 \
-                    size    4149496
+checksums           rmd160  5e7b31308b59b372aace3ebf1402a8653b96d71c \
+                    sha256  4be05a627a281b84a78408894ff3b66dd33e3ef5f540c015203d0e451b05cf30 \
+                    size    3243478
 
 depends_lib-append  port:R-crayon \
                     port:R-Rcpp \
@@ -25,6 +25,7 @@ depends_test-append port:R-knitr \
                     port:R-orthopolynom \
                     port:R-plyr \
                     port:R-rmarkdown \
+                    port:R-RSpectra \
                     port:R-testthat
 
 test.run            yes

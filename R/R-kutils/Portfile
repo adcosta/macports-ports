@@ -3,20 +3,20 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran kutils 1.70
+R.setup             cran cran kutils 1.73
 revision            1
 maintainers         nomaintainer
 license             GPL-2
 description         Project management tools
 long_description    {*}${description}
-checksums           rmd160  3b8ac8b7254c3353e1775413f5d62e5e00d43831 \
-                    sha256  67d0a03ad600ed7f4eea072476baa0664c3fb2d116c326856b550ebcb831531a \
-                    size    566447
+checksums           rmd160  325fb01e666e12f9309a323605b88d3b53020f03 \
+                    sha256  8919b8a93924cc0072fa04f7cb0a70b2bd20f5f8dc615a0117f63a85880e0f77 \
+                    size    575919
 supported_archs     noarch
 
 depends_lib-append  port:R-openxlsx \
                     port:R-plyr \
-                    port:R-RUnit\
+                    port:R-RUnit \
                     port:R-xtable
 
 depends_test-append port:R-rockchalk

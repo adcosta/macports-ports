@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github tidymodels tidymodels 1.1.0 v
-revision            0
+# Revert to GitHub once updated there.
+R.setup             cran tidymodels tidymodels 1.2.0
+revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
 description         Easily install and load the Tidymodels packages
 long_description    {*}${description}
 homepage            https://tidymodels.tidymodels.org
-checksums           rmd160  dd4c4b9686b121f746300ebf83bc0d6b4afe9036 \
-                    sha256  3ad085ed605bc6a70acd4287cbb09588ebea4cc8f8691f9fcd85c316ca575272 \
-                    size    87372
+checksums           rmd160  0c00e11112cd84e2e8a2f8a24d7793dfb0f1a3ee \
+                    sha256  eca6b7440757204a958617613ac12286a371b3c29cc8d452e8e2e0f4643d9212 \
+                    size    50750
 supported_archs     noarch
 
 depends_lib-append  port:R-broom \

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Math-BigInt 1.999838
+perl5.setup         Math-BigInt 2.003002 ../../authors/id/P/PJ/PJACKLAM
 revision            0
 categories-append   math
 license             {Artistic-1 GPL}
@@ -16,11 +16,21 @@ supported_archs     noarch
 description         Math::BigInt - arbitrary size integer math package
 long_description    {*}${description}
 
-checksums           rmd160  fd48bb81920f09ee8b04b2308284630e77abdb15 \
-                    sha256  d3c2fb37d412ac8d126452caad5764f02193147261b59c56e652167c41d1e9d5 \
-                    size    2870131
+checksums           rmd160  ec2a8959c47de2a408fd8bfdb2f0dfa301484241 \
+                    sha256  5ac1fd255cca29d7cf5cb9283e6bb8177cdb07c5bb97502a58084b1c6eace35c \
+                    size    2978287
 
 if {${perl5.major} != ""} {
     depends_lib-append \
                     port:p${perl5.major}-math-complex
+
+    # As of Math::BigInt 2.000000, previously separate module, Math::BigRat,
+    # has been merged into Math::BigInt proper. Deactivate obsolete port
+    # p${perl5.major}-math-bigrat if active to avoid activation conflicts.
+    pre-activate {
+        set pname p${perl5.major}-math-bigrat
+        if {![catch {set installed [lindex [registry_active $pname] 0]}]} {
+            registry_deactivate_composite $pname "" [list ports_nodepcheck 1]
+        }
+    }
 }

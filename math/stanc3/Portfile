@@ -1,0 +1,53 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+PortGroup               ocaml 1.1
+
+github.setup            stan-dev stanc3 2.34.0 v
+epoch                   1
+revision                0
+categories              math lang ocaml
+maintainers             {@barracuda156 gmail.com:vital.had} {@catap korins.ky:kirill} openmaintainer
+license                 BSD
+description             New compiler for Stan, written in OCaml
+long_description        {*}${description}
+homepage                https://mc-stan.org/stanc3/stanc
+checksums               rmd160  f38cffbbc29bc59dddd08e0bc5fce85566fb459f \
+                        sha256  ef7624d01fdced7834c1cc6afaf55cb61bcc468499267e05fee8e256985b36eb \
+                        size    3583890
+github.tarball_from     archive
+
+set py_ver              3.11
+
+set py_ver_nodot        [string map {. {}} ${py_ver}]
+
+depends_lib-append      port:ocaml-core \
+                        port:ocaml-core_kernel \
+                        port:ocaml-fmt \
+                        port:ocaml-menhir \
+                        port:ocaml-ppx_deriving \
+                        port:ocaml-yojson \
+                        port:python${py_ver_nodot}
+
+configure.python        ${prefix}/bin/python${py_ver}
+
+post-patch {
+    reinplace "s|/usr/bin/python3|${configure.python}|" \
+                        ${worksrcpath}/src/frontend/add_missing_messages.py \
+                        ${worksrcpath}/src/frontend/strip_redundant_parser_state.py
+    reinplace "s|python3|${configure.python}|" \
+                        ${worksrcpath}/test/integration/cli-args/debug-generation.t/run.t
+}
+
+depends_test-append     port:ocaml-bisect_ppx \
+                        port:ocaml-merlin \
+                        port:ocaml-ocamlformat \
+                        port:ocaml-ocp-indent \
+                        port:ocaml-patdiff \
+                        port:ocaml-utop
+
+ocaml.build_type        dune
+dune.packages           stanc
+
+test.run                yes

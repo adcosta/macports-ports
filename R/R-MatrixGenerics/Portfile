@@ -3,17 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github Bioconductor MatrixGenerics 74eab7d3c1bab6066501b18d0de515067ecea805
-version             1.13.0
+R.setup             bioconductor Bioconductor MatrixGenerics 1.16.0
 revision            0
+categories-append   bioconductor math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             Artistic-2
 description         S4 generic summary statistic functions that operate on matrix-like objects
 long_description    {*}${description}
-checksums           rmd160  d82bea776432a6594452e0710525d7fcb5a4cfba \
-                    sha256  ed5bfd914bd0df57eea751fdee06740874f89e5110af76e0bda0f3e714a0ae24 \
-                    size    34945
+checksums           rmd160  c544dc675721de53aa97076c8d4a249195de8758 \
+                    sha256  ccff61558f067237b96ea71509e4ca95ad465000294067eb21101892d02df6e4 \
+                    size    31669
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_lib-append  port:R-matrixStats
 

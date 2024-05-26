@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github insightsengineering formatters 0.5.0 v
-revision            0
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+R.setup             github insightsengineering formatters 0.5.6 v
+revision            1
+maintainers         nomaintainer
 license             Apache-2
 description         ASCII formatting for values and tables
 long_description    {*}${description}
 homepage            https://insightsengineering.github.io/formatters/main
-checksums           rmd160  de3c9da1a8afb5c59f097c29287c6f9ea5d2eb29 \
-                    sha256  5788fc2829776741512ca98a8ade54411d74c98ccf36b5a8e395e38759da4b65 \
-                    size    2581028
+checksums           rmd160  8bbcc250238b4404f654d88fe8ef3294a8e90cb4 \
+                    sha256  6d52c9ee26e9712cb3abee5e129dd0e23dbb0975d840c6c0045b2c011da35b88 \
+                    size    4413757
 supported_archs     noarch
 
 depends_lib-append  port:R-checkmate \
@@ -22,8 +22,11 @@ depends_test-append port:R-dplyr \
                     port:R-gt \
                     port:R-huxtable \
                     port:R-knitr \
+                    port:R-lifecycle \
                     port:R-r2rtf \
                     port:R-rmarkdown \
-                    port:R-testthat
+                    port:R-stringi \
+                    port:R-testthat \
+                    port:R-withr
 
 test.run            yes

@@ -5,8 +5,8 @@ PortGroup           cmake 1.1
 PortGroup           github 1.0
 PortGroup           boost 1.0
 
-github.setup        kpeeters cadabra2 2.4.3.2
-revision            1
+github.setup        kpeeters cadabra2 2.4.5.7
+revision            0
 
 categories          math
 platforms           darwin
@@ -25,14 +25,17 @@ long_description    Cadabra is a computer algebra system for the \
 
 homepage            https://cadabra.science/index.html
 
-checksums           rmd160  b7f670693d1bc2e76964a4a4caf790a7ae3d04a7 \
-                    sha256  8cce723f7f95a0072ba5292bdce320cde46af1cd91123f286f06cc107321d1f4 \
-                    size    25161710
+checksums           rmd160  a507bfed677970dfd93ed7cd2d7a8c979c1aedd8 \
+                    sha256  8080ea2c0dab05999488c2913e16b65f0d5f5ee9c4ad97dde9bd77d81e3f40f3 \
+                    size    26833709
 
 compiler.cxx_standard 2017
 
-set python.version  311
+patchfiles          patch-frontend-gtkmm-CMakeLists.txt.diff
+
+set python.version  312
 set python.branch   [string index ${python.version} 0].[string range ${python.version} 1 end]
+set python.prefix   ${frameworks_dir}/Python.framework/Versions/${python.branch}
 
 depends_build-append \
                     port:pkgconfig \
@@ -42,6 +45,7 @@ depends_lib-append  port:adwaita-icon-theme \
                     port:dvipng \
                     port:gmp \
                     port:gtkmm3 \
+                    port:hicolor-icon-theme \
                     port:pcre \
                     port:py${python.version}-sympy \
                     port:sqlite3 \
@@ -50,15 +54,17 @@ depends_lib-append  port:adwaita-icon-theme \
                     port:texlive-latex-recommended
 
 configure.args      -DENABLE_MATHEMATICA=OFF \
+                    -DPYBIND11_PYTHON_VERSION=${python.branch} \
                     -DSQLITE3_INCLUDE_DIR=${prefix}/include
 
 post-destroot {
-    ln ${destroot}${prefix}/lib/python${python.branch}/site-packages/cadabra2.cpython-${python.version}-darwin.so \
+    ln ${destroot}${python.prefix}/lib/python${python.branch}/site-packages/cadabra2.cpython-${python.version}-darwin.so \
             ${destroot}${prefix}/lib/cadabra2.cpython-${python.version}-darwin.so
 }
 
 post-activate {
     system "${prefix}/bin/texhash"
+    system "gtk-update-icon-cache-3.0 ${prefix}/share/icons/hicolor"
 }
 
 variant texmacs description {install TeXmacs front end} {

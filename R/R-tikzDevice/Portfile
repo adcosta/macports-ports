@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github daqana tikzDevice 0.12.4 v
+# Revert to GitHub once updated there.
+R.setup             cran daqana tikzDevice 0.12.6
 revision            1
 categories-append   graphics
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+maintainers         nomaintainer
+license             GPL-2+
 description         R graphics output in LaTeX format
 long_description    {*}${description}
-checksums           rmd160  f22cf0b61718d10decdff41d1c74297701b5a174 \
-                    sha256  26a7746689f7609f80575eafdc2eacd9442711ce8009aa7a2ab913e7645e7089 \
-                    size    2180131
+checksums           rmd160  c96a82bd357e07af6da1fe469df3b610e3241b84 \
+                    sha256  04db2163ca9acb640161fb84dfc492f16abc6f5acc0c64782c197457e15004ac \
+                    size    1461201
 
 depends_lib-append  port:R-filehash \
                     port:R-png

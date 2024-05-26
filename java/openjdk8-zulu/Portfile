@@ -5,7 +5,7 @@ PortSystem       1.0
 name             openjdk8-zulu
 categories       java devel
 maintainers      {breun.nl:nils @breun} openmaintainer
-platforms        darwin
+platforms        {darwin any}
 # This port uses prebuilt binaries; 'NoMirror' makes sure MacPorts doesn't mirror/distribute these third-party binaries
 license          GPL-2 NoMirror
 # This port uses prebuilt binaries for a particular architecture; they are not universal binaries
@@ -14,10 +14,10 @@ universal_variant no
 supported_archs  x86_64 arm64
 
 # https://www.azul.com/downloads/?version=java-8-lts&os=macos&package=jdk#zulu
-version      8.70.0.23
+version      8.78.0.19
 revision     0
 
-set openjdk_version 8.0.372
+set openjdk_version 8.0.412
 
 description  Azul Zulu Community OpenJDK 8 (Long Term Support)
 long_description Azul® Zulu® is a Java Development Kit (JDK), and a compliant implementation of the Java Standard Edition (SE)\
@@ -29,14 +29,14 @@ master_sites https://cdn.azul.com/zulu/bin/
 
 if {${configure.build_arch} eq "x86_64"} {
     distname     zulu${version}-ca-jdk${openjdk_version}-macosx_x64
-    checksums    rmd160  af0d52375aa27dcf9400ca03a668b7a1eed2a730 \
-                 sha256  d35a7bedfb3dde69701d27b7df6100143c5617d5fee746acb3d845311a9573af \
-                 size    106571859
+    checksums    rmd160  c395ef28a9cef9236d9adac2b6bd9d96f7707011 \
+                 sha256  2bfa0506196962bddb21a604eaa2b0b39eaf3383d0bdad08bdbe7f42f25d8928 \
+                 size    106646303
 } elseif {${configure.build_arch} eq "arm64"} {
     distname     zulu${version}-ca-jdk${openjdk_version}-macosx_aarch64
-    checksums    rmd160  aab341da1f3dfe79742aea393a6dcabe97db9a4f \
-                 sha256  ae68ae6a93d1d9952e5ff096f6612eea486846a8506e30dec3dd3b3e52b9d005 \
-                 size    104474376
+    checksums    rmd160  da308c2de7d9e9b85b1b4be5ea46114b1633ad93 \
+                 sha256  35bc35808379400e4a70e1f7ee379778881799b93c2cc9fe1ae515c03c2fb057 \
+                 size    104517359
 }
 
 worksrcdir   ${distname}/zulu-8.jdk
@@ -90,17 +90,21 @@ test.args   -version
 # macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, which is not under ${prefix}.
 destroot.violate_mtree yes
 
-set target /Library/Java/JavaVirtualMachines/${name}
-set destroot_target ${destroot}${target}
+set jvms /Library/Java/JavaVirtualMachines
+set jdk ${jvms}/${name}
 
 destroot {
-    xinstall -m 755 -d ${destroot_target}
-    copy ${worksrcpath}/Contents ${destroot_target}
+    xinstall -m 755 -d ${destroot}${prefix}${jdk}
+    copy ${worksrcpath}/Contents ${destroot}${prefix}${jdk}
+
+    # macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, so let's create a symlink there
+    xinstall -m 755 -d ${destroot}${jvms}
+    ln -s ${prefix}${jdk} ${destroot}${jdk}
 }
 
 notes "
 If you have more than one JDK installed you can make ${name} the default\
 by adding the following line to your shell profile:
 
-    export JAVA_HOME=${target}/Contents/Home
+    export JAVA_HOME=${jdk}/Contents/Home
 "

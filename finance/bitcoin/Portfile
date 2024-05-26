@@ -12,9 +12,8 @@ legacysupport.use_mp_libcxx \
 
 name                    bitcoin
 categories              finance crypto
-version                 25.0
+version                 27.0
 revision                0
-platforms               darwin
 license                 MIT
 maintainers             {easieste @easye} yopmail.com:sami.laine openmaintainer
 description             server daemon and client user interface for a peer-to-peer digital currency
@@ -27,21 +26,19 @@ long_description        Bitcoin is a peer-to-peer digital currency. By peer-to-p
 homepage                https://bitcoincore.org/
 master_sites            ${homepage}bin/bitcoin-core-${version}/
 
-checksums               rmd160  3b63179e68400d23b5b60886ae7bd7642c60f433 \
-                        sha256  5df67cf42ca3b9a0c38cdafec5bbb517da5b58d251f32c8d2a47511f9be1ebc2 \
-                        size    12413133
+checksums               rmd160  1f1787c0008fe837621e67f0e067a6759912a570 \
+                        sha256  9c1ee651d3b157baccc3388be28b8cf3bfcefcd2493b943725ad6040ca6b146b \
+                        size    13082621
 
 depends_build           port:autoconf \
                         port:automake \
                         port:libtool \
                         port:pkgconfig \
-                        port:python311
+                        port:python312
 
 depends_lib             port:libevent \
                         port:miniupnpc \
                         port:zmq
-
-use_parallel_build      yes
 
 configure.cmd           ./autogen.sh && ./configure
 
@@ -58,7 +55,14 @@ configure.args          --disable-ccache \
                         --with-libs \
                         --with-boost=[boost::install_area]
 
-compiler.cxx_standard   2017
+compiler.cxx_standard   2020
+
+# pool.h:161:27: error: aligned allocation function
+# of type 'void *(std::size_t, std::align_val_t)'
+# is only available on macOS 10.13 or newer
+if {${os.platform} eq "darwin" && ${os.major} < 17} {
+    configure.cxxflags-append -fno-aligned-allocation
+}
 
 configure.args-append   --with-daemon=no
 configure.args-append   --with-gui=no
@@ -112,8 +116,12 @@ variant gui description {Build the Qt5 GUI} {
 }
 
 variant wallet description {Build with support for wallet} {
-    depends_lib-append port:sqlite3
+    depends_lib-append port:db48 \
+                       port:sqlite3
     configure.args-replace --enable-wallet=no --enable-wallet=yes
+    configure.env-append \
+        BDB_CFLAGS=-I${prefix}/include/db48 \
+        "BDB_LIBS=-L${prefix}/lib/db48 -ldb_cxx-4.8"
 }
 
 post-destroot {

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pooch
-version             1.7.0
+version             1.8.1
 revision            0
 license             BSD
 maintainers         {mps @Schamschula} openmaintainer
@@ -17,11 +17,11 @@ supported_archs     noarch
 platforms           {darwin any}
 homepage            https://github.com/fatiando/pooch
 
-checksums           rmd160  2450a07f8ea7fbcffa2461db2a98f16995d63c06 \
-                    sha256  f174a1041b6447f0eef8860f76d17f60ed2f857dc0efa387a7f08228af05d998 \
-                    size    57457
+checksums           rmd160  e2efc6fb223431628bd22352e5e4ab6cc746e135 \
+                    sha256  27ef63097dd9a6e4f9d2694f5cfbf2f0a5defa44fccafec08d601e731d746270 \
+                    size    59614
 
-python.versions     37 38 39 310 311
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
     python.pep517   yes
@@ -32,5 +32,6 @@ if {${name} ne ${subport}} {
 
     depends_lib     port:py${python.version}-appdirs \
                     port:py${python.version}-requests \
-                    port:py${python.version}-packaging
+                    port:py${python.version}-packaging \
+                    port:py${python.version}-tqdm
 }

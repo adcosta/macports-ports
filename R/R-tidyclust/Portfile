@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github tidymodels tidyclust 0.1.2 v
+R.setup             github tidymodels tidyclust 0.2.1 v
 revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
@@ -11,9 +11,9 @@ description         Common API to clustering
 long_description    A common interface to specifying clustering models, in the same style as parsnip. \
                     Creates unified interface across different functions and computational engines.
 homepage            https://tidyclust.tidymodels.org
-checksums           rmd160  f8e83a137ae7d5a5f4a06727a3e66504a08b75ad \
-                    sha256  ca0b41acdb16926a76d27721e30d2cb3d093d1e0619a3f6d48892203fb6a7014 \
-                    size    499821
+checksums           rmd160  6d765d13830ea33ad5f1e3f2d4d9d796d878028f \
+                    sha256  82973e354fc9a4dbc6935035bb0e58d6715d7acefd974118f501dc0dd344bca8 \
+                    size    529482
 supported_archs     noarch
 
 depends_lib-append  port:R-cli \
@@ -34,3 +34,17 @@ depends_lib-append  port:R-cli \
                     port:R-tidyr \
                     port:R-tune \
                     port:R-vctrs
+
+depends_test-append port:R-ClusterR \
+                    port:R-clustMixType \
+                    port:R-covr \
+                    port:R-klaR \
+                    port:R-knitr \
+                    port:R-modeldata \
+                    port:R-RcppHungarian \
+                    port:R-recipes \
+                    port:R-rmarkdown \
+                    port:R-testthat \
+                    port:R-workflows
+
+test.run            yes

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-telethon
-version             1.27.0
+version             1.34.0
 revision            0
 python.rootname     Telethon
 license             MIT
@@ -19,11 +19,11 @@ long_description    Telethon is an asyncio Python 3 MTProto library to \
 
 homepage            https://github.com/LonamiWebs/Telethon
 
-python.versions     38 39 310
+python.versions     38 39 310 311 312
 
-checksums           rmd160  a0c0087443c4d0b33b06d7755cb11aa0996e0fdf \
-                    sha256  21fb26051adc521a4a00a157e6f4a9e87711940ac3504414f96e66056918ef61 \
-                    size    532156
+checksums           rmd160  c2921e3c3a2aab765aaeed4958114dcbebcbd991 \
+                    sha256  55290809a30081fa0bb5052abb7547cbb25d7fbca94f32f13c147504d521804f \
+                    size    576927
 
 if {${name} ne ${subport}} {
     depends_build-append  \

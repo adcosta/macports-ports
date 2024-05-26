@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           github  1.0
 
-github.setup        nvie git-toolbelt 1.8.4 v
+github.setup        nvie git-toolbelt 1.9.2 v
 github.tarball_from archive
 revision            0
 
@@ -20,14 +20,22 @@ license             BSD
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 supported_archs     noarch
+platforms           any
 
 checksums           ${distname}${extract.suffix} \
-                    rmd160  f35fc107b823656d5db272e23cdbb36d99b6c6a3 \
-                    sha256  a703d964775b978564735471c6d004611915c5cf5bdbd4f49e546aff7fb0c418 \
-                    size    139990
+                    rmd160  1dee627b8ccfc7474b40b7386d18f8db6ae545cf \
+                    sha256  1bd4f01a4ad4a580ac514e298bae4d37887da27e9d295375aa645f32e30f7a33 \
+                    size    140517
 
 depends_run-append  path:bin/git:git \
-                    port:fzf
+                    port:fzf \
+                    port:realpath
+
+if {${os.platform} eq "darwin" && ${os.major} < 17} {
+    # fzf is not building on older macOS because of older Go.
+    # Do without it on those platforms.
+    depends_run-delete port:fzf
+}
 
 use_configure       no
 

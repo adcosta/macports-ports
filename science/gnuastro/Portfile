@@ -1,9 +1,10 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem              1.0
+PortGroup               compiler_blacklist_versions 1.0
 
 name                    gnuastro
-version                 0.20
+version                 0.22
 revision                0
 categories              science
 license                 GPL-3+
@@ -15,15 +16,15 @@ long_description        The GNU Astronomy Utilities (Gnuastro) is an official GN
 homepage                https://www.gnu.org/software/gnuastro/
 master_sites            gnu
 
-checksums               rmd160  77750b89a58e33332b5190b553ab068c1ad86d55 \
-                        sha256  924b8bb6ac1cd15163ddadc3a9bfdb8b88cac7b5099d5f821ecedbc3f0b069cd \
-                        size    7318098
+checksums               rmd160  4a2cbf8c98dea640cf482c0676450af09748f56d \
+                        sha256  7fd7f16a06bde55aed96282090cd922135beea902369e5af814389eab9cc7308 \
+                        size    7722836
 
 depends_build-append    port:libtool
 
 depends_lib-append      port:cfitsio \
                         port:gsl \
-                        port:libgit2 \
+                        path:lib/pkgconfig/libgit2.pc:libgit2 \
                         port:openjpeg \
                         port:tiff \
                         port:wcslib \
@@ -38,6 +39,10 @@ patchfiles-append       patch-buildjobs.diff
 post-patch {
     reinplace "s|@MP_BUILDJOBS@|${buildmakejobs}|" ${worksrcpath}/configure
 }
+
+# https://trac.macports.org/ticket/68977
+compiler.blacklist-append \
+                        *gcc-4.0 *gcc-4.2 {clang < 400}
 
 # https://trac.macports.org/ticket/66254
 platform darwin powerpc {

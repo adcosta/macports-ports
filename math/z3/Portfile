@@ -20,11 +20,12 @@ if {${subport} eq "${name}-fstar"} {
                         sha256  4e8e232887ddfa643adb6a30dcd3743cb2fa6591735fbd302b49f7028cdc0363 \
                         size    4177051
 } else {
-    github.setup        Z3Prover z3 4.12.2 z3-
+    github.setup        Z3Prover z3 4.12.6 z3-
     revision            0
-    checksums           rmd160  c82388de224e325c6836fb4dc65dfcab0c01e5ab \
-                        sha256  9f58f3710bd2094085951a75791550f547903d75fe7e2fcb373c5f03fc761b8f \
-                        size    5401038
+    checksums           rmd160  ea2d648b1e178130ef8bf11cc416d618584e32f6 \
+                        sha256  9e46a1260ea26c441a1ad6faf378bf911ee9ffd110868867b4b2f2e3c7d2200e \
+                        size    5492517
+    github.tarball_from archive
 }
 
 platforms           darwin freebsd
@@ -33,9 +34,9 @@ license             MIT
 github.tarball_from archive
 
 if {[vercmp ${version} "4.8.9"] >= 0} {
-    patchfiles          libz3-static.diff
+    patchfiles-append   libz3-static.diff
 } else {
-    patchfiles          libz3-static-4.8.5.diff
+    patchfiles-append   libz3-static-4.8.5.diff
 }
 
 worksrcdir          ${name}-${github.tag_prefix}${version}
@@ -89,7 +90,7 @@ variant debug description {Enable the debug build configuration} {
 # Options not shared with our language-binding subports
 if {${subport} eq ${name} || ${subport} eq "${name}-fstar"} {
 
-    set py_ver              3.11
+    set py_ver              3.12
     set py_ver_nodot        [string map {. {}} ${py_ver}]
 
     depends_build-append    port:python${py_ver_nodot} \
@@ -203,7 +204,7 @@ if {${subport} eq ${name} || ${subport} eq "${name}-fstar"} {
         that this will introduce non-negligible runtime overhead.
 
         To generate profile data, specify an output path by setting the\
-        LLVM_PROFILE_FILE environmental variable before executing z3.
+        LLVM_PROFILE_FILE environment variable before executing z3.
         "
     }
 
@@ -325,7 +326,7 @@ subport ${name}-fstar {
     }
 }
 
-set pyversions {37 38 39 310 311}
+set pyversions {38 39 310 311 312}
 
 # Create a top-level Python binding metaport
 subport py-${name} {
@@ -333,6 +334,7 @@ subport py-${name} {
     PortGroup   stub   1.0
 
     supported_archs     noarch
+    platforms           any
     categories-append   python
 
     description         Python bindings for the Z3 theorem prover
@@ -355,6 +357,8 @@ foreach v ${pyversions} {
 
         python.version          ${v}
 
+        supported_archs         noarch
+        platforms               {darwin any}
         categories-append       python
 
         description             Python ${python.branch} bindings for the Z3 theorem prover
@@ -366,7 +370,7 @@ foreach v ${pyversions} {
                                 port:py${v}-setuptools
 
         use_configure           yes
-        configure.args-append   -DPYTHON_EXECUTABLE=${python.bin} \
+        configure.args-append   -DPython3_EXECUTABLE=${python.bin} \
                                 -DZ3_BUILD_PYTHON_BINDINGS=ON \
                                 -DZ3_INSTALL_PYTHON_BINDINGS=ON
 
@@ -378,7 +382,7 @@ foreach v ${pyversions} {
 
         post-destroot {
             # The python module looks for libz3 in its package path
-            ln -sf "${prefix}/lib/libz3.dylib" "${destroot}/${python.pkgd}/z3/"
+            ln -sf "${prefix}/lib/libz3.dylib" "${destroot}${python.pkgd}/z3/"
         }
 
         build.target            src/api/python/all

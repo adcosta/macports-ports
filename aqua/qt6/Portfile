@@ -3,6 +3,7 @@
 PortSystem                  1.0
 PortGroup                   active_variants 1.1
 PortGroup                   qt6_info 1.0
+PortGroup                   compiler_blacklist_versions 1.0
 
 name                        qt6
 
@@ -25,6 +26,14 @@ set qt_major                [lindex [split ${version} .] 0]
 # see https://www.qt.io/blog/qt-6.0-released
 compiler.cxx_standard       2017
 
+# qcompilerdetection.h emits:
+#     error: "Unsupported Apple Clang version"
+# which also means Q_CC_CLANG will not be set.
+# That causes the check for __has_feature(cxx_unicode_literals) to be skipped, causing
+#     error: "Qt6 requires Unicode string support in both the compiler and the standard library"
+# to be emitted, even when the unsupported Apple Clang version does support Unicode string literals.
+compiler.blacklist-append   {clang < 1100}
+
 master_sites                https://download.qt.io/official_releases/qt/${branch}/${version}/submodules
 # file sizes are significantly smaller using xz
 use_xz                      yes
@@ -39,7 +48,7 @@ foreach {qt_base qt_info} ${qt6::available_versions} {
 }
 
 # MacPorts LLVM/Clang version to use when required
-set llvm_version            16
+set llvm_version            17
 
 # MacPorts Python branch & version to use when required
 set python_branch           3.11
@@ -97,7 +106,7 @@ array set modules {
          "Qt OpenGL" "Qt Platform Headers" "Qt Print Support" "Qt XML"}
         ""
         "variant overrides: "
-        "revision 1"
+        "revision 6"
         "License: "
     }
     qtsvg {
@@ -112,7 +121,7 @@ array set modules {
         {"Qt SVG"}
         ""
         "variant overrides: "
-        "revision 0"
+        "revision 1"
         "License: "
     }
     qtdeclarative {
@@ -142,7 +151,7 @@ array set modules {
         {"Qt Multimedia"}
         ""
         "variant overrides: "
-        "revision 0"
+        "revision 1"
         "License: "
     }
     qttools {
@@ -157,7 +166,7 @@ array set modules {
         {"Qt Designer" "Qt Help" "Qt UI Tools"}
         ""
         "variant overrides: "
-        "revision 0"
+        "revision 1"
         "License: "
     }
     qttranslations {
@@ -166,13 +175,13 @@ array set modules {
             79e56b7800d49649a8a8010818538c367a829e0b7a09d5f60bd3aecf5abe972c
             1466828
         }
+        "port:qt6-qttools"
         ""
         ""
-        "qttools"
         {"translation files"}
         ""
         "variant overrides: ~examples ~tests ~debug noarch ~docs"
-        "revision 0"
+        "revision 1"
         "License: "
     }
     qtdoc {
@@ -331,8 +340,8 @@ array set modules {
             55f85af736a1dc79a41b8d95014ba27d8fce0be44293a69e64fece7fa12b2925
             440562844
         }
-        "port:python${python_version} port:py${python_version}-html5lib"
-        "path:bin/node:nodejs16 port:re2 path:lib/pkgconfig/icu-uc.pc:icu port:webp \
+        "path:bin/node:nodejs20 port:python${python_version} port:py${python_version}-html5lib"
+        "port:re2 path:lib/pkgconfig/icu-uc.pc:icu port:webp \
             port:libopus path:lib/libavcodec.dylib:ffmpeg path:lib/pkgconfig/vpx.pc:libvpx \
             port:snappy path:lib/pkgconfig/glib-2.0.pc:glib2 port:zlib port:minizip port:libevent \
             port:libxml2 port:libxslt port:lcms2 port:libpng path:include/turbojpeg.h:libjpeg-turbo \
@@ -341,7 +350,7 @@ array set modules {
         {"Qt WebEngine Qt" "Qt PDF"}
         ""
         "variant overrides: "
-        "revision 2"
+        "revision 6"
         "License: "
     }
     qtwebview {
@@ -536,7 +545,7 @@ array set modules {
         {"Qt 5 Core Compatibility APIs"}
         "status = deprecated"
         "variant overrides: "
-        "revision 1"
+        "revision 2"
         "License: "
     }
     qtlanguageserver {
@@ -701,7 +710,7 @@ array set sql_plugins {
                     -DMySQL_LIBRARY=${prefix}/lib/mariadb-10.8/mysql/libmariadb.dylib
                 }
             }
-            mariadb10_9 {
+            mariadb10_7 {
                 "port:mariadb-10.7"
                 {
                     -DMySQL_INCLUDE_DIR=${prefix}/include/mariadb-10.7/mysql
@@ -733,7 +742,7 @@ array set sql_plugins {
                 "port:mysql8"
                 {
                     -DMySQL_INCLUDE_DIR=${prefix}/include/mysql8/mysql
-                    -DMySQL_LIBRARY=${prefix}/lib/mysql8/mysql/libmysqlclient.dylib
+                    -DMySQL_LIBRARY=${prefix}/lib/mysql8/lib/libmysqlclient.dylib
                 }
             }
         }
@@ -788,7 +797,7 @@ foreach {module module_info} [array get modules] {
 
         if { [lsearch -exact [lindex ${module_info} 6] "noarch"] != -1 } {
             supported_archs                 noarch
-            universal_variant               no
+            platforms                       any
         }
 
         if { [lsearch -exact [lindex ${module_info} 6] "~debug"] == -1 } {
@@ -834,6 +843,12 @@ foreach {module module_info} [array get modules] {
 
         depends_build-append                port:${name}-qttools \
                                             port:${name}-sqlite-plugin
+
+        # have the same build dependencies
+        foreach deps [lindex ${module_info} 1] {
+            depends_build-append [subst ${deps}]
+        }
+
         depends_lib-append                  port:${name}-${module}
 
         description                         Documentation for Qt Tool Kit ${qt_major}
@@ -850,7 +865,7 @@ foreach {module module_info} [array get modules] {
         long_description                    Documentation for Qt Tool Kit ${qt_major}: ${modules_provided_join}
 
         supported_archs                     noarch
-        universal_variant                   no
+        platforms                           any
     }
 }
 
@@ -929,10 +944,7 @@ foreach {driver driver_info} [array get sql_plugins] {
 # Special Cases
 ###############################################################################
 subport ${name}-qtdeclarative {
-    PortGroup                       compiler_blacklist_versions 1.0
-
-    # Xcode 10.3 compiler segfaults
-    compiler.blacklist-append       {clang < 1100}
+    patchfiles-append               patch-qtdeclarative-xcode11.3.diff
 }
 
 subport ${name}-qttools {
@@ -948,7 +960,7 @@ subport ${name}-qttools {
     }
 }
 
-subport ${name}-qtwebengine {
+if { ${subport} in [list "${name}-qtwebengine" "${name}-qtwebengine-docs"] } {
     configure.env-append            PYTHON3_PATH=${prefix}/Library/Frameworks/Python.framework/Versions/${python_branch}/bin
     # in ${worksrcpath}, `${qt6.dir}/bin/qt-configure-module . -help` and `${qt6.dir}/bin/qt-configure-module . -list-features`
     # it is not clear why, but icu and ffmpeg support must be added manually
@@ -965,30 +977,81 @@ subport ${name}-qtwebengine {
     use_xcode                       yes
 }
 
+subport ${name}-qtwebengine {
+    # manually install icudtl.dat
+    post-destroot {
+        xinstall -m 644 ${worksrcpath}/src/3rdparty/chromium/third_party/icu/common/icudtl.dat \
+                        ${destroot}${qt6.dir}/lib/QtWebEngineCore.framework/Resources/
+    }
+}
+
 subport ${name}-qtmultimedia {
+    patchfiles-append               patch-qtmultimedia-macos_10.14_sdk.diff
+
     # GStreamer will be found if gstreamer1 and gstreamer1-gst-plugins-base are installed
     # however, an error will ensue since the GStreamer support requires "Linux DMA buffer support"
     # see
     #     https://code.qt.io/cgit/qt/qtmultimedia.git/tree/src/plugins/multimedia/gstreamer/CMakeLists.txt
     #     https://code.qt.io/cgit/qt/qtmultimedia.git/tree/src/multimedia/configure.cmake
     configure.args-append           -no-gstreamer
+
+    # std::unary_function removed in Xcode clang 15
+    patchfiles-append patch-qtmultimedia_no_std_unary_function.diff
 }
 
 subport ${name}-qt5compat {
     patchfiles-append               patch-qt5compat-find_libs.diff
 }
 
+subport ${name}-qtsvg {
+    patchfiles-append               CVE-2023-32573-qtsvg.diff
+}
+
 subport ${name}-qtspeech {
+    patchfiles-append               patch-qtspeech-macos_10.14_sdk.diff
+
     # ALSA is Linux only (https://www.alsa-project.org/wiki/Main_Page)
     # Speech Dispatcher *might* be made to work on macOS (https://freebsoft.org/speechd)
     configure.args-append           -no-flite-alsa \
                                     -no-speechd
 }
 
+subport ${name}-qtpositioning {
+    patchfiles-append               patch-qtpositioning-macos_10.14_sdk.diff
+}
+
 if { ${subport} eq "${name}-qtbase" || ${subport} eq "${name}-qtbase-docs" } {
+    patchfiles-append {*}{
+                                    CVE-2023-32762-qtbase.diff
+                                    CVE-2023-32763-qtbase.diff
+                                    CVE-2023-33285-qtbase.diff
+                                    CVE-2023-37369-qtbase.diff
+                                    CVE-2023-38197-qtbase.diff
+                                    CVE-2023-51714-qtbase.diff
+                                    CVE-2024-25580-qtbase.diff
+    }
+
     # allow building with macOS 10.14 SDK
     # see https://trac.macports.org/ticket/64345
     patchfiles-append               patch-qtbase-macos_10.14_sdk.diff
+
+    # error: no matching function for call to '_mm256_maskz_cvtps_ph'
+    # note: candidate function not viable: requires 2 arguments, but 3 were provided
+    # see https://trac.macports.org/ticket/67802
+    patchfiles-append               patch-qtbase-intel_intrinsics.diff
+
+    # see https://trac.macports.org/ticket/68204
+    patchfiles-append               qtbase-qmake-xcode-15.patch
+
+    # see https://trac.macports.org/ticket/67980
+    patchfiles-append               patch-qtbase-memory_resource.diff
+
+    # Fixes deploying application libraries with .so extension.
+    # glib gio modules, this also applies to gstreamer since macports
+    # currently uses an older version of gstreamer which uses .so
+    # extensions for plugins.
+    # see https://codereview.qt-project.org/c/qt/qtbase/+/507393
+    patchfiles-append               patch-qtbase-macdeployqt.diff
 
     configure.pre_args-replace      --prefix=${prefix} \
                                     "-prefix ${qt6.dir}"
@@ -1122,6 +1185,19 @@ subport ${name}-qtbase {
                                     ${destroot}${qt6.dir}/bin/qt-cmake
         reinplace                   "s|${prefix}/bin/cmake|/Applications/CMake.app/Contents/bin/cmake|g" \
                                     ${destroot}${qt6.dir}/bin/qt-cmake-private
+
+        if { "${qt6.dir}" ne "${prefix}" } {
+            # Add dummy cmake find modules that forward to the real ones
+            file mkdir "${destroot}${prefix}/lib/cmake/Qt6"
+            foreach configfile [list "Qt6Config.cmake" "Qt6ConfigVersion.cmake"] {
+                set fd [open "${destroot}${prefix}/lib/cmake/Qt6/${configfile}" "w"]
+                puts $fd "set(_PREFIX_PATH_BAK \${CMAKE_PREFIX_PATH})"
+                puts $fd "list(APPEND CMAKE_PREFIX_PATH \"${qt6.dir}\")"
+                puts $fd "include(\"${qt6.dir}/lib/cmake/Qt6/${configfile}\")"
+                puts $fd "set(CMAKE_PREFIX_PATH \${_PREFIX_PATH_BAK})"
+                close $fd
+            }
+        }
     }
 
     # Qt builds part of the system using environment provided by MacPorts.
@@ -1284,8 +1360,8 @@ subport ${name} {
     distfiles
     use_configure                   no
     supported_archs                 noarch
+    platforms                       any
     installs_libs                   no
-    universal_variant               no
     test.run                        no
     depends_extract
     depends_build

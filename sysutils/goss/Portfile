@@ -3,9 +3,12 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/aelsabbahy/goss 0.3.20 v
+go.setup            github.com/goss-org/goss 0.4.6 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
+
+homepage            https://goss.rocks
 
 description         Quick and Easy server testing/validation
 
@@ -22,12 +25,9 @@ license             Apache-2
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  0ef9150f5d0bd07c90e38558723ccbdbdc46acf8 \
-                    sha256  5330d62826261533c8b1474799d9bc932fd50977e6f5a193b72244e0aaaf8946 \
-                    size    126167
-
-# Allow Go to download dependencies during build time.
-build.env-delete    GO111MODULE=off GOPROXY=off
+checksums           rmd160  e0eeb85dc32acb1c75d64b60aad715d58c199282 \
+                    sha256  94eacbb20e5a0be85c67ca845eeaee07ee6c20404f07f5e30c9b5bd478c08ecf \
+                    size    147553
 
 build.pre_args-append \
                     -ldflags \" \

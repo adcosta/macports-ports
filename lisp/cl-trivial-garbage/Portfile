@@ -4,19 +4,21 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           common_lisp 1.0
 
-github.setup        trivial-garbage trivial-garbage b3af9c0c25d4d4c271545f1420e5ea5d1c892427
+github.setup        trivial-garbage trivial-garbage 3474f6414b73d4e3aa2d5c53080f4247a34f6380
 name                cl-trivial-garbage
-version             20211229
+version             20231018
 revision            0
 
-checksums           rmd160  b86f4b7ea17da0750ffab1dd812b046e0e820320 \
-                    sha256  e9ba9ab87dd30c7313ea406c6b6c3e4385a9a5790f2a21f161fcdbe23ce5fd2d \
-                    size    11112
+checksums           rmd160  99c137635aeb97b5c95350174a241397110e3207 \
+                    sha256  d260dec204e84da4915d5bea74eb3c4c05ddfb7bf0e3dbb14ee526887fde554f \
+                    size    11115
 
 categories-append   devel
 maintainers         {@catap korins.ky:kirill} openmaintainer
 license             BSD
 
 description         Portable GC-related APIs for Common Lisp.
+
+depends_lib-append  port:cl-rt
 
 long_description    {*}${description}

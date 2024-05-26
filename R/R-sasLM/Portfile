@@ -1,0 +1,20 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran cran sasLM 0.10.3
+revision            0
+categories-append   math
+maintainers         nomaintainer
+license             GPL-3
+description         SAS Linear Model
+long_description    {*}${description}
+checksums           rmd160  4485f709c44a3d9fd50e9539f959d0aec7fc78d8 \
+                    sha256  53f53ac28069dc5607b69e621c57626ced3247a9372c58201f3972b56d123435 \
+                    size    836222
+supported_archs     noarch
+
+depends_lib-append  port:R-mvtnorm
+
+test.run            yes

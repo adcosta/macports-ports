@@ -3,22 +3,24 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github tidymodels tune 1.1.1 v
+R.setup             github tidymodels tune 1.2.1 v
 revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
 description         Tidy tuning tools
 long_description    {*}${description}
 homepage            https://tune.tidymodels.org
-checksums           rmd160  ee153fd9488ed35587f5ccea45b49fa5c08a5658 \
-                    sha256  a804afe87c99ea4080ad1fc69d377a08f0b2865adf6d0c11026a90a60af84d57 \
-                    size    620177
+checksums           rmd160  833bf33c5c658e953caadf396b9b8ee8f5db6c5f \
+                    sha256  fc82e0fa3fd287e6d80f5100d970121a83e1b6773465ddcd8787eb816ffca22b \
+                    size    898209
 supported_archs     noarch
 
 depends_lib-append  port:R-cli \
                     port:R-dials \
+                    port:R-doFuture \
                     port:R-dplyr \
                     port:R-foreach \
+                    port:R-future \
                     port:R-generics \
                     port:R-ggplot2 \
                     port:R-glue \
@@ -38,13 +40,14 @@ depends_lib-append  port:R-cli \
                     port:R-workflows \
                     port:R-yardstick
 
-patchfiles          patch-no-c50.diff
-
-depends_test-append port:R-covr \
+depends_test-append port:R-C50 \
+                    port:R-censored \
+                    port:R-covr \
                     port:R-kernlab \
                     port:R-kknn \
                     port:R-knitr \
                     port:R-modeldata \
+                    port:R-scales \
                     port:R-spelling \
                     port:R-testthat \
                     port:R-xgboost \

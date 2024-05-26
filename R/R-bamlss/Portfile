@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran GatesLab bamlss 1.2-0
+R.setup             cran Nikolaus.Umlauf bamlss 1.2-4
 revision            0
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,15 +11,41 @@ license             {GPL-2 GPL-3}
 description         Bayesian additive models for location, scale and shape (and beyond)
 long_description    {*}${description}
 homepage            http://www.bamlss.org
-checksums           rmd160  62dcbeff53f224d076122521aea607de1731a806 \
-                    sha256  6a0b95643a66b76bbb948ea4d7c1084314b37409f942da74ff21b6dd0f706a97 \
-                    size    2827358
+checksums           rmd160  a8a5375c8ab7453d014b9177da00ba42d252ac9a \
+                    sha256  08d6cf53d3cc18eda73645a42186eb8b73a045782698e9823646253b78453ddf \
+                    size    1531040
 
 depends_lib-append  port:R-coda \
                     port:R-colorspace \
+                    port:R-distributions3 \
                     port:R-Formula \
                     port:R-MBA \
                     port:R-mvtnorm \
                     port:R-sp
 
 compilers.setup     require_fortran
+
+# Some optional deps are omitted.
+depends_test-append port:R-BayesX \
+                    port:R-bit \
+                    port:R-ff \
+                    port:R-fields \
+                    port:R-gamlss \
+                    port:R-gamlss.dist \
+                    port:R-glmnet \
+                    port:R-glogis \
+                    port:R-interp \
+                    port:R-knitr \
+                    port:R-mapdata \
+                    port:R-maps \
+                    port:R-rjags \
+                    port:R-rmarkdown \
+                    port:R-scoringRules \
+                    port:R-sdPrior \
+                    port:R-sf \
+                    port:R-spdep \
+                    port:R-splines2 \
+                    port:R-statmod \
+                    port:R-zoo
+
+test.run            yes

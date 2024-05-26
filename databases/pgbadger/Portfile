@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           perl5 1.0
 
-github.setup        darold pgbadger 12.1 v
+github.setup        darold pgbadger 12.4 v
 revision            0
 categories          databases
 maintainers         nomaintainer
@@ -19,9 +19,9 @@ platforms           {darwin any}
 
 homepage            https://pgbadger.darold.net/
 
-checksums           rmd160  1343da052e8e1851a422637622c369b5a78fa148 \
-                    sha256  369f1af4b1ee909f81b6da6a8bc634bf88dc997cbf74942ea5ff931edabd0f98 \
-                    size    3041875
+checksums           rmd160  496d841820a758015a931227d45ad688e07ec209 \
+                    sha256  104fc75fe88753920dbc090dbe92bb91ad62d184a10399116dcf0f25e91646ca \
+                    size    4063087
 
 perl5.require_variant   yes
 perl5.conflict_variants yes

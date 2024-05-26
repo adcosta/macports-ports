@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/robinovitch61/wander 0.9.0 v
+go.setup            github.com/robinovitch61/wander 1.1.0 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
 
@@ -21,14 +22,12 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  0822cf050419e0f1a2db9e802de13bf8d36c18d4 \
-                    sha256  c6f848f4ad78ed6e572dd6697662699ebb68b0fb1fee7afd3182aa70777eb0e0 \
-                    size    1711515
+checksums           rmd160  a9c9f6864896f5bb9a99f31ce47727aed91b6202 \
+                    sha256  59a939205c133e3d4514dd958581b25b24ad83d72cc911d1a8b912423970cac0 \
+                    size    6547545
 
 build.pre_args-append \
-    -ldflags \" -X ${go.package}/cmd.Version=${github.tag_prefix}${version} \"
-
-build.env-delete    GO111MODULE=off GOPROXY=off
+    -ldflags \" -X ${go.package}/cmd.Version=${version} \"
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/

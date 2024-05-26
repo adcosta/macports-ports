@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/hairyhenderson/gomplate 3.11.5 v
+go.setup            github.com/hairyhenderson/gomplate 3.11.7 v
 go.package          github.com/hairyhenderson/gomplate/v3
 github.tarball_from archive
 revision            0
@@ -23,11 +23,11 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  fd69eaeb425493d31415c2c64eb6fcd81a71d0ca \
-                    sha256  49d68aef8c0358b5f292444f378bdf40361a71f26ab0292f5468c701367142d8 \
-                    size    561349
+checksums           rmd160  181a54374efed170b7df883cab63bbd0399d95b2 \
+                    sha256  1cae3270759babb959564b74f7e2538992751ca73f74c33f838c50168ac7caf3 \
+                    size    562135
 
-build.env-delete    GO111MODULE=off GOPROXY=off
+go.offline_build no
 
 build.cmd           make
 build.pre_args-append \

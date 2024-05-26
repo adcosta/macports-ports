@@ -4,11 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                buildbot
-version             3.7.0
+version             3.10.1
 revision            0
-checksums           rmd160  d55adc8d0d8cfa1421560901283675dc361156dd \
-                    sha256  60c2d3d523fa35e9c9214553bebe7c195aed3571f0f9b85f80ca59bb7adebc6e \
-                    size    2459736
+checksums           rmd160  e820a850aba7e6f43026a9bcb7207e9a38c1585f \
+                    sha256  fc9e235a821910e6d264ac34e086fa87802f26d7cdc33c28cd1bbe8057a4d439 \
+                    size    2520857
 
 categories          devel
 maintainers         {ryandesign @ryandesign} {rajdeep @rajdeepbh} {mojca @mojca} openmaintainer
@@ -26,6 +26,8 @@ long_description    Buildbot is a system to automate the compile/test \
 
 homepage            https://buildbot.net
 
+# Can't update to 311 due to missing dependency:
+# https://trac.macports.org/ticket/67849
 python.default_version \
                     310
 
@@ -34,7 +36,8 @@ if {${subport} eq ${name}} {
 depends_build-append \
                     port:py${python.version}-setuptools
 
-depends_run-append  port:py${python.version}-autobahn \
+depends_run-append  port:py${python.version}-alembic \
+                    port:py${python.version}-autobahn \
                     port:py${python.version}-dateutil \
                     port:py${python.version}-jinja2 \
                     port:py${python.version}-jwt \
@@ -85,27 +88,20 @@ post-destroot {
         ${destroot}${sharedir}
 }
 
-variant console requires www description {Include console view web UI plugin} {
+variant angularjs description {Include old AngularJS-based web UI server} {
     depends_run-append \
-                    port:buildbot-console-view
-}
-
-variant grid requires www description {Include grid view web UI plugin} {
-    depends_run-append \
-                    port:buildbot-grid-view
-}
-
-variant waterfall requires www description {Include waterfall view web UI plugin} {
-    depends_run-append \
-                    port:buildbot-waterfall-view
-}
-
-variant www description {Include web UI server} {
-    depends_run-append \
+                    port:buildbot-console-view \
+                    port:buildbot-grid-view \
+                    port:buildbot-waterfall-view \
                     port:buildbot-www
 }
 
-default_variants    +console +grid +waterfall +www
+variant react description {Include new React-based web UI server} {
+    depends_run-append \
+                    port:buildbot-www-react
+}
+
+default_variants    +angularjs +react
 
 notes "
 An example launchd plist file is available in ${sharedir}. After you have\

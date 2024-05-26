@@ -5,69 +5,48 @@ PortGroup           app 1.0
 PortGroup           java 1.0
 PortGroup           github 1.0
 
-github.setup        yairm210 Unciv 4.7.1
+github.setup        yairm210 Unciv 4.11.13
 name                unciv
 github.tarball_from archive
 revision            0
-# This package does not work with MacPorts gradle 8
-# See https://github.com/yairm210/Unciv/blob/master/gradle/wrapper/gradle-wrapper.properties
-set gradle_version  7.5
 
 categories          games
 platforms           any
 supported_archs     noarch
-license             MPL-2
+license             {MPL-2 LGPL-2.1+}
 maintainers         {@harens harens} openmaintainer
 
 description         Open-source Android/Desktop remake of Civ V
 long_description    An open source, mod-friendly Android and Desktop \
                     remake of Civ V, made with LibGDX.
 
-set main_distfile   ${distfiles}
-set gradle_distfile gradle-${gradle_version}-bin.zip
+checksums           rmd160  6b0daffdff298d48e3d4012e233dc3810597e8a3 \
+                    sha256  4bdfe2514009de45bad2b1bd1abbe59bab6b02e600d9ca2d0958ac034de90a68 \
+                    size    45223721
 
-extract.only        ${main_distfile}
-master_sites-append https://services.gradle.org/distributions/
-distfiles-append    ${gradle_distfile}
+depends_build-append \
+                    port:gradle
 
-checksums           ${main_distfile} \
-                    rmd160  e4d8fff59aae7a456542f9f4b6b9f89ddd0f9c3d \
-                    sha256  c9d8872aa2b965278e56dbbe1737b90faa66db111b93b5dc70ad83c08d941c07 \
-                    size    44467504 \
-                    ${gradle_distfile} \
-                    rmd160  9a359c0a1f37cbaef3feffbf6f822de21dc86601 \
-                    sha256  cb87f222c5585bd46838ad4db78463a5c5f3d336e5e2b98dc7c0c586527351c2 \
-                    size    120632782
-
-java.version        11+
-java.fallback       openjdk11
+java.version        17+
+java.fallback       openjdk17
 use_configure       no
 
-patchfiles          patch-remove-mobile-build.diff \
-                    patch-gradle-wrappers.diff
+patchfiles          patch-remove-mobile-build.diff
 
 post-extract {
     copy ${filespath}/gui.in ${workpath}/gui
     # Based off AUR: We cannot just get rid of the android/ folder becuase we need assets from it
     delete {*}[glob ${worksrcpath}/android/{res,src,build.gradle.kts,gradle.properties,project.properties}]
-    delete ${worksrcpath}/ios
 }
 
 set javadir         ${prefix}/share/java/${name}
 
-# From apple commander port, which also modifies gradle-wrapper.properties
-proc percent_encode {str} {
-    return [subst [regsub -all {[^a-zA-Z0-9/.~_-]} $str {%[format %02x [scan {&} %c]]}]]
-}
-
 post-patch {
     reinplace -W ${workpath} "s|@JAVADIR@|${javadir}|g;s|@ICON@|${applications_dir}/Unciv.app/Contents/Resources/Unciv.icns|g" gui
-    reinplace -W ${worksrcpath} "s|@DISTPATH@|[percent_encode ${distpath}]|g;s|@GRADLE_VERSION@|${gradle_version}|g" \
-        gradle/wrapper/gradle-wrapper.properties
 }
 
-build.env-append    GRADLE_USER_HOME=${workpath}/gradle
-build.cmd           ${worksrcpath}/gradlew
+build.env-append    GRADLE_USER_HOME=${worksrcpath}
+build.cmd           ${prefix}/bin/gradle
 build.target        desktop:dist
 build.args          --stacktrace --parallel --max-workers=${build.jobs}
 

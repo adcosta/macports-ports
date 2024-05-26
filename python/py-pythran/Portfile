@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pythran
-version             0.13.1
+version             0.16.0
 revision            0
 
 categories-append   devel
@@ -18,26 +18,18 @@ long_description    {*}${description}
 
 homepage            https://github.com/serge-sans-paille/pythran
 
-checksums           rmd160  b6d260dc112e1d5611ff25d3afe7b1ef4f4d755a \
-                    sha256  8aad08162f010e5425a7b254dd68d83311b430bb29f9252dce2eff3ba39497dd \
-                    size    4010788
+checksums           rmd160  68818733d5b73b2ef33d880c74b32f13617d583d \
+                    sha256  37dcf6aa9713b352b05004e3a20d14b3de7399bb0d7fe2027bd2b9e2833fe65a \
+                    size    2376932
 
-python.versions     37 38 39 310 311
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
-    depends_build-append \
-                    port:py${python.version}-setuptools
-
     depends_lib-append \
                     port:py${python.version}-beniget \
                     port:py${python.version}-gast \
                     port:py${python.version}-numpy \
                     port:py${python.version}-ply
-
-    if {${python.version} < 38} {
-        depends_lib-append \
-                    port:py${python.version}-importlib-metadata
-    }
 
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}

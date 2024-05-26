@@ -4,43 +4,23 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-pyglet
-version             2.0.7
+version             2.0.15
 revision            0
 categories-append   devel graphics
 license             BSD
+platforms           {darwin any}
+supported_archs     noarch
 
-python.versions     27 37 38 39 310 311
-python.pep517       yes
+python.versions     38 39 310 311 312
 python.pep517_backend flit
 
 maintainers         {stromnov @stromnov} openmaintainer
 
 description         A cross-platform windowing and multimedia library for Python.
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://pyglet.readthedocs.org/
 
-use_zip             yes
-
-checksums           rmd160  132f6eb78adc275cf4244f0a58b7c4bbfac068aa \
-                    sha256  9282f9497c1c0cdcb2cc39d8c05090cf686dedb9ebbef4a8de49af22a0ae0e8f \
-                    size    6509176
-
-if {${name} ne ${subport}} {
-    depends_build-append \
-                        port:py${python.version}-setuptools
-
-    if {${python.version} eq 27} {
-        version             1.4.10
-        revision            0
-        distname            ${python.rootname}-${version}
-        checksums           rmd160  7bb3f66eafcfafe00d83a2c556c699b0eb1d81e9 \
-                            sha256  c57e3e18246f45e4d6bb3d29e39d128d6e72b05f4212b10353adc3ba260ceb65 \
-                            size    5121084
-        python.pep517       no
-    } else {
-        patchfiles-append   patch-pyproject.toml.diff
-    }
-
-    livecheck.type      none
-}
+checksums           rmd160  98e02d8938fc67c460a3fe728d6d902969b74dbc \
+                    sha256  42085567cece0c7f1c14e36eef799938cbf528cfbb0150c484b984f3ff1aa771 \
+                    size    6408808

@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/shihanng/tfvar 0.7.0 v
+go.setup            github.com/shihanng/tfvar 0.8.1 v
 github.tarball_from archive
 revision            0
 
@@ -25,9 +25,9 @@ destroot {
 }
 
 checksums           ${distname}${extract.suffix} \
-                        rmd160  f7d43861974adb0a4017dbe9373f89b0c7bc0f33 \
-                        sha256  774c5856b1bbde165a705aa4f9e891e16924551fa5fe687b672fea0375600bda \
-                        size    42153
+                        rmd160  fd0e10dcc3c47c79b2786da42f5f50ba7b234506 \
+                        sha256  3f8060817df9ed73a70f98a1c34e77c935c0cc85d613746acd30485f7489c890 \
+                        size    549820
 
 go.vendors          honnef.co/go/tools \
                         repo    github.com/dominikh/go-tools \

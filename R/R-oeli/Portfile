@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran loelschlaeger oeli 0.5.0
+revision            0
+categories-append   devel
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             GPL-3+
+description         Utilities for developing data science software
+long_description    {*}${description}
+homepage            https://github.com/loelschlaeger/oeli
+checksums           rmd160  8fa5e9ea4baa5b2a61460c001b05e3092f0ef38b \
+                    sha256  5f5d4f3c52b8dfd016dba70565ca7fe3437c0d80c9c674d24ef5c5ac1299d76c \
+                    size    95664
+
+depends_lib-append  port:R-benchmarkme \
+                    port:R-checkmate \
+                    port:R-cli \
+                    port:R-ggplot2 \
+                    port:R-hexSticker \
+                    port:R-latex2exp \
+                    port:R-Rcpp \
+                    port:R-RcppArmadillo \
+                    port:R-rprojroot \
+                    port:R-showtext \
+                    port:R-sysfonts \
+                    port:R-testthat \
+                    port:R-usethis
+
+compilers.setup     require_fortran
+
+depends_test-append port:R-knitr \
+                    port:R-rmarkdown \
+                    port:R-testthat \
+                    port:R-xml2
+
+test.run            yes

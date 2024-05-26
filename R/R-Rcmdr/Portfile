@@ -3,18 +3,19 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran Rcmdr 2.8-0
-revision            0
+R.setup             cran r-project Rcmdr 2.9-2
+revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         R Commander
 long_description    A platform-independent basic-statistics GUI (graphical user interface) for R, \
                     based on the tcltk package.
 homepage            https://socialsciences.mcmaster.ca/jfox/Misc/Rcmdr
-checksums           rmd160  b470f54a9aeaf9ba357044b88b4ad6f07eab8b31 \
-                    sha256  df3e8614c177085e921597075bff83f0f02a90ca3a2146181cb1ad3188ba7bb4 \
-                    size    5646962
+checksums           rmd160  be261802b2439861167c19d07d02bbfdf9bcf490 \
+                    sha256  885729b643bb4f84f171f5e78134f8de2e5b06a3d3ca2877e9478afb702cac9c \
+                    size    8406345
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_lib-append  port:R-abind \
                     port:R-car \

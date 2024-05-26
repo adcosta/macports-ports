@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github wlandau crew 0.2.1
+R.setup             github wlandau crew 0.9.3
 revision            0
 categories-append   parallel
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,21 +11,26 @@ license             MIT
 description         Distributed worker launcher
 long_description    {*}${description}
 homepage            https://wlandau.github.io/crew
-checksums           rmd160  9684340780132d174182f87e194361d9d58f56cf \
-                    sha256  642ac58800eee19425b5cc4cc851593085bd4c2e71586715294534274e3d80ea \
-                    size    1118284
+checksums           rmd160  c53d30eae232d2185298d0b8ff7cf457acd7a356 \
+                    sha256  0b416ca3096e7a5ec96a3c16c6cb0a7eaf2879fe7daa44b87b9deafb0fe0e511 \
+                    size    965412
 supported_archs     noarch
+platforms           {darwin any}
+github.tarball_from archive
 
-depends_lib-append  port:R-getip \
+depends_lib-append  port:R-cli \
+                    port:R-data.table \
+                    port:R-getip \
+                    port:R-later \
                     port:R-mirai \
                     port:R-nanonext \
                     port:R-processx \
+                    port:R-promises \
                     port:R-ps \
                     port:R-R6 \
                     port:R-rlang \
                     port:R-tibble \
-                    port:R-tidyselect \
-                    port:R-withr
+                    port:R-tidyselect
 
 depends_test-append port:R-knitr \
                     port:R-markdown \

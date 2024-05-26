@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        mikf gallery-dl 1.25.5 v
+github.setup        mikf gallery-dl 1.26.9 v
 github.tarball_from releases
 distname            gallery_dl-${github.version}
 
@@ -12,9 +12,9 @@ categories          net
 maintainers         {@akierig fastmail.de:akierig} openmaintainer
 revision            0
 
-checksums           rmd160  b366bb039010d169b0ed63ffae9183d92a6ba6db \
-                    sha256  205cca54722e659d962e4db766acb1bf0c57178e5fd8efd502a43f8fdf31e1a8 \
-                    size    547516
+checksums           rmd160  88c30991aef6666780f9354305634bc3368806d3 \
+                    sha256  3e06dfa69c890a9805ba90509e0f0c50f8a16c39a2b780bec569d2cc2272bb99 \
+                    size    505390
 
 description         command-line program to download image galleries and \
                     collections from several image hosting sites
@@ -23,11 +23,11 @@ long_description    ${name} is a {*}${description}. It is a cross-platform tool 
                     capabilities.
 
 supported_archs     noarch
+platforms           {darwin any}
 license             GPL-2
-python.default_version 311
+python.default_version 312
 
-depends_build-append \
-                    port:py${python.version}-setuptools
+depends_build-append port:py${python.version}-setuptools
 
 depends_lib-append  port:py${python.version}-brotli \
                     port:py${python.version}-requests \
@@ -43,4 +43,9 @@ variant youtubedl description {Add youtube-dl dependency to enable video downloa
 
 variant ytdlp description {Add yt-dlp dependency to enable video downloads} {
      depends_run-append port:yt-dlp
+}
+
+post-destroot {
+    ln -s ${python.prefix}/share/man/man1/gallery-dl.1 ${destroot}${prefix}/share/man/man1/gallery-dl.1
+    ln -s ${python.prefix}/share/man/man5/gallery-dl.conf.5 ${destroot}${prefix}/share/man/man5/gallery-dl.conf.5
 }

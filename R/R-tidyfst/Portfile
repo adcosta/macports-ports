@@ -4,16 +4,16 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran hope-data-science tidyfst 1.7.6
+R.setup             cran hope-data-science tidyfst 1.7.8
 revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
 description         Toolkit of tidy data manipulation verbs with data.table as the backend
 long_description    {*}${description}
 homepage            https://hope-data-science.github.io/tidyfst
-checksums           rmd160  9f03e6767b61762c07baffe783b5cd1ed52ef5bf \
-                    sha256  a576c704ffd38bbc5794f4d856d6b9c6cfd064eaab1a5eef2ec50d85cae4e747 \
-                    size    407793
+checksums           rmd160  e9f6c68f9a9f8ecb7b4da1abb05e76ffd0d3139b \
+                    sha256  c2c160f77085df0634ea286fb771d0227aaa2c642e7f32c34aa1141da6b26f6e \
+                    size    404157
 supported_archs     noarch
 
 depends_lib-append  port:R-data.table \

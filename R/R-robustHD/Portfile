@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             github aalfons robustHD 0.8.0 v
+revision            1
+categories-append   math
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             GPL-2+
+description         Robust methods for high-dimensional data
+long_description    {*}${description}
+checksums           rmd160  dc04bea574e4fa929ebd7fd0512bbcca10113b3d \
+                    sha256  9143994894e7c88379d5b0ccc7641c6769a9dc6b9348ba15dfd0bf69956b9424 \
+                    size    2666907
+
+depends_lib-append  port:R-ggplot2 \
+                    port:R-perry \
+                    port:R-Rcpp \
+                    port:R-RcppArmadillo \
+                    port:R-robustbase
+
+compilers.setup     require_fortran
+
+depends_test-append port:R-lars \
+                    port:R-mvtnorm \
+                    port:R-testthat
+
+test.run            yes

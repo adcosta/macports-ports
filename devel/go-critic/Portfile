@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/go-critic/go-critic 0.8.1 v
+go.setup            github.com/go-critic/go-critic 0.11.4 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
 
@@ -21,12 +22,9 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  a3da45ef0217d2956eb918f4c0be54a961514fe8 \
-                    sha256  537a63799bd90d903d2c79db2caf29f6b26807991e1ecb8d686d947860faf4b2 \
-                    size    180491
-
-# Allow Go to fetch dependencies at run-time
-build.env-delete    GO111MODULE=off GOPROXY=off
+checksums           rmd160  74226f96d1d47acef8ffa5bb291e53ca748f6ac7 \
+                    sha256  6b5d2543c76700865de5d4cef17004cc1c33c437cccd04718cf40411a4cf6d83 \
+                    size    180116
 
 build.cmd           make
 build.pre_args-append \

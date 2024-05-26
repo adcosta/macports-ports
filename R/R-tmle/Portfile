@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran tmle 1.5.0.2
-revision            1
+R.setup             cran sgruber tmle 2.0.1
+revision            0
 categories-append   math
 maintainers         nomaintainer
 license             {BSD GPL-2}
 description         Targeted Maximum Likelihood Estimation
 long_description    {*}${description}
-checksums           rmd160  477b730d512774a4d605e276274074a6d97a6814 \
-                    sha256  4772c352e8d3d9b5a0b7480c0e0962de4f5060fb7bf3fcb8ee4fa1cb10f93fd4 \
-                    size    39635
+checksums           rmd160  46328059af007644c57628c493afc361b9aa9600 \
+                    sha256  1952f078629968208e363b449f2a595cbe2503258a741f3e1e401508d7993f76 \
+                    size    45370
 supported_archs     noarch
 
 depends_lib-append  port:R-glmnet \
@@ -20,6 +20,7 @@ depends_lib-append  port:R-glmnet \
 
 depends_test-append port:R-dbarts \
                     port:R-gam \
-                    port:R-ROCR
+                    port:R-ROCR \
+                    port:R-WeightedROC
 
 test.run            yes

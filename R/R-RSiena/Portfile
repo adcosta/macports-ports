@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran RSiena 1.3.14.1
-revision            0
+R.setup             cran tom.snijders RSiena 1.4.7
+revision            1
 categories-append   math
-maintainers         nomaintainer
-license             GPL-2+
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             {GPL-2 GPL-3}
 description         Siena – Simulation Investigation for Empirical Network Analysis
 long_description    {*}${description}
-checksums           rmd160  123335ccddaf6c64d4f2abc8685025758a28ccd7 \
-                    sha256  e4e002a3589ee27fce15ecc3f851e333a1b20eff0deae1d47ed35cbf11aedeae \
-                    size    2269114
+homepage            https://github.com/stocnet/rsiena
+checksums           rmd160  dce5d3d95188d1ad67e5d99894f0570038169755 \
+                    sha256  38b444627e31620550a9005c41094285cd9bc8084061d27e66b15c801c687243 \
+                    size    2234926
 
 depends_lib-append  port:R-xtable
 

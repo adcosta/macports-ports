@@ -3,16 +3,27 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran ggfun 0.0.9
+R.setup             cran YuLab-SMU ggfun 0.1.4
 revision            1
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+maintainers         nomaintainer
 license             Artistic-2
 description         Miscellaneous functions for ggplot2
 long_description    {*}${description}
-checksums           rmd160  487eaa816b9b3d22ef65100265a17aa73764266a \
-                    sha256  5c740e9d1e73b77658f41ed65e21492f4e71b12c7c9ff4b9e52ebf5f8f197612 \
-                    size    216726
+homepage            https://github.com/YuLab-SMU/ggfun
+checksums           rmd160  b42b08afd104c3d8a80a720dd0d42de0fb613536 \
+                    sha256  dc741a141bf401224076c13983e3d991a1e7f5c04c908358ba65c6e1d96533c4 \
+                    size    100270
 supported_archs     noarch
 
-depends_lib-append  port:R-ggplot2 \
+depends_lib-append  port:R-cli \
+                    port:R-ggplot2 \
                     port:R-rlang
+
+depends_test-append port:R-ggnewscale \
+                    port:R-ggplotify \
+                    port:R-knitr \
+                    port:R-prettydoc \
+                    port:R-rmarkdown \
+                    port:R-tidyr
+
+test.run            yes

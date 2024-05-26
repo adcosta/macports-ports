@@ -3,19 +3,21 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             bioconductor Bioconductor ChemmineR 3.50.0
-revision            1
+R.setup             bioconductor girke-lab ChemmineR 3.56.0
+revision            0
+categories-append   bioconductor
 maintainers         nomaintainer
 license             Artistic-2
 description         Cheminformatics toolkit for R
 long_description    {*}${description}
-checksums           rmd160  14fdf6c0b2152a035fc5a8459ef19611668bcadc \
-                    sha256  71180e15d376fb78ffe966f797facc478aa00c9014a70aa42f50766c55f36466 \
-                    size    2053098
+homepage            https://github.com/girke-lab/ChemmineR
+checksums           rmd160  49c555dd3bd671d8bb085b8adcfe9058891f8e79 \
+                    sha256  ac6550157293f9a2b2ec7feb631c153ef747e77f196a021f6959be3586efa288 \
+                    size    2062989
 
 depends_lib-append  port:R-base64enc \
-                    port:R-BiocGenerics \
                     port:R-BH \
+                    port:R-BiocGenerics \
                     port:R-DBI \
                     port:R-digest \
                     port:R-DT \
@@ -28,3 +30,22 @@ depends_lib-append  port:R-base64enc \
                     port:R-rjson \
                     port:R-rsvg \
                     port:R-stringi
+
+depends_test-append port:R-bibtex \
+                    port:R-BiocManager \
+                    port:R-BiocStyle \
+                    port:R-ChemmineDrugs \
+                    port:R-ChemmineOB \
+                    port:R-fmcsR \
+                    port:R-gplots \
+                    port:R-knitcitations \
+                    port:R-knitr \
+                    port:R-knitrBootstrap \
+                    port:R-rmarkdown \
+                    port:R-RPostgreSQL \
+                    port:R-RSQLite \
+                    port:R-scatterplot3d \
+                    port:R-snow
+
+# Tests fail presently: https://github.com/girke-lab/ChemmineR/issues/19
+test.run            no

@@ -4,22 +4,27 @@ PortSystem          1.0
 PortGroup           openssl 1.0
 PortGroup           R 1.0
 
-R.setup             bioconductor Bioconductor rtracklayer 1.60.0
+R.setup             bioconductor lawremi rtracklayer 1.64.0
 revision            0
+categories-append   bioconductor
 maintainers         nomaintainer
 license             Artistic-2
-description         R interface to genome annotation files and the UCSC genome browser
+description         R interface to genome annotation files \
+                    and the UCSC genome browser
 long_description    {*}${description}
-checksums           rmd160  90f038b06cbedcfefe778879bf0cf88d7c36668c \
-                    sha256  3555aa4cbe396e9f23b5f01f9b2461f99c89fc9a0396453cf5d6e066816bc83f \
-                    size    4018828
+homepage            https://github.com/lawremi/rtracklayer
+checksums           rmd160  a34c56bb184d94c61746eba1de7155bd31c25f79 \
+                    sha256  6f8cbfd14ac9919c28778f8745f72ee6867a2fa2eed98bebdc1d632c43c64c40 \
+                    size    3951281
 
 depends_lib-append  port:R-BiocGenerics \
                     port:R-BiocIO \
                     port:R-Biostrings \
+                    port:R-curl \
                     port:R-GenomeInfoDb \
                     port:R-GenomicAlignments \
                     port:R-GenomicRanges \
+                    port:R-httr \
                     port:R-IRanges \
                     port:R-RCurl \
                     port:R-restfulr \

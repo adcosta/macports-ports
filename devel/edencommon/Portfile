@@ -13,11 +13,11 @@ legacysupport.newest_darwin_requires_legacy 10
 
 boost.version       1.81
 
-github.setup        facebookexperimental edencommon 2023.05.15.00 v
-revision            1
-checksums           rmd160  2c47fb75bfdcf2d0e24c7fb1266882180f85913f \
-                    sha256  faa599ef131aaa252971f971a7dc56db297ccb62c24c462e405e162b46c6c45e \
-                    size    146561
+github.setup        facebookexperimental edencommon 2024.01.22.00 v
+revision            0
+checksums           rmd160  c41ed94b3c82568b7dffb8ec271641b838837c05 \
+                    sha256  62d34f9ac46f4b89bd44fa75f4160ef16bcf13ab3ba6e3397e80965f2ed634ab \
+                    size    150070
 
 categories          devel
 license             BSD
@@ -28,7 +28,7 @@ long_description    {*}${description}
 
 distname            ${name}-v${version}
 
-set port_libfmt     libfmt9
+set port_libfmt     libfmt10
 cmake.module_path-append \
                     ${prefix}/lib/${port_libfmt}/cmake
 

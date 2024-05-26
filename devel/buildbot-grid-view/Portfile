@@ -4,11 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                buildbot-grid-view
-version             3.7.0
+version             3.10.1
 revision            0
-checksums           rmd160  5681783a4b3bb0fea61c642d1405f38e7471188f \
-                    sha256  de91d2895a0e663da20867e2cfeb4c59630f1d2047e46829e9edfe6bcb68a6c8 \
-                    size    13712
+checksums           rmd160  afcb1b3bf9075b450fddb2d32a24cc35db1b3846 \
+                    sha256  15df2bdbe8d5e184ae62eeb3525d1f0e311d506933b8772447e3d3484ca85e2a \
+                    size    14092
 
 categories          devel
 maintainers         {ryandesign @ryandesign} {rajdeep @rajdeepbh} {mojca @mojca} openmaintainer
@@ -21,6 +21,8 @@ long_description    {*}${description}
 
 homepage            https://buildbot.net
 
+# Can't update to 311 due to missing dependency:
+# https://trac.macports.org/ticket/67849
 python.default_version \
                     310
 

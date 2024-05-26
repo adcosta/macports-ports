@@ -3,14 +3,15 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran bnaras PMA 1.2.1
-revision            0
+R.setup             cran bnaras PMA 1.2-3
+revision            1
 maintainers         nomaintainer
 license             GPL-2+
 description         Penalized Multivariate Analysis
 long_description    {*}${description}
-checksums           rmd160  4c88f455151cc4ae2b5fb96322a4498e6801cd35 \
-                    sha256  3a155b89e380273dfd4ab301c422184a3f6d4679dc9e3d1bb65939392af511e6 \
-                    size    82582
+homepage            https://github.com/bnaras/PMA
+checksums           rmd160  fa22be0937b3575cd0663f2a5774740108e5a812 \
+                    sha256  e7572f82c159f34058fdec4c8158d394d6cf68b7978953c8893315e298cc6d06 \
+                    size    77000
 
 test.run            yes

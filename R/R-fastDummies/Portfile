@@ -3,15 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran jacobkap fastDummies 1.6.3
+R.setup             cran jacobkap fastDummies 1.7.3
 revision            1
 maintainers         nomaintainer
 license             MIT
 description         Fast creation of dummy (binary) columns and rows from categorical variables
 long_description    {*}${description}
-checksums           rmd160  d0a68fff7b55963990e40ea222156868bcb22256 \
-                    sha256  bd3934fe19d7dff2723438bbb7b89334118143f8ce151d98477ae964ee5d81df \
-                    size    28939
+homepage            https://jacobkap.github.io/fastDummies
+checksums           rmd160  51515a28247793ce157d05ed2c30a7e1a0d4dff7 \
+                    sha256  cf6a182f778711b69460b00575babfa573f1578166d83ae2ed932db5fa15a06a \
+                    size    29499
 supported_archs     noarch
 
 depends_lib-append  port:R-data.table \

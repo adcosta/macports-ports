@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/iximiuz/cdebug 0.0.13 v
+go.setup            github.com/iximiuz/cdebug 0.0.18 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
 
@@ -22,11 +23,9 @@ license             Apache-2
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  973eb18a9d675df7ca1dd4dafa18a30a6b6199b8 \
-                    sha256  6fd0b8ca494f7f6b1ebbef23af5f909fd073e9cca06186aee667c7b0933b199c \
-                    size    339904
-
-build.env-delete    GO111MODULE=off GOPROXY=off
+checksums           rmd160  e0c1e258d55678d6e211ebbe3dd873a3a85e6354 \
+                    sha256  c28d6c079177aa8de850e2edcbd284ac08cd3f9d77aac851928e1cc85a77fbcb \
+                    size    321726
 
 build.args-append   \
     -ldflags=\" -X \'main.version=${github.tag_prefix}${version}\' \"

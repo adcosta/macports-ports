@@ -4,24 +4,25 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran sfcheung stdmod 0.2.7
+R.setup             cran sfcheung stdmod 0.2.10
 revision            1
+categories-append   math
 maintainers         nomaintainer
 license             GPL-3
-description         Standardized Moderation effect and its confidence interval
+description         Standardized moderation effect and its confidence interval
 long_description    {*}${description}
 homepage            https://sfcheung.github.io/stdmod
-checksums           rmd160  b20e9175ace0e672b8ac88f2683e434b6179a553 \
-                    sha256  0f60b6de7de17d0dd15eac5f19f7b590aafbe7a0e38e72fada8baf3b569ae428 \
-                    size    2233948
+checksums           rmd160  6a7af7356126f2f78513f44859400f443a7539e4 \
+                    sha256  269a8b6f4cdf364893a6406255be32e0e3c47163b109d907423cc84d69f053e6 \
+                    size    2205244
 supported_archs     noarch
 
 depends_lib-append  port:R-ggplot2 \
+                    port:R-lavaan \
+                    port:R-manymome \
                     port:R-rlang
 
-depends_test-append port:R-dplyr \
-                    port:R-knitr \
-                    port:R-lavaan \
+depends_test-append port:R-knitr \
                     port:R-lm.beta \
                     port:R-rmarkdown \
                     port:R-testthat \

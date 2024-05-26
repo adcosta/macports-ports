@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran samplingR 0.1.5
-revision            0
+R.setup             cran cran samplingR 1.0.1
+revision            1
 maintainers         nomaintainer
 license             GPL-2
 description         Sampling and estimation methods
 long_description    Functions to take samples of data, sample size estimation and getting useful estimators \
                     such as total, mean, proportion about its population using simple random sampling and stratified sampling.
-checksums           rmd160  fd1e0cc55f484415fa8c9f157ea83cd2b4ab1a41 \
-                    sha256  3147bd4d3305c35e847a462be5d1413513981105803a07abb0bea1ebd5c9bf66 \
-                    size    27533
+checksums           rmd160  7389f13af4b548c6e9eacfc3b6f2821421ff6ef1 \
+                    sha256  3ab107d3f8be434c7f4c999cedd81ebad57bce390ed1fbb601ece7badb6975c6 \
+                    size    27710
 supported_archs     noarch
 
 depends_lib-append  port:R-dplyr

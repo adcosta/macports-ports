@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           makefile 1.0
 
-github.setup        cheusov mk-configure 0.38.2
+github.setup        cheusov mk-configure 0.39.2
 revision            0
 categories          devel
 platforms           any
@@ -15,9 +15,10 @@ supported_archs     noarch
 description         Lightweight, easy to use replacement for GNU autotools
 long_description    {*}${description}
 
-checksums           rmd160  1458b166cf9e9dc89da4b10ab73ac8ae424d69c6 \
-                    sha256  10674911b68be40770a651db0560a820c4399d38221f20be66b527fe3496d026 \
-                    size    236182
+checksums           rmd160  b00b59b21796811f9522c6cb488f7b44c3db92e8 \
+                    sha256  1e86694cc0f2c8595849458ffe5da7a8145e38953f080363480caf1eafb1494b \
+                    size    240967
+github.tarball_from archive
 
 depends_build-append \
                     bin:bmake:bmake \

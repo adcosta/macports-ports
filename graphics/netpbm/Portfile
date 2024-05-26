@@ -5,28 +5,28 @@ PortGroup               github 1.0
 
 # Download distfiles from GitHub mirror because fetching from svn keeps being
 # problematic.
-github.setup            leahneukirchen netpbm-mirror a70405848cb06782036364a88e27f452fb0a0b32
+github.setup            leahneukirchen netpbm-mirror 2ea6cbec549e46141e1212436db4dae5f1652f9b
 name                    netpbm
-version                 11.01.00
-svn.revision            4489
+version                 11.06.01
+svn.revision            4907
 set source_branch       advanced
 distname                ${source_branch}-r${svn.revision}
 set source_distfile     ${distfiles}
 
-set userguide_commit    62c62a8423c7d6746f437f46c35499281c39e4dd
-set userguide_revision  4475
+set userguide_commit    f253c206bb37949ea28d4d52022cc8c424638a51
+set userguide_revision  4903
 set userguide_branch    userguide
 set userguide_distname  ${userguide_branch}-r${userguide_revision}
 set userguide_distfile  ${userguide_distname}${extract.suffix}
 
 checksums               ${source_distfile} \
-                        rmd160  4c6c6c0155233c0a2d3ee20d708979156e3285a2 \
-                        sha256  b908d200897ba535a59ec00f39b222868eb151e8caaf252e27ae3e5425f8a258 \
-                        size    2964306 \
+                        rmd160  28bacdfef02ff251f2eef236c916bd967ab2105e \
+                        sha256  87dfa1f3bd8a1e1965c5cf6dbcd5d4873b79fbd09ee29bc9a6669515f8950346 \
+                        size    3002362 \
                         ${userguide_distfile} \
-                        rmd160  226dacb174d6dec71e95d0551b67310a136ac1a7 \
-                        sha256  2d5b56cdd84a28cc01b680058b4293876340ed60cc62a7486435fa4a2309ead6 \
-                        size    1815523
+                        rmd160  6830854324e6b758e869c5016b20e83474829fb8 \
+                        sha256  afd5feb306622cae50b5a3f3517574bbf0458fc715477dfeec7b5d2b75f6a780 \
+                        size    1820746
 
 categories              graphics
 platforms               darwin freebsd linux
@@ -152,7 +152,7 @@ platform freebsd {
 
 pre-build {
     set fp [open ${workpath}/mtime r]
-    set mtime [read ${fp}]
+    set mtime [read -nonewline ${fp}]
     close ${fp}
     build.env-append    SOURCE_DATE_EPOCH=${mtime}
 }
@@ -185,7 +185,7 @@ destroot {
 }
 
 if {${subport} eq ${name}} {
-    revision            1
+    revision            0
     installs_libs       no
 
     # TODO: Don't build libnetpbm again in netpbm subport.
@@ -229,7 +229,6 @@ if {${subport} eq ${name}} {
             doc/COPYRIGHT.PATENT \
             doc/GPL_LICENSE.txt \
             doc/HISTORY \
-            doc/Netpbm.programming \
             doc/USERDOC \
             doc/copyright_summary \
             doc/lgpl_v21.txt \
@@ -313,7 +312,7 @@ platform darwin 8 {
 
 patchfiles-append       patch-python.diff
 
-set python_branch       3.10
+set python_branch       3.12
 set python_version      [string map {. {}} ${python_branch}]
 
 configure.python        ${prefix}/bin/python${python_branch}

@@ -3,10 +3,10 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran Hmisc 5.1-0
-revision            0
+R.setup             cran harrelfe Hmisc 5.1-2
+revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Harrell miscellaneous
 long_description    Contains many functions useful for data analysis, high-level graphics, \
                     utility operations, functions for computing sample size and power, \
@@ -14,9 +14,9 @@ long_description    Contains many functions useful for data analysis, high-level
                     advanced table making, variable clustering, character string manipulation, \
                     conversion of R objects to LaTeX and html code, and recoding variables.
 homepage            https://hbiostat.org/R/Hmisc
-checksums           rmd160  b7e994f0438952b951cc7565168cfa354750e908 \
-                    sha256  18507eb61d2473918161c232aff61491c028611cbed5ab947de8b4489f852078 \
-                    size    863573
+checksums           rmd160  7b828bf7df70a0d5c2b0ae8a0039e335994c1d44 \
+                    sha256  e7dd1597d4c0e1f46072bb718363f25ffafcd59a7782bbc7c3f057bf78b40f21 \
+                    size    876753
 
 depends_lib-append  port:R-base64enc \
                     port:R-colorspace \
@@ -37,10 +37,12 @@ depends_test-append port:R-abind \
                     port:R-acepack \
                     port:R-chron \
                     port:R-digest \
+                    port:R-getPass \
                     port:R-gt \
                     port:R-htmlwidgets \
                     port:R-jsonlite \
                     port:R-kableExtra \
+                    port:R-keyring \
                     port:R-latticeExtra \
                     port:R-leaps \
                     port:R-mice \
@@ -49,10 +51,12 @@ depends_test-append port:R-abind \
                     port:R-plyr \
                     port:R-polspline \
                     port:R-qreport \
+                    port:R-qs \
                     port:R-rio \
                     port:R-rlang \
                     port:R-rms \
                     port:R-rstudioapi \
+                    port:R-safer \
                     port:R-sparkline \
                     port:R-tables \
                     port:R-VGAM

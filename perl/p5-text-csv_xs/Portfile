@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Text-CSV_XS 1.50
+perl5.setup         Text-CSV_XS 1.54
 revision            0
 license             {Artistic-1 GPL}
 maintainers         oaf.dk:mni openmaintainer
@@ -15,21 +15,27 @@ long_description    Text::CSV_XS provides facilities for the composition and dec
                     comma-separated values. An instance of the Text::CSV_XS class can combine \
                     fields into a CSV string and parse a CSV string into fields.
 
-platforms           darwin
-
-checksums           rmd160  12684499d0ea0b9c5b75f61a27b3524adfb0d776 \
-                    sha256  85b5e1bed7e11dc0413d4e920cee25d980de47376c0048029041cf461eac96b1 \
-                    size    266660
+checksums           rmd160  b9f4778c920932a69543787fc1da363b1359d822 \
+                    sha256  9e61fb700c1bab7845c1799d1718a65c2b2ade915e020b7a0ca8e703e1b5daa6 \
+                    size    272716
 
 extract.suffix      .tgz
 
-# recommends Encode 3.19
+# recommends Encode 3.21
 # perl 5.28.3 core is 2.97
 # perl 5.30.3 core is 3.01
-# perl 5.32.1 core is 3.06
-# perl 5.34.1 core is 3.08_01
-# perl 5.36.0 core is 3.17
+# perl 5.32.3 core is 3.06
+# perl 5.34.3 core is 3.08_01
+# perl 5.36.3 core is 3.17
+# perl 5.38.1 core is 3.19
+
+# MacPorts p5-encode is 3.21
+
 if {${perl5.major} != ""} {
+    depends_build-append \
+                    port:p${perl5.major}-extutils-makemaker \
+                    port:p${perl5.major}-test-simple
+
     depends_lib-append \
                     port:p${perl5.major}-encode
 }

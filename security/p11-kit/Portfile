@@ -2,8 +2,9 @@
 
 PortSystem          1.0
 PortGroup           github 1.0
+PortGroup           legacysupport 1.1
 
-github.setup        p11-glue p11-kit 0.24.1
+github.setup        p11-glue p11-kit 0.25.3
 revision            0
 license             Permissive
 description         Provides a way to load and enumerate PKCS#11 modules and a standard \
@@ -16,12 +17,13 @@ categories          security
 github.tarball_from releases
 use_xz              yes
 
-checksums           rmd160  9e4f84be5abdd1f8ada983161d156756d83465dd \
-                    sha256  d8be783efd5cd4ae534cee4132338e3f40f182c3205d23b200094ec85faaaef8 \
-                    size    838304
+checksums           rmd160  730afef28ce42efe59bb3af334df8d43f08e0ab2 \
+                    sha256  d8ddce1bb7e898986f9d250ccae7c09ce14d82f1009046d202a0eb1b428b2adc \
+                    size    991528
 
 depends_build       port:gettext \
-                    port:pkgconfig
+                    port:pkgconfig \
+                    port:python311
 
 depends_lib         port:gettext-runtime \
                     port:libtasn1 \
@@ -33,6 +35,14 @@ depends_run         path:share/curl/curl-ca-bundle.crt:curl-ca-bundle
 configure.args      --disable-doc \
                     --disable-silent-rules \
                     --with-trust-paths=${prefix}/share/curl/curl-ca-bundle.crt:${prefix}/etc/openssl
+
+# /usr/bin/python is Python 2.7 for older systems, and
+# /usr/bin/python3 is too old (< 3.6) on older systems
+# https://trac.macports.org/ticket/68739
+configure.env       PYTHON=${prefix}/bin/python3.11
+
+# https://trac.macports.org/wiki/WimplicitFunctionDeclaration#strchr
+configure.checks.implicit_function_declaration.whitelist-append strchr
 
 variant doc description {Build man pages and documentation} {
     depends_build-append    port:gtk-doc

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 R.setup             cran cran car 3.1-2
-revision            1
+revision            2
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             {GPL-2 GPL-3}
 description         Companion to Applied Regression
@@ -14,6 +14,7 @@ checksums           rmd160  b343af3cc33ae8be81797d207146a8ded074deaf \
                     sha256  89263491977ac8e9406b2f4b1638bf06c7ddd1b0e0e3ecda4be61420474674c8 \
                     size    579829
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_lib-append  port:R-abind \
                     port:R-carData \

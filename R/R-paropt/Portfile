@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran Konrad1991 paropt 0.3
-revision            0
+R.setup             cran Konrad1991 paropt 0.3.3
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3
 description         Parameter optimizing of ODE systems
 long_description    {*}${description}
-checksums           rmd160  bf949988fbf98a4469c504d4c6c6b5982852aaf7 \
-                    sha256  c503d6aac38475e3392f02cec355ad72f57ee6792be1eb0d9e9e0fecc1c7967a \
-                    size    437893
+checksums           rmd160  1f4bb25ca9662f8cb4cb13e0f97675fef1c1bb87 \
+                    sha256  54df9d138bd942759b188ebad9eb50325763c4ac949c5e3dc349033d6455b166 \
+                    size    425157
 
 depends_lib-append  port:R-ast2ast \
                     port:R-dfdr \

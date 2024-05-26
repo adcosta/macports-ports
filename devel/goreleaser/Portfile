@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/goreleaser/goreleaser 1.18.2 v
+go.setup            github.com/goreleaser/goreleaser 1.26.2 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
 
@@ -20,14 +21,11 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  a5974a6090ea3be4a687fe7dbc062d76412dbe4c \
-                    sha256  82883f95d0bdda52a82cd16f2157553be505fcccbf5cd927011ab52d06cdd6bd \
-                    size    843140
+checksums           rmd160  28b65c294d004f73ce061fd6726f1715694b64a9 \
+                    sha256  a48a029fae8e39dfa27d9ac60cc8909d226dbaba111cf2cf8a153a3bd9be012f \
+                    size    985685
 
 set build_script    ${worksrcpath}/_build.sh
-
-# Allow deps to be fetched at build-time.
-build.env-delete    GO111MODULE=off GOPROXY=off
 
 build.cmd           ${build_script}
 build.pre_args      {}

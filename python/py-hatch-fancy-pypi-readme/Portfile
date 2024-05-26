@@ -4,15 +4,15 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-hatch-fancy-pypi-readme
-version             22.8.0
+version             24.1.0
 revision            0
+
 categories-append   devel
 license             MIT
 supported_archs     noarch
 platforms           {darwin any}
 
-python.versions     37 38 39 310 311
-python.pep517       yes
+python.versions     37 38 39 310 311 312
 python.pep517_backend hatch
 
 maintainers         nomaintainer
@@ -23,9 +23,9 @@ long_description    {*}${description}
 homepage            https://github.com/hynek/hatch-fancy-pypi-readme
 distname            hatch_fancy_pypi_readme-${version}
 
-checksums           rmd160  d66127cfc2f57a7c9eae8993c713f55cbdea2006 \
-                    sha256  da91282ca09601c18aded8e378daf8b578c70214866f0971156ee9bb9ce6c26a \
-                    size    26511
+checksums           rmd160  fc3f0fc0216a5470a127f77940fba23a3b29dfb6 \
+                    sha256  44dd239f1a779b9dcf8ebc9401a611fd7f7e3e14578dcf22c265dfaf7c1514b8 \
+                    size    28683
 
 if {${name} ne ${subport}} {
     if {${python.version} < 311} {

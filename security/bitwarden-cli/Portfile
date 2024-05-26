@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           npm 1.0
 
 name                bitwarden-cli
-version             2023.5.0
+version             2023.12.1
 revision            0
 
 npm.rootname        @bitwarden/cli
@@ -14,11 +14,11 @@ categories          security
 license             GPL-3
 maintainers         {bochtler.io:macports @MarcelBochtler} \
                     openmaintainer
-platforms           darwin
+
 description         Bitwarden password manager CLI
 long_description    CLI implementation of the Bitwarden password manager.
 homepage            https://bitwarden.com
 
-checksums           rmd160  8b813166ab40ea527f1d22ff7c3f85d15a2e8f03 \
-                    sha256  1e9a592ed4ae1611afbd652ee546fd95b2bbf8414a02db836d756ee653ed2321 \
-                    size    654560
+checksums           rmd160  faa0142b8eb7b61bc0492e0bea0e183299207834 \
+                    sha256  4f792e984fad704fd70bdbcef4dcae9ec9d56c83eda38cdce979e5b4359e3e15 \
+                    size    739112

@@ -7,8 +7,8 @@ PortGroup           legacysupport 1.1
 legacysupport.newest_darwin_requires_legacy 13
 
 name                vnstat
-version             2.10
-revision            1
+version             2.12
+revision            0
 categories          net
 maintainers         nomaintainer
 license             GPL-2
@@ -23,9 +23,9 @@ long_description    \
 homepage            https://humdi.net/vnstat/
 master_sites        https://humdi.net/${name}
 
-checksums           rmd160  ecaf1fb382f2b0a0fdd52c49c131b25749b37b89 \
-                    sha256  a9c61744e5cd8c366e2db4d282badc74021ddb614bd65b41240937997e457d25 \
-                    size    304464
+checksums           rmd160  734c176fb331c344b8ceee6eaba675dbc155ce7e \
+                    sha256  b7386b12fc1fc6f47fab31f208b12eda61862e63e229e84e95a6fa80406d2852 \
+                    size    325227
 
 depends_lib         port:gd2
 

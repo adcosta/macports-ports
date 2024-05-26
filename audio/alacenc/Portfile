@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           github 1.0
+
+github.setup        flacon alacenc 0.4.0 v
+revision            0
+categories          audio
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             MIT
+description         Apple Lossless Audio Codec Encoder
+long_description    ${description}
+
+checksums           rmd160  9b337500239db9d6aff172bb6802af3fcd52959c \
+                    sha256  49f27b16690f6594001d3bfd528e7ea5e0bb901ac01a115cf61c996e0dec8f29 \
+                    size    114463
+github.tarball_from archive
+
+compiler.cxx_standard 2017
+
+# https://github.com/flacon/alacenc/pull/4
+patchfiles          0001-Make-endianness-check-actually-work.patch \
+                    0002-atoms.cpp-fix-a-type.patch

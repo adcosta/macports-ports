@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 PortGroup           github 1.0
 
-github.setup        spyder-ide qtpy 2.3.1 v
+github.setup        spyder-ide qtpy 2.4.1 v
 github.tarball_from archive
 revision            0
 name                py-qtpy
@@ -19,16 +19,15 @@ description         Abstraction layer for PyQt5/PyQt6/PySide2/PySide6
 long_description    Provides an uniform layer to support PyQt5, PyQt6, \
                     PySide2, and PySide6 with a single codebase.
 
-checksums           rmd160  567332c0f7470e52f0eba115ed7b183826a87d09 \
-                    sha256  8121e8cdc09f927823b627c02bacabb81982024250eb65997032a19d5a10f3cd \
-                    size    59690
+checksums           rmd160  0789194dbee98718bd037e54525ebb12510222cc \
+                    sha256  e5f3ceaf3465b453f71cc0248fc85116ae5b3dfd76cbfd491409eb345a9f9df2 \
+                    size    67984
 
-python.versions     37 38 39 310 311
-python.pep517       yes
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
-    depends_build-append \
-                    port:py${python.version}-wheel
+    depends_lib-append \
+                    port:py${python.version}-packaging
 
     depends_test-append \
                     port:py${python.version}-pytest-qt

@@ -3,27 +3,27 @@
 PortSystem          1.0
 
 name                CImg
-version             3.2.4
+version             3.3.5
 categories          devel
 platforms           any
 maintainers         yandex.com:bstj openmaintainer
 supported_archs     noarch
-license             CeCILL-C CeCILL
+license             {CeCILL-C CeCILL}
 
 description         C++ Template Image Processing Toolkit
 
 long_description    Open source, C++ toolkit for image processing
 
-homepage            http://cimg.eu \
+homepage            https://cimg.eu \
                     https://github.com/GreycLab/CImg
-master_sites        http://cimg.eu/files/
+master_sites        https://cimg.eu/files/
 use_zip             yes
 
 distfiles           CImg_${version}.zip
 
-checksums           rmd160  609055121d136f69b6e246bc763d1dbf0c78300e \
-                    sha256  15a93361c1b34c7731554b0d5a28615e2acf65ab5d323f6962783baa7628474a \
-                    size    3276577
+checksums           rmd160  d7d657c63a967005478cf8559afe0168bfe3e0e8 \
+                    sha256  c7268c270e3b93730a3eaf5738250a1b1efb0866bd57409786d750f7f4be7705 \
+                    size    3283026
 
 use_configure       no
 

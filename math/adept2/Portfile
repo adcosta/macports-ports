@@ -3,10 +3,11 @@
 PortSystem          1.0
 PortGroup           compilers 1.0
 PortGroup           github 1.0
+PortGroup           linear_algebra 1.0
 
-github.setup        rjhogan Adept-2 dd32a415bebba998c581395251cc8055dea8db15
+github.setup        rjhogan Adept-2 9ac1eaa0b3ae95d230504f11d52b9cc4b43ef112
 name                adept2
-version             2023.03.30
+version             2024.01.24
 revision            0
 categories          math
 license             Apache-2
@@ -14,34 +15,35 @@ maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 description         Fast automatic differentiation library in C++
 long_description    Combined array and automatic differentiation library in C++.
 homepage            https://www.met.reading.ac.uk/clouds/adept
-checksums           rmd160  b7fef7d082c7fa312a763ada72cd3bdc89bb4295 \
-                    sha256  5ccaf2fd2a0042b58cbdc65d23220c51a8824c28e41ea6464e1288c1d3f80e1b \
-                    size    327227
+checksums           rmd160  eb7b29f03b31d26c9361b333002198493cf93f42 \
+                    sha256  82c62d658ceb2654b313a709a13a3beeb318701bc50abf20c5891d42ecaa6abb \
+                    size    333335
+github.tarball_from archive
+
+set_default_variants    no
+
+if {![variant_isset accelerate] && ![variant_isset atlas] && ![variant_isset blis] \
+    && ![variant_isset flexiblas] && ![variant_isset openblas]} {
+        default_variants-append +openblas
+}
 
 use_autoreconf      yes
-
-depends_lib-append  path:lib/libopenblas.dylib:OpenBLAS
 
 compilers.choose    fc f90 f77
 compilers.setup     require_fortran
 
-# https://github.com/rjhogan/Adept-2/issues/25
-# Until this is fixed: https://github.com/iains/darwin-toolchains-start-here/discussions/41
-compiler.blacklist-append \
-                    macports-gcc-12
 compiler.thread_local_storage yes
 
-# https://github.com/rjhogan/Adept-2/issues/24
-patchfiles          patch-include.diff
-
-post-patch {
-    reinplace "s|include <cblas.h>|include <cblas_openblas.h>|" ${worksrcpath}/configure.ac
-    reinplace "s|cblas.h|cblas_openblas.h|" ${worksrcpath}/adept/settings.cpp
+if [variant_isset openblas] {
+    post-patch {
+        reinplace "s|include <cblas.h>|include <cblas_openblas.h>|" ${worksrcpath}/configure.ac
+        reinplace "s|cblas.h|cblas_openblas.h|" ${worksrcpath}/adept/settings.cpp
+    }
 }
 
 pre-configure {
     configure.args-append \
-                    --with-blas="-L${prefix}/lib -lopenblas"
+                    --with-blas="-L${prefix}/lib ${linalglib}"
 }
 
 depends_test-append port:gsl

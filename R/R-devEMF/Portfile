@@ -4,23 +4,27 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran plfjohnson devEMF 4.4
-revision            0
+R.setup             cran plfjohnson devEMF 4.4-2
+revision            1
 categories-append   graphics
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3
 description         EMF Graphics Output Device
 long_description    {*}${description}
-checksums           rmd160  8c8cedce75db8fa65975d40e6f6b2a6b3956f824 \
-                    sha256  14cbab88589aa9b919d45ba1d9a8861fd95d5b2db5005eb64988872e687be4e1 \
-                    size    214332
+homepage            https://github.com/plfjohnson/devEMF
+checksums           rmd160  b89c6091e528a03b41e553fcd5c101d6b0ffeca2 \
+                    sha256  bdc81b81c00fd88594b39a79e92d0cd259df42539b50a83fd4d45d972330f381 \
+                    size    214755
 
 depends_build-append \
                     port:pkgconfig
 
 if {(${os.platform} eq "darwin" && ${os.major} < 11) || ${os.platform} ne "darwin"} {
     depends_lib-append \
-                    port:Xft2
+                    port:fontconfig \
+                    port:freetype \
+                    port:Xft2 \
+                    port:zlib
 }
 
 test.run            yes

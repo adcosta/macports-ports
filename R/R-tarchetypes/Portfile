@@ -3,26 +3,24 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github ropensci tarchetypes 0.7.5
+R.setup             github ropensci tarchetypes 0.9.0
 revision            1
 categories-append   devel
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
-description         Archetypes for targets
+description         Archetypes for R-targets
 long_description    {*}${description}
 homepage            https://docs.ropensci.org/tarchetypes
-checksums           rmd160  6782c5745b411f6b608ef9cb7b55eb89540c40b7 \
-                    sha256  84db51c4484b568b42cad93662504425e18ae64f703d18590f950c4febada6f0 \
-                    size    255250
+checksums           rmd160  d0639954c81b1753c76544647d918b670883dc14 \
+                    sha256  69286f42f985af63611d41a70d91df2e5fac0ffce555d933f6081b41e23e1418 \
+                    size    264447
 supported_archs     noarch
 
 depends_lib-append  port:R-digest \
                     port:R-dplyr \
                     port:R-fs \
-                    port:R-furrr \
-                    port:R-future \
-                    port:R-future.callr \
                     port:R-rlang \
+                    port:R-secretbase \
                     port:R-targets \
                     port:R-tibble \
                     port:R-tidyselect \

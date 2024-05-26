@@ -4,16 +4,17 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran aadler lamW 2.1.2
+R.setup             cran aadler lamW 2.2.3
 revision            1
 categories-append   math
 maintainers         nomaintainer
 license             BSD
-description         Lambert W-Function
+description         Lambert W-function
 long_description    {*}${description}
-checksums           rmd160  a9c24b700761afb4ed55000b64f7a56e854b85a5 \
-                    sha256  206d334edec05df246fb621b170df2eb87145955d2e2ceb818d553cf79a89b96 \
-                    size    16290
+homepage            https://github.com/aadler/lamW
+checksums           rmd160  603ddcf5005079be861d52c8919e0329edb3d5d4 \
+                    sha256  a1e232186673d2fc298fc45278a6ff169db428fe8a63551c9297124a05ee034b \
+                    size    17324
 
 depends_lib-append  port:R-Rcpp \
                     port:R-RcppParallel

@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                a2ps
-version             4.15.4
+version             4.15.6
 revision            0
 
 categories          print
@@ -18,9 +18,9 @@ long_description    a2ps is a utilty that allows the user to do \
 homepage            https://www.gnu.org/software/a2ps/
 master_sites        gnu
 
-checksums           rmd160  d46d894cc1ae516a63af1c574748a99d887387a0 \
-                    sha256  4a063f84ba89d86be14a6704ca35fd130083b572f1376b439a1b79b67b206dd7 \
-                    size    3570970
+checksums           rmd160  f4f61a0c3181366544028d755e1b5fae2e5890fe \
+                    sha256  87ff9d801cb11969181d5b8cf8b65e65e5b24bb0c76a1b825e8098f2906fbdf4 \
+                    size    3605392
 
 depends_build       bin:psnup:psutils \
                     port:help2man \

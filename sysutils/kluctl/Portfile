@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/kluctl/kluctl 2.20.4 v
+go.setup            github.com/kluctl/kluctl 2.22.1 v
 go.package          github.com/kluctl/kluctl/v2
 github.tarball_from archive
 revision            0
@@ -39,11 +39,11 @@ license             Apache-2
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  e82b198372c726b68f97a86bb86692d5177a92b9 \
-                    sha256  faaccbe66c4f91dd4fb32993d1b37db43ac139c9088f11ae5399cb84493c0894 \
-                    size    396823
+checksums           rmd160  345e970c17eb7cfe6d108e65ca0d3381d73623a6 \
+                    sha256  18cfcefda099c4a8686ddf8f580fb2a725bdd4725aa6d6bd6680b315ca3115b1 \
+                    size    835915
 
-build.env-delete    GO111MODULE=off GOPROXY=off
+go.offline_build no
 
 build.pre_args-append \
     -ldflags \"-X main.version=${github.tag_prefix}${version}\" \

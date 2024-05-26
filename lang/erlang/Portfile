@@ -9,12 +9,13 @@ PortGroup           legacysupport 1.1
 legacysupport.newest_darwin_requires_legacy 10
 
 name                erlang
-version             25.3
+version             27.0
 revision            0
 
+set doc_version     ${version}
+
 categories          lang erlang
-maintainers         {ciserlohn @ci42}
-platforms           darwin
+maintainers         {ciserlohn @ci42} openmaintainer
 license             Apache-2
 
 description         The Erlang Programming Language
@@ -34,30 +35,28 @@ long_description    Erlang is a programming language designed at the        \
                     number of Ericsson products, for example the new        \
                     Ericsson ATM switch.
 
-homepage            http://www.erlang.org/
-master_sites        http://www.erlang.org/download/
-
-# Parallel build doesn't work as per R13B01
-use_parallel_build  no
+homepage            https://www.erlang.org/
+master_sites        https://www.erlang.org/download/ \
+                    https://github.com/erlang/otp/releases/download/OTP-${version}/
 
 universal_variant   no
 
 distfiles           otp_src_${version}${extract.suffix}                    \
-                    otp_doc_man_${version}${extract.suffix}                \
-                    otp_doc_html_${version}${extract.suffix}
+                    otp_doc_man_${doc_version}${extract.suffix}                \
+                    otp_doc_html_${doc_version}${extract.suffix}
 
 checksums           otp_src_${version}.tar.gz \
-                    rmd160  5e6fb5e0f158327c86c12a48cc930c63c3d3a0be \
-                    sha256  aeaa546e0c38e338010d16348d8c67f7fc8c02df728a88d8499838d8c9131e1c \
-                    size    103797057 \
-                    otp_doc_man_${version}.tar.gz \
-                    rmd160  0b4e2aabe13d2fba591d18f898e4b5a2469f8257 \
-                    sha256  675658e5cac834ffe726e180d3f7839e23d32fa57ae921a524ac9f808b6ed76e \
-                    size    1715883 \
-                    otp_doc_html_${version}.tar.gz \
-                    rmd160  fe6497919abcd708f5e8a6f60d94120258f5ac48 \
-                    sha256  35cd476ae1a013256d9c51c23216669840512031b8733e5391b6742c3477e140 \
-                    size    41054645
+                    rmd160  b3d8528389c497ee547bf94b0ad2c33cbb0290de \
+                    sha256  56412677466b756740fb2dbf4a8019e7c7cc38f01bd30c4cac5210214cafeef6 \
+                    size    101038198 \
+                    otp_doc_man_${doc_version}.tar.gz \
+                    rmd160  14a6963ba477eabdd3e27324afa839686b07c364 \
+                    sha256  95a2ea0e22ea4b7d58e74df145b52e2c85b642434391c814300824204a107c38 \
+                    size    1764909 \
+                    otp_doc_html_${doc_version}.tar.gz \
+                    rmd160  a769c4f2f72019e00978a60a1ac002cd993a81f7 \
+                    sha256  69c926bbf1b3fed93f361317a481910dae98f9700f58765b36c4875044bcc9d7 \
+                    size    29506649
 
 worksrcdir          otp_src_${version}
 
@@ -70,9 +69,10 @@ configure.args      --prefix=${prefix}       \
                     --without-javac          \
                     --without-wx
 
-depends_build       port:gawk
+depends_build-append \
+                    port:gawk
 # ${prefix}/lib/erlang/erts-5.8.4/bin/beam.smp links with ncurses
-depends_lib         port:ncurses
+depends_lib-append  port:ncurses
 
 # Erlang seems to have an on-again/off-again relationship with Clang.
 # As of Xcode 4.2, it's off again.
@@ -80,8 +80,8 @@ depends_lib         port:ncurses
 compiler.blacklist  {clang < 300} *gcc-4.*
 
 post-destroot   {
-    system "tar -C ${destroot}${prefix}/lib/erlang -zxvf [shellescape ${distpath}/otp_doc_html_${version}${extract.suffix}]"
-    system "tar -C ${destroot}${prefix}/lib/erlang -zxvf [shellescape ${distpath}/otp_doc_man_${version}${extract.suffix}]"
+    system "tar -C ${destroot}${prefix}/lib/erlang -zxvf [shellescape ${distpath}/otp_doc_html_${doc_version}${extract.suffix}]"
+    system "tar -C ${destroot}${prefix}/lib/erlang -zxvf [shellescape ${distpath}/otp_doc_man_${doc_version}${extract.suffix}]"
 
     set erts_dir            erts-12.2
     set erl_interface_dir   erl_interface-5.1
@@ -120,6 +120,8 @@ platform darwin {
     }
 }
 
+# FIXME: allow building with wxGTK on older systems.
+# See: https://github.com/erlang/otp/issues/8370
 variant wxwidgets description {Build wxWidgets support} {
     wxWidgets.use               wxWidgets-3.2
     depends_lib-append          port:${wxWidgets.port}
@@ -131,7 +133,7 @@ variant wxwidgets description {Build wxWidgets support} {
 variant ssl description {Build SSL support} {
     PortGroup                   openssl 1.0
 
-    openssl.branch              1.1
+    openssl.branch              3
     configure.args-delete       --without-ssl
     configure.args-append       --with-ssl=[openssl::install_area]
     configure.ldflags-append    -lz

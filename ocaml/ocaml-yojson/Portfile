@@ -5,8 +5,8 @@ PortGroup github    1.0
 PortGroup ocaml     1.1
 
 name                ocaml-yojson
-github.setup        ocaml-community yojson 1.7.0
-revision            1
+github.setup        ocaml-community yojson 2.1.2
+revision            0
 
 categories          ocaml devel
 maintainers         {landonf @landonf} openmaintainer
@@ -15,14 +15,15 @@ description         JSON parsing and printing library for OCaml
 long_description    Yojson is an optimized JSON parsing and printing library \
                     for OCaml.
 
-platforms           darwin
+checksums           rmd160  46cc575e9c7769d74c3483c76e964302fb796ef7 \
+                    sha256  fd84f8a6cf5bdae6c6b235be8d40d1788c1427291e02bf0e6a4d5cfad7f881bf \
+                    size    49324
+github.tarball_from archive
 
-checksums           rmd160  b9ab1778082163d104aab3c494cb5172c42c8f0a \
-                    sha256  6f0d5c1b89836b4e99b84a6ba429ca9512ac554ebc0298fb992a648b6a7dcf61 \
-                    size    29713
-
-depends_build       port:ocaml-cppo
-depends_lib         port:ocaml-easy-format \
-                    port:ocaml-biniou
+depends_build-append \
+                    port:ocaml-cppo
+depends_lib-append  port:ocaml-biniou \
+                    port:ocaml-easy-format \
+                    port:ocaml-seq
 
 ocaml.build_type    dune

@@ -5,7 +5,7 @@ PortGroup           cmake 1.1
 PortGroup           github 1.0
 PortGroup           linear_algebra 1.0
 
-github.setup        igraph igraph 0.10.4
+github.setup        igraph igraph 0.10.12
 revision            0
 github.tarball_from releases
 
@@ -23,10 +23,15 @@ depends_lib         port:arpack \
                     port:gmp \
                     port:libxml2
 
-checksums           rmd160  352d5881b55bd3c40084a45198981636b0b48f03 \
-                    sha256  aa5700b58c5f1e1de1f4637ab14df15c6b20e25e51d0f5a260921818e8f02afc \
-                    size    4279321
+checksums           rmd160  33c439d1038f01ccd02cc0560de17e735754fc7e \
+                    sha256  b011f7f9f38a3e59924cc9ff652e6d33105fa03fcaf3792f47d752626a0a4625 \
+                    size    4373463
 
+# Testing notes:
+#
+# There is a bug in macOS 13.x to 14.0 that will cause the safelocale test to fail.
+# See https://stackoverflow.com/q/76133503/695132 and https://github.com/igraph/igraph/issues/2340
+# This is fixed in macOS 14.1.
 test.run            yes
 test.target         check
 
@@ -65,6 +70,9 @@ variant tls description {Build thread-safe version} {
     configure.args-append           -DIGRAPH_ENABLE_TLS=ON
 }
 
+# The openmp variant is not enabled by default because in MacPorts,
+# the compilers that support OpenMP won't support LTO (without workarounds).
+# Overall, igraph performance benefits more from LTO than OpenMP.
 variant openmp description {Enable OpenMP support} {
     # This compiler gives an invalid warning about uninitialized variables.
     # It is unclear if it also miscompiles the code.

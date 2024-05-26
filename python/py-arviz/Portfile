@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-arviz
-version             0.15.1
+version             0.18.0
 revision            0
 
 platforms           {darwin any}
@@ -13,20 +13,17 @@ license             Apache-2
 maintainers         {reneeotten @reneeotten} openmaintainer
 
 description         Exploratory analysis of Bayesian models
-long_description    ${description}
+long_description    {*}${description}
 
 homepage            https://github.com/arviz-devs/arviz
 
-checksums           rmd160  11ef538e7de0e5ce49435d93c9b15a0c66361285 \
-                    sha256  981cce0282bdf6f3b379255b95a440979f9a0ef0ae9dd88a54f763cf5b31484c \
-                    size    1566128
+checksums           rmd160  2a57de37254954da39ac4cd2aba34d4b50f7fafb \
+                    sha256  2ffd6a632af6b28eb5dac7e3b938223ffa202308dc67c58b55a404565a985bd2 \
+                    size    1579703
 
-python.versions     37 38 39 310 311
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
-    depends_build-append \
-                    port:py${python.version}-setuptools
-
     depends_lib-append \
                     port:py${python.version}-h5netcdf \
                     port:py${python.version}-matplotlib \

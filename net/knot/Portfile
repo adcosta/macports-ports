@@ -7,11 +7,11 @@ PortGroup           legacysupport 1.1
 legacysupport.newest_darwin_requires_legacy 15
 
 name                knot
-version             3.2.7
+version             3.3.5
 revision            0
 categories          net
 license             GPL-3+
-maintainers         {mps @Schamschula} openmaintainer
+maintainers         {mps @Schamschula} {@catap korins.ky:kirill} openmaintainer
 description         Knot DNS is a high-performance authoritative-only DNS server which \
                     supports all key features of the modern domain name system.
 long_description    {*}${description}
@@ -21,9 +21,9 @@ master_sites        https://secure.nic.cz/files/knot-dns/ \
 
 use_xz              yes
 
-checksums           rmd160  e0ee858951a4868a132ee0e55fe179ff2158c372 \
-                    sha256  d3b7872ac8aa80f7f54ddb1bb3b1e2f90ec55f7270a2c4a9338eab42b7d2767b \
-                    size    1681416
+checksums           rmd160  4816abf055b2edce34a5449342d315db4ae5f949 \
+                    sha256  0e0bf04319581280660e8e62ab04be64a7d632331e40fc9c87e76861305db3ad \
+                    size    1558484
 
 depends_build       port:pkgconfig
 
@@ -32,12 +32,14 @@ depends_lib         port:fstrm \
                     port:libidn2 \
                     port:lmdb \
                     port:nghttp2 \
+                    port:ngtcp2 \
                     port:protobuf-c \
                     port:userspace-rcu
 
+# Should match knot-resolver port
 platforms {darwin >= 15}
 
-configure.args      --disable-silent-rules
+patchfiles          patch-src-knot-server-quic-handler.c.diff
 
 post-patch {
     reinplace "s|task_t|k_task_t|g" \
@@ -50,11 +52,25 @@ post-patch {
         ${worksrcpath}/tests/knot/test_worker_queue.c
 }
 
-startupitem.create      yes
-startupitem.netchange   yes
-startupitem.executable  ${prefix}/sbin/knotd -c ${prefix}/etc/knot/knot.conf
+configure.args      --disable-silent-rules
 
-notes "
+subport libknot {
+    conflicts       ${name}
+
+    configure.args-append \
+                    --disable-daemon \
+                    --disable-modules \
+                    --disable-utilities 
+} 
+
+if {${name} eq ${subport}} {
+    conflicts       libknot
+
+    startupitem.create      yes
+    startupitem.netchange   yes
+    startupitem.executable  ${prefix}/sbin/knotd -c ${prefix}/etc/knot/knot.conf
+
+    notes "
 To complete the installation, run:
 
 sudo cp ${prefix}/etc/knot/knot.sample.conf ${prefix}/etc/knot/knot.conf
@@ -63,3 +79,4 @@ Edit as necessary. (See the knot.conf manpage for additional information.)
 
 You will also need to created *.zone files. See ${prefix}/etc/knot/example.com.zone.
 "
+}

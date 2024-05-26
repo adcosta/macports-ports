@@ -3,17 +3,19 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github Bioconductor KEGGREST b810cd1e0899690b151166925898384ba80768c1
-version             1.41.0
+R.setup             bioconductor Bioconductor KEGGREST 1.44.0
 revision            0
+categories-append   bioconductor www
 maintainers         nomaintainer
 license             Artistic-2
-description         Client-side REST access to the Kyoto Encyclopedia of Genes and Genomes (KEGG)
+description         Client-side REST access to the Kyoto Encyclopedia \
+                    of Genes and Genomes (KEGG)
 long_description    {*}${description}
-checksums           rmd160  198d492a273fd540fd5c053017e7e16bab5304b4 \
-                    sha256  027f1eb1c90aec8105d6f1b6925b7bdad973b72b8bf69a7433daeaa9f7712286 \
-                    size    15027
+checksums           rmd160  22c12d375b8204536df1fe86687c35ae90ece6c2 \
+                    sha256  c079a74d37d4246ef67bcfa1da00d33bc87ac5fb74e1eb5015728fcc7d0871f7 \
+                    size    23171
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_lib-append  port:R-Biostrings \
                     port:R-httr \

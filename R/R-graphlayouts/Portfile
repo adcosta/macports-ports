@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github schochastics graphlayouts 1.0.0 v
-revision            0
+# Revert to GitHub once updated there.
+R.setup             cran schochastics graphlayouts 1.1.1 v
+revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
 description         Additional layout algorithms for network visualizations
 long_description    {*}${description}
 homepage            http://graphlayouts.schochastics.net
-checksums           rmd160  cd4ed26ba42b09ae4211eb556e88f5acffbfdb38 \
-                    sha256  e63e4b77296b65475c9786427d9fb3266db9014d65c23af63dc4520632da439f \
-                    size    4537748
+checksums           rmd160  ceff6681be75d4ed84c24395c69e7a8f447d9634 \
+                    sha256  7bc2459a02b1339ac01184a76687a3e50de5680f4699b5966a3f2e6a882f3801 \
+                    size    3827271
 
 depends_lib-append  port:R-igraph \
                     port:R-Rcpp \
@@ -21,9 +22,9 @@ depends_lib-append  port:R-igraph \
 # Apparently ARMA_64BIT_WORD can be used on 32-bit platforms as well.
 # https://github.com/schochastics/graphlayouts/issues/49
 
-depends_test-append port:R-knitr \
-                    port:R-ggplot2 \
+depends_test-append port:R-ggplot2 \
                     port:R-ggraph \
+                    port:R-knitr \
                     port:R-oaqc \
                     port:R-rmarkdown \
                     port:R-testthat \

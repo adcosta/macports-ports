@@ -4,7 +4,9 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-dnspython
-version             2.3.0
+version             2.6.1
+revision            0
+
 categories-append   net
 license             ISC
 supported_archs     noarch
@@ -19,11 +21,11 @@ long_description \
 
 homepage            https://www.dnspython.org/
 
-python.versions     27 37 38 39 310 311
+python.versions     27 38 39 310 311 312
 
-checksums           rmd160  6ddac659ec5da0ed4f599515b52f980a642ea91e \
-                    sha256  224e32b03eb46be70e12ef6d64e0be123a64e621ab4c0822ff6d450d52a540b9 \
-                    size    312313
+checksums           rmd160  f4ef9acdec1ea397ceec74646926c9a9c4d7e34b \
+                    sha256  e8f0f9c23a7b7cb99ded64e6c3a6f3e701d78f50c55e002b839dea7225cff7cc \
+                    size    332727
 
 if {${name} ne ${subport}} {
   depends_build-append port:py${python.version}-setuptools
@@ -49,17 +51,11 @@ if {${name} ne ${subport}} {
                         port:py${python.version}-sniffio \
                         port:py${python.version}-trio
     } else {
-        python.pep517           yes
-        python.pep517_backend   poetry
-
-        depends_test-append \
-                        port:py${python.version}-pytest
+        python.pep517_backend   hatch
 
         test.run        yes
-        test.dir        ${build.dir}/tests
-        test.cmd        python${python.branch}
-        test.target     utest.py
-        test.env        PYTHONPATH=${worksrcpath}/build/lib
+        # there currently 3 test failures in test_resolver.py
+        # and 1 in test_resolver_override.py
     }
 
     post-destroot {

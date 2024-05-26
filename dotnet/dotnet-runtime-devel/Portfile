@@ -3,9 +3,9 @@
 PortSystem          1.0
 
 name                dotnet-runtime-devel
-set main_version    8.0.0
-# See patch version in https://dotnet.microsoft.com/en-us/download/dotnet/8.0
-set patch_version   5.23280.8
+set main_version    9.0.0
+# See patch version in https://dotnet.microsoft.com/en-us/download/dotnet/9.0
+set patch_version   3.24172.9
 version             ${main_version}-preview.${patch_version}
 revision            0
 categories          dotnet
@@ -28,21 +28,21 @@ supported_archs     x86_64 arm64
 switch ${build_arch} {
     x86_64 {
         distname            dotnet-runtime-${version}-osx-x64
-        checksums           rmd160  5a018b7089e1508460c8d15bd5cbcae0db78de8d \
-                            sha256  d296e4396e103fcc8f605d5cca09e2689ec6c7e949898e3a0c263241b3c740a3 \
-                            size    29784877
+        checksums           rmd160  2d3c4012c3c3f6a3bcb2c743142b83d759e32fa2 \
+                            sha256  3c9e05646ac00e4974a38c787a8d76175eec6d1f277a8e76c1a3e89945fb6322 \
+                            size    31697052
     }
     arm64 {
         distname            dotnet-runtime-${version}-osx-arm64
-        checksums           rmd160  3106a61e90c64cb9b45ffba2199a730ac9221ca5 \
-                            sha256  c3f9479e0235ab88e93b6c8f1e620d2076231256313fc0d749786ce6a6d5a1b0 \
-                            size    28182469
+        checksums           rmd160  938e11f6de6a19d2c598ccb026e2682e67854cd6 \
+                            sha256  d8448405d7d717bf66f6a0894381bd758e7084c8010c1a44c4d691de7b8c8071 \
+                            size    29992105
     }
     default {
         known_fail yes
         pre-fetch {
             ui_error "${subport} @ ${version} only supported for architectures ${supported_archs}"
-            return -code error "Unsupported architecture"
+            return -code error "Unsupported architecture: ${build_arch}"
         }
     }
 }
@@ -60,13 +60,16 @@ build {}
 
 destroot {
     set dotnet_home ${prefix}/share/dotnet
+    set hostfxr_dir /host/fxr
     set runtime_dir /shared/Microsoft.NETCore.App
+    xinstall -d ${destroot}${dotnet_home}${hostfxr_dir}
     xinstall -d ${destroot}${dotnet_home}${runtime_dir}
 
+    move ${worksrcpath}${hostfxr_dir}/${version} ${destroot}${dotnet_home}${hostfxr_dir}
     move ${worksrcpath}${runtime_dir}/${version} ${destroot}${dotnet_home}${runtime_dir}
 }
 
 livecheck.version   [join [lrange [split ${patch_version} .] 0 0] .]
 livecheck.type      regex
-livecheck.url       https://dotnet.microsoft.com/en-us/download/dotnet/8.0
+livecheck.url       https://dotnet.microsoft.com/en-us/download/dotnet/9.0
 livecheck.regex     ".NET Runtime ${main_version}-preview.(\\d)"

@@ -5,7 +5,7 @@ PortGroup           kde4 1.1
 
 name                soprano
 version             2.9.4
-revision            6
+revision            7
 categories          devel
 maintainers         nomaintainer
 license             GPL-2+ LGPL-2+
@@ -44,6 +44,13 @@ patchfiles          patch-parsers-raptor-raptorparser.h.diff \
 configure.args-append \
                     -DSOPRANO_DISABLE_CLUCENE_INDEX=1 \
                     -DSOPRANO_DISABLE_SESAME2_BACKEND=1
+
+test.run yes
+configure.args-append \
+                    -DSOPRANO_BUILD_TESTS=ON
+configure.pre_args-replace \
+                    -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=ON \
+                    -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=OFF
 
 # the JavaVM requirement is a problem, as there is no current universal JavaVM for arm64/x86_64
 # and the kde ports can't build as arm64. So they would need an x86_64 JavaVM installed if there

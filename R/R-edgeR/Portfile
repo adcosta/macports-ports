@@ -3,18 +3,33 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             bioconductor Bioconductor edgeR 3.42.2
+R.setup             bioconductor Bioconductor edgeR 4.2.0
 revision            0
+categories-append   bioconductor
 maintainers         nomaintainer
 license             GPL-2+
 description         Empirical analysis of digital gene expression data in R
 long_description    {*}${description}
-checksums           rmd160  4b9463b2c5609601e2b70dd9cc5509fbc3561ac9 \
-                    sha256  32a734348e825d6cd18711f139f972753cb4481a9ebaab19376e8b50851d5aef \
-                    size    1814881
+checksums           rmd160  428b5356d754d6b2091e0ab409b6e0378e087947 \
+                    sha256  0f4343a340dbb609b6688d9b1eecb99bc474572c720c8ae7a21e4b30e0b86df0 \
+                    size    3430399
 
 depends_lib-append  port:R-limma \
                     port:R-locfit \
                     port:R-Rcpp
 
+patchfiles          patch-no-org.Hs.eg.db.diff
+
 compilers.setup     require_fortran
+
+depends_test-append port:R-AnnotationDbi \
+                    port:R-Biobase \
+                    port:R-BiocStyle \
+                    port:R-jsonlite \
+                    port:R-knitr \
+                    port:R-readr \
+                    port:R-rhdf5 \
+                    port:R-SeuratObject \
+                    port:R-SummarizedExperiment
+
+test.run            yes

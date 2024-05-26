@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           openssl 1.0
+PortGroup           R 1.0
+
+R.setup             github s-u PKI e1bd275a698dcf7e2fbe4a186fd68a6aa9c9e598
+version             0.1-14
+revision            0
+categories-append   crypto
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             {GPL-2 GPL-3}
+description         Public Key Infrastucture for R, \
+                    based on the X.509 standard
+long_description    {*}${description}
+homepage            https://www.rforge.net/PKI
+checksums           rmd160  35c37f21cbd1fde8e67507b2e2f564e539735387 \
+                    sha256  299fe7d5f4d1a28e70fe5d25ff6fa123bc062bed531c66e29a8b740f0e92a33f \
+                    size    86192
+github.tarball_from archive
+
+depends_build-append \
+                    port:pkgconfig
+
+depends_lib-append  port:R-base64enc
+
+depends_test-append port:R-gmp
+
+test.run            yes

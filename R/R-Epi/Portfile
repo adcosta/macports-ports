@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran bendixcarstensen Epi 2.48
+revision            1
+maintainers         nomaintainer
+license             GPL-2
+description         Statistical analysis in epidemiology
+long_description    {*}${description}
+homepage            https://bendixcarstensen.com/Epi
+checksums           rmd160  c840773aba885a47d1ec76a39337b1b9d59d8d00 \
+                    sha256  d7c7d998795894ce444560075d59eb699efcb887d0e3d50e0b0b1ed2452b2619 \
+                    size    3370888
+
+depends_lib-append  port:R-cmprsk \
+                    port:R-data.table \
+                    port:R-dplyr \
+                    port:R-etm \
+                    port:R-magrittr \
+                    port:R-numDeriv \
+                    port:R-plyr \
+                    port:R-zoo

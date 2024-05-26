@@ -3,11 +3,14 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/gopasspw/gopass 1.15.5 v
+go.setup            github.com/gopasspw/gopass 1.15.13 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
 categories          security
-maintainers         {@sikmir disroot.org:sikmir} openmaintainer
+maintainers         {@sikmir disroot.org:sikmir} \
+                    {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
 license             MIT
 
 description         The slightly more awesome Standard Unix Password Manager for Teams
@@ -16,14 +19,28 @@ homepage            https://www.gopass.pw
 
 depends_lib-append  port:gnupg2
 
-checksums           rmd160  35f7374462035876e954bb1c70685ba33eae9b15 \
-                    sha256  d37e23081abd53c6441a28f1faecc5bbdc760e921ea26fb092745a695e79f60f \
-                    size    2304217
+checksums           rmd160  54d60ce5899594bcaf4607febc0c181feff81114 \
+                    sha256  8f7ee347f517bf66a7d0760e7a5ed6c948d66737559bd04fa8da594801ed9b4f \
+                    size    2328529
 
 set go_ldflags      "-s -w -X main.version=${version}"
-build.env-delete    GO111MODULE=off GOPROXY=off
-build.args          -ldflags \"${go_ldflags}\"
+build.args          -ldflags \"${go_ldflags}\" -tags=netgo
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+
+    # Install shell completions
+    xinstall -d ${destroot}${prefix}/share/bash-completion/completions
+    xinstall -m 0644 ${worksrcpath}/bash.completion \
+        ${destroot}${prefix}/share/bash-completion/completions/${name}
+
+    xinstall -d ${destroot}${prefix}/share/fish/vendor_completions.d/
+    xinstall -m 0644 ${worksrcpath}/fish.completion \
+        ${destroot}${prefix}/share/fish/vendor_completions.d/${name}.fish
+
+    xinstall -d ${destroot}${prefix}/share/zsh/site-functions
+    xinstall -m 0644 ${worksrcpath}/zsh.completion \
+        ${destroot}${prefix}/share/zsh/site-functions/_${name}
+
+
 }

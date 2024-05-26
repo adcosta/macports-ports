@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/itchyny/bed 0.2.3 v
+go.setup            github.com/itchyny/bed 0.2.5 v
 github.tarball_from archive
 revision            0
 
@@ -26,30 +26,30 @@ destroot {
 }
 
 checksums           ${distname}${extract.suffix} \
-                        rmd160  19e3d4b2e398516fb29e1114f91a7a56e9316f2f \
-                        sha256  b4b5addb2622152073ae95202d61bae0e2c793b27220b7bf5c64f09517e94225 \
-                        size    51927
+                        rmd160  398b8a518b7775f8ca56e34ecc500c1b8bf250dd \
+                        sha256  a8fa1bddcf65fd3dd52ede2f3fc1cb2840420e9a24fb8fd8c950a9bab9d86f70 \
+                        size    53141
 
 go.vendors          golang.org/x/text \
-                        lock    v0.5.0 \
-                        rmd160  22d952d3a5226707a3ab3575c75ad6269ab28851 \
-                        sha256  ae1308be329a9c8a939243c5f44410d5155594d3d31c274bd6daa2399784ce33 \
-                        size    8354318 \
+                        lock    v0.14.0 \
+                        rmd160  e26a72d542901d19f6dde4e07746f72206fb8701 \
+                        sha256  ef54709caaafdd8b27ce3d5f7c53408f11bc5fd1688c1c4f328de8ed268b3188 \
+                        size    8972503 \
                     golang.org/x/sys \
-                        lock    v0.3.0 \
-                        rmd160  17c78e6210a6f938db21fa772584ab8c7d4e06c1 \
-                        sha256  b04ddf676ead57e0d3e367e9aa17db1b11fc20af719e479d1ca56873a2bdf06b \
-                        size    1411264 \
+                        lock    v0.19.0 \
+                        rmd160  b8d5c2b9cfad17163b4f700b771438ccf303248a \
+                        sha256  d66ea87fcd714685af230190cddc8a9de6343f1d0ab83a3688f6a4189c7ab478 \
+                        size    1449936 \
                     github.com/rivo/uniseg \
-                        lock    v0.4.3 \
-                        rmd160  8549c36ce2cf42213bec9682642a6711ef4041f3 \
-                        sha256  7578a5eac90d671db12e8ffd6c808ec285af8751bdeaa6a59bddd4341698758a \
-                        size    452761 \
+                        lock    v0.4.7 \
+                        rmd160  a9056dc9a2a80aa9c46d0ff9e54f9e2e5a498c41 \
+                        sha256  abc6a2f17b64b34b8a0c56eb9d0b53886ebbe0c88d467755c09c7fa696a16677 \
+                        size    458166 \
                     github.com/mattn/go-runewidth \
-                        lock    v0.0.14 \
-                        rmd160  7186117475d80aff012960b61daefd53c7efeca6 \
-                        sha256  71e68e76e460aff1af8b58453a5a7b2278c42f6659c8c7b4321907bdf14ee6eb \
-                        size    18269 \
+                        lock    v0.0.15 \
+                        rmd160  702d468077550681ac11c3c2f3f5c9f98a868798 \
+                        sha256  a6b5f47ffe7329895a605c356ff806dfd50b536bbc87af77773e55ad6e52d2db \
+                        size    18287 \
                     github.com/lucasb-eyer/go-colorful \
                         lock    v1.2.0 \
                         rmd160  a4183d0625e6c94474942cdc544c1061d35c4e34 \
@@ -61,7 +61,7 @@ go.vendors          golang.org/x/text \
                         sha256  ee8948a76a4cc5ba8285f03840473cf41e80e476a1317239414ee54396db82c9 \
                         size    152003 \
                     github.com/gdamore/encoding \
-                        lock    v1.0.0 \
-                        rmd160  3ed8916f763a5b51db1bcc8bd3ad06cf3d12ec07 \
-                        sha256  4f470c7308790bea8a526ea26cecbaa22345aad8dc566821cda6175b3d241ee1 \
-                        size    10900
+                        lock    v1.0.1 \
+                        rmd160  7e73cab014fe3647552b67678a397ba5ce2475e9 \
+                        sha256  dc7a586abe34b2d9562ca2aed225a1db734cc8b548a89bb238e75251d9aa0344 \
+                        size    14814

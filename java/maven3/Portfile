@@ -5,13 +5,13 @@ PortGroup select 1.0
 PortGroup java 1.0
 
 name            maven3
-version         3.9.2
+version         3.9.7
 revision        0
 
 categories      java devel
 license         Apache-2
 maintainers     {breun.nl:nils @breun} openmaintainer
-platforms       darwin
+platforms       any
 supported_archs noarch
 
 description     A Java-based build and project management environment.
@@ -35,12 +35,12 @@ master_sites    apache:maven/maven-3/${version}/binaries
 distname        apache-maven-${version}-bin
 worksrcdir      apache-maven-${version}
 
-checksums       rmd160  fe3a31c000f81eda7a18d6f44edce0a42f582349 \
-                sha256  809ef3220c6d179195c06c324cb9a6d34d8ecba566c5cfd8eb83167bc034117d \
-                size    9248920
+checksums       rmd160  411c13dd6c2f027e8399601f9c9fe7e23e7655ac \
+                sha256  c8fb9f620e5814588c2241142bbd9827a08e3cb415f7aa437f2ed44a3eeab62c \
+                size    9581488
 
 java.version    1.8+
-java.fallback   openjdk17
+java.fallback   openjdk21
 
 depends_run     port:maven_select
 

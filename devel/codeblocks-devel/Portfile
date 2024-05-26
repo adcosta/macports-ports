@@ -21,15 +21,20 @@ long_description        {*}${description}. This port tracks the upstream develop
 
 fetch.type              svn
 svn.url                 svn://svn.code.sf.net/p/codeblocks/code/trunk
-svn.revision            13311
+svn.revision            13517
 svn.method              checkout
-version                 20230615-r${svn.revision}
+version                 20240503-r${svn.revision}
 revision                0
 
 worksrcdir              trunk
 
-# fix boost detection with i386 systems
-patchfiles-append       patch-m4-boost.diff
+svn.args-append         --ignore-externals
+
+# svn info https://svn.code.sf.net/p/fortranproject/code/trunk
+set fortranproject_rev  375
+post-fetch {
+    system -W ${worksrcpath}/src/plugins/contrib/ "${svn.cmd} checkout -r${fortranproject_rev} https://svn.code.sf.net/p/fortranproject/code/trunk FortranProject"
+}
 
 use_autoconf            yes
 autoconf.cmd            ./bootstrap
@@ -45,7 +50,7 @@ depends_lib-append      port:hunspell \
                         port:bzip2
 
 compiler.cxx_standard   2011
-# https://build.macports.org/builders/ports-10.11_x86_64-builder/builds/200332/steps/install-port/logs/stdio
+# the build issue this was based on has scrolled off the buildbot logs
 compiler.blacklist-append {clang < 801}
 
 # FileManager does not build with Carbon/Cocoa
@@ -58,7 +63,7 @@ post-destroot {
     ln -s ${prefix}/lib/codeblocks/plugins ${destroot}${prefix}/share/codeblocks/plugins
 }
 
-# this will need to be reassessed if we use the full bundle
+# this will need to be reassessed if we use the full bundle build
 app.name                CodeBlocks
 app.executable          codeblocks
 app.use_launch_script   yes

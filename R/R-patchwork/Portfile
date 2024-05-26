@@ -3,20 +3,22 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github thomasp85 patchwork 1.1.2 v
+R.setup             github thomasp85 patchwork 1.2.0 v
 revision            1
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+maintainers         nomaintainer
 license             MIT
 description         Composer of ggplots
 long_description    {*}${description}
 homepage            https://patchwork.data-imaginist.com
-checksums           rmd160  bd344c22faac51fdeca8de6a773faf7d7f8571b9 \
-                    sha256  8a3e6ecb7ffdac98041e4a8e9a51d7cb766de9f91027ff2b50cfa812145aa024 \
-                    size    3103418
+checksums           rmd160  821b61e96cd0232c9444d71cc18d5bee9855773e \
+                    sha256  5ad94e1fd20ffbf630ef9ca02d2b9873a197fe9de5b258cf62a448441e242094 \
+                    size    3201005
 supported_archs     noarch
 
-depends_lib-append  port:R-ggplot2 \
-                    port:R-gtable
+depends_lib-append  port:R-cli \
+                    port:R-ggplot2 \
+                    port:R-gtable \
+                    port:R-rlang
 
 depends_test-append port:R-covr \
                     port:R-gridExtra \

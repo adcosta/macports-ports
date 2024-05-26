@@ -6,7 +6,7 @@ PortGroup           legacysupport 1.1
 PortGroup           makefile 1.0
 
 name                haproxy
-version             2.8.0
+version             2.9.7
 revision            0
 
 set branch          [join [lrange [split ${version} .] 0 1] .]
@@ -30,9 +30,9 @@ homepage            https://www.haproxy.org/
 master_sites        ${homepage}download/${branch}/src/ \
                     https://sources.openwrt.org/
 
-checksums           rmd160  ffdc25e553647da8fb09ba6c839b88600848d96e \
-                    sha256  61cdafb5db7e9174d0757b8e4bcde938352306fb7cc8ff2b5f55c26dd48a6cf7 \
-                    size    4328018
+checksums           rmd160  61251baa4f3dc97aee07cee6c0144f49d370b88e \
+                    sha256  d1a0a56f008a8d2f007bc0c37df6b2952520d1f4dde33b8d3802710e5158c131 \
+                    size    4516225
 
 openssl.branch      3
 depends_lib         port:pcre port:zlib
@@ -49,6 +49,7 @@ compwrap.compilers_to_wrap
 
 build.target        TARGET=osx
 
+configure.cflags-append "-fwrapv"
 makefile.override   PREFIX \
                     CC \
                     LD \

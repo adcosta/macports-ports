@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-set ver             2023-02
+set ver             2024-05
 github.setup        odin-lang odin ${ver} dev-
 github.tarball_from archive
 version             0.[string map {- .} ${ver}]
@@ -11,7 +11,7 @@ revision            0
 
 categories          lang
 license             BSD
-maintainers         {outlook.com:mohd.akram @mohd-akram} openmaintainer
+maintainers         {makr @mohd-akram} openmaintainer
 
 description         Odin programming language
 
@@ -21,22 +21,25 @@ long_description    Odin is a general-purpose programming language with \
 
 homepage            https://odin-lang.org/
 
-set llvm_version    14
+set llvm_version    18
 
-depends_build       port:llvm-${llvm_version}
+depends_lib         port:llvm-${llvm_version}
 
-checksums           rmd160  8bab534f365bc6fc1b73dbe863c2e05743b71422 \
-                    sha256  4430a4dfd2b52c2e103c187a4e3b32471631da8b08dc884d59f55cd1f2473b50 \
-                    size    45176207
+checksums           rmd160  0f74acc46fac6bc65d49017395e8b74ace6ccf42 \
+                    sha256  20d0b40e02a5f3a7fbb32423fb9c38c6ee616692bc036c1d71dc7843aa4a7915 \
+                    size    116222806
 
-patchfiles          patch-build.diff
+patchfiles          patch-build.diff patch-raylib.diff
 
-compiler.cxx_standard 2014
+# odin only needs c++14 but llvm needs c++17
+compiler.cxx_standard 2017
 
 use_configure       no
+configure.ldflags-append    -Wl,-rpath,${prefix}/libexec/llvm-${llvm_version}/lib
+
 build.pre_args      release
-build.args          ODIN_VERSION=dev-${ver}
-build.env           LLVM_CONFIG=llvm-config-mp-${llvm_version} \
+build.env           ODIN_VERSION=dev-${ver} \
+                    LLVM_CONFIG=llvm-config-mp-${llvm_version} \
                     CXX=${configure.cxx} \
                     CXXFLAGS=${configure.cxxflags} \
                     CPPFLAGS=${configure.cppflags} \
@@ -44,7 +47,9 @@ build.env           LLVM_CONFIG=llvm-config-mp-${llvm_version} \
 
 destroot {
     xinstall -d ${destroot}${prefix}/libexec/${name}
-    copy ${worksrcpath}/${name} ${worksrcpath}/core ${worksrcpath}/vendor \
-        ${destroot}${prefix}/libexec/${name}
+    copy ${worksrcpath}/${name} ${worksrcpath}/base ${worksrcpath}/core \
+        ${worksrcpath}/vendor ${destroot}${prefix}/libexec/${name}
+    delete \
+        {*}[glob ${destroot}${prefix}/libexec/${name}/vendor/raylib/macos*/*.dylib]
     ln -s ../libexec/${name}/${name} ${destroot}${prefix}/bin
 }

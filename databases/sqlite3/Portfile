@@ -5,10 +5,9 @@ PortGroup           clang_dependency 1.0
 
 name                sqlite3
 # don't forget to update the checksums for sqlite3-tools when updating sqlite3
-version             3.42.0
+version             3.46.0
 revision            0
 categories          databases
-platforms           darwin
 license             public-domain
 
 maintainers         {mps @Schamschula} openmaintainer
@@ -24,14 +23,14 @@ long_description    SQLite3 is an SQL database engine in a C library. \
                     an example of how to use the SQLite3 library.
 
 homepage            https://www.sqlite.org/
-master_sites        ${homepage}2023
+master_sites        ${homepage}2024
 
 set padded_ver      [string range [subst [regsub -all {\.([0-9]+)} "${version}.0.0" {[format %02d \1]}]] 0 6]
 distname            sqlite-autoconf-${padded_ver}
 
-checksums           rmd160  0752db046501ef367a3661e0d80f553000c3670f \
-                    sha256  7abcfd161c6e2742ca5c6c0895d1f853c940f203304a0b49da4e1eca5d088ca6 \
-                    size    3148813
+checksums           rmd160  2ebd70567ecd7a470f078a935da5c9d62fa07b70 \
+                    sha256  6f8e6a7b335273748816f9b3b62bbdc372a889de8782d7f048c653a447417a7d \
+                    size    3265248
 
 depends_lib         port:libedit \
                     port:ncurses \
@@ -112,6 +111,8 @@ subport ${name}-tcl {
 }
 
 subport ${name}-tools {
+    revision                0
+
     distname                sqlite-src-${padded_ver}
 
     description             A bundle of command-line tools for managing SQLite \
@@ -119,9 +120,9 @@ subport ${name}-tools {
     long_description        {*}${description}, including the sqldiff program and the \
                             sqlite3_analyzer program.
 
-    checksums       rmd160  3112097fb7741dd0edce73bd88b9ba90e317b767 \
-                    sha256  38ca56a317be37fb00bd92bc280d9b9209bd4008b297d483c41ec1f6079bfb6d \
-                    size    13910252
+    checksums       rmd160  ff80506ec6a92590d6e5fa0dcb3608f52f810846 \
+                    sha256  070362109beb6899f65797571b98b8824c8f437f5b2926f88ee068d98ef368ec \
+                    size    14275927
 
     use_zip                 yes
     depends_lib             port:tcl \

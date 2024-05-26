@@ -111,6 +111,16 @@ array set crossgcc.versions_info {
         sha256  61d684f0aa5e76ac6585ad8898a2427aade8979ed5e7f85492286c4dfc13ee86 \
         size    87451196
     }}
+    13.2.0 {xz {
+        rmd160  a6d646ed9765f973d3f63ef560edf4a50cf686c3 \
+        sha256  e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da \
+        size    87858592
+    }}
+    14.1.0 {xz {
+        rmd160  7ef2f86a35529c52a71107ae4e82400ce3c90758 \
+        sha256  e283c654987afe3de9d8080bc0bd79534b5ca0d681a73a11ff2b5d3767426840 \
+        size    92265736
+    }}
 }
 
 array set newlib.versions_info {
@@ -157,7 +167,6 @@ proc crossgcc.setup {target version} {
         name            ${crossgcc.target}-gcc
         version         ${crossgcc.version}
         categories      cross devel
-        platforms       darwin
         license         GPL-3+
         maintainers     nomaintainer
 

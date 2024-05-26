@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran segmented 1.6-4
-revision            1
+R.setup             cran vito.muggeo segmented 2.1-0
+revision            0
 categories-append   math
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+maintainers         nomaintainer
+license             GPL
 description         Regression models with break-points estimation
 long_description    {*}${description}
-checksums           rmd160  cc1916171478e4044b809812389b6f4140dae26d \
-                    sha256  472c08ae3eb1c4e784aba45f3e745b0e946bef77c26fbb9f103fd35e1a349191 \
-                    size    178319
+checksums           rmd160  c161ceb65f65f7a034cb269a8aab991313da4979 \
+                    sha256  6d7ba0248cb5aa23dfdfc3fc53b6aab2f564323c671420fc73c5274e03640cf2 \
+                    size    305990
 supported_archs     noarch
 
 test.run            yes

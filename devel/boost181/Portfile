@@ -114,6 +114,9 @@ patchfiles-append patch-boost-context-asm.diff
 # https://github.com/boostorg/fiber/pull/306
 patchfiles-append patch-fix-fiber.diff
 
+# Upstream c++17 fix: https://github.com/boostorg/functional/commit/6a573e4
+patchfiles-append patch-boost-functional.diff
+
 # Availability.h -> AvailabilityMacros.h on Tiger
 # The attempted fix:
 # https://github.com/boostorg/core/commit/128d9314d6f814930400c46c9afd34399d19132b
@@ -136,10 +139,17 @@ post-patch {
     reinplace "s|__MACPORTS_CXX__|${configure.cxx}|g" ${worksrcpath}/tools/build/src/tools/clang-darwin.jam
 }
 
+# Define BOOST_CLANG_VERSION correctly when LLVM.org clang is used instead of Apple clang.
+# https://github.com/boostorg/config/pull/487
+patchfiles-append patch-boost-clang-version-llvmorg-on-apple.diff
+
 # Build issue on some older systems
 # ld: warning: option -s is obsolete and being ignored
 # ld: internal error: atom not found in symbolIndex(__ZNSt3__1plIcNS_11char_traitsIcEENS_9allocatorIcEEEENS_12basic_stringIT_T0_T1_EERKS9_SB_) for architecture x86_64
 patchfiles-append patch-b2-build-older-OSes.diff
+
+# add an entry to asm_sources to match arm/Intel combined builds
+patchfiles-append patch-boost-asm-sources-combined-arm-intel.diff
 
 proc write_jam s {
     global worksrcpath
@@ -267,7 +277,7 @@ post-destroot {
     }
 }
 
-set pythons_versions {2.7 3.5 3.6 3.7 3.8 3.9 3.10 3.11}
+set pythons_versions {2.7 3.5 3.6 3.7 3.8 3.9 3.10 3.11 3.12}
 
 set pythons_ports {}
 foreach v ${pythons_versions} {
@@ -312,7 +322,7 @@ foreach v ${pythons_versions} {
 }
 
 if {![variant_isset debug]} {
-    set selected_python python311
+    set selected_python python312
     foreach v ${pythons_versions} {
         set s [string map {. {}} ${v}]
         if {[variant_isset python${s}]} {
@@ -349,7 +359,7 @@ variant no_single description {Disable building single-threaded libraries} {
 }
 
 subport ${name}-numpy {
-    revision 3
+    revision 5
     description Boost.Numpy library
     long_description {*}${description}
     depends_lib port:boost${tag}
@@ -374,7 +384,7 @@ subport ${name}-numpy {
 
 if {$subport eq $name} {
 
-    revision 6
+    revision 10
 
     patchfiles-append patch-disable-numpy-extension.diff
 
@@ -492,11 +502,11 @@ variant universal {
     build.args-append   pch=off
 
     if {[lsearch ${configure.universal_archs} arm*] != -1} {
-        build.args-append address-model=64 architecture=combined
+        build.args-append address-model=64 architecture=arm+x86
     } else {
         if {[lsearch ${configure.universal_archs} ppc*] != -1} {
             if {[lsearch ${configure.universal_archs} *86*] != -1} {
-                build.args-append architecture=combined
+                build.args-append architecture=arm+x86
             } else {
                 build.args-append architecture=power
             }

@@ -4,17 +4,17 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran primme PRIMME 3.2-4
-revision            0
+R.setup             cran primme PRIMME 3.2-6
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3
 description         PReconditioned Iterative MultiMethod Eigensolver \
                     for solving symmetric/Hermitian eigenvalue problems and singular value problems
 long_description    {*}${description}
-checksums           rmd160  df1337637cc79bd1d11a30445420097fff9944bc \
-                    sha256  dbfdacd2ba2329e40db6cecbbb4bab6552850ffd1875e1ff081caa65bf4eaba3 \
-                    size    395105
+checksums           rmd160  373606546cdb17b30ac0708442ded161a0120a0b \
+                    sha256  a08637edc732905c16b81874ade69e966214d46a0bcbb216fac8e66be2ed7c64 \
+                    size    396516
 
 depends_lib-append  port:R-Rcpp
 

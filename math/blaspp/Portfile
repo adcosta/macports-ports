@@ -5,16 +5,16 @@ PortGroup           cmake 1.1
 PortGroup           github 1.0
 PortGroup           linear_algebra 1.0
 
-github.setup        icl-utk-edu blaspp 2023.01.00 v
-revision            0
+github.setup        icl-utk-edu blaspp 2023.11.05 v
+revision            1
 categories          math science
 license             BSD
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 description         C++ API for the Basic Linear Algebra Subroutines
 long_description    {*}${description}
-checksums           rmd160  e45e1c7ab77f9adcaf5fe8b7d4b4bd1d3b4807c2 \
-                    sha256  311b8373cd7a391e7fe4f5614970dc8518f123f9c645052f6a094ce59a771c11 \
-                    size    217832
+checksums           rmd160  eebdcad4c306b4b25a8b56f83cdedec57af498e4 \
+                    sha256  a25b155d7be158f2315a453625711c6b7ab6bac2531d7944a329189d5ccd9c50 \
+                    size    226379
 github.tarball_from archive
 
 platform darwin {

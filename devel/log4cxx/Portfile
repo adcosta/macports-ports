@@ -5,18 +5,17 @@ PortGroup           cmake 1.1
 
 name                log4cxx
 version             1.1.0
-revision            0
+revision            1
+
 categories          devel
 license             Apache-2
-
-maintainers         nomaintainer
+maintainers         {mascguy @mascguy} openmaintainer
 
 description         log4cxx is a port to C++ of the log4j project
 long_description    Apache log4cxx is a logging framework for C++ patterned \
                     after Apache log4j. Apache log4cxx uses Apache Portable \
                     Runtime for most platform-specific code and should be \
                     usable on any platform supported by APR.
-
 homepage            https://logging.apache.org/log4cxx/
 
 distname            apache-log4cxx-${version}
@@ -51,7 +50,7 @@ platform darwin 10 {
 configure.args-append \
                     -DPREFER_BOOST:BOOL=OFF
 
-patch.pre_args      -p1
+patch.pre_args-replace  -p0 -p1
 patchfiles-append   gcc43.patch
 # See: https://github.com/fmtlib/fmt/issues/2759
 patchfiles-append   patch-fmt.diff

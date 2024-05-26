@@ -4,21 +4,25 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran samuel-watson glmmrOptim 0.2.4
+R.setup             cran samuel-watson glmmrOptim 0.3.4
 revision            1
 categories-append   math
 maintainers         nomaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Approximate optimal experimental designs using generalised linear mixed models
 long_description    {*}${description}
-checksums           rmd160  d27bbaba8998b8b4b49bac630fb594b7702214b4 \
-                    sha256  d1707074550a705a59727c34e0c4fdbcf23f7f7042360ca14a0d24ec72da39cb \
-                    size    26434
+checksums           rmd160  fa01bd37ad55c842cc011c57bbef79e4463f2465 \
+                    sha256  70b92c5a01b72b835c9da1afff579b5e4501c188343360d6f4c1e1fdcd3f747c \
+                    size    35423
 
-depends_lib-append  port:R-digest \
+depends_lib-append  port:R-BH \
+                    port:R-digest \
                     port:R-glmmrBase \
                     port:R-Rcpp \
-                    port:R-RcppEigen
+                    port:R-RcppEigen \
+                    port:R-RcppProgress \
+                    port:R-rminqa \
+                    port:R-SparseChol
 
 compilers.setup     require_fortran
 
@@ -26,4 +30,5 @@ depends_test-append port:R-CVXR \
                     port:R-testthat
 
 # There are no specific tests yet.
+# https://github.com/samuel-watson/glmmrOptim/issues/15
 test.run            yes

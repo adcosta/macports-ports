@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # Revert to GitHub once updated there.
-R.setup             cran r-lib xml2 1.3.4
-revision            1
+R.setup             cran r-lib xml2 1.3.6
+revision            2
 categories-append   devel textproc
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
@@ -13,14 +13,16 @@ description         Bindings to libxml2
 long_description    The xml2 package is a binding to libxml2, making it easy to work \
                     with HTML and XML from R. The API is somewhat inspired by jQuery.
 homepage            https://xml2.r-lib.org
-checksums           rmd160  8eed5336ccde723a2025bcc2edab27a5ed451699 \
-                    sha256  340bb1a18e643a5008c0b4e92d71c3b0abacb44f1742e3a77d0cb33cb73b3030 \
-                    size    272605
+checksums           rmd160  41b41e596c43c83a5a26ca0e39cca6493cb2feca \
+                    sha256  e81991ff99bff3616dde8683c1327194e3ea64fa3b8062f52d8ce32673dd308f \
+                    size    294715
 
 depends_build-append \
                     port:pkgconfig
 depends_lib-append  path:lib/pkgconfig/icu-uc.pc:icu \
-                    port:libxml2
+                    port:libxml2 \
+                    port:R-cli \
+                    port:R-rlang
 
 depends_test-append port:R-covr \
                     port:R-curl \

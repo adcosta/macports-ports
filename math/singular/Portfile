@@ -8,12 +8,11 @@ PortGroup           compiler_blacklist_versions 1.0
 # clock_gettime
 legacysupport.newest_darwin_requires_legacy 15
 
-github.setup        Singular Singular 4-3-2p2 Release-
+github.setup        Singular Singular 4-4-0 Release-
 name                singular
 revision            0
 version             [string map {- .} ${github.version}]
 categories          math
-platforms           darwin
 maintainers         {@catap korins.ky:kirill} openmaintainer
 license             {GPL-2 GPL-3}
 description         the Singular computer algebra system
@@ -23,9 +22,9 @@ long_description \
     geometry, and singularity theory.
 homepage            https://www.singular.uni-kl.de/
 
-checksums           rmd160  6e418df33304486101b4b10198a7aead615d4a64 \
-                    sha256  04d88ed4a33dc0a2ceddff4bad13d04a8014cfef0a95d0d5bfd84db7802b2e79 \
-                    size    13756650
+checksums           rmd160  83126d27a2953ac7d9db7b913b731af5ebe3975a \
+                    sha256  260d9a25aecfe9971186b6fcfe6cdbe2a1f63af7915d452066323c9434f39e13 \
+                    size    13796887
 
 # clang: error: unknown argument: '-fno-delete-null-pointer-checks'
 # https://trac.macports.org/ticket/65804

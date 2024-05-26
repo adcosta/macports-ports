@@ -3,12 +3,12 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        usbids usbids a5edeafb6099d24bde605b628d0ba47a3502bdd8
-version             2022.05.20
+github.setup        usbids usbids a4cde95c4154b705c2f576ebdfddf1917c6774ce
+version             2024.01.30
 revision            0
-checksums           rmd160  78544ce753af43f7edcef55e92386c9b599713bd \
-                    sha256  66bce7365bf54fff588b6bc9aa04148b1d21374e016aa9dce6a17fbc90fd80d2 \
-                    size    263749
+checksums           rmd160  7a033f5e2a285be0540d902fa31d2ef74237a0af \
+                    sha256  b592f9de29de70bb5aecc7f5a4b65bffccc6265e03dc45c7a21dd674dbb9612d \
+                    size    267260
 
 categories          sysutils
 license             {GPL-2+ BSD}

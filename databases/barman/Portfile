@@ -4,11 +4,13 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                barman
-version             3.4.0
+version             3.10.0
+revision            0
 categories          databases
-platforms           darwin
+platforms           {darwin any}
+supported_archs     noarch
 license             GPL-3
-maintainers         {outlook.com:mohd.akram @mohd-akram} openmaintainer
+maintainers         {makr @mohd-akram} openmaintainer
 
 description         Backup and Recovery Manager for PostgreSQL
 
@@ -21,15 +23,18 @@ long_description    Barman (Backup and Recovery Manager) is an open-source \
 
 homepage            https://www.pgbarman.org
 
-checksums           rmd160  de861e36ba96c8bcd57f1f5af4c8ca47695a0aaf \
-                    sha256  d60505a9466091a6a8a5abe11c764a7827649b5eb6ebad7029e6f59a14f93ccc \
-                    size    1318662
+checksums           rmd160  7cbc8c8bc2d0e48c6a65431e509592e21ea09f81 \
+                    sha256  c40b42481a16b960e19d803bbe1f7d549749a5089d99d49cf77ec129297074a0 \
+                    size    1613799
 
-python.default_version 311
+python.default_version 312
 
+# setuptools for distutils
+# https://github.com/EnterpriseDB/barman/issues/750
 depends_lib-append  port:py${python.version}-argcomplete \
                     port:py${python.version}-dateutil \
-                    port:py${python.version}-psycopg2
+                    port:py${python.version}-psycopg2 \
+                    port:py${python.version}-setuptools
 
 set conf_dir        ${prefix}/etc/barman.d
 set home_dir        ${prefix}/var/lib/${name}
@@ -54,8 +59,9 @@ destroot.keepdirs   ${destroot}${conf_dir} \
                     ${destroot}${log_dir}
 
 post-destroot {
-    xinstall -m 644 ${worksrcpath}/doc/barman.conf \
-        ${destroot}${prefix}/etc/barman.conf
+    xinstall -d ${destroot}${prefix}/share/doc/${name}
+    copy ${worksrcpath}/doc/barman.conf ${destroot}${prefix}/share/doc/${name}
+
     foreach p [glob ${destroot}${python.prefix}/share/man/man1/*.1] {
         ln -s [string range $p [string length ${destroot}] end] \
             ${destroot}${prefix}/share/man/man1/
@@ -68,4 +74,10 @@ post-destroot {
     xinstall -d ${destroot}${conf_dir}
     xinstall -o ${name} -g ${name} -d ${destroot}${home_dir}
     xinstall -o ${name} -g ${name} -d ${destroot}${log_dir}
+}
+
+post-activate {
+    if {![file exists ${prefix}/etc/barman.conf]} {
+        copy ${prefix}/share/doc/${name}/barman.conf ${prefix}/etc/
+    }
 }

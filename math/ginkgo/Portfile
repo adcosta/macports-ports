@@ -5,8 +5,7 @@ PortGroup           cmake 1.1
 PortGroup           github 1.0
 PortGroup           mpi 1.0
 
-github.setup        ginkgo-project ginkgo e3467eb0145c0ac87d20515e0a2bbf4a8b75b228
-version             1.6.0
+github.setup        ginkgo-project ginkgo 1.7.0 v
 revision            0
 categories          math parallel
 license             BSD
@@ -14,9 +13,10 @@ maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 description         Numerical linear algebra software package
 long_description    A numerical linear algebra library targeting many-core architectures.
 homepage            https://ginkgo-project.github.io
-checksums           rmd160  6b76c4fed0f71c0613174ce9e339fb624f1d36cc \
-                    sha256  6bdb29670e8904b079805ea17838675f204b9405dd59213d705e91cdfcf3a89c \
-                    size    12781152
+checksums           rmd160  f36e609f28bd2f756325aec7a5dc751b4d39b53c \
+                    sha256  f4b362bcb046bc53fbe2e578662b939222d0c44b96449101829e73ecce02bcb3 \
+                    size    13080034
+github.tarball_from archive
 
 cmake.build_type    Release
 
@@ -88,9 +88,12 @@ variant openmp description "Use OpenMP" {
 }
 
 # FIXME: Upstream has broken this in 1.6.0 for Clang.
+# Issue: https://github.com/ginkgo-project/ginkgo/issues/1482
 # default_variants    +openmp
 
 variant tests description "Enable testing" {
+    # Test failures on PowerPC: https://github.com/ginkgo-project/ginkgo/issues/1260
+    # Test failures on aarch64: https://github.com/ginkgo-project/ginkgo/issues/1481
     depends_test-append port:gtest
 
     configure.pre_args-replace \

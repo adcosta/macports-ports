@@ -8,7 +8,7 @@ PortGroup       compiler_blacklist_versions 1.0
 PortGroup       boost 1.0
 PortGroup       legacysupport 1.1
 
-github.setup    qbittorrent qBittorrent 4.5.3 release-
+github.setup    qbittorrent qBittorrent 4.6.4 release-
 revision        0
 conflicts       qBittorrent-qt5
 categories      net
@@ -26,9 +26,9 @@ long_description \
 
 homepage        https://www.qbittorrent.org
 
-checksums       rmd160  e7534ba6e15375d9ba0f99a055407fdca1b57ba1 \
-                sha256  32e31752bc2e2db29d3d6c289c75a6f1a115534d4353bd1b2655262c96ad7de6 \
-                size    8823613
+checksums       rmd160  597b4615af0d8a85610e3252a73056492181293d \
+                sha256  c9b162026e4bb15eea7cc7725b152666d7d63add368885a479e722fa3af20b93 \
+                size    9072494
 
 qt6.blacklist   {< 6.2}
 
@@ -53,14 +53,14 @@ depends_lib-append \
 
 boost.depends_type  \
                 build
+boost.version   1.81
 
 configure.cxxflags-append \
-                -std=c++17
-
+                -std=c++20
 compiler.cxx_standard \
-                2017
+                2020
 compiler.blacklist-append \
-                *gcc-3.* *gcc-4.* {clang < 900.0.39.2}
+                {clang < 1600} {*gcc-[4-9]*} {*clang-[3-9]*}
 
 # undefined symbols for std::filesystem on 10.14
 legacysupport.newest_darwin_requires_legacy \
@@ -90,6 +90,7 @@ destroot {
 
 variant gui description {Enable GUI} {
                 configure.args-replace -DGUI=OFF -DGUI=ON
+                qt6.depends_lib-append qtsvg
 }
 
 variant webui description {Enable WebUI} {

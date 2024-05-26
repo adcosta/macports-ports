@@ -3,17 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran vdorie stan4bart 0.0-6
-revision            2
+R.setup             cran vdorie stan4bart 0.0-8
+revision            0
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3+
 description         Uses Stan sampler and math library to semi-parametrically fit linear and multi-level models \
                     with additive Bayesian Additive Regression Tree (BART) components
 long_description    {*}${description}
-checksums           rmd160  b7b183e0a8462d20ae4d9d33830754f04be8706f \
-                    sha256  ba343ad44bb19246dfe59b6a3684ce02805564c0c28bb664f71840e7aa79b584 \
-                    size    1396653
+checksums           rmd160  336d22136d6fd2351a3de1f67c1975047393654b \
+                    sha256  c4aa45414406472bb187b7fa3e53ad05602e8788bef254a29e685c8006d50ac4 \
+                    size    1397359
 
 depends_lib-append  port:R-BH \
                     port:R-dbarts \

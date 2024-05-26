@@ -3,17 +3,15 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran powerindexR 1.0.2
-revision            0
+R.setup             cran livinoa powerindexR 1.5
+revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-2
 description         Measure the power in voting systems
 long_description    {*}${description}
-checksums           rmd160  15a361fc7a557cee0523c4880098aa5f1e82e227 \
-                    sha256  d7ee28aee49e0bebe3d726d7d1a3aadcdabc3e46c376fc338ba59edbf781cda3 \
-                    size    11489
+checksums           rmd160  885adb2c7eb3832020322bcca2fec932c5cb6b84 \
+                    sha256  837dbfa87020dcd88b1c8306e23337b7fb12158f168d62657f7ef1d0b9ad45b6 \
+                    size    12342
 supported_archs     noarch
-
-depends_lib-append  port:R-CoopGame
 
 test.run            yes

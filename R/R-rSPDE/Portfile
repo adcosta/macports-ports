@@ -4,18 +4,39 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version is archaic.
-# r-universe is broken: https://github.com/davidbolin/rSPDE/issues/6
-R.setup             cran davidbolin rSPDE 2.3.1
-revision            0
+R.setup             cran davidbolin rSPDE 2.3.3
+revision            1
 categories-append   math
 maintainers         nomaintainer
 license             GPL-3+
 description         Rational approximations of fractional stochastic partial differential equations
 long_description    {*}${description}
 homepage            https://davidbolin.github.io/rSPDE
-checksums           rmd160  bf365b01ecd95579fe21ac84c166051b1120791c \
-                    sha256  3cdf79ab1e840eba8062ffd38b3bd37c010af34c83b94d71934489fbecb8ad4c \
-                    size    4373239
+checksums           rmd160  82b4aab1c436c97b6ea0377f97c0cf4f286f19bf \
+                    sha256  d89b872feb58bac5795780512de36b3a44eaefbefaa9e582e635413b51cb03d0 \
+                    size    2870386
 supported_archs     noarch
 
-depends_lib-append  port:R-numDeriv
+depends_lib-append  port:R-broom \
+                    port:R-fmesher \
+                    port:R-lifecycle
+
+patchfiles          patch-no-INLA.diff
+
+depends_test-append port:R-doParallel \
+                    port:R-dplyr \
+                    port:R-foreach \
+                    port:R-ggplot2 \
+                    port:R-knitr \
+                    port:R-numDeriv \
+                    port:R-optimParallel \
+                    port:R-rmarkdown \
+                    port:R-RSpectra \
+                    port:R-scoringRules \
+                    port:R-sn \
+                    port:R-splancs \
+                    port:R-testthat \
+                    port:R-tidyr \
+                    port:R-viridis
+
+test.run            yes

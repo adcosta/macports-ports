@@ -3,14 +3,15 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran kwstat agridat 1.21
+R.setup             cran kwstat agridat 1.23
 revision            1
 maintainers         nomaintainer
-license             public-domain
+license             MIT
 description         Agricultural Datasets
 long_description    {*}${description}
 homepage            https://kwstat.github.io/agridat
-checksums           rmd160  fd27f6fddec564b1791f31ce46dd6aaeb1dc2c87 \
-                    sha256  299a9070cf1359ea0439df06efadc7438bc640155223e7700dc0da224dd91ac6 \
-                    size    2706868
+checksums           rmd160  00b3fdafe193c468410dbe81068b18bb27ac7a59 \
+                    sha256  985e276351ce3f9e0d13360056f99899d7cf3bdfe5671b7c0be68b276104b89f \
+                    size    2864492
 supported_archs     noarch
+platforms           {darwin any}

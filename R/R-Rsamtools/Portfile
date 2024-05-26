@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             bioconductor Bioconductor Rsamtools 2.16.0
+R.setup             bioconductor Bioconductor Rsamtools 2.20.0
 revision            0
+categories-append   bioconductor
 maintainers         nomaintainer
 license             Artistic-2
-description         Binary alignment (BAM), FASTA, variant call (BCF) and tabix file import
+description         Binary alignment (BAM), FASTA, variant call (BCF) \
+                    and tabix file import
 long_description    {*}${description}
-homepage            https://github.com/Bioconductor/Rsamtools
-checksums           rmd160  580af1c3ac4c78d3f25fe14c6fb9e5d2a3db2cac \
-                    sha256  9489323fa8674e876b320c9422f9eb8d72d9a3bb2e968ce9fc6757e9eb3670a2 \
-                    size    2918582
+checksums           rmd160  7a5d6a2e2d3a1bc414c9de750aa853a9596b80b2 \
+                    sha256  689d914c78a085d15cf6d8a2511cd9ae2c6f2c95755ded799228beca7f039f12 \
+                    size    2920003
 
 depends_lib-append  port:curl \
                     port:R-BiocGenerics \

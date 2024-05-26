@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Locale-Codes 3.74
+perl5.setup         Locale-Codes 3.78
 revision            0
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
@@ -14,9 +14,9 @@ long_description    {*}${description}
 platforms           {darwin any}
 supported_archs     noarch
 
-checksums           rmd160  65283c993e016d5e70d6df4b637cfa0b71243890 \
-                    sha256  a310b4cad11d2708ab3d602724d16f5ef01362d57de57cb5e99e1221e9a16ecb \
-                    size    869833
+checksums           rmd160  56d6f74741ab641d41b5dd6b597bdcab671ce9aa \
+                    sha256  5529c6d06556a04da1f2e0f13d1335695d04b19370858f6f051e2421687d8b0e \
+                    size    865135
 
 if {${perl5.major} != ""} {
     depends_build-append \

@@ -3,9 +3,12 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/walles/moar 1.15.2 v
+go.setup            github.com/walles/moar 1.23.15 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
+
+conflicts           MoarVM
 
 description         Moar is a pager. It's designed to just do the right thing \
                     without any configuration.
@@ -15,6 +18,10 @@ long_description    Moar should work as a drop-in replacement for Less. \
                     support, incremental search and automatic decompression, \
                     among others.
 
+checksums           rmd160  82701c2b48c4c14eede3d14db6ebd8e4247e9fe7 \
+                    sha256  d2edfc143eb3c71ea1ce51753b60da19f907013a16649ff81cd42cb7e3b3835b \
+                    size    2804019
+
 categories          textproc
 installs_libs       no
 license             FreeBSD
@@ -22,17 +29,28 @@ maintainers         {gmail.com:j.lopez.r @jlopezr} \
                     {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
+set install_name ${name}
+
+variant pager description {Install as moar-pager} {
+    set install_name ${name}-pager
+
+    conflicts-delete MoarVM
+    patchfiles       patch-moar-1.diff
+}
+
+build.pre_args-append \
+    -ldflags \"-X main.versionString=${version}\"
+
 destroot {
-    xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+    xinstall -m 0755 ${worksrcpath}/${name} \
+        ${destroot}${prefix}/bin/${install_name}
 
     xinstall -d ${destroot}${prefix}/share/man/man1
     xinstall -m 0644 \
-        ${worksrcpath}/${name}.1 ${destroot}${prefix}/share/man/man1/
+        ${worksrcpath}/${name}.1 \
+        ${destroot}${prefix}/share/man/man1/${install_name}.1
 }
 
-checksums           rmd160  10c79a63709064a703c6a07144e4853a1f3d8192 \
-                    sha256  45374ead069d9aa797b329a633241e3de07625242d951be49dbdd959c6c60153 \
-                    size    2780812
-
-# Allow Go to fetch deps at build time
-build.env-delete    GO111MODULE=off GOPROXY=off
+notes {
+    The pager variant is compatible with MoarVM for raku and nqp development.
+}

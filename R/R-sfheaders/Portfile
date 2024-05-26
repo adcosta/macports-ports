@@ -4,16 +4,16 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran dcooley sfheaders 0.4.2
+R.setup             cran dcooley sfheaders 0.4.4
 revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
 description         Build sf objects from R and Rcpp
 long_description    {*}${description}
 homepage            https://dcooley.github.io/sfheaders
-checksums           rmd160  933d7f678a45ff35ffdb827ca75625c8f4999392 \
-                    sha256  ed9fb934c537fb6f126886f8e5997727de856e32fc3d38911b61a3a83faa7b2c \
-                    size    84283
+checksums           rmd160  ce6572a4d7a81afb341e57fb9a3389a266f7bb80 \
+                    sha256  f65ffe67b1d07beb6904b8960c66be684f5526b4d6450ab46c630c77e9b9bd07 \
+                    size    84537
 
 depends_lib-append  port:R-geometries \
                     port:R-Rcpp

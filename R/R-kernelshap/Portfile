@@ -1,0 +1,23 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             github ModelOriented kernelshap 0.4.1
+revision            1
+categories-append   math
+maintainers         nomaintainer
+license             GPL-2+
+description         Kernel SHAP
+long_description    {*}${description}
+checksums           rmd160  118f62c00bcc858246075882d3cff4d173618028 \
+                    sha256  c4ae3017bccead7d42c67fad0a2a42f6a63d11d090d321aad2766ec344fefd9f \
+                    size    446176
+supported_archs     noarch
+
+depends_lib-append  port:R-foreach
+
+depends_test-append port:R-doFuture \
+                    port:R-testthat
+
+test.run            yes

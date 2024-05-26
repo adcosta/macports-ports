@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                aspnetcore-runtime-7
-version             7.0.7
+version             7.0.18
 revision            0
 categories          dotnet
 license             MIT
@@ -20,21 +20,21 @@ long_description    .NET is a free, cross-platform, open source developer platfo
                     to build for web, mobile, desktop, games, and IoT.
 
 homepage            https://dotnet.microsoft.com/
-platforms           darwin
+platforms           {darwin any}
 supported_archs     x86_64 arm64
 
 switch ${build_arch} {
     x86_64 {
         distname            aspnetcore-runtime-${version}-osx-x64
-        checksums           rmd160  f36bde08359110b313124fcf335f22452d00ca53 \
-                            sha256  01162f61d69af752f0f32efa0d12bca14cb47b01cb39332385981c4042992d50 \
-                            size    40564428
+        checksums           rmd160  bd6ea0f01980d1a9af745ac5de5e40c62ce973fd \
+                            sha256  23642276ed20fb61542045142cf40584baa3641c596e68caa1d74b5309ba3280 \
+                            size    40586093
     }
     arm64 {
         distname            aspnetcore-runtime-${version}-osx-arm64
-        checksums           rmd160  3719b71227c8010c83708d936ba25dacd01402b0 \
-                            sha256  85f4f5106fa4fabe7fb5616740067c4840df4f639b535fd3dc33a5c2f0826630 \
-                            size    38642011
+        checksums           rmd160  d84b4e085bce61ead7f63f3935b173be807728e0 \
+                            sha256  0ff79910fa149059083c86fd84ed1335aebc854b4bde810c1807e7708e6951ac \
+                            size    38660153
     }
     default {
         known_fail yes
@@ -52,7 +52,8 @@ extract.mkdir       yes
 
 use_configure       no
 
-depends_run         port:dotnet-cli
+depends_run         port:dotnet-cli \
+                    port:dotnet-runtime-7
 
 build {}
 

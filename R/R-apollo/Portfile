@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran apollo 0.2.9
-revision            0
+R.setup             cran apolloChoiceModelling apollo 0.3.2
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-2
 description         Tools for choice model estimation and application
 long_description    {*}${description}
-checksums           rmd160  648a4e59a27f5044bd079be8a938d1ba79ba5687 \
-                    sha256  a3e6ff3427bb5bc0105fae050145324feb83891d464e3a6d9394201b2831d11c \
-                    size    508443
+homepage-append     http://www.apolloChoiceModelling.com
+checksums           rmd160  e71be88b15c6a99700b6bd1399c353bd384e8bbd \
+                    sha256  ddf828ab22d5ab1c5b6dd858acf59208bf62bf36e1a94771c8363df597f9ef25 \
+                    size    511399
 
 depends_lib-append  port:R-bgw \
                     port:R-cli \
@@ -28,6 +29,7 @@ depends_lib-append  port:R-bgw \
                     port:R-RcppArmadillo \
                     port:R-RcppEigen \
                     port:R-RSGHB \
+                    port:R-Rsolnp \
                     port:R-stringr \
                     port:R-tibble
 

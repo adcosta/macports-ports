@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran fbartos zcurve 2.4.1
+revision            0
+categories-append   math
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             GPL-3
+description         Implementation of z-curves
+long_description    {*}${description}
+homepage            https://fbartos.github.io/zcurve
+checksums           rmd160  adf650cca301620badeb598f45bac5761f4e6074 \
+                    sha256  dccaa1152ca06e8f46a7c326695e4ae10bd8237caba4d153a7df7042c546578b \
+                    size    216322
+
+depends_lib-append  port:R-evmix \
+                    port:R-ggplot2 \
+                    port:R-nleqslv \
+                    port:R-Rcpp \
+                    port:R-Rdpack \
+                    port:R-rlang
+
+depends_test-append port:R-spelling \
+                    port:R-testthat \
+                    port:R-vdiffr
+
+test.run            yes

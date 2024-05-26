@@ -14,15 +14,17 @@ compiler.cxx_standard 2011
 compiler.blacklist-append {clang < 900}
 
 name                vtk
-version             9.1.0
-revision            4
+version             9.3.0
+revision            1
 categories          graphics devel
 platforms           darwin
 license             BSD
 
 set branch          [join [lrange [split ${version} .] 0 1] .]
 
-maintainers         {stromnov @stromnov} {@rdbisme gmail.com:rubendibattista} openmaintainer
+maintainers         {stromnov @stromnov} \
+                    {@Dave-Allured noaa.gov:dave.allured} \
+                    openmaintainer
 
 description         Visualization Toolkit (VTK)
 
@@ -35,15 +37,15 @@ master_sites        http://www.vtk.org/files/release/${branch}
 
 distname            VTK-${version}
 
-checksums           rmd160  bfdaaa9ddc5723becf338e1c0374b0acab740ef1 \
-                    sha256  8fed42f4f8f1eb8083107b68eaa9ad71da07110161a3116ad807f43e5ca5ce96 \
-                    size    47871165
+checksums           rmd160  8e45c2178c4c7890fdb1a1d7840698cbcdd7ab16 \
+                    sha256  fdc7b9295225b34e4fdddc49cd06e66e94260cb00efee456e0f66568c9681be9 \
+                    size    99932810
 
 mpi.setup
 
 depends_lib-append \
     port:double-conversion \
-    port:eigen3 \
+    path:share/pkgconfig/eigen3.pc:eigen3 \
     port:expat \
     port:freetype \
     port:gl2ps \
@@ -100,7 +102,7 @@ variant qt5 description {Add Qt5 support.} {
 }
 
 # Supported pythons
-set python_versions {27 36 37 38 39 310 311}
+set python_versions {38 39 310 311}
 
 foreach pyver ${python_versions} {
     # Conflicting python versions

@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran sjmgarnier viridis 0.6.3
-revision            0
+R.setup             cran sjmgarnier viridis 0.6.5
+revision            1
 maintainers         nomaintainer
 license             MIT
 description         Colorblind-friendly color maps for R
 long_description    {*}${description}
 homepage            https://sjmgarnier.github.io/viridis
-checksums           rmd160  f60c755a8d6866f935bdcd1864a98b18adeb3f80 \
-                    sha256  4a60b79745997219601a0cd1d85bc5eb8a9840ed732b06ef539dd33e1c7f1ffc \
-                    size    3049132
+checksums           rmd160  db8781fcf3fec5695fa9dc893b5c170fc255e119 \
+                    sha256  862b5cb6be115deea0207cdd3c8bb33de28552cfdc29900777512fd488d0005c \
+                    size    3047363
 supported_archs     noarch
 
 depends_lib-append  port:R-ggplot2 \

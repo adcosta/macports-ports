@@ -5,16 +5,21 @@ PortSystem       1.0
 name             openjdk8-corretto
 categories       java devel
 maintainers      {breun.nl:nils @breun} openmaintainer
-platforms        darwin
+
+# See https://aws.amazon.com/corretto/faqs/#Using_Amazon_Corretto for minimum supported OS version
+# macOS 12 → Darwin 21 (https://trac.macports.org/wiki/PortfileRecipes#compare-osx-darwin-version)
+platforms        {darwin any} {darwin >= 21}
+
 # This port uses prebuilt binaries; 'NoMirror' makes sure MacPorts doesn't mirror/distribute these third-party binaries
 license          GPL-2 NoMirror
+
 # This port uses prebuilt binaries for a particular architecture; they are not universal binaries
 universal_variant no
 
 # https://github.com/corretto/corretto-8/releases
 supported_archs  x86_64 arm64
 
-version      8.372.07.1
+version      8.412.08.1
 revision     0
 
 description  Amazon Corretto OpenJDK 8 (Long Term Support)
@@ -24,27 +29,17 @@ master_sites https://corretto.aws/downloads/resources/${version}/
 
 if {${configure.build_arch} eq "x86_64"} {
     distname     amazon-corretto-${version}-macosx-x64
-    checksums    rmd160  f3100eebfd9c51c758cdab504a85171fb06cd4cd \
-                 sha256  2cce42e96fe56e85a3ed9d2d28ce56133054fc4be4e20085e869a05f121dcbf0 \
-                 size    118746691
+    checksums    rmd160  acb7d98a14a9dbe17c2195bde4d7e9ad62e76cfa \
+                 sha256  edb4b85d5ad81a4d1cb29516e15ec99d065537a7b9fed6001d7653a6fcece7a3 \
+                 size    118465453
 } elseif {${configure.build_arch} eq "arm64"} {
     distname     amazon-corretto-${version}-macosx-aarch64
-    checksums    rmd160  d014e0559d5a51abcc6b5fb0e1c1444581507451 \
-                 sha256  5f34b20138b6fe0adbb410fb0fdfa3183cd486770d6045865cf9336850e55b4d \
-                 size    104171446
+    checksums    rmd160  87e67ff3a925d13a2b2b13c99b5680c8e4be9c3c \
+                 sha256  9d328d143afefb3bb0612297aa0b339fc1afe390d9f1fde0fe750dacdd56f51d \
+                 size    102889992
 }
 
 worksrcdir   amazon-corretto-8.jdk
-
-# https://trac.macports.org/wiki/PortfileRecipes#compare-osx-darwin-version
-if {${os.platform} eq "darwin" && ${os.major} < 20} {
-    # See https://github.com/corretto/corretto-8/blob/release-8.372.07.1/CHANGELOG.md
-    known_fail yes
-    pre-fetch {
-        ui_error "${name} ${version} is only supported on macOS 11 Big Sur or later."
-        return -code error
-    }
-}
 
 homepage     https://aws.amazon.com/corretto/
 
@@ -83,17 +78,21 @@ test.args   -version
 # macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, which is not under ${prefix}.
 destroot.violate_mtree yes
 
-set target /Library/Java/JavaVirtualMachines/${name}
-set destroot_target ${destroot}${target}
+set jvms /Library/Java/JavaVirtualMachines
+set jdk ${jvms}/${name}
 
 destroot {
-    xinstall -m 755 -d ${destroot_target}
-    copy ${worksrcpath}/Contents ${destroot_target}
+    xinstall -m 755 -d ${destroot}${prefix}${jdk}
+    copy ${worksrcpath}/Contents ${destroot}${prefix}${jdk}
+
+    # macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, so let's create a symlink there
+    xinstall -m 755 -d ${destroot}${jvms}
+    ln -s ${prefix}${jdk} ${destroot}${jdk}
 }
 
 notes "
 If you have more than one JDK installed you can make ${name} the default\
 by adding the following line to your shell profile:
 
-    export JAVA_HOME=${target}/Contents/Home
+    export JAVA_HOME=${jdk}/Contents/Home
 "

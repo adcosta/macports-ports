@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github Rdatatable data.table 1.14.8
+R.setup             github Rdatatable data.table 1.15.4
 revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MPL-2
 description         Extension of data.frame
 long_description    {*}${description}
 homepage            https://r-datatable.com
-checksums           rmd160  d3c0a5872910aa439d8635f64666e2ff168074cd \
-                    sha256  20c586e002e7c7c5f648d99a022c7e16222134bea70fd56687cab4a626710937 \
-                    size    5298140
+checksums           rmd160  1f779a05cae5dd8ed3430d9ed0eedb08e57477ec \
+                    sha256  672a6cffe4332cb9f7c79345a923706bd5ea0c2cf4cf4d5c6d82cdde22dc9532 \
+                    size    5536989
 
 depends_build-append \
                     port:pkgconfig
@@ -34,9 +34,7 @@ variant openmp description "Enable OpenMP support" {
 
 depends_test-append port:R-bit \
                     port:R-bit64 \
-                    port:R-curl \
                     port:R-knitr \
-                    port:R-nanotime \
                     port:R-R.utils \
                     port:R-rmarkdown \
                     port:R-xts \

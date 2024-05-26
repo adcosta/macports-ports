@@ -5,11 +5,15 @@ PortGroup select 1.0
 PortGroup compilers 1.0
 PortGroup compiler_blacklist_versions 1.0
 PortGroup muniversal 1.0
+PortGroup deprecated 1.0
+
+# EOL 2023-11-09
+deprecated.upstream_support no
 
 #remember to update the -doc and -server as well
 name                postgresql11
 version             11.14
-revision            3
+revision            4
 
 categories          databases
 platforms           darwin

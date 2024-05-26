@@ -6,7 +6,7 @@ PortGroup           compiler_blacklist_versions 1.0
 PortGroup           legacysupport 1.1
 
 name                ghc
-version             9.6.2
+version             9.6.4
 revision            0
 categories          lang haskell
 maintainers         {ieee.org:s.t.smith @essandess} openmaintainer
@@ -60,33 +60,41 @@ set ghc_distname    ${distname}-${ghc_build_arch}-apple-darwin
 
 # set build_arch by hand on arm64/x86_64 systems to get x86_64/arm64 checksums
 # sudo port -d checksum ghc-prebuilt os.arch=arm build_arch=arm64
+# sudo port -d checksum ghc-prebuilt os.arch=i386 build_arch=x86_64
 # run `port clean --all ghc-prebuilt` afterwards
 if {${build_arch} eq {arm64}} {
     checksums       ${ghc_distname}${extract.suffix} \
-                    rmd160  a6442496b552bfe35437c33552d2ed22a228b995 \
-                    sha256  7351933097f7ff2896fede102f9df612cc03e49565800e207ad91fb318f84da0 \
-                    size    203720808
+                    rmd160  40add277c78cccea2f7ccbfe4dc06b93b020fbd9 \
+                    sha256  25affc9ceb6f2032706ec1b4b7ba5d14bd34df3b5223d8060f210aece25feea9 \
+                    size    203868728
 } elseif {${build_arch} eq {x86_64}} {
     checksums       ${ghc_distname}${extract.suffix} \
-                    rmd160  4838561aa3bcc53aec9079c041ef37e7c8febd82 \
-                    sha256  2eb62788c1b4a61b2fc96e9d8500bede89a9bf37319f001ee867b312aab3a134 \
-                    size    195107612
+                    rmd160  76e9020d4829c5550a5637ec82fbebaf04996a2b \
+                    sha256  b897cbd156690f4e6cc4400f6b9465d610ea228d8527f8bd501210d1b93a4eab \
+                    size    196195572
 }
 set ghc_source_checksums [list \
                     ${distname}-src${extract.suffix} \
-                    rmd160  40c373883dab68fb2498fb821f4bea5fd3fea6fa \
-                    sha256  1b510c5f8753c3ba24851702c6c9da7d81dc5e47fe3ecb7af39c7c2613abf170 \
-                    size    29388468 \
+                    rmd160  f780fb486a5159caccde12fd8c52da38f6b7f17b \
+                    sha256  10bf25b8b07174fdd9868b5c0c56c17c0ef1edcb6247b4b864be933651bfd4c0 \
+                    size    29451856 \
                     ]
 set ghc_testsuite_checksums [list \
                     ${distname}-testsuite${extract.suffix} \
-                    rmd160  034fbe4437ce41b5e94f2e707bea5e6ea784a547 \
-                    sha256  e4ffbc2d6db720fba30f8e7e12214522c470d1cfc0ee69f7997782b0ae20abbf \
-                    size    7022068 \
+                    rmd160  f3070f01a929c6ce90865a24023c9f5b02209c17 \
+                    sha256  6e13282fbebffdbfa0a49889437444c9a90cfe5760c47969cd4245854c338d73 \
+                    size    7075820 \
                     ]
 
-# https://bgamari.github.io/media/ben@well-typed.com.asc
-set gpg_keyid       ffeb7ce81e16a36b3e2ded6f2de04d4e97db64ad
+# gpg --list-packets ${distfiles}/${distname}-src${extract.suffix}.sig
+# https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x588764FBE22D19C4
+set gpg_keyid       588764FBE22D19C4
+
+# relative paths to ${prefix}
+set ghc_libdir ${prefix}/lib/${name}-${version}
+
+# LlvmMaxVersion=16 from ./configure.ac; must be less than actual llvm version
+set ghc_llvm_version  15
 
 if {${name} eq ${subport}} {
     PortGroup       haskell_cabal 1.0
@@ -96,6 +104,9 @@ if {${name} eq ${subport}} {
     haskell_cabal.env \
                     "CABAL_CONFIG=${haskell_cabal.cabal_root}/config" \
                     "GHC=${haskell_cabal.cabal_root}/bin/ghc" \
+                    "LD=${prefix}/bin/ld" \
+                    "LLC=${prefix}/bin/llc-mp-${ghc_llvm_version}" \
+                    "OPT=${prefix}/bin/opt-mp-${ghc_llvm_version}" \
                     "PATH=${workpath}/bin:${haskell_cabal.cabal_root}/bin:$env(PATH)"
 
     # https://gitlab.haskell.org/ghc/ghc/-/issues/23477
@@ -116,7 +127,10 @@ if {${name} eq ${subport}} {
                     "CPPFLAGS=${configure.cppflags}" \
                     CXX=${configure.cxx} \
                     "CXXFLAGS=${configure.cxxflags}" \
-                    "LDFLAGS=${configure.ldflags}"
+                    "LDFLAGS=${configure.ldflags}" \
+                    "LD=${prefix}/bin/ld" \
+                    "LLC=${prefix}/bin/llc-mp-${ghc_llvm_version}" \
+                    "OPT=${prefix}/bin/opt-mp-${ghc_llvm_version}"
     }
 
     configure.cmd   ./configure
@@ -161,7 +175,7 @@ if {${name} eq ${subport}} {
                     ${distname}-testsuite${extract.suffix}.sig
         checksums-append \
                     ${distname}-testsuite${extract.suffix}.sig \
-                    size    586
+                    size    438
 
         post-checksum {
             gpg_verify.verify_gpg_signature \
@@ -171,8 +185,6 @@ if {${name} eq ${subport}} {
         }
     }
 
-    use_xcode       yes
-
     # Build requires C11
     compiler.c_standard 2011
     # On OSX 10.{8,9} with clang 503, 600
@@ -181,7 +193,7 @@ if {${name} eq ${subport}} {
 
     # use these to specify python versions, python3 required
     # use ${prefix}/var/macports/sources/rsync.macports.org/macports/release/tarballs/ports/_resources/port1.0/group/python-1.0.tcl
-    set python3_version 310
+    set python3_version 312
     set python3_branch  [string index ${python3_version} 0].[string range ${python3_version} 1 end]
     set python3_prefix  ${frameworks_dir}/Python.framework/Versions/${python3_branch}
     set python3_bin     ${python3_prefix}/bin/python${python3_branch}
@@ -192,22 +204,25 @@ if {${name} eq ${subport}} {
                     port:automake \
                     port:bash \
                     port:bzip2 \
-                    port:cctools \
+                    port:file \
                     port:gzip \
                     port:hadrian \
                     port:happy \
                     port:HsColour \
                     port:python${python3_version} \
                     port:py${python3_version}-sphinx \
-                    port:texlive \
                     port:texlive-fonts-extra \
                     port:texlive-fonts-recommended \
                     port:texlive-latex-extra \
+                    port:texlive-xetex \
                     port:xz
 
     depends_lib-append  \
+                    port:cctools \
                     port:gmp \
+                    port:ld64 \
                     port:libiconv \
+                    port:llvm-${ghc_llvm_version} \
                     port:ncurses
     
     # build depends upon these x86_64 binaries
@@ -248,6 +263,11 @@ if {${name} eq ${subport}} {
             reinplace -E "s|\{(DejaVu\[\[:alnum:]_]*)\}|\{\\1.ttf\}|g" \
                     ${f}
         }
+        
+        # update rtd-theme to make it compatible with sphinx 7
+        delete ${worksrcpath}/docs/users_guide/rtd-theme
+        copy ${filespath}/rtd-theme-70526f5bd8886126f49833ef20604a2c6477780a \
+             ${worksrcpath}/docs/users_guide/rtd-theme
     }
 
     pre-configure {
@@ -277,6 +297,10 @@ if {${name} eq ${subport}} {
         }
     }
 
+    haskell_cabal.bindirs-append \
+                    ${destroot}${prefix}/lib/${subport}-${version}/bin \
+                    ${destroot}${prefix}/lib/${subport}-${version}/lib/bin
+    
     # documentation
     post-destroot {
         xinstall -W ${filespath} -m 0644 ./ghci.conf ${destroot}${prefix}/etc
@@ -293,7 +317,7 @@ if {${name} eq ${subport}} {
         # delete any destroot path appearing in text files
         fs-traverse f ${destroot}${prefix} {
             if {[file isfile ${f}] && [file type ${f}] eq {file}} {
-                if {[string match "text/*" [lindex [exec /usr/bin/file --mime-type ${f}] end]]} {
+                if {[string match "text/*" [lindex [exec file --mime-type ${f}] end]]} {
                     reinplace -q "s|${destroot}||g" ${f}
                 }
             }
@@ -335,7 +359,7 @@ subport ghc-prebuilt {
                     ${ghc_distname}${extract.suffix}.sig
         checksums-append \
                     ${ghc_distname}${extract.suffix}.sig \
-                    size    586
+                    size    438
 
         post-checksum {
             gpg_verify.verify_gpg_signature \
@@ -345,10 +369,16 @@ subport ghc-prebuilt {
         }
     }
 
+    depends_build-append \
+                    port:file
+
+    depends_lib-append \
+                    port:cctools \
+                    port:ld64 \
+                    port:llvm-${ghc_llvm_version}
+
     extract.only    ${ghc_distname}${extract.suffix}
-if {[exists extract.rename]} {
     extract.rename  yes
-}
 
     # Build requires C11
     compiler.c_standard 2011
@@ -358,6 +388,11 @@ if {[exists extract.rename]} {
 
     distname        ${name}-${ghc_version}
 
+    configure.env-append \
+                    "LD=${prefix}/bin/ld" \
+                    "LLC=${prefix}/bin/llc-mp-${ghc_llvm_version}" \
+                    "OPT=${prefix}/bin/opt-mp-${ghc_llvm_version}"
+
     build           {}
 
     post-destroot {
@@ -366,7 +401,7 @@ if {[exists extract.rename]} {
         set docdir ${prefix}/share/doc/${distname}
         foreach f [glob ${destroot}${prefix}/bin/*] {
             if {[file isfile ${f}] && [file type ${f}] eq {file}
-                && [string match "text/*" [lindex [exec /usr/bin/file --mime-type ${f}] end]]} {
+                && [string match "text/*" [lindex [exec file --mime-type ${f}] end]]} {
                 reinplace -E -q \
                     "s|^(exeprog=\".+)(\")\$|\\1-prebuilt\\2|" \
                     ${f}
@@ -393,7 +428,7 @@ subport hadrian {
     # find ${worksrcpath} -type f -exec egrep -E -o '"pkg-name":"shake","pkg-version":"[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+"' {} ';'
     # revbump if the version is unchanged
     version         0.19.7
-    revision        1
+    revision        2
 
     distname        ${name}-${ghc_version}
     distfiles       [lindex ${ghc_source_checksums} 0]

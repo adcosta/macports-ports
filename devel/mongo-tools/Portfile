@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 # This port deliberately does not use github.tarball_from archive because that
-# does not provide us with the commit hash anywhere, which we want to know.
+# does not provide us with the commit hash which we want to know.
 # This block must be declared before the one declared by the github portgroup
 # (which is included by the golang portgroup).
 post-extract {
@@ -17,15 +17,19 @@ post-extract {
 
 PortGroup           golang 1.0
 
-go.setup            github.com/mongodb/mongo-tools 100.7.0
+go.setup            github.com/mongodb/mongo-tools 100.9.4
 revision            0
-checksums           rmd160  042df1696e9fda73911b57d4c4eab3a39169430b \
-                    sha256  99c28c40ba656ffe64909eb3a5dff275f93d2ae062977e9617afd7ec680e3967 \
-                    size    4415128
+checksums           rmd160  471d5e711cf33ae75af1f8e217f7137ea28e65b6 \
+                    sha256  3fdd2cc70fabd377edef5719681906c93df891bd6df62936926e637778864cec \
+                    size    4743284
 
 categories          devel
 maintainers         {ryandesign @ryandesign} openmaintainer
 license             Apache-2
+
+# On older OS versions, the go port uses an older version of go with which this
+# port is not compatible.
+platforms           {darwin >= 17}
 
 description         utilities for working with mongodb databases: bsondump, \
                     mongoimport, mongoexport, mongodump, mongorestore, \

@@ -3,17 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github r-lib withr 2.5.0 v
-revision            2
+R.setup             github r-lib withr 3.0.0 v
+revision            1
 categories-append   devel
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
 description         Methods for temporarily modifying global state
 long_description    A set of functions to run code with safely and temporarily modified global state, \
                     withr makes working with the global state, i.e. side effects, less error-prone.
-checksums           rmd160  0afcdcbf766b51d92dfa95a4922553f239ef3ea2 \
-                    sha256  8388dd02777027b2be8f5e81f1925a9136fd1d8477d0dd0e9fbd056ddf4a9030 \
-                    size    125079
+homepage            https://withr.r-lib.org
+checksums           rmd160  6a4f382d955993dd3b5ca1d73149fad41f5cdc29 \
+                    sha256  8db2584e6ba4d9f2ad8fc2d3d82cf3f75de6f544d33df5e5571c2de6cf605865 \
+                    size    131789
 supported_archs     noarch
 
 depends_test-append port:R-callr \

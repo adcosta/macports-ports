@@ -4,16 +4,16 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # Revert to GitHub once updated there.
-R.setup             cran tidymodels parsnip 1.1.0
+R.setup             cran tidymodels parsnip 1.2.1
 revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
 description         Common API to modeling and analysis functions
 long_description    {*}${description}
 homepage            https://parsnip.tidymodels.org
-checksums           rmd160  599029fe7a73751cd6c77232e07c5ab6655a884e \
-                    sha256  ecbdeb88d8347405b8b6ba2f684311ad3fd762076e46d9a08a3ea5882221778d \
-                    size    843600
+checksums           rmd160  b4866ba7a3cbf358b109c766d987bc155f6e50fc \
+                    sha256  3e8aed6fce995e78d89e2800cf4d7d3016d3bfae9f5580e81aaa31e490198512 \
+                    size    974958
 supported_archs     noarch
 
 depends_lib-append  port:R-cli \
@@ -33,3 +33,28 @@ depends_lib-append  port:R-cli \
                     port:R-tidyr \
                     port:R-vctrs \
                     port:R-withr
+
+# Some optional deps are omitted.
+depends_test-append port:R-baguette \
+                    port:R-bench \
+                    port:R-C50 \
+                    port:R-covr \
+                    port:R-dials \
+                    port:R-earth \
+                    port:R-ggrepel \
+                    port:R-kernlab \
+                    port:R-kknn \
+                    port:R-knitr \
+                    port:R-LiblineaR \
+                    port:R-modeldata \
+                    port:R-prodlim \
+                    port:R-ranger \
+                    port:R-remotes \
+                    port:R-rmarkdown \
+                    port:R-sda \
+                    port:R-sparklyr \
+                    port:R-testthat \
+                    port:R-xgboost \
+                    port:R-xrf
+
+test.run            yes

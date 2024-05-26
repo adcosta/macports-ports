@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-textdistance
-version             4.5.0
+version             4.6.2
 revision            0
 
 supported_archs     noarch
@@ -17,13 +17,8 @@ long_description    {*}${description}
 
 homepage            https://github.com/life4/textdistance
 
-checksums           rmd160  39cbcea2e62178989fede88aedf66e13cb05c707 \
-                    sha256  364d43f4f6635742662e3e6cf5372a86859416c84a3c9b2ef9d66d44f5a4385c \
-                    size    30927
+checksums           rmd160  c550b86ebb863429b052da26f60c0bbac9fa4c34 \
+                    sha256  01e1fbcf7b871eb8f41911d94f461b0b99cf8003384ee0e1c34ca5c1a7ab2ed0 \
+                    size    32117
 
-python.versions     37 38 39 310 311
-
-if {${name} ne ${subport}} {
-    depends_build-append \
-                    port:py${python.version}-setuptools
-}
+python.versions     38 39 310 311 312

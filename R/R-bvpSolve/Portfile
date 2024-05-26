@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran bvpSolve 1.4.3
+R.setup             cran cran bvpSolve 1.4.4.1
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Solvers for boundary value problems of differential equations
 long_description    {*}${description}
-checksums           rmd160  c0e8f0033441e669ab0c69e712e064a69af46600 \
-                    sha256  5ca18f76e092934a792fb755abcf0e805f8b5bb70648bfa408c8aa7faf0d441d \
-                    size    1142429
+checksums           rmd160  8978d94846074effe0bf259b47608683afd20d59 \
+                    sha256  92939bfe544c0b5ec9cd184f33fccca15eee9368196afa021bd428cf4ea90577 \
+                    size    1374576
 
 depends_lib-append  port:R-deSolve \
                     port:R-rootSolve

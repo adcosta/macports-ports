@@ -4,17 +4,18 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub tarball is broken.
-R.setup             cran sbihorel rclipboard 0.1.6
+R.setup             cran sbihorel rclipboard 0.2.1
 revision            1
 maintainers         nomaintainer
 license             MIT
 description         Shiny/R Wrapper for clipboard.js
 long_description    {*}${description}
-checksums           rmd160  fac2bb926eb26a67079c1f055f0e6e390749e978 \
-                    sha256  7e83f6355869eee1630849981abf930fa048cd3861407466a4ee4e07a1466269 \
-                    size    6419
+checksums           rmd160  39a79159043a81c11f092393e4bd4abbee6842df \
+                    sha256  023153f184db1ecf379301fc3da5fe827a4ee76b1b95daa007aff5127719b2a1 \
+                    size    7029
 supported_archs     noarch
 
-depends_lib-append  port:R-shiny
+depends_lib-append  port:R-bslib \
+                    port:R-shiny
 
 test.run            yes

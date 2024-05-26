@@ -7,7 +7,7 @@ PortGroup           python 1.0
 name                py-mupdf
 
 # Keep synchronized with port:mupdf.
-github.setup        pymupdf PyMuPDF 1.22.2
+github.setup        pymupdf PyMuPDF 1.23.5
 github.tarball_from archive
 
 revision            0
@@ -33,28 +33,24 @@ long_description    PyMuPDF adds Python bindings and abstractions to MuPDF, a \
 
 homepage            https://pymupdf.readthedocs.io/
 
-checksums           rmd160  a65df0716e3f83b9baaab8f2db3a8f5e79c007b6 \
-                    sha256  68f3cb582683061ac39368193613627e5741f1edf01903cc748fc07317d83ef9 \
-                    size    9786569
-python.versions     37 38 39 310 311
+checksums           rmd160  d08fe823f29b7cb5860a00d733973ea8fa685e97 \
+                    sha256  0c3fa40951d2f1455c944898df09cbb42a8f0dfb80f8ff7b70ae678426d3c7a0 \
+                    size    14640909
+python.versions     38 39 310 311 312
 python.pep517       yes
 
 if {${name} ne ${subport}} {
     depends_build-append \
                     port:swig-python
     depends_lib-append \
+                    port:freetype \
                     port:mupdf
 
-    patchfiles      setup.py.diff
-    post-patch {
-        reinplace   "s|@prefix@|${prefix}|g"    ${worksrcpath}/setup.py
-    }
+    patchfiles      patch-build.diff
 
     build.env-append \
-                    PYMUPDF_SETUP_MUPDF_BUILD=
-    if {${python.pep517}} {
-        # pyproject.toml lists "swig" in "requires", but this port uses
-        # port:swig-python instead of the Python swig package.
-        build.args  --skip-dependency-check
-    }
+                    PYMUPDF_SETUP_MUPDF_BUILD= \
+                    PYMUPDF_SETUP_IMPLEMENTATIONS=a \
+                    PYMUPDF_INCLUDES=${prefix}/include:${prefix}/include/freetype2 \
+                    PYMUPDF_MUPDF_LIB=${prefix}/lib
 }

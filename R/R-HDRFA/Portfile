@@ -3,17 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran HDRFA 0.1.1
+R.setup             cran liudong_stat HDRFA 0.1.4
 revision            1
 categories-append   math
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+maintainers         nomaintainer
 license             {GPL-2 GPL-3}
 description         High-Dimensional Robust Factor Analysis
 long_description    {*}${description}
-checksums           rmd160  f11307f30baccc96387748c25363687951c7dcf2 \
-                    sha256  a335e19041268cb9dfa35ca15bd873db2eff5034d083a26d23b930a083cf561f \
-                    size    5961
+checksums           rmd160  09c571c742a198dfc72d54e1fc58d9b1838d1886 \
+                    sha256  a2630125172c533569d22f892d55c87c53dd84c9c4ffd4c7d82c16b991d09eb7 \
+                    size    6349
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_lib-append  port:R-pracma \
                     port:R-quantreg

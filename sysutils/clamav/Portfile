@@ -6,7 +6,7 @@ PortGroup               legacysupport 1.0
 
 name                    clamav
 conflicts               clamav-legacy
-version                 1.1.0
+version                 1.3.1
 categories              sysutils
 platforms               {darwin > 10}
 maintainers             {geeklair.net:dluke @danielluke}
@@ -19,9 +19,9 @@ long_description        Clam AntiVirus is a GPL anti-virus toolkit for UNIX. \
 
 homepage                https://www.clamav.net
 master_sites            https://www.clamav.net/downloads/production
-checksums               rmd160  0f3a5b5a5306bc041b6865188a94104b55f8b3b8 \
-                        sha256  a30020d99cd467fa5ea0efbd6f4f182efebf62a9fc62fc4a3a7b2cc3f55e6b74 \
-                        size    47793733
+checksums               rmd160  06ad65c973c891e7fe54dd31ce11d924a51cff85 \
+                        sha256  12a3035bf26f55f71e3106a51a5fa8d7b744572df98a63920a9cff876a7dcce4 \
+                        size    54554712
 
 # Disable tests to avoid extra dependencies
 configure.args-append   -DENABLE_TESTS=OFF

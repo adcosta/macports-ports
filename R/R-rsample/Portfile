@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github tidymodels rsample 1.1.1 v
+R.setup             github tidymodels rsample 1.2.1 v
 revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
@@ -11,15 +11,17 @@ description         General resampling infrastructure
 long_description    Classes and functions to create and summarize different types \
                     of resampling objects (e.g. bootstrap, cross-validation).
 homepage            https://rsample.tidymodels.org
-checksums           rmd160  26e5b59bb72142a0eb9ca7c619c46beb04ee25d7 \
-                    sha256  5e1ed643952a706b21bdf078512e1cbf44184b8a0706183288e39126d3b62ee7 \
-                    size    218176
+checksums           rmd160  2b6b52016421c122c4f76ffcb957ea3fb56b8f7e \
+                    sha256  88ffdccd72cb389f241da4ccc2ac50c64d6aabf5360ad77971ccbe783ec1557e \
+                    size    220242
 supported_archs     noarch
 
-depends_lib-append  port:R-dplyr \
+depends_lib-append  port:R-cli \
+                    port:R-dplyr \
                     port:R-furrr \
                     port:R-generics \
                     port:R-glue \
+                    port:R-lifecycle \
                     port:R-pillar \
                     port:R-purrr \
                     port:R-rlang \

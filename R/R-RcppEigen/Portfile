@@ -3,24 +3,23 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             r-universe rcppcore RcppEigen 0.3.3.9.3.1
-revision            0
+R.setup             cran rcppcore RcppEigen 0.3.4.0.0
+revision            2
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Rcpp integration for the Eigen Templated Linear Algebra Library
 long_description    {*}${description}
-homepage            https://github.com/RcppCore/RcppEigen
-checksums           rmd160  16326313ec9a3eb1c431378b108b3cd8bec84b5d \
-                    sha256  405b2addf75f48e4b22d718ee6229f90000ef71202cf0bb1327462955f7ea760 \
-                    size    1897382
-
-# Move to GitHub commit-based or CRAN-based version with the next update.
-# Turned out, R-universe publishes packages from every master commit without increasing their versions.
-# That breaks checksums and is generally a recipe for a disaster.
-master_sites        macports_distfiles
+homepage            https://dirk.eddelbuettel.com/code/rcpp.eigen.html
+checksums           rmd160  6f256313980c65b46811e9df767084d3ddeea43a \
+                    sha256  28d4a02011129f9b7a2a2bbe69ec4cca7676b072d5aca9dc1cefa8f96af45136 \
+                    size    1765714
 
 depends_lib-append  port:R-Rcpp
+
+# Fixed in upstream in: https://gitlab.com/libeigen/eigen/-/merge_requests/1150
+# To be dropped with 0.3.5.
+patchfiles          patch-fix-powerpc.diff
 
 compilers.setup     require_fortran
 

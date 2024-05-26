@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-app-model
-version             0.1.4
+version             0.2.7
 revision            0
 categories          python
 license             BSD
@@ -18,11 +18,11 @@ homepage            https://pypi.org/project/app-model/
 
 distname            app_model-${version}
 
-checksums           rmd160  cdb942549581cb17928eadf79297e9e499ef5ca7 \
-                    sha256  67f5cdf16f79e22844f2bdb91fd90e81d05077c5882bc3536f9d74b515a5b1d4 \
-                    size    69284
+checksums           rmd160  28c24e62a70c35681c4c6eda40e2f8ec7a7cc186 \
+                    sha256  1cea9479c9c76f4cfc1c2251c3cdaab6670220ab6b3dc48413b5a6b1406f2a17 \
+                    size    112533
 
-python.versions     37 38 39 310 311
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
     python.pep517   yes
@@ -36,5 +36,6 @@ if {${name} ne ${subport}} {
                     port:py${python.version}-in-n-out \
                     port:py${python.version}-psygnal \
                     port:py${python.version}-pydantic \
+                    port:py${python.version}-pydantic-compat \
                     port:py${python.version}-typing_extensions
 }

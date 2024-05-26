@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github jepusto scdhlm 0.7.1
+R.setup             github jepusto scdhlm 0.7.3
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,9 +11,9 @@ license             GPL-3
 description         Estimating hierarchical linear models for single-case designs
 long_description    {*}${description}
 homepage            https://jepusto.github.io/scdhlm
-checksums           rmd160  0967f8d40521723d769c85e14b23d38f2e3d98d5 \
-                    sha256  0865163be86da11d203d0c27acac1e94dddcdb192c9a8d3730b7ee1e6e89af60 \
-                    size    1340687
+checksums           rmd160  e396ceffa38be105aad5c5001605c9d341684c26 \
+                    sha256  2600f1e72222be8ea06221b20165a79b9d644a8fd37bf7a1d0db7b19ef522892 \
+                    size    1188829
 supported_archs     noarch
 
 depends_lib-append  port:R-dplyr \

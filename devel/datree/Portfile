@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/datreeio/datree 1.9.3
+go.setup            github.com/datreeio/datree 1.9.19
 revision            0
 
 categories          devel
@@ -14,13 +14,14 @@ description         CLI tool to run policies against Kubernetes manifests YAML f
 long_description    Datree automatically validates Kubernetes objects for rule violations, ensuring no misconfigurations reach production
 
 checksums           ${distname}${extract.suffix} \
-                    rmd160  35f620dcb93692f56045ba7bc9ab6319ce180dc8 \
-                    sha256  586f223530d447d78f5ef48a7cb0a3a56f9cdba223b4cb472a24933cae1b0452 \
-                    size    5648177
+                    rmd160  5d8eeb9344d945ca25bd09b2d0d9b772e91d3a55 \
+                    sha256  250e58ce930fb26a3c5a2a71071d91ff5abb2e6baba7556a42ece791e5087f9e \
+                    size    5792755
+
 
 set go_ldflags      "-s -w -X ${go.package}/cmd.CliVersion=${version}"
 build.args          -tags main -ldflags \"${go_ldflags}\"
-build.env-delete    GO111MODULE=off GOPROXY=off
+go.offline_build no
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/

@@ -3,15 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github brodieG fansi 1.0.3 v
+# Revert to GitHub once updated there.
+R.setup             cran brodieG fansi 1.0.6 v
 revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             {GPL-2 GPL-3}
 description         ANSI control sequence-aware string functions
 long_description    {*}${description}
-checksums           rmd160  6dba36c23d14bafd2eff858fc0d71879565e9f3d \
-                    sha256  227f52a05582deccd8a1da8ea30a1bb226472cc6716b8e839f3163cc572cafe0 \
-                    size    3474488
+checksums           rmd160  59ffeb363c2522dacebb7d6ed2e57e2b4105ce1c \
+                    sha256  ea9dc690dfe50a7fad7c5eb863c157d70385512173574c56f4253b6dfe431863 \
+                    size    482480
 
 depends_test-append port:R-knitr \
                     port:R-rmarkdown \

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-setupmeta
-version             3.4.0
+version             3.6.0
 revision            0
 
 categories-append   devel
@@ -18,16 +18,13 @@ long_description    {*}${description}
 
 homepage            https://github.com/zsimic/setupmeta
 
-checksums           rmd160  b0bb3eb574cc0639dee4cf63987546827e48cd03 \
-                    sha256  f986a1d9c5b595a840d71d888950c7cc6bbb586b4145d04e7992501e280e07c3 \
-                    size    88071
+checksums           rmd160  6a9dbc0626e097eb885aca7b372aad3e6b72c01f \
+                    sha256  2989bd850bde578f7e3dd8878ce5488194d863e0fbbe76b18bc345a6e29fae8b \
+                    size    89084
 
-python.versions     37 38 39 310 311
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
-    depends_build-append \
-                    port:py${python.version}-setuptools
-
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}
         xinstall -d ${destroot}${docdir}

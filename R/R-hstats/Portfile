@@ -1,0 +1,23 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             github mayer79 hstats 1.1.2
+revision            1
+categories-append   math
+maintainers         nomaintainer
+license             GPL-2+
+description         Interaction statistics
+long_description    {*}${description}
+homepage            https://mayer79.github.io/hstats
+checksums           rmd160  109258a00107878ef0dfb4bd659ccf12fcc17e4e \
+                    sha256  0f7a5f09b7020284af51fa04be9cdaf6c0f500fca837478bbed3792fc466f93a \
+                    size    512463
+supported_archs     noarch
+
+depends_lib-append  port:R-ggplot2
+
+depends_test-append port:R-testthat
+
+test.run            yes

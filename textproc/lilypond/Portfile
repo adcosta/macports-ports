@@ -8,7 +8,12 @@ name                lilypond
 
 categories          textproc
 maintainers         {snc @nerdling} openmaintainer
+
 license             GPL-3+
+# LilyPond does not link with Ghostscript.  However, at least one of
+# Ghostscript's dependencies (libpaper) links with legacysupport, which
+# is APSL-2 licensed, and which would cause an apparent conflict.
+license_noconflict  ghostscript
 
 description         An automated engraving system for typesetting sheet music.
 long_description    Lilypond is a unix-based automated engraving system that \
@@ -44,21 +49,21 @@ notes-append "\
 compiler.cxx_standard 2014
 
 if {${subport} eq ${name}} {
-    version         2.24.1
+    version         2.24.3
     revision        0
     conflicts       lilypond-devel
-    checksums       rmd160  cceaf4ae4909d106086ae40e41de61c4f1ae59c2 \
-                    sha256  d5c59087564a5cd6f08a52ba80e7d6509b91c585e44385dcc0fa39265d181509 \
-                    size    19438552
+    checksums       rmd160  c37651f49ac60517056ddc7c281954d1b7e1cd84 \
+                    sha256  df005f76ef7af5a4cd74a10f8e7115278b7fa79f14018937b65c109498ec44be \
+                    size    19441299
 
     set livecheck_url "source.html"
 } else {
-    version         2.25.5
+    version         2.25.13
     revision        0
     conflicts       lilypond
-    checksums       rmd160  f5eacb5a95ae0d04043ac06808c1fed21f15dab1 \
-                    sha256  42014688d2aa7c2ed0ec4d3fca1b17170299a23fbfd3b7341b04cf5a20f3feee \
-                    size    18954996
+    checksums       rmd160  ffb30994d5000ce591f93050bf51b6fbdac65128 \
+                    sha256  a23a16de1abe0ef80696f59244d93d542a284738b9b29a7ca3ca0aa9bef8b667 \
+                    size    19274596
 
     set livecheck_url "development.html"
 }
@@ -180,8 +185,17 @@ if {[variant_isset docs]} {
 } else {
     configure.args-append   --disable-documentation
 }
-configure.args-append   --with-urwotf-dir=${prefix}/share/fonts/urw-core35-fonts
-configure.args-append   --with-texgyre-dir=${lilypond.texgyredir}
+if {${subport} eq ${name}} {
+    configure.args-append   --with-urwotf-dir=${prefix}/share/fonts/urw-core35-fonts
+    configure.args-append   --with-texgyre-dir=${lilypond.texgyredir}
+} else {
+    # This is a temporary fix until MacPorts provides guile 3, see
+    # https://github.com/macports/macports-ports/pull/14600.
+    configure.env-append    GUILE_FLAVOR=guile-2.2
+
+    # Regarding font setup see https://trac.macports.org/ticket/67026,
+    # which is still unresolved.
+}
 
 configure.env-append    PYTHON=${configure.python}
 build.env-append        PYTHON=${configure.python}

@@ -3,18 +3,29 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github r-lib svglite 2.1.1 v
+# Revert to GitHub once updated there.
+R.setup             cran r-lib svglite 2.1.3 v
 revision            1
 categories-append   graphics
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         SVG graphics device
 long_description    {*}${description}
 homepage            https://svglite.r-lib.org
-checksums           rmd160  4dfac3c31f7db6c9a0761f8823ac4246bb097d38 \
-                    sha256  733f936a39413b302e4be4eb8bfa312d0b325f2d5c864feca3c571e247460750 \
-                    size    200040
+checksums           rmd160  e6fc858ff6ed6f7545f828fecd0637e36d27b811 \
+                    sha256  f0a8564e6f9127f4d1e05cf5a5f36b4e244aee0008e27473e504c63873ef0a54 \
+                    size    124650
 
 depends_lib-append  port:libpng \
                     port:R-cpp11 \
                     port:R-systemfonts
+
+depends_test-append port:R-covr \
+                    port:R-fontquiver \
+                    port:R-htmltools \
+                    port:R-knitr \
+                    port:R-rmarkdown \
+                    port:R-testthat \
+                    port:R-xml2
+
+test.run            yes

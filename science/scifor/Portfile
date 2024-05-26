@@ -2,13 +2,13 @@
 
 PortSystem          1.0
 PortGroup           cmake 1.1
-PortGroup           compilers 1.0
 PortGroup           github 1.0
+PortGroup           mpi 1.0
 
-github.setup        QcmPlab SciFortran 4.10.5
+github.setup        QcmPlab SciFortran 4.10.9
 name                scifor
-revision            0
-categories          science math
+revision            2
+categories          science math fortran
 license             LGPL-3
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 description         A library of Fortran modules and routines for scientific calculations
@@ -18,9 +18,10 @@ long_description    This is a unitary collection of Fortran modules and procedur
                     The project is largely inspired by SciPy for Python \
                     and tries to closely follow its guidelines and naming convention.
 homepage            https://QcmPlab.github.io/SciFortran
-checksums           rmd160  e291341d3d66eca758516615713ed4d6326a9906 \
-                    sha256  e916d06c34c31bd59e4877c1bd5e15fed4069cb9e72d6da5dc666eef53f38970 \
-                    size    4114223
+checksums           rmd160  7e8d654c6de05a75bd4472e259a854354039ccf2 \
+                    sha256  d379075afd45cf1df5f1bfc08fb1dccbc935afdfa57283c77dad8376fc3e3aee \
+                    size    4113530
+github.tarball_from archive
 
 cmake.generator     Ninja
 
@@ -36,12 +37,29 @@ post-patch {
 }
 
 compilers.choose    fc f90
-compilers.setup     require_fortran
+mpi.setup           require_fortran -g95
+
+# Otherwise configure may pick a random BLAS implementation, like FlexiBLAS.
+pre-configure {
+    configure.args-append  \
+                    -DBLAS_LIBRARIES=${prefix}/lib/libopenblas.dylib \
+                    -DLAPACK_LIBRARIES=${prefix}/lib/libopenblas.dylib
+}
 
 configure.args-append \
+                    -DWITH_BLAS_LAPACK=OFF
+
+if {[variant_isset mpich] || [variant_isset openmpi]} {
+    depends_lib-append \
+                    port:scalapack
+    configure.args-append \
+                    -DUSE_MPI=ON \
+                    -DWITH_SCALAPACK=ON
+} else {
+    configure.args-append \
                     -DUSE_MPI=OFF \
-                    -DWITH_BLAS_LAPACK=OFF \
                     -DWITH_SCALAPACK=OFF
+}
 
 # Provided install scripts are a mess, avoid them.
 destroot {

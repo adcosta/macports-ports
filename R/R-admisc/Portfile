@@ -3,15 +3,15 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran dusadrian admisc 0.32
-revision            0
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+R.setup             cran dusadrian admisc 0.35
+revision            1
+maintainers         nomaintainer
 license             GPL-3+
 description         Adrian Dusa’s Miscellaneous
 long_description    {*}${description}
-checksums           rmd160  5a853c21fca4000e1ed2ab6cdba0634dcde380de \
-                    sha256  d38ed1a3dbf549dff6759dad58c13ff3f236dbaa89f6f595459793f3e0b065b7 \
-                    size    62912
+checksums           rmd160  3778fcdd00aedcbe89598347b5346826aaf97c75 \
+                    sha256  cf4b5b3f09f0fd0ad085d97bd589be0cfe6652e5a365f7b09c0e93515b5aed3f \
+                    size    64994
 
 depends_test-append port:R-QCA
 

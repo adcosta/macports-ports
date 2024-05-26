@@ -30,9 +30,9 @@ if {${subport} eq ${name}} {
 }
 
 subport eigen3-devel {
-    gitlab.setup        libeigen eigen 2709f4c8
+    gitlab.setup        libeigen eigen 9cec679e
     # For when there is no current development version (other than rolling snapshot)
-    version             3.4-tracking-20230510
+    version             3.4-tracking-20240423
     revision            0
     epoch               3
     gitlab.livecheck.branch 3.4
@@ -42,9 +42,9 @@ subport eigen3-devel {
     long_description    {*}${description} This (-devel) version tracks \
                         development of the current (3.4) branch.
 
-    checksums           rmd160  6035e3d2101a14aa7d7a244530ea836060de47ab \
-                        sha256  51926f609b277101ef57848cb1dd0a5818172f3d5cfe03aa82491e3bc47b54b6 \
-                        size    2233325
+    checksums           rmd160  7d4364a6f61cb70f0b584cb18d6e682613143903 \
+                        sha256  f0222e1d5954b77e871745872b16b7a6c659d2b8c99fbb9656d9174a316eca38 \
+                        size    2260380
 
     compilers.setup     require_fortran
 }

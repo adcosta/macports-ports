@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-param
-version             1.13.0
+version             2.1.0
 revision            0
 license             BSD
 maintainers         {mps @Schamschula} openmaintainer
@@ -17,16 +17,19 @@ supported_archs     noarch
 platforms           {darwin any}
 homepage            https://github.com/holoviz/param
 
-checksums           rmd160  f54e8481873f9be871082e3e9849f750186f9e2e \
-                    sha256  59d55048d42a85e148a69837df42bd11c3391d47fad15ba57d118e145f001ef2 \
-                    size    85349
+checksums           rmd160  16bab38d2eb07a27375ec2e6104dfc71c49a1ea5 \
+                    sha256  a7b30b08b547e2b78b02aeba6ed34e3c6a638f8e4824a76a96ffa2d7cf57e71f \
+                    size    173822
 
-python.versions     37 38 39 310 311
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
     python.pep517   yes
+    python.pep517_backend \
+                    hatch
 
     depends_build-append \
+                    port:py${python.version}-hatch-vcs \
                     port:py${python.version}-numpy \
                     port:py${python.version}-pyobjc
 }

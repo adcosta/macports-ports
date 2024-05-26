@@ -3,10 +3,10 @@
 PortSystem          1.0
 
 name                openjdk11
-# https://github.com/openjdk/jdk11u/tags
-version             11.0.19
-set build 7
-revision            0
+# See https://openjdk-sources.osci.io/openjdk11/ for the version and build number that matches the latest '-ga' version
+version             11.0.23
+set build 9
+revision            1
 categories          java devel
 supported_archs     x86_64 arm64
 license             GPL-2+
@@ -14,16 +14,18 @@ maintainers         {outlook.com:usersword123 @usersxx} openmaintainer
 description         OpenJDK 11
 long_description    JDK 11 builds of OpenJDK, the Open-Source implementation \
                     of the Java Platform, Standard Edition, and related projects.
-homepage            https://openjdk.java.net/
-master_sites        https://git.openjdk.java.net/jdk11u/archive/refs/tags
-distname            jdk-${version}-ga
-worksrcdir          jdk11u-${distname}
+homepage            https://openjdk.org/projects/jdk/11/
+master_sites        https://openjdk-sources.osci.io/openjdk11/
+distname            openjdk-${version}-ga
+use_xz              yes
+worksrcdir          jdk-${version}+${build}
 
-checksums           rmd160  7bb4029949f8c590d3738900a004588a7a8ab206 \
-                    sha256  5077e9713e59ccf92fbe58b9bb63e18294fb2110df644f476638e1528e5dfd46 \
-                    size    123660996
+checksums           rmd160  0b31aa900cefffb02d0fea57c81e49ed7e442484 \
+                    sha256  f51be67721f6cb8d14b0cd75cc9b53634e7d83e808148940d64e67c8b77accfc \
+                    size    71402820
 
-depends_lib         port:freetype
+depends_lib         port:freetype \
+                    port:libiconv
 depends_build       port:autoconf \
                     port:gmake \
                     port:bash \
@@ -35,7 +37,7 @@ pre-patch {
     reinplace "s|assert|vmassert|g" ${worksrcpath}/src/hotspot/share/jfr/periodic/jfrNetworkUtilization.cpp
 }
 
-set tpath /Library/Java
+set tpath ${prefix}/Library/Java
 use_configure    yes
 configure.cmd       ${prefix}/bin/bash configure
 configure.pre_args  --prefix=${tpath}
@@ -60,6 +62,14 @@ configure.args      --with-debug-level=release \
                     --with-vendor-bug-url="${bug_url}" \
                     --with-vendor-vm-bug-url="${bug_url}" \
                     --with-conf-name=openjdk11
+
+if {[option configure.ccache]} {
+    # replace MacPorts ccache integration into JDK
+    configure.ccache        no
+    depends_build-append    path:bin/ccache:ccache
+    configure.args-append   --enable-ccache \
+                            --with-ccache-dir=${ccache_dir}
+}
 
 variant release \
     conflicts debug optimized \
@@ -142,10 +152,17 @@ test.cmd            ${bundle_dir}/Home/bin/java
 test.target         --version
 
 set pathb ${tpath}/JavaVirtualMachines/${name}
+set jvms /Library/Java/JavaVirtualMachines
+set jdk ${jvms}/${name}
 destroot {
     xinstall -m 755 -d ${destroot}${pathb}
     copy ${worksrcpath}/${bundle_dir} ${destroot}${pathb}
+
+    # macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, so let's create a symlink there
+    xinstall -m 755 -d ${destroot}${jvms}
+    ln -s ${pathb} ${destroot}${jdk}
 }
+# macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, which is not under ${prefix}.
 destroot.violate_mtree      yes
 
 post-destroot {
@@ -154,10 +171,10 @@ post-destroot {
 
 notes "
 If you want to make ${name} the default JDK, add this to shell profile:
-export JAVA_HOME=${pathb}/Contents/Home
+export JAVA_HOME=${jdk}/Contents/Home
 "
 
 livecheck.type      regex
-livecheck.url       https://github.com/openjdk/jdk11u/tags
-livecheck.regex     jdk-(\[0-9.\]+)-ga
+livecheck.url       https://openjdk-sources.osci.io/openjdk11/
+livecheck.regex     openjdk-(\[0-9.\]+)-ga
 

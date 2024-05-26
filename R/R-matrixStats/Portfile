@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github HenrikBengtsson matrixStats 1.0.0
-revision            0
+R.setup             cran HenrikBengtsson matrixStats 1.3.0
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             Artistic-2
-description         Functions that apply to rows and columns of matrices (and to vectors).
+description         Functions that apply to rows and columns of matrices (and to vectors)
 long_description    {*}${description}
-checksums           rmd160  aab07c746580d231b4e98d7ab300d91ec1791194 \
-                    sha256  9e9aa93242b994976d980de4b563ae0dec25141a85676f3f72e1cb6303048455 \
-                    size    257752
+homepage            https://github.com/HenrikBengtsson/matrixStats
+checksums           rmd160  83c29c96d1b720ae7a91521a1a9b1e28cbf6680e \
+                    sha256  413ee607d95b243c514b4a7c4944c2caea1fb264d27c96ff547c3939f893245a \
+                    size    213441
 
 depends_test-append port:R-base64enc \
                     port:R-ggplot2 \

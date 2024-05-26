@@ -16,8 +16,8 @@ PortGroup           xcode_workaround 1.0
 name                ffmpeg6
 set my_name         ffmpeg
 
-version             6.0
-revision            1
+version             6.1.1
+revision            4
 epoch               0
 
 license             LGPL-2.1+
@@ -60,9 +60,9 @@ distname            ${my_name}-${version}
 dist_subdir         ${my_name}
 use_xz              yes
 
-checksums           rmd160  591511f1b96534dcd007875394913ba63e82a4a4 \
-                    sha256  57be87c22d9b49c112b6d24bc67d42508660e6b718b3db89c44e47e289137082 \
-                    size    10234012
+checksums           rmd160  75589206a87bb9fc9153119396d1f0a434561ea4 \
+                    sha256  8684f4b00f94b85461884c3719382f1261f0d9eb3d59640a1f4ac0873616f968 \
+                    size    10458600
 
 depends_build-append \
                     port:cctools \
@@ -79,7 +79,7 @@ depends_lib-append \
                     path:lib/pkgconfig/gnutls.pc:gnutls \
                     path:lib/pkgconfig/harfbuzz.pc:harfbuzz \
                     port:lame \
-                    port:libass \
+                    path:lib/pkgconfig/libass.pc:libass \
                     port:libbluray \
                     port:libiconv \
                     port:libmodplug \
@@ -104,6 +104,17 @@ patchfiles-append   patch-avutil-builtin-available.diff
 # Additional fixes related to use of '__builtin_available'
 # TODO: Submit patches to upstream
 patchfiles-append   patch-libavcodec-profvidworkflow.diff
+
+# https://trac.macports.org/ticket/68973
+# TODO: Raise the issue to upstream
+patchfiles-append   patch-libavcodec-librsvgdec.diff
+
+# https://trac.macports.org/ticket/68720
+# Remove once upstream has included these in the next release
+patchfiles-append   patch-issue-10695.diff
+
+# https://trac.macports.org/ticket/69678
+patchfiles-append   patch-fix-vulkan.diff
 
 # enable auto configure of asm optimizations
 # requires Xcode 3.1 or better on Leopard
@@ -147,12 +158,13 @@ set port_datadir    ${port_sharedir}/data
 configure.pre_args-delete \
                     --prefix=${prefix}
 configure.pre_args-append \
-                    --prefix=${port_prefix} \
+                    --cc="${configure.cc}" \
                     --datadir=${port_datadir} \
-                    --docdir=${port_docdir}
+                    --docdir=${port_docdir} \
+                    --progs-suffix=${port_ver_major} \
+                    --prefix=${port_prefix}
 
 configure.args-append \
-                    --cc="${configure.cc}" \
                     --disable-audiotoolbox \
                     --disable-indev=jack \
                     --disable-libjack \
@@ -292,12 +304,20 @@ platform darwin {
                     port:svt-av1
     }
 
-    # Available on 10.6+
-    if {(${os.major} >= 10) && (${configure.build_arch} ne "ppc")} {
-        configure.args-append \
-                    --enable-librav1e
-        depends_lib-append \
-                    port:rav1e
+    # rav1e available on 10.6+
+    if {(${os.major} < 10) || (${configure.build_arch} eq "ppc")} {
+        if {[variant_isset rav1e]} {
+            error "Variant rav1e not supported for macOS 10.5 and earlier, or PPC"
+        }
+    }
+
+    # due to the new linker (which was introduced in Xcode 15: https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes),
+    # this port requires '-ld_classic' to build successfully with the toolchains from Xcode 15 or Command Line Tools 15.
+    #
+    # TODO: This is a temporary solution, the classic linker will be removed in a future release by Apple.
+    if { ${os.major} == 23 && ( [vercmp ${xcodeversion} 15 ] >= 0 ) || ( [vercmp ${xcodecltversion} 15 ] >= 0 ) } {
+        configure.ldflags-append \
+                    -Wl,-ld_classic
     }
 }
 
@@ -327,20 +347,29 @@ configure.universal_args-delete \
 if {${universal_possible} && [variant_isset universal]} {
     foreach arch ${configure.universal_archs} {
         set merger_host($arch) ""
-        lappend merger_configure_args($arch) --arch=${arch}
-        lappend merger_configure_env($arch)  "ASFLAGS=-arch ${arch}"
+        lappend merger_configure_args($arch) \
+                    --arch=${arch}
+        lappend merger_configure_env($arch) \
+                    "ASFLAGS=-arch ${arch}"
     }
     if {[string match "*86*" ${configure.universal_archs}]} {
-        depends_build-append port:nasm
+        depends_build-append \
+                    port:nasm
     }
-    lappend merger_configure_args(i386) --enable-x86asm
-    lappend merger_configure_args(x86_64) --enable-x86asm
+    lappend merger_configure_args(i386) \
+                    --enable-x86asm
+    lappend merger_configure_args(x86_64) \
+                    --enable-x86asm
 } else {
-    configure.args-append --arch=${configure.build_arch}
-    configure.env-append  ASFLAGS=[get_canonical_archflags]
+    configure.args-append \
+                    --arch=${configure.build_arch}
+    configure.env-append \
+                    ASFLAGS=[get_canonical_archflags]
     if {${build_arch} eq "i386" || ${build_arch} eq "x86_64"} {
-        depends_build-append port:nasm
-        configure.args-append --enable-x86asm
+        depends_build-append \
+                    port:nasm
+        configure.args-append \
+                    --enable-x86asm
     }
 }
 
@@ -363,10 +392,9 @@ post-destroot {
     set port_bin_list \
         [glob -type f -directory ${destroot}${port_bindir} *]
     foreach f ${port_bin_list} {
-        set fsrc [file tail ${f}]
-        set ftgt [file tail ${f}]${port_ver_major}
-        ui_info "Symlinking bin: ${prefix}/bin/${ftgt} -> ${port_bindir}/${fsrc}"
-        ln -s ${port_bindir}/${fsrc} ${destroot}${prefix}/bin/${ftgt}
+        set fname [file tail ${f}]
+        ui_info "Symlinking bin: ${prefix}/bin/${fname} -> ${port_bindir}/${fname}"
+        ln -s ${port_bindir}/${fname} ${destroot}${prefix}/bin/${fname}
     }
 }
 
@@ -470,51 +498,54 @@ variant nonfree description {enable nonfree code, libraries and binaries will no
                     port:libfdk-aac
 }
 
+variant rav1e description {Enable codec rav1e} {
+    configure.args-append \
+                    --enable-librav1e
+    depends_lib-append \
+                    port:rav1e
+}
+
+variant flite description {Enable flite audio source} {
+    configure.args-append \
+                    --enable-libflite
+    depends_lib-append \
+                    port:flite
+}
+
+if {![variant_isset rav1e]} {
+    notes-append "Support for rav1e now disabled by default; enable via +rav1e"
+}
+
 if {[variant_isset nonfree]} {
-notes "
+notes-append "
 This build of ${name} includes nonfree code as follows:
   libfdk-aac
 The following libraries and binaries may not be redistributed:
-  ffmpeg
-  libavcodec
-  libavdevice
-  libavfilter
-  libavformat
-  libavutil
+  ffmpeg libavcodec libavdevice libavfilter libavformat libavutil
 To remove this restriction remove the variant +nonfree
 "
 } elseif {[variant_isset gpl3]} {
-notes "
-This build of ${name} includes GPLed code and is therefore licensed under GPL v3 or later.
+notes-append "
+This build of ${name} includes GPLed code and is therefore licensed under GPL v3 or later.\
 The following modules are GPLed:
-  postproc
-  libsambaclient
-  libvidstab
-  libx264
-  libx265
-  libxvid
-To include all nonfree, GPLed and LGPL code use variant +nonfree.
+  libsambaclient libvidstab libx264 libx265 libxvid postproc
+To include all nonfree, GPLed and LGPL code use variant +nonfree.\
 To remove nonfree and GPLed code leaving only LGPL code remove the +gpl2 and +gpl3 variants.
 "
 } elseif {[variant_isset gpl2]} {
-notes "
-This build of ${name} includes GPLed code and is therefore licensed under GPL v2 or later.
+notes-append "
+This build of ${name} includes GPLed code and is therefore licensed under GPL v2 or later.\
 The following modules are GPLed:
-  postproc
-  libvidstab
-  libx264
-  libx265
-  libxvid
-To include all nonfree, GPLed and LGPL code use variant +nonfree.
+  libvidstab libx264 libx265 libxvid postproc
+To include all nonfree, GPLed and LGPL code use variant +nonfree.\
 To remove nonfree and GPLed code leaving only LGPL code remove the +gpl2 variant.
 "
 } else {
-notes "
-This build of ${name} includes no GPLed or nonfree code\
-and is therefore licensed under LGPL v2.1 or later.
+notes-append "
+This build of ${name} includes no GPLed or nonfree code and is therefore licensed under LGPL v2.1 or later.
 "
 }
 
 livecheck.type      regex
 livecheck.url       ${master_sites}
-livecheck.regex     "${my_name}-(\\d+(?:\\.\\d+)*)${extract.suffix}"
+livecheck.regex     "${my_name}-(${port_ver_major}(?:\\.\\d+)*)${extract.suffix}"

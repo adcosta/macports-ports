@@ -4,11 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                buildbot-pkg
-version             3.7.0
+version             3.10.1
 revision            0
-checksums           rmd160  be3a32d7ae70a09e21f636e153de68a09514d89c \
-                    sha256  e015c238b5b97bb46e644cf20fea11992d88e284f65b7a13707e193f1c0a2af5 \
-                    size    4804
+checksums           rmd160  bcd13e2ab7cf47d7e9397e5f077a620f4a534895 \
+                    sha256  ea5256d573702977934e7d230ce22c54752b9b149673888ade020dbd3157d975 \
+                    size    4997
 
 categories          devel
 maintainers         {ryandesign @ryandesign} {rajdeep @rajdeepbh} {mojca @mojca} openmaintainer
@@ -21,6 +21,8 @@ long_description    {*}${description}
 
 homepage            https://buildbot.net
 
+# Can't update to 311 due to missing dependency:
+# https://trac.macports.org/ticket/67849
 python.default_version \
                     310
 

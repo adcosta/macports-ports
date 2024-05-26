@@ -6,6 +6,8 @@ PortGroup           python 1.0
 name                py-kaitaistruct
 version             0.9
 license             MIT
+platforms           {darwin any}
+supported_archs     noarch
 maintainers         nomaintainer
 
 description         Kaitai Struct declarative parser generator for binary data runtime \
@@ -18,9 +20,4 @@ checksums           rmd160  272981cdc06dd84f9060f59bf0307cbe03b9f48f \
                     sha256  3d5845817ec8a4d5504379cc11bd570b038850ee49c4580bc0998c8fb1d327ad \
                     size    5497
 
-python.versions     37 38 39 310
-
-if {${name} ne ${subport}} {
-    depends_build-append \
-                    port:py${python.version}-setuptools
-}
+python.versions     38 39 310 311

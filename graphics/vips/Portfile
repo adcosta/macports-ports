@@ -5,7 +5,7 @@ PortGroup           github 1.0
 PortGroup           gobject_introspection 1.0
 PortGroup           meson 1.0
 
-github.setup        libvips libvips 8.14.2 v
+github.setup        libvips libvips 8.15.1 v
 revision            4
 name                vips
 distname            vips-${version}
@@ -14,16 +14,15 @@ long_description    VIPS is an image processing library. It is good for \
                     large images and for colour.
 maintainers         {gmail.com:jcupitt @jcupitt} openmaintainer
 categories          graphics
-platforms           darwin
 license             LGPL-2.1+
 homepage            https://libvips.github.io/libvips/
 github.tarball_from releases
 
 use_xz              yes
 
-checksums           rmd160  10a31557cde08d755120e49aa5ad56d30dffe65b \
-                    sha256  27dad021f0835a5ab14e541d02abd41e4c3bd012d2196438df5a9e754984f7ce \
-                    size    18693660
+checksums           rmd160  ecc1bb26bd15f4bd27eb528a67be66a5381fb003 \
+                    sha256  06811f5aed3e7bc03e63d05537ff4b501de5283108c8ee79396c60601a00830c \
+                    size    18648116
 
 # minor tweak to allow build with older compilers
 # StandaloneFuzzTargetMain.c:31: error: 'for' loop initial declaration used outside C99 mode
@@ -44,6 +43,7 @@ depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     port:lcms2 \
                     port:libexif \
                     port:libgsf \
+                    port:libjxl \
                     port:libpng \
                     path:lib/pkgconfig/librsvg-2.0.pc:librsvg \
                     port:libtool \
@@ -58,4 +58,4 @@ depends_lib         path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     port:zlib
 
 configure.post_args-append \
-                   -Dintrospection=true
+                   -Dintrospection=enabled

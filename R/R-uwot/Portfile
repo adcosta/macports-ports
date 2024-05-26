@@ -3,20 +3,34 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github jlmelville uwot 0.1.14 v
+# Revert to GitHub once updated there.
+R.setup             cran jlmelville uwot 0.2.2
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3+
-description         Uniform manifold approximation and projection (umap) method for dimensionality reduction
+description         Uniform manifold approximation and projection (umap) \
+                    method for dimensionality reduction
 long_description    {*}${description}
-checksums           rmd160  58bd91f120acb792d2d628e5031ec40f8b53f5ee \
-                    sha256  4b8d7bbd6a5a3b7c64359c540afe5091da0358b32e0b650f39d0ef6a708059d8 \
-                    size    47671384
+homepage            https://jlmelville.github.io/uwot
+checksums           rmd160  4287f9e80c83ef60bd7697225c8933a437bf9daf \
+                    sha256  d9938c43d29530d4b36d1b2649cc679b09945a740db2cd3a266242b1aa9a6cd1 \
+                    size    602996
 
 depends_lib-append  port:R-dqrng \
                     port:R-FNN \
                     port:R-irlba \
                     port:R-Rcpp \
                     port:R-RcppAnnoy \
-                    port:R-RcppProgress
+                    port:R-RcppProgress \
+                    port:R-RSpectra
+
+depends_test-append port:R-bigstatsr \
+                    port:R-covr \
+                    port:R-knitr \
+                    port:R-RcppHNSW \
+                    port:R-rmarkdown \
+                    port:R-rnndescent \
+                    port:R-testthat
+
+test.run            yes

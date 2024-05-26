@@ -4,16 +4,16 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran business-science timetk 2.8.3
+R.setup             cran business-science timetk 2.9.0
 revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3+
 description         Tool-kit for working with time series in R
 long_description    {*}${description}
 homepage            https://business-science.github.io/timetk
-checksums           rmd160  a2d9dc832cfefd5e7c92358f353cc6e2a8750177 \
-                    sha256  3e22e5f731856226a3261b7bbbd48c2c2a80d53277cd45eb0da82a64d4c2a5a9 \
-                    size    3057307
+checksums           rmd160  9167e92124e431ce70e3b65aae8f37a550ab7875 \
+                    sha256  6f5c47dd51a9632a1270debbe080740cf5d61f347332e68c6c1ec47ee333dbb8 \
+                    size    4116258
 supported_archs     noarch
 
 depends_lib-append  port:R-anytime \
@@ -36,9 +36,11 @@ depends_lib-append  port:R-anytime \
                     port:R-stringi \
                     port:R-stringr \
                     port:R-tibble \
+                    port:R-tidymodels \
                     port:R-tidyr \
                     port:R-tidyselect \
                     port:R-timeDate \
+                    port:R-timeSeries \
                     port:R-tsfeatures \
                     port:R-xts \
                     port:R-zoo
@@ -47,13 +49,12 @@ depends_test-append port:R-broom \
                     port:R-covr \
                     port:R-fracdiff \
                     port:R-knitr \
+                    port:R-modeltime \
                     port:R-parsnip \
                     port:R-rmarkdown \
                     port:R-roxygen2 \
                     port:R-scales \
                     port:R-testthat \
-                    port:R-tidymodels \
-                    port:R-timeSeries \
                     port:R-trelliscopejs \
                     port:R-tseries \
                     port:R-tune \

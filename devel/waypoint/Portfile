@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/hashicorp/waypoint 0.11.1 v
+go.setup            github.com/hashicorp/waypoint 0.11.4 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
 
@@ -27,12 +28,9 @@ license             MPL-2
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  599710b794c88b28e030da882faaeac5b18f2238 \
-                    sha256  8615d9333f9ee3c94a55d2594deac7a9c9fa4fb44cf83540be190a17eda19a5a \
-                    size    24882887
-
-# Do not restrict Go from downloading dependencies at build time.
-build.env-delete    GOPROXY=off GO111MODULE=off
+checksums           rmd160  412a282be713262db85d00d8ba4d3f3938d63e7b \
+                    sha256  e2526a621880fdc92c285250242532d2e9c5053fd53d2df9ad4ca7efa6b951a3 \
+                    size    24896635
 
 depends_build-append port:go-bindata
 

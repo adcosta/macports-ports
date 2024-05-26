@@ -4,11 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                scons
-version             4.5.2
-revision            0
-checksums           rmd160  2c3a91e7ec832b8384d17b659134c2c457232b3e \
-                    sha256  ce26aac95d350a79a4192196b0beac3cb24f4ccabce0123eb28d3370f576f072 \
-                    size    3194724
+version             4.7.0
+revision            1
+checksums           rmd160  6b65ec3ce4b1125e5fd53557c963e19b884f942d \
+                    sha256  d9fcd831700ce373ecd30ac55e9d7eff20754215cff5967c4972237d614a326e \
+                    size    3220744
 
 categories          devel python
 supported_archs     noarch
@@ -28,14 +28,18 @@ homepage            https://www.scons.org
 master_sites        sourceforge:project/scons/scons/${version}
 distname            SCons-${version}
 
+# Keep the python version synchronized with ports that need extra python modules
+# in their scons scripts, including: cantera
 python.default_version \
-                    311
+                    312
 
 patchfiles          python-interp.patch
 post-patch {
-    reinplace -W ${worksrcpath}/SCons/Utilities "s|__PYTHON__|${python.bin}|" \
+    reinplace -W ${worksrcpath}/SCons/Utilities "1s|__PYTHON__|${python.bin}|" \
         ConfigureCache.py sconsign.py
 }
+
+patchfiles-append   stdlib.patch
 
 post-destroot {
     xinstall -m 0755 -d \

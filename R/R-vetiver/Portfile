@@ -3,21 +3,21 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github rstudio vetiver-r 0.2.1 v
-set R.package       vetiver
-revision            0
+R.setup             cran rstudio vetiver 0.2.5
+revision            1
 maintainers         nomaintainer
 license             MIT
 description         Version, share, deploy and monitor models
 long_description    {*}${description}
 homepage            https://rstudio.github.io/vetiver-r
-checksums           rmd160  e4c8d1fa8a8bd82294af4f6f47f17daf5ec89203 \
-                    sha256  d45b2baf54156ac745edc42ae2b5bdfecee1ae72e7c98225a9d13b57f870a66b \
-                    size    369568
+checksums           rmd160  62744e9a3bc3a1d45e775cbac100d7c7648e7e67 \
+                    sha256  0b6852a357c796e03361cd1248100f0ec9f0e6cd0d75e2deec20ff4d20c9f711 \
+                    size    387177
 supported_archs     noarch
 
 depends_lib-append  port:R-bundle \
                     port:R-butcher \
+                    port:R-cereal \
                     port:R-cli \
                     port:R-ellipsis \
                     port:R-fs \

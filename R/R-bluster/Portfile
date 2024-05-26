@@ -3,15 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             bioconductor Bioconductor bluster 1.8.0
-revision            1
+R.setup             bioconductor LTLA bluster 1.14.0
+revision            0
+categories-append   bioconductor
 maintainers         nomaintainer
 license             GPL-3
 description         Clustering algorithms for Bioconductor
 long_description    {*}${description}
-checksums           rmd160  83cca35179a464be4ca0d86af335680ab4daf62d \
-                    sha256  7e9b2cab68ddf27b4167436b6a4e42bce32487bdc3a635cba025559b00dd29f6 \
-                    size    2999922
+homepage            https://github.com/LTLA/bluster
+checksums           rmd160  1f28583a0aeb4e697e742a1cbb88444346f0fa8a \
+                    sha256  8a7b1818ca21442a1d1166f82e248e8eab5d02c21557d69fd87971db44e747ae \
+                    size    2953678
 
 depends_lib-append  port:R-BiocNeighbors \
                     port:R-BiocParallel \

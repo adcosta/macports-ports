@@ -4,16 +4,16 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version is outdated.
-R.setup             cran PolMine RcppCWB 0.6.1
-revision            0
+R.setup             cran PolMine RcppCWB 0.6.4
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3
 description         Rcpp bindings for the C code of the Corpus Workbench (CWB)
 long_description    {*}${description}
-checksums           rmd160  a27d5d11a19de211d28178f6e3ecf5e4a7cfe5df \
-                    sha256  297c93941eeafbd01a8df6dc11af315dba0217c91ccc76dba1bb7d2deb410041 \
-                    size    1127675
+checksums           rmd160  cdd1dd606f7e3a6515629bb6300522805306c7e6 \
+                    sha256  4f7072199e741d6621f13e798358a772f741f4216583cff11c953f9bcd97849f \
+                    size    1129997
 
 depends_build-append \
                     port:pkgconfig
@@ -22,13 +22,7 @@ depends_lib-append  path:lib/pkgconfig/glib-2.0.pc:glib2 \
                     port:R-fs \
                     port:R-Rcpp
 
-post-extract {
-    move ${worksrcpath}/src/cwb/config/platform/darwin-64 ${worksrcpath}/src/cwb/config/platform/darwin-x86_64
-}
-
-patchfiles          0001-Fix-building-for-PowerPC.patch \
-                    0002-Fix-static-libs.patch \
-                    0003-Fixes-for-Macports.patch
+patchfiles          0001-Fixes-for-Macports.patch
 
 post-patch {
     reinplace "s|@CC@|${configure.cc}|" \

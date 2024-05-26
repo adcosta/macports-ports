@@ -1,0 +1,22 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran Juan.Domingo parallelpam 1.4
+revision            1
+categories-append   math
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             GPL-2+
+description         Parallel partitioning-around-medoids (PAM) for big sets of data
+long_description    {*}${description}
+checksums           rmd160  6b9256f6ba70bd33e278a0a6c720238c2a32015c \
+                    sha256  02520ac732a34ae3d907ee6865fe87f468823791cd4d78b8cd808094b10c6147 \
+                    size    163600
+
+depends_lib-append  port:R-memuse \
+                    port:R-Rcpp
+
+depends_test-append port:R-knitr
+
+test.run            yes

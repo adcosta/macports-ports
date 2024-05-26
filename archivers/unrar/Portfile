@@ -1,14 +1,11 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           legacysupport 1.1
-
-# wcsdup function is not available in Snow Leopard
-legacysupport.newest_darwin_requires_legacy 10
+PortGroup           compiler_blacklist_versions 1.0
 
 name                unrar
 set my_name         ${name}src
-version             6.2.8
+version             7.0.9
 categories          archivers
 maintainers         nomaintainer
 license             Restrictive/Distributable
@@ -23,9 +20,9 @@ homepage            https://www.rarlab.com/
 master_sites        ${homepage}rar/
 distname            ${my_name}-${version}
 
-checksums           rmd160  e5b043317d5e525b1f4fb88303f9c04d7246a492 \
-                    sha256  1777e3d3b073815ff68a411ddb1ab76d0a4e1f58ecc7080035b27b52967ff911 \
-                    size    246249
+checksums           rmd160  a6f75fbb962be30fe27862bede474e4a94b8e501 \
+                    sha256  505c13f9e4c54c01546f2e29b2fcc2d7fabc856a060b81e5cdfe6012a9198326 \
+                    size    258287
 
 patchfiles          patch-makefile.unix.diff
 
@@ -44,8 +41,10 @@ compiler.cxx_standard \
                     2011
 configure.cxxflags-append \
                     -std=c++11
-configure.ldflags-append \
-                    -std=c++11
+
+# error: invalid cpu feature string for builtin
+# uses newer intrinsic functions
+compiler.blacklist  {*gcc-[3-4].*} {clang < 900}
 
 set cxx_stdlibflags {}
 if {[string match *clang* ${configure.cxx}] && ${configure.cxx_stdlib} ne ""} {

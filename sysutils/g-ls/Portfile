@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               golang 1.0
+
+go.setup                github.com/Equationzhao/g 0.27.0 v
+name                    g-ls
+revision                0
+categories              sysutils
+license                 MIT
+platforms               {darwin >= 18}
+installs_libs           no
+maintainers             {@TheRealKeto gmail.com:therealketo} openmaintainer
+
+description             Powerful and cross-platform ls
+long_description        {*}${description}. Built for the modern terminal.
+
+homepage                https://g.equationzhao.space
+
+checksums               rmd160  7d3d5e402fb2ea29b8177e3b4760baede6433cbd \
+                        sha256  ec77cbb7cd98f67188f903514ebd282a3691cb0b35c9546b57207dda5529ed4b \
+                        size    401983
+
+# Vendored libraries cause failure, fetch them at build time
+go.offline_build        no
+
+build.args-append       -ldflags="-s -w"
+
+destroot {
+    xinstall -m 0755 ${worksrcpath}/g ${destroot}${prefix}/bin/g
+    xinstall -d ${destroot}${prefix}/share/zsh/site-functions
+    xinstall -m 0644 ${worksrcpath}/completions/zsh/_g \
+        ${destroot}${prefix}/share/zsh/site-functions
+}

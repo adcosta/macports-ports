@@ -3,27 +3,29 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github r-lib httr2 0.2.3 v
-revision            0
-categories-append   devel
+R.setup             github r-lib httr2 1.0.1 v
+revision            1
+categories-append   devel net
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
 description         Perform HTTP requests and process the responses
 long_description    {*}${description}
 homepage            https://httr2.r-lib.org
-checksums           rmd160  dc32088d2653e9848022550cbbbbe7cdb74a47e4 \
-                    sha256  088f23829838362a4bd0510d5fd574c5ed255292385560155d38e4e237f1f727 \
-                    size    122983
+checksums           rmd160  16043ce295d82c50945d7622f189ab9c9a9b8b7f \
+                    sha256  b6592e102bb2ecb439e9f5a257ba4dff793999e04a254e027a87f08ed66fbd87 \
+                    size    309284
 supported_archs     noarch
 
 depends_lib-append  port:R-cli \
                     port:R-curl \
                     port:R-glue \
+                    port:R-lifecycle \
                     port:R-magrittr \
                     port:R-openssl \
                     port:R-R6 \
                     port:R-rappdirs \
                     port:R-rlang \
+                    port:R-vctrs \
                     port:R-withr
 
 depends_test-append port:R-askpass \
@@ -35,7 +37,6 @@ depends_test-append port:R-askpass \
                     port:R-jose \
                     port:R-jsonlite \
                     port:R-knitr \
-                    port:R-purrr \
                     port:R-rmarkdown \
                     port:R-testthat \
                     port:R-tibble \

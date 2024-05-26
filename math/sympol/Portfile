@@ -8,7 +8,7 @@ PortGroup               github 1.0
 github.setup            tremlin SymPol 0.1.9 v
 github.tarball_from     tarball
 name                    sympol
-revision                0
+revision                1
 categories              math science
 license                 GPL-2
 maintainers             {@catap korins.ky:kirill} openmaintainer
@@ -35,7 +35,7 @@ depends_build-append    port:permlib
 
 depends_lib-append      port:bliss \
                         port:cddlib \
-                        port:eigen3 \
+                        path:share/pkgconfig/eigen3.pc:eigen3 \
                         port:gmp \
                         port:lrslib
 

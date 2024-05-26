@@ -3,15 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran rstudio rstudioapi 0.14
+R.setup             cran rstudio rstudioapi 0.16.0
 revision            1
 maintainers         nomaintainer
 license             MIT
 description         Safely access the RStudio API
 long_description    {*}${description}
-checksums           rmd160  f1bbcfd160198b06d11d3afd6a3213eb374e367f \
-                    sha256  469d0987b1ad728a96c363a422fba712a5cebc8b11a5f7e953b4a671044dafc4 \
-                    size    115390
+homepage            https://rstudio.github.io/rstudioapi
+checksums           rmd160  c66105a66716fbeead3e0660a48de2c2cfbd3b0f \
+                    sha256  74ffa867199e87a54386fbd26919233371f314f73d7338dd4e4695708fed4fe6 \
+                    size    117418
 supported_archs     noarch
 
 depends_test-append port:R-clipr \

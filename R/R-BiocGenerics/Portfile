@@ -3,14 +3,15 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github Bioconductor BiocGenerics b77fb69412cbeb0f219859aaaecbbeb53889d76b
-version             0.47.0
+R.setup             bioconductor Bioconductor BiocGenerics 0.50.0
 revision            0
+categories-append   bioconductor
 maintainers         nomaintainer
 license             Artistic-2
-description         The package defines many S4 generic functions used in Bioconductor
-long_description    {*}${description}
-checksums           rmd160  923dde6eecc3a59a95688a2660c8b8db9bf19801 \
-                    sha256  6540ff9b2c0c49ebca0881cb56764fcd218ec17946e6a57e785e8e119095d5ab \
-                    size    49082
+description         The package defines many S4 generic functions
+long_description    {*}${description} used in Bioconductor.
+checksums           rmd160  03d7d483fdf4d8d4502b150ddbc185cafdffe374 \
+                    sha256  11d72e20c087911a58d08db7898d47424930e00265d6e65ae87d14d786f20014 \
+                    size    49747
 supported_archs     noarch
+platforms           {darwin any}

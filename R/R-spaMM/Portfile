@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran francois spaMM 4.4.16
+revision            1
+categories-append   math
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             CeCILL-2
+description         Mixed-effect models, with or without spatial random effects
+long_description    {*}${description}
+homepage            https://gitlab.mbb.univ-montp2.fr/francois/spamm-ref
+checksums           rmd160  1e859763f9eff32dca7d5182105a2b66bc69a7c3 \
+                    sha256  4476ed502d898177f2c9554b8601915a44b8b022698f309bd1c8afee4ec3b985 \
+                    size    1538013
+
+depends_lib-append  port:gsl \
+                    port:R-backports \
+                    port:R-crayon \
+                    port:R-geometry \
+                    port:R-gmp \
+                    port:R-minqa \
+                    port:R-nloptr \
+                    port:R-numDeriv \
+                    port:R-pbapply \
+                    port:R-proxy \
+                    port:R-Rcpp \
+                    port:R-RcppEigen \
+                    port:R-ROI

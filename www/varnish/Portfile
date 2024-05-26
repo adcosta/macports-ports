@@ -4,7 +4,7 @@ PortSystem            1.0
 PortGroup             github 1.0
 PortGroup             legacysupport 1.1
 
-github.setup          varnishcache varnish-cache 7.3.0 varnish-
+github.setup          varnishcache varnish-cache 7.4.2 varnish-
 github.tarball_from   archive
 name                  varnish
 epoch                 20110709
@@ -20,9 +20,9 @@ long_description      Varnish was written from the ground up to be a high \
 
 homepage              https://varnish-cache.org/
 
-checksums             rmd160  cd3066ed2195130b4dc04ded810d3ef0975626db \
-                      sha256  f7dfb80b11f2b71421439dfdb91991ceaa4694b72b79d6a9ef7e0631b47d1296 \
-                      size    2019397
+checksums             rmd160  d4723c28109c39b681921086d2a47bfab02003a1 \
+                      sha256  207f81bb84b4b37004986de11168a1c0b0a7564698bf49f8aed11e61b1e6722b \
+                      size    2042569
 
 set python_branch     3.11
 set python_version    [string map {. {}} ${python_branch}]
@@ -39,9 +39,10 @@ autoreconf.args       -fi
 # needs MAP_ANONYMOUS
 legacysupport.newest_darwin_requires_legacy 14
 
-configure.args-append --with-rst2man=${prefix}/bin/rst2man-${python_branch}.py \
-                      --with-rst2html=${prefix}/bin/rst2html-${python_branch}.py \
-                      --with-sphinx-build=${prefix}/bin/sphinx-build-${python_branch}
+configure.args-append --with-rst2man=${prefix}/bin/rst2man-${python_branch} \
+                      --with-rst2html=${prefix}/bin/rst2html-${python_branch} \
+                      --with-sphinx-build=${prefix}/bin/sphinx-build-${python_branch} \
+                      PYTHON=${prefix}/bin/python${python_branch}
 
 startupitem.create    yes
 startupitem.pidfile   auto "${prefix}/var/run/${name}/${name}.pid"

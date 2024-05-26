@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/boyter/scc 3.1.0 v
+go.setup            github.com/boyter/scc 3.3.4 v
+github.tarball_from archive
 revision            0
 
 description         scc is a very fast & accurate code counter with \
@@ -25,9 +26,9 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  bac56f993335a6b55a2e1ae5daa17a59765ac95f \
-                    sha256  d8f4dac1720c53954c178cd543a69238c1b6568257261594474e5d4c9c441ffd \
-                    size    1055692
+checksums           rmd160  cc54be8d0d3711f36d08be9590541f4722d5a3bc \
+                    sha256  3097e23532d9a254fe217c81557136c7ac5aa4d48a200b61b366330e5eaf7ce4 \
+                    size    2548453
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/

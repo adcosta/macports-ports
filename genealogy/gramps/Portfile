@@ -5,11 +5,12 @@ PortGroup               github 1.0
 PortGroup               python 1.0
 PortGroup               app 1.1
 
-github.setup            gramps-project gramps 5.1.5 v
-revision                6
+github.setup            gramps-project gramps 5.1.6 v
+revision                2
 github.tarball_from     archive
 
 supported_archs         noarch
+platforms               {darwin any}
 categories              genealogy python
 license                 GPL-2
 maintainers             {devans @dbevans} {mascguy @mascguy} openmaintainer
@@ -21,9 +22,9 @@ long_description        Gramps is a genealogy program to store, edit, \
                         correlation to potentially fill relationship gaps.
 homepage                https://www.gramps-project.org/
 
-checksums               rmd160  54f05d1eb18fadde9c41ae867e7c6e1e4bfbff4d \
-                        sha256  4045a142a7c3cbe50a41e594bb160dce4112e37ef7dec68d65af42e9269c2df6 \
-                        size    17425167
+checksums               rmd160  ad761f8b36d3c335bed67d91d6798af26b49ad45 \
+                        sha256  bff0b5694e77e0f7075fb76481c4523d37646cc042c8dd9897ff2e0cd401fa3b \
+                        size    17429153
 
 depends_build-append \
                         port:intltool
@@ -97,8 +98,17 @@ if {![variant_isset quartz] && ![variant_isset x11]} {
 }
 
 post-destroot {
-    reinplace "s|${destroot}${python.prefix}|${prefix}|" \
+    set dir_share ${prefix}/share
+    set file_resource_path \
         ${destroot}${python.pkgd}/gramps/gen/utils/resource-path
+
+    if {[file exists ${file_resource_path}]} {
+        ui_info "resource-path: file exists, deleting: ${file_resource_path}"
+        file delete -force ${file_resource_path}
+    }
+
+    ui_info "resource-path: creating: ${file_resource_path}"
+    system "/bin/echo -n \"${dir_share}\" > ${file_resource_path}"
 
     delete ${destroot}${prefix}/share
     move ${destroot}${python.prefix}/share ${destroot}${prefix}
@@ -106,7 +116,7 @@ post-destroot {
 
 post-activate {
     system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
-#    system "${prefix}/bin/update-mime-database ${prefix}/share/mime"
+    system "${prefix}/bin/update-mime-database ${prefix}/share/mime"
 }
 
 app.icon   ${worksrcpath}/images/hicolor/scalable/apps/gramps.svg

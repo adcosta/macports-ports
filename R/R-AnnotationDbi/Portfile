@@ -3,17 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github Bioconductor AnnotationDbi f754ee6b67de7ef14e02f5a14df740e4a6cefa8f
-version             1.63.1
+R.setup             bioconductor Bioconductor AnnotationDbi 1.66.0
 revision            0
+categories-append   bioconductor
 maintainers         nomaintainer
 license             Artistic-2
 description         Manipulation of SQLite-based annotations in Bioconductor
 long_description    {*}${description}
-checksums           rmd160  4fcc294f8837aad00100d3500531b044a3c8eb8d \
-                    sha256  9dd07a7d6284f41772bd5a646bd451a4b085cae1a8a9045904c58fdd0bcb6a5d \
-                    size    3931735
+checksums           rmd160  081469e0c6d4d202377e279fa0a6f30508d8d4c9 \
+                    sha256  3aa793c6888ad50a63d88e2a2df59655c6384ada9db2c5d84473ca76fafa5ebc \
+                    size    4359386
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_lib-append  port:R-Biobase \
                     port:R-BiocGenerics \

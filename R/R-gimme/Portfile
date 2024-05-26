@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran GatesLab gimme 0.7-14
+R.setup             cran GatesLab gimme 0.7-17
 revision            0
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,19 +11,19 @@ license             GPL-2
 description         Group Iterative Multiple Model Estimation
 long_description    {*}${description}
 homepage            https://tarheels.live/gimme/tutorials
-checksums           rmd160  8b1862da067a12864c1ed41306b2ac0939d02151 \
-                    sha256  9ad81537c52740c79b0d0170f89bbe0ba263ee4a1ad9718f5aa4cbca123a1607 \
-                    size    1636515
+checksums           rmd160  ddb5971e515d51a57d87f932778a3ff64f3361ac \
+                    sha256  1dd8e3bd3b139156b7c0b54f3cbe0bf1def1d01c6c683c23e9fd1d0e9eaa405d \
+                    size    1624240
 supported_archs     noarch
 
-depends_lib-append  port:R-aTSA \
-                    port:R-data.tree \
+depends_lib-append  port:R-data.tree \
                     port:R-igraph \
                     port:R-imputeTS \
                     port:R-lavaan \
                     port:R-MIIVsem \
                     port:R-nloptr \
-                    port:R-qgraph
+                    port:R-qgraph \
+                    port:R-tseries
 
 depends_test-append port:R-knitr \
                     port:R-rmarkdown

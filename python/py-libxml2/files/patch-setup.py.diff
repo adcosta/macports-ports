@@ -1,6 +1,6 @@
---- setup.py.orig	2022-05-02 07:10:21.000000000 -0500
-+++ setup.py	2022-09-20 01:07:33.000000000 -0500
-@@ -17,13 +17,13 @@
+--- setup.py.orig	2024-02-04 08:22:54.000000000 -0600
++++ setup.py	2024-03-16 05:13:11.000000000 -0500
+@@ -21,13 +21,13 @@
  ROOT = r'@prefix@'
  
  # Thread-enabled libxml2
@@ -19,7 +19,7 @@
  
  icu_series = 69
  
-@@ -66,11 +66,7 @@
+@@ -75,11 +75,7 @@
  # - libxml2/libxml/tree.h
  # - libxslt/xsltconfig.h
  includes_dir = [
@@ -31,7 +31,7 @@
  ];
  
  xml_includes=""
-@@ -122,32 +118,6 @@
+@@ -131,32 +127,6 @@
      result.close()
  
  with_xslt=0

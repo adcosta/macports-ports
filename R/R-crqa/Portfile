@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran moreno.cocoi crqa 2.0.5
+revision            1
+categories-append   math
+maintainers         nomaintainer
+license             GPL-2+
+description         Recurrence quantification analysis for categorical and continuous time series
+long_description    {*}${description}
+checksums           rmd160  86f4ed0a2be62bfa454d068bb23858af7ec0045e \
+                    sha256  d064acb548fb19ea9081f9366949fd8da511ae7342f5c6616e1d9e3d7bfcd6da \
+                    size    213738
+
+depends_lib-append  port:R-gplots \
+                    port:R-plot3D \
+                    port:R-pracma \
+                    port:R-rdist \
+                    port:R-tseriesChaos
+
+compilers.setup     require_fortran
+
+depends_test-append port:R-knitr \
+                    port:R-rmarkdown
+
+test.run            yes

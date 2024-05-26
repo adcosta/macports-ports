@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github wlandau crew.cluster 0.1.1
+R.setup             github wlandau crew.cluster 0.3.1
 revision            0
 categories-append   parallel
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,15 +11,21 @@ license             MIT
 description         Crew launcher plugins for traditional high-performance computing clusters
 long_description    {*}${description}
 homepage            https://wlandau.github.io/crew.cluster
-checksums           rmd160  d797be062fad6b7639119483b426e3a962937c17 \
-                    sha256  938bf24a8ff94a286deae0994355448272effa6aae9d3a10298b03e0bf89701d \
-                    size    293625
+checksums           rmd160  dc83aae044cc61331086268939eb1b94a107ba58 \
+                    sha256  2297afcb0b7a2b65506316947e33d43b6bcc1055d2d8c4226154159cfc3e9756 \
+                    size    297891
 supported_archs     noarch
+platforms           {darwin any}
+github.tarball_from archive
 
 depends_lib-append  port:R-crew \
                     port:R-lifecycle \
+                    port:R-ps \
                     port:R-R6 \
-                    port:R-rlang
+                    port:R-rlang \
+                    port:R-vctrs \
+                    port:R-xml2 \
+                    port:R-yaml
 
 depends_test-append port:R-knitr \
                     port:R-markdown \

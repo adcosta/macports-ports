@@ -3,21 +3,24 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran quantregGrowth 1.6-1
-revision            1
+R.setup             cran vito.muggeo quantregGrowth 1.7-1
+revision            0
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
-description         Non-crossing additive regression quantiles and non-parametric growth charts
+license             GPL
+description         Non-crossing additive regression quantiles \
+                    and non-parametric growth charts
 long_description    {*}${description}
-checksums           rmd160  e78d8caef692d21594cdcf94c90446b3bbb04f94 \
-                    sha256  57b1cae176ed8184d49f9810821a3816c17aef3bb4cbfa2e04a512989a3bb143 \
-                    size    494236
+checksums           rmd160  18fddc13171037869dc9a0f0e15a9fb884acdad7 \
+                    sha256  4d117dd5aa9a446575185980a5adde76a75ae43970800b8e9c826865d52c121e \
+                    size    179043
 supported_archs     noarch
 
-depends_lib-append  port:R-quantreg
+depends_lib-append  port:R-quantreg \
+                    port:R-SparseM
 
 depends_test-append port:R-knitr \
+                    port:R-markdown \
                     port:R-rmarkdown
 
 test.run            yes

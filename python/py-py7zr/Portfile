@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-py7zr
-version             0.20.5
+version             0.20.8
 revision            0
 
 platforms           {darwin any}
@@ -16,13 +16,13 @@ long_description    {*}${description}
 
 homepage            https://github.com/miurahr/py7zr
 
-checksums           rmd160  0521155fc61ac3d8e85c0a18421df2a9092f320b \
-                    sha256  6fb4889c0fa32581818a3366984083253585d6c794e82c3242b8a12d6aeaabd3 \
-                    size    4985655
+checksums           rmd160  127063d0714bd7102f7118fb67c23ab2906ef388 \
+                    sha256  2a6b0db0441e63a2dd74cbd18f5d9ae7e08dc0e54685aa486361d0db6a0b4f78 \
+                    size    4988208
 
 python.pep517       yes
 
-python.versions     38 39 310 311
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
     depends_build-append \
@@ -38,11 +38,6 @@ if {${name} ne ${subport}} {
                     port:py${python.version}-pyppmd \
                     port:py${python.version}-pyzstd \
                     port:py${python.version}-texttable
-
-    if {${python.version} < 38} {
-        depends_lib-append \
-                    port:py${python.version}-importlib-metadata
-    }
 
     depends_test-append \
                     port:py${python.version}-cpuinfo \

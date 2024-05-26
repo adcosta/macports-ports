@@ -20,7 +20,7 @@ checksums           rmd160  06eb0389277f0f34d1c304cca25b16563d12643b \
                     sha256  fe9dfa3f5d9912087f3fee522fb4333a9740ef82bc8da9580a5af6c12e2c92c6 \
                     size    23395140
 depends_build-append port:pkgconfig
-depends_lib-append   port:ode port:flann port:triangle port:eigen3
+depends_lib-append   port:ode port:flann port:triangle path:share/pkgconfig/eigen3.pc:eigen3
 
 compiler.cxx_standard   2017
 configure.args-append   -DOMPL_BUILD_DEMOS=OFF \
@@ -33,7 +33,7 @@ configure.args-append   -DOMPL_BUILD_DEMOS=OFF \
 # somewhat dependent on compiler and/or boost version, so we can't
 # pre-generate them and make them available as an extra download.
 post-configure {
-    if {[variant_isset python35] || [variant_isset python36] || [variant_isset python37] || [variant_isset python38] || [variant_isset python39] || [variant_isset python310] || [variant_isset python311]} {
+    if {[variant_isset python38] || [variant_isset python39] || [variant_isset python310] || [variant_isset python311]} {
         # enable parallel build on at most 2 cores. Generating the bindings
         # uses large amounts of memory, so don't use more cores.
         if { ${use_parallel_build} } { set cj "-j 2" } else { set cj "" }
@@ -81,7 +81,7 @@ variant spot description {Include support for automaton generation from LTL spec
     depends_lib-append    port:spot
 }
 
-set pythons_versions {3.5 3.6 3.7 3.8 3.9 3.10 3.11}
+set pythons_versions {3.8 3.9 3.10 3.11}
 
 set pythons_ports {}
 foreach v ${pythons_versions} {

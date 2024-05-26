@@ -4,7 +4,12 @@ PortSystem          1.0
 PortGroup           java 1.0
 
 name                bcprov
+# See https://trac.macports.org/ticket/68455
+# This port is currently only needed by pdftk-java.
+# Please wait until https://gitlab.com/pdftk-java/pdftk/-/issues/155
+# is resolved before updating to bcprov ≥ 1.75.
 version             1.74
+epoch               1
 revision            0
 
 checksums           rmd160  d12042ab8de08b6913e816a46eccacedb4d9bbb7 \
@@ -29,6 +34,7 @@ worksrcdir          ${distname}
 
 java.version        1.8+
 java.fallback       openjdk11
+java.deptypes       run
 
 extract {
     file copy ${distpath}/${distname}.jar ${workpath}

@@ -4,17 +4,17 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran business-science modeltime 1.2.6
+R.setup             cran business-science modeltime 1.2.8
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
-description         Tidymodels extension for time series modeling
+description         Tidymodels extension for time series modelling
 long_description    {*}${description}
 homepage            https://business-science.github.io/modeltime
-checksums           rmd160  b23b7880931200fd4daefe9351a4b89cf77d8a3d \
-                    sha256  67657d5a4ad299f8edd1383e70e6ab4504f2ec002681fcc80302958799e6fd78 \
-                    size    3616738
+checksums           rmd160  1e9bade8a8a2973218800e21ec986dcf0f95b89a \
+                    sha256  4f91ff30e2594fb5663909850ec21d7eea60a17ade8846b3d3559c9439f975f3 \
+                    size    3619115
 supported_archs     noarch
 
 depends_lib-append  port:R-cli \

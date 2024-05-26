@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+
+github.setup            gitkraken gk-cli 2.0.0 v
+name                    gk
+github.tarball_from     releases
+
+categories              devel
+license                 CCBY-3
+installs_libs           no
+maintainers             {@sergiolms}\
+                        openmaintainer
+
+
+supported_archs         x86_64 arm64
+
+
+description             Official CLI for GitKraken
+long_description        ${name} is GitKraken on the command line. It makes working across multiple \
+                        repos easier with Workspaces, provides access to pull requests and \
+                        issues from multiple services (GitHub, GitLab, Bitbucket, etc.), \
+                        and seamlessly connects with GitKraken Client and GitLens in VS Code \
+                        to visualize git information when you need it.
+
+checksums               ${name}_${version}_macOS_arm64.zip \
+                            sha256  36be7a2e111b7ac961527fceee0857c20bb7844f7b9f4f35e2a7518a82d53840 \
+                            rmd160  92d1d21542d64a4051442d2350d4a8135cd8df96 \
+                            size    11899037 \
+                        ${name}_${version}_macOS_x86_64.zip \
+                            sha256  719f87bca4448ae5dfdcd61723b6c1a5f6b0f1472a53032cc5e71f9248cdb502 \
+                            rmd160  9d7515579a49614e5b89b028f39cf5dbaf8404b5 \
+                            size    12877324
+
+extract.mkdir           yes
+
+build                   {}
+use_configure           no
+use_zip                 yes
+
+if { ${build_arch} eq "arm64" } {
+    distfiles           ${name}_${version}_macOS_arm64.zip
+} else {
+    distfiles           ${name}_${version}_macOS_x86_64.zip
+}
+
+destroot {
+   xinstall -m 0755 -W ${worksrcpath} gk ${destroot}${prefix}/bin
+}
+
+github.livecheck.regex  {([0-9.]+)}

@@ -3,16 +3,24 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran HughParsonage hutilscpp 0.9.3
+R.setup             cran HughParsonage hutilscpp 0.10.4
 revision            1
 maintainers         nomaintainer
 license             GPL-2
 description         Miscellaneous functions in C++
 long_description    {*}${description}
-checksums           rmd160  3488848e49d4eb5628dfa99d387077a8a7fef930 \
-                    sha256  312ddc64e07b153260a6e1fb00c1eeb2ccefebe9e34fe41a5c99778e7cd0076a \
-                    size    424313
+checksums           rmd160  a1150c30ba2eca5731f28b945a7365e2c0692250 \
+                    sha256  c9490a141e4b796121851bd3ab693016a1c563609aa486840e8cb0860012523e \
+                    size    426026
 
 depends_lib-append  port:R-data.table \
                     port:R-hutils \
                     port:R-magrittr
+
+depends_test-append port:R-bench \
+                    port:R-covr \
+                    port:R-TeXCheckR \
+                    port:R-tinytest \
+                    port:R-withr
+
+test.run            yes

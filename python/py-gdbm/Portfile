@@ -14,7 +14,7 @@ long_description	{*}${description}
 
 homepage		https://docs.python.org/2/library/gdbm.html
 
-python.versions 26 27 32 33 34 35 36 37 38 39 310 311
+python.versions 26 27 32 33 34 35 36 37 38 39 310 311 312
 
 subport py26-gdbm {
     maintainers     {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
@@ -104,43 +104,53 @@ subport py37-gdbm {
 }
 subport py38-gdbm {
     maintainers     nomaintainer
-    version         3.8.17
+    version         3.8.19
     revision        0
     homepage        https://docs.python.org/release/${version}/library/dbm.html
-    checksums       md5 70223497e664524303ca2364208647e1 \
-                    rmd160 73a4bed2f9fb3ab0a60839e1d24237b70e0e3822 \
-                    sha256 2e54b0c68191f16552f6de2e97a2396540572a219f6bbb28591a137cecc490a9
+    checksums       md5 2532d25930266546822c144b99652254 \
+                    rmd160 9eede506febbecb73e4ffe0974fda791a23d9b96 \
+                    sha256 d2807ac69f69b84fd46a0b93bbd02a4fa48d3e70f4b2835ff0f72a2885040076
     livecheck.regex {Python (3\.8\.[0-9]+)}
 }
 subport py39-gdbm {
     maintainers     {jmr @jmroot}
-    version         3.9.17
+    version         3.9.19
     revision        0
     homepage        https://docs.python.org/release/${version}/library/dbm.html
-    checksums       md5 601fc470594f378b4339b454901f8e41 \
-                    rmd160 3f3c92decdabe268267448eecf4dd5e2274e0bef \
-                    sha256 30ce057c44f283f8ed93606ccbdb8d51dd526bdc4c62cce5e0dc217bfa3e8cee
+    checksums       md5 87d0f8281237b972ff8b23e0e2c8d325 \
+                    rmd160 b46fbe50a0cace4a6ecdb70d026a32932427f566 \
+                    sha256 d4892cd1618f6458cb851208c030df1482779609d0f3939991bd38184f8c679e
     livecheck.regex {Python (3\.9\.[0-9]+)}
 }
 subport py310-gdbm {
     maintainers     {jmr @jmroot}
-    version         3.10.12
+    version         3.10.14
     revision        0
     homepage        https://docs.python.org/release/${version}/library/dbm.html
-    checksums       md5 49b0342476b984e106d308c25d657f12 \
-                    rmd160 2fa4755bd20a07c1af9b51a83659716fb9163b8f \
-                    sha256 afb74bf19130e7a47d10312c8f5e784f24e0527981eab68e20546cfb865830b8
+    checksums       md5 05148354ce821ba7369e5b7958435400 \
+                    rmd160 7c947aa2c06cb72b654dafc828cf93c5a8d02ce5 \
+                    sha256 9c50481faa8c2832329ba0fc8868d0a606a680fc4f60ec48d26ce8e076751fda
     livecheck.regex {Python (3\.10\.[0-9]+)}
 }
 subport py311-gdbm {
     maintainers     {jmr @jmroot}
-    version         3.11.4
+    version         3.11.9
     revision        0
     homepage        https://docs.python.org/release/${version}/library/dbm.html
-    checksums       md5 fb7f7eae520285788449d569e45b6718 \
-                    rmd160 3b31d5c3e4294282de3ff76958efac2fa75d55b4 \
-                    sha256 2f0e409df2ab57aa9fc4cbddfb976af44e4e55bf6f619eee6bc5c2297264a7f6
+    checksums       md5 22ea467e7d915477152e99d5da856ddc \
+                    rmd160 3f817129ad823ef32cee7bb361e80f5867473ff1 \
+                    sha256 9b1e896523fc510691126c864406d9360a3d1e986acbda59cda57b5abda45b87
     livecheck.regex {Python (3\.11\.[0-9]+)}
+}
+subport py312-gdbm {
+    maintainers     {jmr @jmroot}
+    version         3.12.3
+    revision        0
+    homepage        https://docs.python.org/release/${version}/library/dbm.html
+    checksums       md5 8defb33f0c37aa4bdd3a38ba52abde4e \
+                    rmd160 aaa0b0c3fee2211ec4d5be4d0fe7a032b5fcd1c3 \
+                    sha256 56bfef1fdfc1221ce6720e43a661e3eb41785dd914ce99698d8c7896af4bdaa1
+    livecheck.regex {Python (3\.12\.[0-9]+)}
 }
 
 

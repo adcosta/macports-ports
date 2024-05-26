@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           cmake 1.1
+PortGroup           compilers 1.0
+PortGroup           github 1.0
+
+github.setup        Goddard-Fortran-Ecosystem gFTL 1.13.0 v
+revision            0
+categories          devel fortran
+license             Apache-2
+platforms           any
+supported_archs     noarch
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+description         Software containers for Fortran
+long_description    {*}${description}
+checksums           rmd160  6396ed5f60e5277af1768ad41357a4bd328eee9f \
+                    sha256  d8ef4bca5fb67e63dcd69e5377a0cef8336b00178a97450e79010552000d0a52 \
+                    size    170124
+github.tarball_from archive
+
+depends_build-append \
+                    port:m4
+
+# Oh: https://github.com/Goddard-Fortran-Ecosystem/gFTL/issues/200
+patchfiles-append   patch-fix-paths.diff
+
+post-patch {
+    reinplace "s,@PREFIX@,${prefix},g" ${worksrcpath}/CMakeLists.txt
+}
+
+build.env-append    M4=${prefix}/bin/gm4
+
+# That was non-trivial: https://github.com/Goddard-Fortran-Ecosystem/gFTL/issues/184
+build.target        all m4_type_includes test_generated_incs
+
+compilers.setup     require_fortran
+
+test.run            yes
+test.cmd            ctest

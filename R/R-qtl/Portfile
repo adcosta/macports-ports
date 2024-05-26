@@ -3,15 +3,15 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github kbroman qtl 1.60
+R.setup             github kbroman qtl 1.66
 revision            1
 maintainers         nomaintainer
 license             GPL-3
 description         Tools for analyzing QTL experiments
 long_description    {*}${description}
-checksums           rmd160  9bf36f3eb46025c4db26832b924f486d005e7b2f \
-                    sha256  42a097bb9fdf1e154dfdf4faf3e686febde5c995595fced13e5033d8b5418ef2 \
-                    size    4563334
+checksums           rmd160  a550a68669aecc7da111be5ec7fce38ab4e5413d \
+                    sha256  b67f3bc9d813b0c3862db85fe638edc189ff5214371fb87b588fb0b654c5e992 \
+                    size    4563413
 
 compilers.setup     require_fortran
 

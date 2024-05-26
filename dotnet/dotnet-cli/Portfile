@@ -1,9 +1,30 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
+### Notes
+# .NET File Hierarchy -- based on .NET 6.0
+# ${prefx}/share/dotnet
+# ├── LICENSE.txt                                   # provided by `dotnet-cli`
+# ├── ThirdPartyNotices.txt                         # provided by `dotnet-cli`
+# ├── dotnet                                        # main executable, provided by `dotnet-cli`
+# ├── host
+# │   └── fxr                                       # Host FX Resolver, provided by `dotnet-runtime-{version}`
+# ├── packs
+# │   ├── Microsoft.AspNetCore.App.Ref              # ASP.NET Core Targeting Pack, provided by `dotnet-sdk-{version}`
+# │   ├── Microsoft.NETCore.App.Host.{dotnet-rid}   # .NET AppHost Pack, provided by `dotnet-sdk-{version}`
+# │   ├── Microsoft.NETCore.App.Ref                 # .NET Targeting Pack, provided by `dotnet-sdk-{version}`
+# │   └── NETStandard.Library.Ref                   # .NET Standard Targeting Pack, not provided, see https://devblogs.microsoft.com/dotnet/the-future-of-net-standard/
+# ├── sdk                                           # provided by `dotnet-sdk-{version}`
+# ├── sdk-manifests                                 # provided by `dotnet-sdk-{version}`
+# ├── shared
+# │   ├── Microsoft.AspNetCore.App                  # provided by `aspnetcore-runtime-{version}`
+# │   └── Microsoft.NETCore.App                     # provided by `dotnet-runtime-{version}`
+# └── templates                                     # provided by `dotnet-sdk-{version}`
+###
+
 PortSystem          1.0
 
 name                dotnet-cli
-version             7.0.7
+version             8.0.4
 revision            0
 categories          dotnet
 license             MIT
@@ -31,15 +52,15 @@ master_sites        https://dotnetcli.azureedge.net/dotnet/Runtime/${version}/
 switch ${build_arch} {
     x86_64 {
         distname            dotnet-runtime-${version}-osx-x64
-        checksums           rmd160  3bf1e884216b76e698f6bc12d4fb89b66e8cc248 \
-                            sha256  e143d43bfe7f5dd609e388fb664a5062959a2e9d3a53bc1c0d4b164988ff5a47 \
-                            size    30845662
+        checksums           rmd160  540fc15bb749a193343ff0a186c23a494a19cab6 \
+                            sha256  f5452dd19e084c9850d9c6aa3916d8e6a1584d4e59fc8f02766187cf95180abc \
+                            size    30795879
     }
     arm64 {
         distname            dotnet-runtime-${version}-osx-arm64
-        checksums           rmd160  add165332c13b618589b3d4dbdc2546a5e8d043e \
-                            sha256  92931e3eb4349431143ab551ef444c6a94b4937d032bc0bc2847a79060a1ed63 \
-                            size    29176619
+        checksums           rmd160  41d4e8167bf4f52c4f601edfbb380bd8d2492adc \
+                            sha256  4a39a67a1498b2356b5457ef960d229b9a0ed002541e7ad953edc2936835ad0a \
+                            size    29119888
     }
     default {
         known_fail yes
@@ -68,7 +89,6 @@ destroot {
     move ${worksrcpath}/dotnet \
          ${worksrcpath}/ThirdPartyNotices.txt \
          ${worksrcpath}/LICENSE.txt \
-         ${worksrcpath}/host \
          ${target}
 
     # Symlink dotnet into the bin directory

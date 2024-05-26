@@ -4,7 +4,8 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-in-n-out
-version             0.1.7
+python.rootname     in_n_out
+version             0.2.1
 revision            0
 categories          python
 license             BSD
@@ -13,20 +14,20 @@ description         Python dependency injection you can taste.
 long_description    A lightweight dependency injection and result processing framework \
                     for Python using type hints. Emphasis is on simplicity, ease of use, \
                     and minimal impact on source code.
+supported_archs     noarch
+platforms           {darwin any}
 homepage            https://github.com/napari/in-n-out
 
-checksums           rmd160  9cc9b6cd6ac5697a7276ae274cff1294885b89d2 \
-                    sha256  8380f0d1e8c1e81c5c3294591a0c4d0de032b98f77511395b08ac0c2feaf4aa6 \
-                    size    35458
+checksums           rmd160  9d8c6d5a0ad8bcb639dae895aa034a34018fef22 \
+                    sha256  43cde2b7de981d41a6d70618a2b7bd989481095922a53ead4dc75f2bbd5dffea \
+                    size    26026
 
-python.versions     37 38 39 310 311
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
-    depends_build-append \
-                    port:py${python.version}-cython-devel \
-                    port:py${python.version}-setuptools_scm \
-                    port:py${python.version}-wheel
+    python.pep517_backend \
+                    hatch
 
-    # cython >= 3.0.0
-    patchfiles patch-pyproject.toml.diff
+    depends_build-append \
+                   port:py${python.version}-hatch-vcs
 }

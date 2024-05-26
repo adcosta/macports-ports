@@ -3,19 +3,19 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran AndriSignorell DescTools 0.99.49
-revision            0
+R.setup             cran AndriSignorell DescTools 0.99.54
+revision            1
 categories-append   math
 maintainers         nomaintainer
 license             GPL-2+
 description         Tools for descriptive statistics
 long_description    {*}${description}
 homepage            https://andrisignorell.github.io/DescTools
-checksums           rmd160  957659e9e39f86088d5c394b93ce730d7131acd3 \
-                    sha256  4522cd2b308bafd0d26220496daa35c62fa891d2ef7ac6572e8419f03b825f68 \
-                    size    2637562
+checksums           rmd160  bb1c6335e721e91568bea8599790a8913728f79f \
+                    sha256  470a16405d52d7e8595ac025a0d2bf50b78edaebe83af358903e201168a80b9b \
+                    size    2654274
 
-depends_lib-append  port:R-BH \
+depends_lib-append  port:R-cli \
                     port:R-data.table \
                     port:R-Exact \
                     port:R-expm \
@@ -26,8 +26,6 @@ depends_lib-append  port:R-BH \
                     port:R-readxl \
                     port:R-rstudioapi \
                     port:R-withr
-
-patchfiles          patch-no-RDCOMClient.diff
 
 compilers.setup     require_fortran
 

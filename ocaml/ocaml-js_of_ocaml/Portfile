@@ -1,0 +1,39 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+PortGroup           ocaml 1.1
+
+name                ocaml-js_of_ocaml
+github.setup        ocsigen js_of_ocaml 5.8.1
+revision            0
+categories          ocaml devel lang
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             {GPL-2+ LGPL-2.1+}
+description         Compiler from OCaml bytecode to JavaScript
+long_description    {*}${description}
+
+checksums           rmd160  86dfaf4b3cf54e318e0a1248d1ea1425ff88797d \
+                    sha256  3b8919c95e9b84778b27044478669078bb4cc8711af9ba6fc99179eb69db4a15 \
+                    size    2196511
+github.tarball_from archive
+
+depends_lib-append  port:ocaml-ppxlib
+
+ocaml.build_type    dune
+
+if {${subport} eq ${name} } {
+    depends_lib-append \
+                    port:ocaml-js_of_ocaml-compiler
+}
+
+subport ocaml-js_of_ocaml-compiler {
+    depends_lib-append \
+                    port:ocaml-cmdliner \
+                    port:ocaml-findlib \
+                    port:ocaml-menhir \
+                    port:ocaml-menhirLib \
+                    port:ocaml-menhirSdk \
+                    port:ocaml-sedlex \
+                    port:ocaml-yojson
+}

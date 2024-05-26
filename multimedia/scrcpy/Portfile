@@ -4,9 +4,14 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           meson 1.0
 PortGroup           compiler_blacklist_versions 1.0
+PortGroup           legacysupport 1.1
 
-github.setup        Genymobile scrcpy 2.0 v
+# needed for clock_gettime and static_assert to work on older OS X versions
+legacysupport.newest_darwin_requires_legacy 15
+
+github.setup        Genymobile scrcpy 2.3.1 v
 revision            0
+github.tarball_from archive
 
 categories          multimedia
 platforms           darwin
@@ -24,16 +29,13 @@ extract.only        ${distfiles}
 distfiles-append    ${name}-server-v${version}:bootstrap
 
 checksums           ${distname}${extract.suffix} \
-                    rmd160  5991a252ef7883bf907becf121cbdd84c8baeb90 \
-                    sha256  ed6e86f8df82454252f9d1da7f918e1e1ecab09e06c1a537c86a70b21af7489b \
-                    size    375926 \
+                    rmd160  5ff0b8a66eb77e6e914eac3c0b73cf77fd5b1450 \
+                    sha256  76f38779f00d91d0b46a399ebca32c82ff1facdbd843871b7e46c2e7cad38a42 \
+                    size    401278 \
                     ${name}-server-v${version} \
-                    rmd160  32ee7d41e1e0e393d1c96b9d645d31cbd2626caa \
-                    sha256  9e241615f578cd690bb43311000debdecf6a9c50a7082b001952f18f6f21ddc2 \
-                    size    52867
-
-patchfiles          6b769675fa68e60c9765022e43c4d7b1e329353a.patch
-
+                    rmd160  d418586f74046a4a7c9ae7c7a9c035d4ab27139f \
+                    sha256  f6814822fc308a7a532f253485c9038183c6296a6c5df470a9e383b4f8e7605b \
+                    size    66007
 depends_build-append \
                     port:pkgconfig
 
@@ -52,4 +54,4 @@ configure.args-append \
 compiler.c_standard 2011
 # Work around cfm: fatal error: 'stdatomic.h' file not found
 # https://trac.macports.org/ticket/60429
-compiler.blacklist-append {clang < 700}
+compiler.blacklist-append {clang < 701}

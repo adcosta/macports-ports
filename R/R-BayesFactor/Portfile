@@ -4,16 +4,17 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version is lagging behind.
-R.setup             cran richarddmorey BayesFactor 0.9.12-4.4
+R.setup             cran richarddmorey BayesFactor 0.9.12-4.7
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-2
-description         Panel Data Econometrics with R
+description         Computation of Bayes factors for common designs
 long_description    {*}${description}
-checksums           rmd160  0926999d167eb1eabd63eef8a6573b4ab83d668d \
-                    sha256  eab049e2ba31f39ec64f4d8983e8f0c3355c7b03315c2622e6e9f669aba27009 \
-                    size    1132315
+homepage            https://richarddmorey.github.io/BayesFactor
+checksums           rmd160  d45221661d173ef7ce2f5049599fa2d32007885f \
+                    sha256  f92720697f8dbda248c7977873d582dc802522851647d563c5bcb1cada4e377d \
+                    size    6380157
 
 depends_lib-append  port:R-coda \
                     port:R-hypergeo \

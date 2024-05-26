@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.recommended       yes
+
+# This is a recommended package. Keep it CRAN-sourced.
+R.setup             cran r-project nlme 3.1-164
+revision            1
+categories-append   math
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             GPL-2+
+description         Fit and compare Gaussian linear and nonlinear mixed-effects models
+long_description    {*}${description}. Recommended package
+homepage-append     https://svn.r-project.org/R-packages/trunk/nlme
+checksums           rmd160  4a94e1f75a560b24f7780a3c81df447897b9ce4c \
+                    sha256  79a5a020ce7037b83ee6c28336e35a1310058c13fc59f7fcb11eca0bc9bdd4e8 \
+                    size    836832
+
+# Notice that recommended packages must have all hard dependencies set explicitly.
+depends_lib-append  port:R-lattice
+
+compilers.setup     require_fortran
+
+depends_test-append port:R-Hmisc \
+                    port:R-MASS \
+                    port:R-SASmixed
+
+test.run            yes

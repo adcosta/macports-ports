@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran cjvanlissa tidySEM 0.2.6
+revision            1
+epoch               1
+categories-append   math
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             GPL-3+
+description         Tidy Structural Equation Modeling
+long_description    {*}${description}
+homepage            https://cjvanlissa.github.io/tidySEM
+checksums           rmd160  ec771d6b2e5155a0793f42406b638a4057c4c6c9 \
+                    sha256  60c1f594a1fabccb086ebcafbc38fc1731b4e9aa5817868279befe5bc327536f \
+                    size    1763311
+supported_archs     noarch
+
+depends_lib-append  port:R-bain \
+                    port:R-blavaan \
+                    port:R-car \
+                    port:R-dbscan \
+                    port:R-future.apply \
+                    port:R-ggplot2 \
+                    port:R-gtable \
+                    port:R-igraph \
+                    port:R-lavaan \
+                    port:R-MplusAutomation \
+                    port:R-nonnest2 \
+                    port:R-OpenMx \
+                    port:R-progressr \
+                    port:R-psych \
+                    port:R-RANN

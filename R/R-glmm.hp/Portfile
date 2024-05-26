@@ -3,20 +3,23 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran laijiangshan glmm.hp 0.0-8
-revision            1
+R.setup             cran laijiangshan glmm.hp 0.1-3
+revision            0
 categories-append   math
 maintainers         nomaintainer
-license             {GPL-2 GPL-3}
-description         Hierarchical partitioning of marginal R2 for generalized mixed-effect models
+license             GPL
+description         Hierarchical partitioning of marginal R2 \
+                    for generalized mixed-effect models
 long_description    {*}${description}
-checksums           rmd160  61bfb2fa8dc6d0efde32d152d019d6dc4c6234cf \
-                    sha256  c3675dcfc4ac2263da563c17752220fef75826732b8ef7aa07290f9f91384f07 \
-                    size    6654
+homepage            https://github.com/laijiangshan/glmm.hp
+checksums           rmd160  182f317bfca6868d18301b091ad8d68a4cfe96c8 \
+                    sha256  9e03a83d40a72002a637798feb6b252cd2c980358ae9037faf4189dcf0e3f81e \
+                    size    7678
 supported_archs     noarch
 
 depends_lib-append  port:R-ggplot2 \
                     port:R-lme4 \
-                    port:R-MuMIn
+                    port:R-MuMIn \
+                    port:R-vegan
 
 test.run            yes

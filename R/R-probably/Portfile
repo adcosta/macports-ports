@@ -3,17 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github tidymodels probably 1.0.0 v
-revision            0
+R.setup             github tidymodels probably 1.0.3 v
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
 description         Tools for post-processing class probability estimates
 long_description    {*}${description}
 homepage            https://probably.tidymodels.org
-checksums           rmd160  4a268b7a5bf48dd024fd42eb4ed18c2fe5125040 \
-                    sha256  7db5f2c2b2b3f8bb344b347901dd6bf86dfd118d6f264957ff365c5fb9cf9234 \
-                    size    1359369
+checksums           rmd160  045ebec33bd14ad79f04d70d7c996139c55078ca \
+                    sha256  fe2b408886181981a363dc787ebb650131dfd33453f3602b64c3c499c6d87cdc \
+                    size    1158366
 supported_archs     noarch
 
 depends_lib-append  port:R-butcher \
@@ -39,6 +39,7 @@ depends_test-append port:R-betacal \
                     port:R-knitr \
                     port:R-modeldata \
                     port:R-parsnip \
+                    port:R-quantregForest \
                     port:R-randomForest \
                     port:R-recipes \
                     port:R-rmarkdown \

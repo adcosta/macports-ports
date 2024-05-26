@@ -4,7 +4,7 @@ PortSystem          1.0
 
 name                nginx-devel
 set propername      nginx
-version             1.25.1
+version             1.26.0
 revision            0
 categories          www mail
 license             BSD
@@ -27,9 +27,9 @@ master_sites        https://nginx.org/download:nginx \
 
 distfiles           ${propername}-${version}${extract.suffix}:nginx
 checksums           ${propername}-${version}${extract.suffix} \
-                    rmd160  034fb27bd3949a695ad4e6736826c922402a0734 \
-                    sha256  f09071ac46e0ea3adc0008ef0baca229fc6b4be4533baef9bbbfba7de29a8602 \
-                    size    1213919
+                    rmd160  ee9f1161a004cacf6ca6889822dd6c4c824fb800 \
+                    sha256  d2e6c8439d6c6db5015d8eaab2470ab52aef85a7bf363182879977e084370497 \
+                    size    1244118
 
 depends_lib         port:pcre \
                     port:zlib
@@ -157,14 +157,14 @@ subport ${name}-geoip2 {
 
 subport ${name}-headers_more {
     set ngx_h_more_filename     headers-more-nginx-module
-    set ngx_h_more_version      0.34
-    revision                    1
+    set ngx_h_more_version      0.37
+    revision                    0
     set ngx_h_more_distname     ${ngx_h_more_filename}-${ngx_h_more_version}
     distfiles-append            v${ngx_h_more_version}.tar.gz:h_more_module
     checksums-append            v${ngx_h_more_version}.tar.gz \
-                                rmd160  d437b7f755b5584548a94354f9b82dcd84e906d6 \
-                                sha256  0c0d2ced2ce895b3f45eb2b230cd90508ab2a773299f153de14a43e44c1209b3 \
-                                size    28827
+                                rmd160  14e70a27cf6bcadfd792034ccaff14ef2e7a41e1 \
+                                sha256  cf6e169d6b350c06d0c730b0eaf4973394026ad40094cddd3b3a5b346577019d \
+                                size    29433
 
     configure.args-append       --add-dynamic-module=${workpath}/${ngx_h_more_distname}
 
@@ -177,14 +177,14 @@ subport ${name}-headers_more {
 subport ${name}-lua {
     depends_lib-append      port:luajit-openresty
     set ngx_lua_filename    lua-nginx-module
-    set ngx_lua_version     0.10.24
-    revision                2
+    set ngx_lua_version     0.10.26
+    revision                0
     set ngx_lua_distname    ${ngx_lua_filename}-${ngx_lua_version}
     distfiles-append        v${ngx_lua_version}.tar.gz:lua_module
     checksums-append        v${ngx_lua_version}.tar.gz \
-                            rmd160  261a3564a6ee96f6131b109c12ae552fde450738 \
-                            sha256  c5935ff25557031ab34d960d958a210613c9e6369b97db169b946717eca48fdf \
-                            size    724961
+                            rmd160  d7c1b5c585a265d084fb7c2bf82c214f26dfce3c \
+                            sha256  a75983287a2bdc5e964ace56a51b215dc2ec996639d4916cd393d6ebba94b565 \
+                            size    745785
 
     platforms {darwin >= 11}
 
@@ -254,13 +254,13 @@ variant degradation description {Allow to return 204 or 444 code for some locati
 
 variant devel_kit description {Enable ngx_devel_kit module (https://github.com/simpl/ngx_devel_kit)} {
     set devel_kit_filename  ngx_devel_kit
-    set devel_kit_version   0.3.2
+    set devel_kit_version   0.3.3
     set devel_kit_distname  ${devel_kit_filename}-${devel_kit_version}
     distfiles-append        v${devel_kit_version}.tar.gz:devel_kit_module
     checksums-append        v${devel_kit_version}.tar.gz \
-                            rmd160  bd3e1d164e521988e50f18d97b3d58c14e97e953 \
-                            sha256  aa961eafb8317e0eb8da37eb6e2c9ff42267edd18b56947384e719b85188f58b \
-                            size    66551
+                            rmd160  3fdd31a09b276f2a4d47bea4f7503feddc1b265e \
+                            sha256  faa2fcd5168b10764d35081356511d5f84db5c526a1aa4b6add2db94b6853b2b \
+                            size    66561
 
     configure.args-append     --add-module=${workpath}/${devel_kit_distname}
 }

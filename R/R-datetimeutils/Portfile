@@ -3,17 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran enricoschumann datetimeutils 0.6-1
+R.setup             cran enricoschumann datetimeutils 0.6-4
 revision            1
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+maintainers         nomaintainer
 license             GPL-3
 description         R utilities for working with dates and times
 long_description    {*}${description}
 homepage            http://enricoschumann.net/R/packages/datetimeutils
-checksums           rmd160  616f2d3cc3edaf2fd48a2df05815f9f7e1ba4a3e \
-                    sha256  26fe06ecefcb98a893a5d705ecc1cf2c488283ade5f3af809b9017bd530b135e \
-                    size    166218
+checksums           rmd160  a4eb6d008215a74fdca98f92799b7298185a799c \
+                    sha256  135a411896a7bdc0c362075a085f2875d9c7f2cacf3b11ee3149addb467e1f4d \
+                    size    177399
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_test-append port:R-tinytest
 

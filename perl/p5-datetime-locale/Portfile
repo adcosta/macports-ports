@@ -5,7 +5,7 @@ PortGroup           perl5 1.0
 
 epoch               1
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         DateTime-Locale 1.39
+perl5.setup         DateTime-Locale 1.42
 revision            0
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
@@ -20,9 +20,9 @@ long_description    DateTime::Locale is primarily a factory for the \
 platforms           {darwin any}
 supported_archs     noarch
 
-checksums           rmd160  11f9834c7c26315248acc2fae3d6d60425979f07 \
-                    sha256  10c145a6c7daf7118864e97482b4ae9f94f93b9414212eee8aa30b16a8135100 \
-                    size    1745640
+checksums           rmd160  659db51c50b6d0ccd52e9bbb24f26dc5f3efb52c \
+                    sha256  7d8a138fa32faf24af30a1dbdee4dd11988ddb6a129138004d220b6cc4053cb0 \
+                    size    2015405
 
 if {${perl5.major} != ""} {
     depends_build-append \

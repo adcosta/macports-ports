@@ -3,15 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran fpc 2.2-10
-revision            1
+R.setup             cran christian.hennig fpc 2.2-12
+revision            0
+categories-append   math
 maintainers         nomaintainer
-license             {GPL-2 GPL-3}
+license             GPL
 description         Flexible Procedures for Clustering
 long_description    {*}${description}
-checksums           rmd160  5df279da61cc36fa4e6faace7ab015475dd0f097 \
-                    sha256  99b4548f2eca1a092a31bc2fa4e4bd1d6b50fdfacf3218588c879ceec99147d2 \
-                    size    202694
+checksums           rmd160  d0799db36fa15ac4dde939c1bdbc41cb47883fef \
+                    sha256  555996b4c7e78a28067df25ac657b5065ec79b6b2cd76080382c2d5b43104787 \
+                    size    202488
 supported_archs     noarch
 
 depends_lib-append  port:R-diptest \
@@ -20,3 +21,9 @@ depends_lib-append  port:R-diptest \
                     port:R-mclust \
                     port:R-prabclus \
                     port:R-robustbase
+
+depends_test-append port:R-mvtnorm \
+                    port:R-pdfCluster \
+                    port:R-tclust
+
+test.run            yes

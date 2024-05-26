@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran ICSOutlier 0.3-0
+R.setup             cran klausnordhausenR ICSOutlier 0.4-0
 revision            1
 maintainers         nomaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Outlier detection using Invariant Coordinate Selection
 long_description    {*}${description}
-checksums           rmd160  79da22784e5663fa4ee54ec8872387fb8624b3e3 \
-                    sha256  b0ba24ae98932565f367c5960312fd9f701fa607bd5a4cde846f5ec43ff141ee \
-                    size    588777
+checksums           rmd160  6a42fd5cc53e62cfc7d89a97d72760185d2e4444 \
+                    sha256  6605c7c217d0211a2ae35be9f6c01a8b76e111ff51632b1d48144481d5d7cf1e \
+                    size    799525
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_lib-append  port:R-ICS \
                     port:R-moments \

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           java 1.0
 
 name                LanguageTool
-version             6.1
+version             6.4
 revision            0
 categories          aqua textproc java
 license             LGPL-2.1
@@ -15,13 +15,13 @@ long_description    LanguageTool is an Open Source proofreading software for Eng
                     German, Polish, Russian, and more than 20 other languages. It finds many \
                     errors that a simple spell checker cannot detect.
 homepage            https://languagetool.org/
-platforms           darwin
+platforms           {darwin any}
 supported_archs     noarch
 master_sites        https://languagetool.org/download/
 
-checksums           rmd160  b78e6b58fd8eec24d80e5e8710c525ea71572ccf \
-                    sha256  ea4d8bb3a92d109e63ab6d0ef6a1ef1b5b73f4dd16cdd7b2a7a02a0e74c7651d \
-                    size    230619934
+checksums           rmd160  3fb16f93be9a3d6c84aa2f7f1c81a47a5e85b274 \
+                    sha256  d5d517335d1ca33f33412920447fa0c742ef78d645521d650e0e22628fe0d3bd \
+                    size    246431853
 
 java.version        1.8+
 

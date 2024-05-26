@@ -4,8 +4,8 @@ PortSystem      1.0
 PortGroup       github 1.0
 PortGroup       xcode 1.0
 
-github.setup    transmission transmission 4.0.3
-revision        1
+github.setup    transmission transmission 4.0.5
+revision        0
 categories      net aqua
 maintainers     {khindenburg @kurthindenburg} openmaintainer
 license         MIT GPL-2
@@ -25,9 +25,9 @@ github.tarball_from \
                 releases
 use_xz          yes
 
-checksums       rmd160  59f6327d3985e96c928f58f245abab9de338911a \
-                sha256  b6b01fd58e42bb14f7aba0253db932ced050fcd2bba5d9f8469d77ddd8ad545a \
-                size    10062044
+checksums       rmd160  afe8124820daa9d8eb44c808b0d583463bcd263a \
+                sha256  fd68ff114a479200043c30c7e69dba4c1932f7af36ca4c5b5d2edcb5866e6357 \
+                size    9745756
 
 patchfiles      patch-xcodebuild.diff
 
@@ -55,9 +55,6 @@ pre-patch {
 
 post-patch {
     reinplace -E "s|@@PREFIX@@|${prefix}|g" ${worksrcpath}/Transmission.xcodeproj/project.pbxproj
-    # Fix building on case sensitive systems
-    # Remove after https://github.com/transmission/transmission/pull/5456 is merged
-    reinplace "s|Appkit.h|AppKit.h|g" ${worksrcpath}/macosx/BlocklistScheduler.h
     # Disable Sparkle without messing with xib files
     system -W ${worksrcpath}/macosx/ "/usr/libexec/PlistBuddy -c \"Delete :SUFeedURL\" Info.plist"
     system -W ${worksrcpath}/macosx/ "/usr/libexec/PlistBuddy -c \"Set :SUEnableAutomaticChecks bool false\" Defaults.plist"
@@ -74,6 +71,9 @@ post-patch {
 variant daemon description {Builds headless daemon} {
     xcode.target-append transmission-daemon
     xcode.target-append transmission-remote
+    xcode.target-append transmission-create
+    xcode.target-append transmission-edit
+    xcode.target-append transmission-show
 }
 
 destroot {
@@ -83,16 +83,13 @@ destroot {
 
     if {[variant_isset daemon]} {
         xinstall -m 755 -W ${worksrcpath}/build/${xcode.configuration} \
-        transmission-daemon transmission-remote \
+        transmission-daemon transmission-remote transmission-create transmission-edit transmission-show \
         ${destroot}${prefix}/bin
 
-        xinstall -m 644 -W ${worksrcpath}/daemon \
-        transmission-daemon.1 \
-        ${destroot}${prefix}/share/man/man1
-        
-        xinstall -m 644 -W ${worksrcpath}/utils \
-        transmission-remote.1 \
-        ${destroot}${prefix}/share/man/man1
+        xinstall -m 644 -W ${worksrcpath} \
+            daemon/transmission-daemon.1 \
+            utils/transmission-remote.1 utils/transmission-create.1 utils/transmission-edit.1 utils/transmission-show.1 \
+            ${destroot}${prefix}/share/man/man1
    }
 }
 

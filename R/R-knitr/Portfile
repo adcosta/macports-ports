@@ -3,20 +3,53 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github yihui knitr 1.43 v
-revision            0
+R.setup             github yihui knitr 1.46 v
+revision            1
 categories-append   devel
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL
 description         General-purpose literate programming engine
 long_description    {*}${description}
 homepage            https://yihui.org/knitr
-checksums           rmd160  991450c817858c63a5327bf268eed736d9dc1609 \
-                    sha256  90ada68e0a35fb9a05bbf4b67ca4df9ea5e44e9624e1ba8741356eab19b22b32 \
-                    size    343112
+checksums           rmd160  642b01e949be5225a59bc0d1bfd386d15e8f9c40 \
+                    sha256  8c514b0c6ef7fea317eeec0f323e840c6636e0e0aa79a0970099308f18ea5557 \
+                    size    342842
 supported_archs     noarch
 
 depends_lib-append  port:R-evaluate \
                     port:R-highr \
                     port:R-xfun \
                     port:R-yaml
+
+patchfiles          patch-no-gifski.diff
+
+depends_test-append port:R-bslib \
+                    port:R-curl \
+                    port:R-DBI \
+                    port:R-digest \
+                    port:R-formatR \
+                    port:R-gridSVG \
+                    port:R-htmlwidgets \
+                    port:R-jpeg \
+                    port:R-JuliaCall \
+                    port:R-magick \
+                    port:R-markdown \
+                    port:R-png \
+                    port:R-ragg \
+                    port:R-reticulate \
+                    port:R-rgl \
+                    port:R-rlang \
+                    port:R-rmarkdown \
+                    port:R-rstudioapi \
+                    port:R-sass \
+                    port:R-showtext \
+                    port:R-styler \
+                    port:R-svglite \
+                    port:R-targets \
+                    port:R-testit \
+                    port:R-tibble \
+                    port:R-tikzDevice \
+                    port:R-tinytex \
+                    port:R-webshot
+
+test.run            yes

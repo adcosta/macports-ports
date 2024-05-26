@@ -4,33 +4,31 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran stan-dev projpred 2.6.0
-revision            0
+R.setup             cran stan-dev projpred 2.8.0
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3
 description         Projection predictive feature selection
 long_description    {*}${description}
 homepage            https://mc-stan.org/projpred
-checksums           rmd160  b05bff484611ad529bee643dbe25e4bd2eb633fa \
-                    sha256  4c41d1154a1cd08973b48ff6c61e16052d884604d9b32915f87a107b46a171da \
-                    size    994155
+checksums           rmd160  d5f88ce818c2e90464c00be4302fd1ece4be06ce \
+                    sha256  b383ddc5eca275737b96e4e3e14256b4f4abc4b29d292b5cebf3828d0921a1f6 \
+                    size    1341946
 
 depends_lib-append  port:R-abind \
-                    port:R-dplyr \
                     port:R-gamm4 \
                     port:R-ggplot2 \
+                    port:R-gtools \
                     port:R-lme4 \
                     port:R-loo \
-                    port:R-magrittr \
                     port:R-mclogit \
                     port:R-mvtnorm \
                     port:R-ordinal \
                     port:R-Rcpp \
                     port:R-RcppArmadillo \
-                    port:R-rlang \
                     port:R-rstantools \
-                    port:R-ucminf
+                    port:R-scales
 
 compilers.setup     require_fortran
 
@@ -39,16 +37,21 @@ depends_test-append port:R-bayesplot \
                     port:R-cmdstanr \
                     port:R-doFuture \
                     port:R-doParallel \
+                    port:R-doRNG \
                     port:R-foreach \
                     port:R-future \
                     port:R-future.callr \
+                    port:R-ggrepel \
                     port:R-glmnet \
                     port:R-iterators \
                     port:R-knitr \
                     port:R-optimx \
                     port:R-posterior \
+                    port:R-rlang \
                     port:R-rmarkdown \
                     port:R-rstanarm \
-                    port:R-testthat
+                    port:R-testthat \
+                    port:R-ucminf \
+                    port:R-vdiffr
 
 test.run            yes

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           muniversal 1.0
 
 name                feh
-version             3.9.1
+version             3.10.2
 revision            0
 categories          graphics
 maintainers         nomaintainer
@@ -19,9 +19,9 @@ homepage            https://feh.finalrewind.org/
 master_sites        ${homepage}
 use_bzip2           yes
 
-checksums           rmd160  e281235d10c2713b9e862bb001306f3f28de2595 \
-                    sha256  455c92711b588af149b945edc5c145f3e9aa137ed9689dabed49d5e4acac75fa \
-                    size    2108873
+checksums           rmd160  1cd3761e133fc0fb2f1dd273ad8c3088e7fa5edb \
+                    sha256  5f94a77de25c5398876f0cf431612d782b842f4db154d2139b778c8f196e8969 \
+                    size    2113183
 
 depends_lib-append  path:include/turbojpeg.h:libjpeg-turbo \
                     port:curl \

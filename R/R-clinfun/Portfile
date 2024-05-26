@@ -3,18 +3,21 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran clinfun 1.1.1
+R.setup             cran seshanv clinfun 1.1.5
 revision            1
 maintainers         nomaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Clinical trial design and data analysis functions
 long_description    {*}${description}
-checksums           rmd160  59fd8477dad0f22518e7af885c604ad80e6b08b1 \
-                    sha256  dd642eab60d7a03ddadac6a0546d63b14dec378cb126a9cf1a8b67d459b2974a \
-                    size    56149
+checksums           rmd160  a11428e48d0d7b9574c2ae680d317e7d7e14df2c \
+                    sha256  d10699de157ed751f4dc9843b4fc03d54f66f5dc764871cdbe891d9d847c4b37 \
+                    size    86370
 
 depends_lib-append  port:R-mvtnorm
 
 compilers.setup     require_fortran
+
+depends_test-append port:R-knitr \
+                    port:R-rmarkdown
 
 test.run            yes

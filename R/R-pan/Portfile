@@ -3,16 +3,19 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran pan 1.6
+R.setup             cran jinghuazhao pan 1.9
 revision            1
 categories-append   math
 maintainers         nomaintainer
 license             GPL-3
 description         Multiple imputation for multivariate panel or clustered data
 long_description    {*}${description}
-checksums           rmd160  ddadfc77e866b691c9621b3939315e62cad41496 \
-                    sha256  adc0df816ae38bc188bce0aef3aeb71d19c0fc26e063107eeee71a81a49463b6 \
-                    size    405761
+checksums           rmd160  5fe02d268ed6be92e7d9617f653ac0ca378f7950 \
+                    sha256  cd91232d653783ea7f34c0eebaa80c472b5501b21eea500c4c1a8e57116c6eea \
+                    size    1087690
+
+# Drop with next update:
+dist_subdir         ${name}/${version}_1
 
 depends_lib-append  port:R-lme4 \
                     port:R-mitools

@@ -1,14 +1,14 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           cmake   1.1
-PortGroup           github  1.0
-PortGroup           legacysupport 1.1
+PortGroup           cmake           1.1
+PortGroup           github          1.0
+PortGroup           legacysupport   1.1
 
 # please rev-bump enchant2 when the library version changes
-github.setup        nuspell nuspell 5.1.2 v
+github.setup        nuspell nuspell 5.1.4 v
 github.tarball_from archive
-revision            3
+revision            1
 
 homepage            https://nuspell.github.io
 
@@ -25,9 +25,9 @@ license             LGPL-3+
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  fcf55b0e39faf81c7fb63290a119a317836864bb \
-                    sha256  82f5f2faa82df30099555dca94b3a908d38fdba408e31e74535c523f7e6ea18d \
-                    size    371092
+checksums           rmd160  29e88cae287a5d3363cfb9c57b2e2c2af73cca23 \
+                    sha256  bdf344c5adbcc6797940f8f8cb75cb59f5a3794eb21b9547751a11782a792ef7 \
+                    size    371512
 
 depends_lib-append  path:lib/pkgconfig/icu-uc.pc:icu
 

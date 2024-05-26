@@ -1,0 +1,51 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+# GitHub version is outdated.
+R.setup             cran datawookie emayili 0.8.0
+revision            1
+categories-append   mail
+maintainers         nomaintainer
+license             GPL-3
+description         Light, simple tool for sending e-mails with minimal dependencies
+long_description    {*}${description}
+homepage            https://datawookie.github.io/emayili
+checksums           rmd160  1bad29a564387bbc5faac4129b8dd471b5480e72 \
+                    sha256  8e56105bf1c05ba52f8f07e4400d9ee122ab2e8627ca39712d40868ff839ef32 \
+                    size    279467
+supported_archs     noarch
+
+depends_lib-append  port:R-base64enc \
+                    port:R-commonmark \
+                    port:R-curl \
+                    port:R-digest \
+                    port:R-dplyr \
+                    port:R-glue \
+                    port:R-htmltools \
+                    port:R-httr \
+                    port:R-logger \
+                    port:R-magrittr \
+                    port:R-mime \
+                    port:R-purrr \
+                    port:R-rmarkdown \
+                    port:R-rvest \
+                    port:R-stringi \
+                    port:R-stringr \
+                    port:R-tidyr \
+                    port:R-urltools \
+                    port:R-xfun \
+                    port:R-xml2
+
+# Some optional deps are omitted.
+depends_test-append port:R-gpg \
+                    port:R-here \
+                    port:R-jinjar \
+                    port:R-lintr \
+                    port:R-memoise \
+                    port:R-roxygen2 \
+                    port:R-showtext \
+                    port:R-testthat
+
+test.run            yes

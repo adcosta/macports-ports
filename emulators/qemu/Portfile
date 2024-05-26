@@ -1,18 +1,19 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
-PortSystem 1.0
-PortGroup compiler_blacklist_versions 1.0
-PortGroup legacysupport 1.1
+PortSystem              1.0
+PortGroup               compiler_blacklist_versions 1.0
+PortGroup               legacysupport               1.1
 
 # clock_gettime
 legacysupport.newest_darwin_requires_legacy 16
 
 name                    qemu
-version                 7.1.0
-revision                1
+version                 9.0.0
+revision                0
 categories              emulators
 license                 GPL-2+
 maintainers             {raimue @raimue} \
+                        {gmail.com:herby.gillot @herbygillot} \
                         openmaintainer
 
 description             Emulator for various architectures
@@ -25,28 +26,37 @@ homepage                https://www.qemu.org
 master_sites            https://download.qemu.org/
 use_xz                  yes
 
-checksums               rmd160  01c82bed8b0219935c00981e16b573004b3802d0 \
-                        sha256  a0634e536bded57cf38ec8a751adb124b89c776fe0846f21ab6c6728f1cbbbe6 \
-                        size    121833004
+checksums               rmd160  267b5336096d05dbcfab5f61062096e941361e47 \
+                        sha256  32708ac66c30d8c892633ea968c771c1c76d597d70ddead21a0d22ccf386da69 \
+                        size    129789856
 
-depends_build           port:texinfo \
+set py_version          312
+set py_branch           \
+    [string index ${py_version} 0].[string range ${py_version} 1 end]
+
+depends_build-append    port:texinfo \
                         port:libtool \
-                        port:meson \
                         port:ninja \
-                        port:pkgconfig \
-                        port:py39-sphinx
+                        path:bin/pkg-config:pkgconfig \
+                        port:py${py_version}-meson \
+                        port:py${py_version}-sphinx \
+                        port:py${py_version}-sphinx_rtd_theme
 
 # perl5 is only used for build scripts, no linking
 depends_build-append    port:perl5
 
 license_noconflict      perl5
 
-depends_lib             path:lib/pkgconfig/glib-2.0.pc:glib2 \
+depends_lib-append      path:lib/pkgconfig/glib-2.0.pc:glib2 \
+                        path:lib/pkgconfig/gnutls.pc:gnutls \
+                        path:lib/pkgconfig/pixman-1.pc:libpixman \
+                        port:bzip2 \
+                        port:libslirp \
+                        port:lzfse \
+                        port:lzo2 \
+                        port:snappy \
                         port:zlib \
-                        path:lib/pkgconfig/pixman-1.pc:libpixman
-
-# This patch sets the python interpreter from meson's shebang line
-patchfiles-append       patch-qemu-configure.diff
+                        port:zstd
 
 # "error: unknown type name 'fpunchhole_t'" pre-10.12.4
 patchfiles-append       patch-qemu-punchhole.diff
@@ -60,8 +70,8 @@ patchfiles-append       patch-qemu-include-qemu-madvise_h.diff
 # MAP_JIT workaround
 patchfiles-append       patch-qemu-tcg-region.diff
 
-# "ERROR: You need at least GCC v7.5 or Clang v6.0 (or XCode Clang v10.0)"
-compiler.blacklist      {clang < 1000} {macports-clang-[3-5].*} {macports-gcc-[56]} {*gcc-[34].*}
+# ERROR: Problem encountered: You either need GCC v7.4 or Clang v10.0 (or XCode Clang v12.0) to compile QEMU
+compiler.blacklist      {clang < 1200} {macports-clang-[3-9].*} {macports-gcc-[56]} {*gcc-[34].*}
 if {${os.platform} eq "darwin" && ${os.major} < 11 && [string match *clang* ${configure.compiler}]} {
     # Emulated TLS needed, which was added in LLVM 3.8
     configure.cflags-append     -femulated-tls
@@ -76,14 +86,13 @@ if {"${configure.build_arch}" eq "arm64"} {
 configure.args          --cpu=${host_cpu} \
                         --cc=${configure.cc} \
                         --objcc=${configure.objc} \
-                        --host-cc=${configure.cc} \
-                        --sphinx-build=${prefix}/bin/sphinx-build-3.9
-
-# Use MacPorts meson, which includes platform-specific fixes
-configure.args-append   --meson=${prefix}/bin/meson
+                        --host-cc=${configure.cc}
 
 # Do not use iasl, even if it is installed, #43911
 configure.args-append   --iasl=/usr/bin/false
+
+# Use MacPorts Python
+configure.args-append   --python=${prefix}/bin/python${py_branch}
 
 # Select features
 configure.args-append   --disable-cocoa \
@@ -97,6 +106,7 @@ configure.args-append   --disable-cocoa \
                         --disable-curl \
                         --disable-attr \
                         --disable-vde \
+                        --disable-jack \
                         --disable-brlapi \
                         --disable-cap-ng \
                         --disable-spice-protocol \
@@ -107,23 +117,33 @@ configure.args-append   --disable-cocoa \
                         --disable-libusb \
                         --disable-usb-redir \
                         --disable-seccomp \
+                        --enable-slirp \
                         --disable-linux-aio \
                         --disable-glusterfs \
                         --disable-rdma \
                         --disable-libssh \
                         --disable-vnc \
-                        --disable-gnutls \
+                        --enable-gnutls \
                         --disable-gcrypt \
                         --disable-nettle \
                         --disable-numa \
                         --disable-xen \
-                        --disable-snappy \
-                        --disable-lzo \
-                        --disable-lzfse \
+                        --enable-snappy \
+                        --enable-lzo \
+                        --enable-lzfse \
                         --disable-png \
-                        --disable-zstd \
+                        --enable-zstd \
                         --disable-dbus-display \
-                        --enable-virtfs
+                        --enable-bochs \
+                        --enable-cloop \
+                        --enable-dmg \
+                        --enable-qcow1 \
+                        --enable-qed \
+                        --enable-tools \
+                        --enable-parallels \
+                        --enable-vdi \
+                        --enable-virtfs \
+                        --enable-vvfat
 
 # Use 'smbd' installed by samba port, rather than macOS; latter does not work with qemu.
 configure.args-append   --smbd=${prefix}/sbin/smbd
@@ -169,7 +189,7 @@ pre-configure {
 # disable silent rules
 build.args-append       V=1
 
-default_variants        +usb
+default_variants        +usb +spice +vnc
 
 # https://trac.macports.org/ticket/62164#comment:10
 if {${os.platform} eq "darwin" && ${os.major} < 18} {
@@ -199,18 +219,20 @@ variant curses description {Use the curses text-only user interface} {
 # XXX: gtk/sdl need libepoxy for OpenGL
 
 variant gtk3 description {Use the GTK+3 graphical user interface} conflicts cocoa {
-    configure.args-replace --disable-gtk --enable-gtk
-    depends_lib-append     path:lib/pkgconfig/gtk+-3.0.pc:gtk3 port:vte
+    configure.args-replace  --disable-gtk --enable-gtk
+    depends_lib-append      path:lib/pkgconfig/gtk+-3.0.pc:gtk3 port:vte
 }
 
 variant sdl2 description {Use the SDL 2 graphical user interface} conflicts cocoa {
-    configure.args-replace --disable-sdl --enable-sdl
+    configure.args-replace  --disable-sdl --enable-sdl
     depends_lib-append      port:libsdl2
 }
 
 variant usb description {Support forwarding of USB devices to the guest} {
     configure.args-replace  --disable-libusb --enable-libusb
-    depends_lib-append      path:lib/pkgconfig/libusb-1.0.pc:libusb
+    configure.args-replace  --disable-usb-redir --enable-usb-redir
+    depends_lib-append      path:lib/pkgconfig/libusb-1.0.pc:libusb \
+                            port:usbredir
 }
 
 variant curl description {Support network block devices using CURL} {
@@ -224,11 +246,9 @@ variant curl description {Support network block devices using CURL} {
 variant vnc description {Support VNC server} {
     configure.args-replace  --disable-png --enable-png \
                             --disable-vnc --enable-vnc
-    configure.args-append   --enable-gnutls \
-                            --enable-vnc-jpeg \
+    configure.args-append   --enable-vnc-jpeg \
                             --enable-vnc-sasl
-    depends_lib-append      path:lib/pkgconfig/gnutls.pc:gnutls \
-                            port:cyrus-sasl2 \
+    depends_lib-append      port:cyrus-sasl2 \
                             path:include/turbojpeg.h:libjpeg-turbo \
                             port:libpng
 }
@@ -240,34 +260,12 @@ variant spice_protocol description {Support Spice protocol} {
 
 variant spice requires spice_protocol description {Support Spice server} {
     configure.args-replace  --disable-spice --enable-spice
-    configure.args-append   --enable-gnutls
-    depends_lib-append      path:lib/pkgconfig/gnutls.pc:gnutls \
-                            port:spice-server
+    depends_lib-append      port:spice-server
 }
 
 variant vde description {Support VDE networking} {
     configure.args-replace  --disable-vde --enable-vde
     depends_lib-append      port:vde2
-}
-
-variant lzo description {Support LZO compression} {
-    configure.args-replace  --disable-lzo --enable-lzo
-    depends_lib-append      port:lzo
-}
-
-variant lzfse description {Support lzfse compression} {
-    configure.args-replace  --disable-lzfse --enable-lzfse
-    depends_lib-append      port:lzfse
-}
-
-variant snappy description {Support Snappy compression} {
-    configure.args-replace  --disable-snappy --enable-snappy
-    depends_lib-append      port:snappy
-}
-
-variant zstd description {Support zstd compression} {
-    configure.args-replace  --disable-zstd --enable-zstd
-    depends_lib-append      port:zstd
 }
 
 variant ssh description {Support remote block devices over SSH} {

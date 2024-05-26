@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/restic/restic 0.15.2 v
+go.setup            github.com/restic/restic 0.16.4 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
 
@@ -21,18 +22,13 @@ license             BSD
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  3900abf07c2e977dc5b47467a02781ea6502db49 \
-                    sha256  52aca841486eaf4fe6422b059aa05bbf20db94b957de1d3fca019ed2af8192b7 \
-                    size    23924222
+checksums           rmd160  ee3abfdbe08a0aaf8453db80e53c37849d365818 \
+                    sha256  d736a57972bb7ee3398cf6b45f30e5455d51266f5305987534b45a4ef505f965 \
+                    size    23990246
 
 dist_subdir         ${name}/${version}_${revision}
 
-# FIXME: This port currently can't be built without allowing go mod to fetch
-# dependencies during the build phase. See
-# https://trac.macports.org/ticket/61192
-build.env-delete    GOPROXY=off GO111MODULE=off
-
-set pyver           3.11
+set pyver           3.12
 
 variant             docs description {Build the documentation} {
     set pyver_nodot [string map {. {}} ${pyver}]

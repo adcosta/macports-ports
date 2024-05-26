@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran gss 2.2-4
+R.setup             cran cran gss 2.2-7
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,9 +11,9 @@ license             {GPL-2 GPL-3}
 description         General Smoothing Splines
 long_description    A comprehensive package for structural multivariate function estimation \
                     using smoothing splines.
-checksums           rmd160  d96563ead75cfabf2f130bc159a5bffd31260445 \
-                    sha256  953e89dfe3bee9cac51df3e5325bf4d1496ad76e4393706c4efdb1834c0c7441 \
-                    size    544243
+checksums           rmd160  16255fa797582f9c34b3fa93d29ecd5f329b2b93 \
+                    sha256  3b13144702c570c83462b4ea2ad17f4bd630cff5bf2ab0347a33c7e86a4f3f6a \
+                    size    544255
 
 compilers.setup     require_fortran
 

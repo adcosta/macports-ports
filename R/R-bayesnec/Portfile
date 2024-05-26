@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version is old.
-R.setup             cran open-aims bayesnec 2.1.0.3
+R.setup             cran open-aims bayesnec 2.1.2.0
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -12,21 +12,22 @@ license             GPL-2
 description         Bayesian No-Effect-Concentration (NEC) algorithm
 long_description    {*}${description}
 homepage            https://open-aims.github.io/bayesnec
-checksums           rmd160  092b4f8674c42caab61769ac21ec2223d7f7789d \
-                    sha256  45418704f9a6bfbee9c76053e6420e0545c33466635469d6b576b8a431ca7abb \
-                    size    3464667
+checksums           rmd160  9dcfdc5273ec8204f28c6c52ffdbac4dda9b2ad5 \
+                    sha256  7528c25bd6ff243aac67c7d70535e3b337a8853af9d887ec78ac68ec06f544c9 \
+                    size    4467652
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_lib-append  port:R-brms \
                     port:R-chk \
                     port:R-dplyr \
                     port:R-evaluate \
-                    port:R-extraDistr \
                     port:R-formula.tools \
                     port:R-ggplot2 \
                     port:R-loo \
                     port:R-purrr \
                     port:R-rlang \
+                    port:R-tibble \
                     port:R-tidyr \
                     port:R-tidyselect
 

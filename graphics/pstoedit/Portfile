@@ -7,10 +7,13 @@ legacysupport.newest_darwin_requires_legacy 9
 legacysupport.redirect_bins pstoedit
 
 name                pstoedit
-version             3.78
+version             4.01
 revision            0
+checksums           rmd160  13c8b21223192912bc2b9b7e3207c05181c8e850 \
+                    sha256  459765ab736cb10f9554a7ac02c5ea7f355c6c2e9fcfd217611c7d5102b1076b \
+                    size    1335475
+
 categories          graphics
-platforms           darwin
 maintainers         nomaintainer
 license             GPL-2+
 
@@ -20,14 +23,10 @@ long_description    pstoedit converts PostScript™ and PDF files to other \
                     vector graphic formats so that they can be edited \
                     graphically.
 
-homepage            http://www.pstoedit.net/
+homepage            http://www.pstoedit.net
 master_sites        sourceforge:project/pstoedit/pstoedit/${version}
 
-checksums           rmd160  7f7e18718c349c1a95a4570902cd85038b787f22 \
-                    sha256  8cc28e34bc7f88d913780f8074e813dd5aaa0ac2056a6b36d4bf004a0e90d801 \
-                    size    1301408
-
-depends_build       port:pkgconfig
+depends_build       path:bin/pkg-config:pkgconfig
 
 depends_lib         port:ImageMagick \
                     port:libzip \

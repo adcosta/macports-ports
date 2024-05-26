@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           tree_sitter 1.0
 
-github.setup        tree-sitter tree-sitter-typescript 0.20.2 v
+github.setup        tree-sitter tree-sitter-typescript 0.21.1 v
 name                tree-sitter-tsx
 revision            0
 
@@ -16,8 +16,11 @@ categories          devel
 license             MIT
 maintainers         {amake @amake} openmaintainer
 
-checksums           rmd160  227fcbec7f0d124d068a64fe0cad454db5925f9f \
-                    sha256  4b10b6f3f3b1f10146a53748794e4cfe052867fac7773c8007b4558ee9f56a14 \
-                    size    826726
+checksums           rmd160  19a3a6fa44062e36d13e10ac1828b9fb3ab6641a \
+                    sha256  7ed27324fa031370960e66fce42b29ec69730ef01e410719f28539d15793f3d7 \
+                    size    1566709
 
 worksrcdir          ${worksrcdir}/tsx/src
+
+# scanner.h: error: ‘for’ loop initial declaration used outside C99 mode
+configure.cflags-append -std=c99

@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran mixmod Rmixmod 2.1.8
+R.setup             cran mixmod Rmixmod 2.1.10
 revision            1
 categories-append   math
 maintainers         nomaintainer
 license             GPL-3
 description         Classification with mixture modelling
-long_description    {*}${description}
-checksums           rmd160  ab23d0813005488a756497019cfe373421fc8a3a \
-                    sha256  5eb95dba23d70d14ff60613145705d8f4ec115a5b8424dfaac1606d9a2017d35 \
-                    size    637290
+long_description    Interface of MIXMOD software for supervised, unsupervised and semi-supervised classification with mixture modelling.
+homepage            https://github.com/mixmod/mixmod
+checksums           rmd160  6d018a42e290d8b592134ab120dca05391cd7cb1 \
+                    sha256  96d592c36a456ab744b5e885dbbc929e4d1d2a5f4d8489c9c224fe353f0af189 \
+                    size    630895
 
 depends_lib-append  port:R-Rcpp \
                     port:R-RcppEigen

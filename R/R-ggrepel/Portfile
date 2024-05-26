@@ -4,18 +4,34 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran slowkow ggrepel 0.9.3
+R.setup             cran slowkow ggrepel 0.9.5
 revision            1
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+maintainers         nomaintainer
 license             GPL-3
 description         Automatically position non-overlapping text labels with ggplot2
 long_description    {*}${description}
-checksums           rmd160  a812fcc55c82cf0914f4f84fba66d3e91ebc334e \
-                    sha256  b9eba0e2edee84db0276b49e4834b65f5369edc4bc56f4cacc13e0d1c39a005c \
-                    size    136189
+checksums           rmd160  25710899116033899a02c8ed23289f53526bfea7 \
+                    sha256  d1e600e56c2ad345961ed23f30f04b81c631ff94bd6762a260c62e0206cf8caa \
+                    size    151033
 
 depends_lib-append  port:R-ggplot2 \
                     port:R-Rcpp \
                     port:R-rlang \
                     port:R-scales \
                     port:R-withr
+
+depends_test-append port:R-devtools \
+                    port:R-dplyr \
+                    port:R-ggbeeswarm \
+                    port:R-gridExtra \
+                    port:R-knitr \
+                    port:R-magrittr \
+                    port:R-prettydoc \
+                    port:R-readr \
+                    port:R-rmarkdown \
+                    port:R-stringr \
+                    port:R-svglite \
+                    port:R-testthat \
+                    port:R-vdiffr
+
+test.run            yes

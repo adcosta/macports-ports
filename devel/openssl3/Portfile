@@ -10,8 +10,10 @@ legacysupport.newest_darwin_requires_legacy 8
 
 set major_v         3
 name                openssl$major_v
-version             ${major_v}.1.1
-revision            0
+# For rolling back to 3.1.4 release where needed. Must now stay.
+epoch               1
+version             ${major_v}.2.1
+revision            1
 
 # Please revbump these ports when updating the openssl3 version/revision
 #  - freeradius (#43461)
@@ -48,12 +50,35 @@ master_sites        ${homepage}/source \
                     ftp://ftp.linux.hr/pub/openssl/source/ \
                     ftp://guest.kuria.katowice.pl/pub/openssl/source/
 
-checksums           rmd160  b88142ed021e735c402ae6f0fb2d49846d9d5b34 \
-                    sha256  b3aa61334233b852b63ddb048df181177c2c659eb9d4376008118f9c08d07674 \
-                    size    15544757
+checksums           rmd160  0182f83617754e1a2b0f6864679a7cd9c088e172 \
+                    sha256  83c7329fe52c850677d75e5d0b0ca245309b97e8ecbcfdc1dfdc4ab9fac35b39 \
+                    size    17733249
 
-patchfiles          d79bb5316e1318bd776d6b2d6723a36778e07f9d.patch \
-                    52a38144b019cfda6b0e5eaa0aca88ae11661a26.patch
+patchfiles          e9d7083e241670332e0443da0f0d4ffb52829f08.patch
+
+# 3.2.0 is currently broken for OS < 10.14, see #68766
+if {${os.platform} eq "darwin" && ${os.major} < 18} {
+
+    subport ${name}-devel {
+        conflicts           ${name}
+    }
+
+    if {$subport eq $name} {
+        conflicts           ${name}-devel
+        version             ${major_v}.1.5
+        revision            1
+
+        distname            openssl-${version}
+
+        checksums           rmd160  9c3e80f27e0b15b6b46774a944d75cf034358474 \
+                            sha256  6ae015467dabf0469b139ada93319327be24b98251ffaeceda0221848dc09262 \
+                            size    15663524
+
+        patchfiles-replace  e9d7083e241670332e0443da0f0d4ffb52829f08.patch \
+                            7e4d731b1c07201ad9374c1cd9ac5263bdf35bce.patch
+    }
+
+}
 
 if {${os.platform} eq "darwin" && ${os.major} < 11} {
     # Having the stdlib set to libc++ on 10.6 causes a dependency on a
@@ -118,6 +143,7 @@ if {(${configure.build_arch} eq "i386") || (${universal_possible} && [variant_is
 }
 
 test.run            yes
+test.target-append  HARNESS_JOBS=${build.jobs}
 
 pre-destroot {
     if {[variant_exists universal] && [variant_isset universal]} {

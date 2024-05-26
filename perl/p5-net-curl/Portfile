@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Net-Curl 0.54
+perl5.setup         Net-Curl 0.56
 revision            0
 license             MIT
 maintainers         nomaintainer
@@ -13,9 +13,9 @@ long_description    {*}${description}
 
 platforms           darwin
 
-checksums           rmd160  856978df020a739cac3eaef8a5c1e429fc837dd0 \
-                    sha256  ad76bd1bf97d61bbd758a196e945c232d1cb7b2064e751f6c88c344086d6ffbc \
-                    size    109642
+checksums           rmd160  703b8b45c79ab219bb7c20053dc19908224125ea \
+                    sha256  8ccbcf745792ce45c0726067262fec5bb19a21540c8a6e7741160553fbf5ff68 \
+                    size    109801
 
 if {${perl5.major} != ""} {
     depends_lib-append \

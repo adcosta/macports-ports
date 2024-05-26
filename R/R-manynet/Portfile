@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran snlab-ch manynet 0.1.1
-revision            0
+R.setup             cran snlab-ch manynet 0.4.4
+revision            1
 categories-append   math
 maintainers         nomaintainer
 license             MIT
 description         Many ways to make, manipulate and map myriad networks
 long_description    {*}${description}
-checksums           rmd160  3f9e26f811d99dd664802e0bb930ce54b20927fb \
-                    sha256  72a4c6d418e2a42c719aeddbde7259399f81e1468ad1f3bfd8a99abc4d9364cc \
-                    size    1506707
+homepage            https://snlab-ch.github.io/manynet
+checksums           rmd160  118ff4b25f0cff77586e4803552565af6d0d0d75 \
+                    sha256  7e4c3dc0293c84cfe7e29e674a755220939240ee648eaa4bdfd7dc9367f427cc \
+                    size    1313215
 supported_archs     noarch
 
 depends_lib-append  port:R-dplyr \
@@ -20,4 +21,31 @@ depends_lib-append  port:R-dplyr \
                     port:R-ggraph \
                     port:R-igraph \
                     port:R-network \
+                    port:R-pillar \
                     port:R-tidygraph
+
+# R-concaveman needs V8: https://github.com/joelgombin/concaveman/issues/18
+patchfiles          patch-remove-unavailable-suggests.diff
+
+depends_test-append port:R-BiocManager \
+                    port:R-furrr \
+                    port:R-future \
+                    port:R-gganimate \
+                    port:R-ggforce \
+                    port:R-graphlayouts \
+                    port:R-knitr \
+                    port:R-migraph \
+                    port:R-minMSE \
+                    port:R-multiplex \
+                    port:R-patchwork \
+                    port:R-png \
+                    port:R-readxl \
+                    port:R-Rgraphviz \
+                    port:R-rmarkdown \
+                    port:R-roxygen2 \
+                    port:R-RSiena \
+                    port:R-testthat \
+                    port:R-xml2
+
+# One test fails: https://github.com/snlab-ch/manynet/issues/20
+test.run            yes

@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran limSolve 1.5.6
+R.setup             cran karline.soetaert limSolve 1.5.7.1
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL
 description         Solving linear inverse models
 long_description    {*}${description}
-checksums           rmd160  24907f5b231d15763afd284b0729f7384c6d9691 \
-                    sha256  b97ea9930383634c8112cdbc42f71c4e93fe0e7bfaa8f401921835cb44cb49a0 \
-                    size    955676
+checksums           rmd160  9b4f2197d92f206a603829355c687000835c0e45 \
+                    sha256  a5945217bbf512724297883f8d7c65846a11202266b2b6bb3355372935e85b92 \
+                    size    747217
 
 depends_lib-append  port:R-lpSolve \
                     port:R-quadprog

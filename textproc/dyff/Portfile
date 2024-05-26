@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/homeport/dyff 1.5.7 v
+go.setup            github.com/homeport/dyff 1.7.1 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
 
@@ -16,17 +17,36 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  d4eaebf8d8dab34da2432fc6ae4ea063794963ea \
-                    sha256  16652f850e050da7dbcc4e44bc8e854e81be5ef6a7579f62d3a3d96840f3a191 \
-                    size    1207318
-
-# Allow Go to fetch deps at build time
-build.env-delete    GO111MODULE=off GOPROXY=off
+checksums           rmd160  f1223a15fc82457cd1ac48e0c4a90b698e9d68e6 \
+                    sha256  db129db79af3c5e284eb939041a9e21c4fd2351ecacadc81cf095d7d447a9570 \
+                    size    1209353
 
 build.pre_args-append \
     -ldflags \"-X ${go.package}/internal/cmd.version=${version}\"
 build.args          ./cmd/${name}
 
+post-build {
+    # Generate completion files
+    file mkdir ${worksrcpath}/completion
+
+    foreach _shell {bash fish zsh} {
+        system -W ${worksrcpath} \
+            "./${name} completion ${_shell} > ./completion/${name}.${_shell}"
+    }
+}
+
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+
+    xinstall -d ${destroot}${prefix}/share/bash-completion/completions
+    copy ${worksrcpath}/completion/${name}.bash \
+        ${destroot}${prefix}/share/bash-completion/completions/${name}
+
+    xinstall -d ${destroot}${prefix}/share/fish/vendor_completions.d
+    copy ${worksrcpath}/completion/${name}.fish \
+        ${destroot}${prefix}/share/fish/vendor_completions.d/
+
+    xinstall -d ${destroot}${prefix}/share/zsh/site-functions
+    copy ${worksrcpath}/completion/${name}.zsh \
+        ${destroot}${prefix}/share/zsh/site-functions/_${name}
 }

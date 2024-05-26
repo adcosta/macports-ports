@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                borgbackup
-version             1.2.4
-revision            0
+version             1.2.8
+revision            1
 
 categories          sysutils
 license             BSD
@@ -23,13 +23,14 @@ long_description    BorgBackup (short: Borg) is a deduplicating backup \
 
 homepage            https://www.borgbackup.org/
 
-checksums           rmd160  c637ce9c9ed2451b95a248ae55f39b4579b27487 \
-                    sha256  a4bd54e9469e81b7a30a6711423115abc818d9cd844ecb1ca0e6104bc5374da8 \
-                    size    4056513
+checksums           rmd160  b816db029cb4ce49de2025615c14dc87ed2cab17 \
+                    sha256  d39d22b0d2cb745584d68608a179b6c75f7b40e496e96feb789e41d34991f4aa \
+                    size    4369117
 
-python.default_version  310
+python.default_version  312
 
 depends_build-append \
+                    port:py${python.version}-cython \
                     port:py${python.version}-pkgconfig \
                     port:py${python.version}-setuptools_scm \
                     port:py${python.version}-sphinx \

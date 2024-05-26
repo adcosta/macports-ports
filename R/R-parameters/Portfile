@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github easystats parameters 0.21.1 v
+R.setup             github easystats parameters 0.21.7 v
 revision            0
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,9 +11,10 @@ license             GPL-3
 description         Processing of model parameters
 long_description    {*}${description}
 homepage            https://easystats.github.io/parameters
-checksums           rmd160  f19e3492c7d46b56eacd2ff93206d98c1407c8d4 \
-                    sha256  d4196c8b4dffec81c27e65a40c4e758e952b1c4a2df6cc9aa8d996e5bcb52e16 \
-                    size    1001477
+checksums           rmd160  8e61378e5335e7ddc0ca81afc3f509ed330e6806 \
+                    sha256  302e7da80d0336491f938a0e5c22a2454037ab869bb475ddcff20a9052952315 \
+                    size    1026892
+github.tarball_from archive
 supported_archs     noarch
 
 depends_lib-append  port:R-bayestestR \

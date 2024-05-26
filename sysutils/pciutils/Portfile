@@ -4,10 +4,10 @@ PortSystem                  1.0
 PortGroup                   makefile 1.0
 
 name                        pciutils
-version                     3.9.0
+version                     3.12.0
 revision                    0
 categories                  sysutils
-license                     GPL-2
+license                     GPL-2+
 maintainers                 {mcalhoun @MarcusCalhoun-Lopez} openmaintainer
 description                 a collection of programs for inspecting and manipulating configuration of PCI devices
 long_description            The PCI Utilities are {*}${description}, \
@@ -17,9 +17,9 @@ long_description            The PCI Utilities are {*}${description}, \
 homepage                    https://mj.ucw.cz/sw/pciutils
 master_sites                https://mj.ucw.cz/download/linux/pci/
 
-checksums                   rmd160  7c9586966a97623eaed71fb7218ab22b2001e406 \
-                            sha256  8953a785b2e3af414434b8fdcbfb75c90758819631001e60dd3afb89b22b2331 \
-                            size    908219
+checksums                   rmd160  876eb3c45da0a059ca5253d13cd45ba8afdb8971 \
+                            sha256  827a641d2016a15f0b959804daa5a05f055d0f91d58a70d32ac41ce7ef94164e \
+                            size    668358
 
 patchfiles-append           patch-shared_library.diff
 
@@ -31,5 +31,8 @@ makefile.override-append    PREFIX \
 build.args-append           ZLIB=yes \
                             DNS=yes \
                             SHARED=yes
+
+# ls-ecaps.c: error: ‘for’ loop initial declaration used outside C99 mode
+configure.cflags-append     -std=c99
 
 destroot.target-append      install-lib

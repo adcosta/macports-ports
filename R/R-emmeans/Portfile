@@ -3,18 +3,56 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran rvlenth emmeans 1.8.6
+R.setup             cran rvlenth emmeans 1.10.2
 revision            0
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             {GPL-2 GPL-3}
 description         Estimated marginal means, aka least-squares means
 long_description    {*}${description}
-checksums           rmd160  ded695f77f68785c2622ff30f350be5234fcbbb4 \
-                    sha256  a46db4e0d6e7e8ba7adf58a96a1e0bf512050081b87f4f5d2abeaff13552f585 \
-                    size    1472678
+homepage            https://github.com/rvlenth/emmeans
+checksums           rmd160  c1a00cb50c509f9fabe45a99c5a7c269b4196ce4 \
+                    sha256  60be64c27a9d1660b76a114762c1c9fb8063415e6a87510d6218ef686e3b8522 \
+                    size    1507788
 supported_archs     noarch
 
 depends_lib-append  port:R-estimability \
                     port:R-numDeriv \
                     port:R-mvtnorm
+
+patchfiles          patch-no-CARBayes.diff
+
+depends_test-append port:R-bayesplot \
+                    port:R-bayestestR \
+                    port:R-biglm \
+                    port:R-brms \
+                    port:R-car \
+                    port:R-coda \
+                    port:R-coxme \
+                    port:R-gee \
+                    port:R-geepack \
+                    port:R-ggplot2 \
+                    port:R-knitr \
+                    port:R-lme4 \
+                    port:R-lmerTest \
+                    port:R-logspline \
+                    port:R-MCMCglmm \
+                    port:R-MCMCpack \
+                    port:R-mediation \
+                    port:R-mice \
+                    port:R-multcomp \
+                    port:R-multcompView \
+                    port:R-MuMIn \
+                    port:R-ordinal \
+                    port:R-pbkrtest \
+                    port:R-pscl \
+                    port:R-rmarkdown \
+                    port:R-rsm \
+                    port:R-rstanarm \
+                    port:R-sandwich \
+                    port:R-scales \
+                    port:R-sommer \
+                    port:R-testthat \
+                    port:R-xtable
+
+test.run            yes

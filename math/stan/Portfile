@@ -3,7 +3,7 @@
 PortSystem              1.0
 PortGroup               github 1.0
 
-github.setup            stan-dev stan 2.32.2 v
+github.setup            stan-dev stan 2.34.1 v
 revision                0
 categories              math
 maintainers             {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,11 +11,12 @@ license                 BSD
 description             C++ package for Bayesian inference, maximum likelihood estimation etc.
 long_description        {*}${description}
 homepage                https://mc-stan.org
-checksums               rmd160  9682c6ea7c62d9019086287cdb567fef3a44128b \
-                        sha256  06ba35eea4072aab3111bddf77a5de5bcfd266145739893bece44742c35b2215 \
-                        size    4050117
+checksums               rmd160  e31e98bf6609f334b1644ee3d61919368f67d760 \
+                        sha256  c38864706bbeb1ee1ad92d97cd0d8db24844bb01c4a431bd7f9d6e87fd0f0bd0 \
+                        size    4377341
+github.tarball_from     archive
 supported_archs         noarch
-installs_libs           no
+platforms               any
 
 depends_lib-append      path:lib/pkgconfig/RapidJSON.pc:rapidjson \
                         port:stanmath

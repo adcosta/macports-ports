@@ -3,14 +3,22 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github aursiber nlstools 2.0-0
+# Revert to GitHub once updated there.
+R.setup             cran aursiber nlstools 2.1-0
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3
 description         Tools for non-linear regression analysis
 long_description    {*}${description}
-checksums           rmd160  a04affe504661a2a023e54b3eb05c39c5674c98b \
-                    sha256  9fd443de82bf94448083362be18fd6cd32e275fddc3d9c0e1b6613e2b8c2c31e \
-                    size    727229
+homepage            https://github.com/lbbe-software/nlstools
+checksums           rmd160  70e1fa111f418f19901632e9be8e0511bb4add5f \
+                    sha256  3bc668a5b9a1f431fcea3bfd563d212147ab4d0838efa118d52229631918dbac \
+                    size    389558
 supported_archs     noarch
+
+depends_test-append port:R-knitr \
+                    port:R-rmarkdown \
+                    port:R-rticles
+
+test.run            yes

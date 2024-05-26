@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           golang 1.0
+
+go.setup            github.com/Tufin/oasdiff 1.10.16 v
+go.offline_build    no
+github.tarball_from archive
+revision            0
+
+homepage            https://www.oasdiff.com/
+
+description         Compare and detect breaking changes in OpenAPI specs.
+
+long_description    {*}${description}
+
+categories          devel
+installs_libs       no
+license             Apache-2
+maintainers         {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
+
+checksums           rmd160  7b7354f92cc9d27cde2058c180043f18e9510535 \
+                    sha256  5f76a21515624660cd28ea6f6774eceea7fa90f5b75b573e4f47220a99d8132b \
+                    size    421918
+
+destroot {
+    xinstall -m 0766 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+}

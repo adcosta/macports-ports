@@ -6,7 +6,8 @@ PortGroup           github          1.0
 PortGroup           legacysupport   1.0
 PortGroup           openssl         1.0
 
-github.setup        cwida duckdb 0.8.1 v
+github.setup        cwida duckdb 0.10.3 v
+github.tarball_from archive
 revision            0
 
 homepage            https://www.duckdb.org
@@ -26,19 +27,26 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-patchfiles          no-ccache.patch
+checksums           rmd160  438c74af4e18495b242ecc136cb45426fc8c8939 \
+                    sha256  7855587b3491dd488993287caee28720bee43ae28e92e8f41ea4631e9afcbf88 \
+                    size    80169796
+
+patchfiles-append   no-ccache.patch
+
+set python_version  312
+set python_branch   \
+    [string index ${python_version} 0].[string range ${python_version} 1 end]
 
 configure.args-append \
-                    -DBUILD_PARQUET_EXTENSION=TRUE \
-                    -DBUILD_FTS_EXTENSION=TRUE \
-                    -DBUILD_HTTPFS_EXTENSION=TRUE
-
-fetch.type          git
+                    -DBUILD_EXTENSIONS='parquet\;fts\;httpfs' \
+                    -DOVERRIDE_GIT_DESCRIBE=v${version} \
+                    -DPython3_EXECUTABLE=${prefix}/bin/python${python_branch}
 
 compiler.cxx_standard 2011
 
 depends_build-append \
                     port:pkgconfig \
+                    port:python${python_version} \
                     port:zstd
 
 if {[string match *gcc* ${configure.compiler}]} {

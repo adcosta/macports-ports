@@ -4,15 +4,24 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         CPAN-Changes 0.400002
+perl5.setup         CPAN-Changes 0.500003
 license             {Artistic-1 GPL}
 maintainers         nomaintainer
 description         CPAN::Changes - Read and write Changes files
-long_description    ${description}
+long_description    {*}${description}
 
 platforms           {darwin any}
-
-checksums           rmd160  cff5a90408810fe9926ed767ab8f5d752b017da9 \
-                    sha256  01eedea90d07468cb58e4a50bfa3bb1d4eeda9073596add1118fc359153abe8d
-
 supported_archs     noarch
+
+checksums           rmd160  a0868dbd15fd521c5ed83582c112c1f2bd60811c \
+                    sha256  478943bebec77d167a0321ed64a37288aac6c1347f4e30649f334d5f8f58c23d \
+                    size    546737
+
+if {${perl5.major} != ""} {
+    depends_lib-append \
+                    port:p${perl5.major}-module-runtime \
+                    port:p${perl5.major}-moo \
+                    port:p${perl5.major}-sub-quote \
+                    port:p${perl5.major}-test-simple \
+                    port:p${perl5.major}-type-tiny
+}

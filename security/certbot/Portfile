@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           python 1.0
 
-github.setup        certbot certbot 2.6.0 v
+github.setup        certbot certbot 2.10.0 v
 revision            0
 categories          security
 license             Apache-2
@@ -12,25 +12,27 @@ maintainers         {mps @Schamschula} openmaintainer
 description         An ACME Let's Encrypt client that can obtain certs and extensibly \
                     update server configurations.
 long_description    {*}${description}
-supported_archs     noarch
-platforms           {darwin any}
 homepage            https://certbot.eff.org/
 
-checksums           rmd160  eedc65fe561bc628cc46bf26ccbf93f13c85c16b \
-                    sha256  d25e78d3edf952177e77142b332f52481d537cd3646fe418575f30ee77f6e60a \
-                    size    1336178
+supported_archs     noarch
+platforms           {darwin any}
 
-variant python37 conflicts python38 python39 python310 python311 description {Use Python 3.7} {}
-variant python38 conflicts python37 python39 python310 python311 description {Use Python 3.8} {}
-variant python39 conflicts python37 python38 python310 python311 description {Use Python 3.9} {}
-variant python310 conflicts python37 python38 python39 python311 description {Use Python 3.10} {}
-variant python311 conflicts python37 python38 python39 python310 description {Use Python 3.11} {}
+checksums           rmd160  b94df90298d654b24f7ca37539250b108e7ae40b \
+                    sha256  abe81fd843a6a1c558fb4d9df908fde832a89d64a6e994d98193148620ca5233 \
+                    size    2322794
 
-if {![variant_isset python37] && ![variant_isset python38] && ![variant_isset python39] && ![variant_isset python310]} {
-    default_variants +python311
+variant python38 conflicts python39 python310 python311 python312 description {Use Python 3.8} {}
+variant python39 conflicts python38 python310 python311 python312 description {Use Python 3.9} {}
+variant python310 conflicts python38 python39 python311 python312 description {Use Python 3.10} {}
+variant python311 conflicts python38 python39 python310 python312 description {Use Python 3.11} {}
+variant python312 conflicts python38 python39 python310 python311 description {Use Python 3.12} {}
+
+if {![variant_isset python38] && ![variant_isset python39] \
+        && ![variant_isset python310] && ![variant_isset python311] } {
+    default_variants +python312
 }
 
-foreach pv {311 310 39 38 37} {
+foreach pv {312 311 310 39 38} {
     if {[variant_isset python${pv}]} {
         python.default_version ${pv}
         break
@@ -94,8 +96,6 @@ subport ${name}-apache {
                         this plugin on the command line, simply include \"--apache\". \
                         https://certbot.eff.org/docs/using.html\#apache
     build.dir           ${worksrcpath}/${name}-apache
-    supported_archs     noarch
-    platforms           {darwin any}
 
     depends_lib-append  port:mod_perl2 \
                         port:py${python.version}-python-augeas
@@ -110,8 +110,6 @@ subport ${name}-nginx {
                         \"--nginx\" flag on the commandline. \
                         https://certbot.eff.org/docs/using.html\#nginx
     build.dir           ${worksrcpath}/${name}-nginx
-    supported_archs     noarch
-    platforms           {darwin any}
 
     depends_lib-append  port:py${python.version}-parsing
 
@@ -136,13 +134,6 @@ subport ${name}-dns-cloudflare {
                         https://certbot-dns-cloudflare.readthedocs.io/
     build.dir           ${worksrcpath}/${name}-dns-cloudflare
     depends_lib-append  port:py${python.version}-cloudflare
-}
-
-subport ${name}-dns-cloudxns {
-    # removed upstream with version 2.0.0
-    # remove after 2023-11-21
-    PortGroup           obsolete 1.0
-    description         The certbot dns_cloudxns plugin for dns-01 challenges
 }
 
 subport ${name}-dns-digitalocean {
@@ -219,8 +210,6 @@ subport ${name}-dns-nsone {
                         TXT records using the NS1 API. \
                         https://certbot-dns-nsone.readthedocs.io/
     build.dir           ${worksrcpath}/${name}-dns-nsone
-    supported_archs     noarch
-    platforms           {darwin any}
     depends_lib-append  port:py${python.version}-dns-lexicon
 }
 
@@ -241,7 +230,6 @@ subport ${name}-dns-rfc2136 {
                         TXT records using RFC 2136 Dynamic Updates. \
                         https://certbot-dns-rfc2136.readthedocs.io/
     build.dir           ${worksrcpath}/${name}-dns-rfc2136
-    supported_archs     noarch
 }
 
 subport ${name}-dns-route53 {
@@ -251,7 +239,6 @@ subport ${name}-dns-route53 {
                         TXT records using the Amazon Web Services Route 53 API. \
                         https://certbot-dns-route53.readthedocs.io/
     build.dir           ${worksrcpath}/${name}-dns-route53
-    supported_archs     noarch
 }
 
 subport ${name}-dns-sakuracloud {

@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/prometheus/prometheus 2.44.0 v
+go.setup            github.com/prometheus/prometheus 2.52.0 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
 
@@ -29,8 +30,7 @@ patchfiles-append \
 
 depends_build-append \
                     port:golangci-lint \
-                    path:bin/node:nodejs16 \
-                    path:bin/npm:npm8 \
+                    path:bin/npm:npm10 \
                     port:promu \
                     port:yarn \
                     port:gnutar
@@ -48,7 +48,6 @@ build.pre_args-append \
                     GOLANGCI_LINT=${prefix}/bin/golangci-lint \
                     PROMU=${prefix}/bin/promu
 build.args          build
-build.env-delete    GO111MODULE=off GOPROXY=off
 
 use_parallel_build  no
 use_xcode           yes
@@ -62,9 +61,9 @@ set prom_share_dir  ${prefix}/share/${name}
 set prom_log_dir    ${prefix}/var/log/${name}
 set prom_log_file   ${prom_log_dir}/${name}.log
 
-checksums           rmd160  1c1d8d3634175d1bd8a233af3cae7e9d3fac1f34 \
-                    sha256  cbaaa0e17a355abc4a90d4ead952620aa1bca8fad4a95fd81ac68c0d963add26 \
-                    size    6251225
+checksums           rmd160  4016febdb365838215f85e4712c364a565ac586e \
+                    sha256  cdbc5245e7b54b1e247a082866b4ca73b676f0485ea14e596dda25719b22dacc \
+                    size    6192779
 
 add_users           ${prom_user} \
                     group=${prom_user} \

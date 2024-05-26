@@ -1,0 +1,19 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran mbq.me vistla 2.0.1
+revision            1
+categories-append   math
+maintainers         nomaintainer
+license             GPL-3+
+description         Detect influence paths with information theory
+long_description    {*}${description}
+checksums           rmd160  c9e43035aeb83d22aac1be6852e483e274c41fdc \
+                    sha256  720dc452d8704139aeef0e880c21d643a70abd26b274579b196b366f30ad1432 \
+                    size    33721
+
+depends_test-append port:R-testthat
+
+test.run            yes

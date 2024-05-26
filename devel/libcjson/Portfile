@@ -1,0 +1,30 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem              1.0
+PortGroup               github 1.0
+PortGroup               cmake 1.1
+
+github.setup            DaveGamble cJSON 1.7.17 v
+name                    libcjson
+revision                0
+
+checksums               rmd160  8c75dc184e68c38be0f6ead127315d254b7e02af \
+                        sha256  e86853ea8ecc9910f79eb801c285ec031064229f6884db5705d8a106caadbaa4 \
+                        size    353837
+
+license                 MIT
+categories              devel
+maintainers             nomaintainer
+
+description             ultralightweight JSON parser in ANSI C
+
+long_description        ${name} is an {*}${description}.
+
+patchfiles              AppleClang.patch \
+                        disable-werror.diff
+
+variant tests description "Enable testing" {
+    test.run            yes
+    configure.pre_args-replace  -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=ON \
+                                -DCMAKE_BUILD_WITH_INSTALL_RPATH:BOOL=OFF
+}

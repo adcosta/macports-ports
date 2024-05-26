@@ -3,22 +3,19 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran eddelbuettel RcppSpdlog 0.0.12
-revision            1
-maintainers         nomaintainer
-license             {GPL-2 GPL-3}
+R.setup             cran eddelbuettel RcppSpdlog 0.0.17
+revision            0
+categories-append   devel
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+license             GPL-2+
 description         R and C++ interfaces to spdlog C++ header library for logging
 long_description    {*}${description}
 homepage            https://dirk.eddelbuettel.com/code/rcpp.spdlog.html
-checksums           rmd160  965c85ebf994c2a1dfa8b7498cd5958311150aaf \
-                    sha256  9db914047a5b7b5c863c059a2db83ad051168093a14e4d0315b4f5442a0456d9 \
-                    size    268434
+checksums           rmd160  16c0637396a71dd9da774aeadaa455e499807f43 \
+                    sha256  4a9151371bc15ff7dc04fed981d9e89de6cbf3390d012c2e08a9c52906033a38 \
+                    size    279580
 
 depends_lib-append  port:R-Rcpp
-
-# https://trac.macports.org/ticket/67212
-# https://github.com/gabime/spdlog/pull/2715
-patchfiles          0001-os-inl.h-fix-for-missing-pthread_threadid_np.patch
 
 depends_test-append port:R-simplermarkdown
 

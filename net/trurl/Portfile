@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github      1.0
 PortGroup           makefile    1.0
 
-github.setup        curl trurl 0.7 trurl-
+github.setup        curl trurl 0.13 trurl-
 github.tarball_from archive
 revision            0
 
@@ -20,9 +20,9 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  c420034e45e145879ab3948dec229a62ee8107a7 \
-                    sha256  11616a4c3d255ff3347cb8fc65ea4f890526f327800ec556d78e88881e2cbfa7 \
-                    size    36624
+checksums           rmd160  93454064f1c277a9cd962f567599a534af90c06a \
+                    sha256  8ceeb09d0e08dc677897f26651aa625d9ad18021f881f9d5f31e5a95bb3cc047 \
+                    size    46408
 
 depends_build-append \
                     port:gmake
@@ -34,3 +34,12 @@ build.cmd           gmake
 build.target        ${name}
 
 use_parallel_build  no
+
+post-destroot {
+    xinstall -d ${destroot}${prefix}/share/doc/${name}
+
+    xinstall -m 0444 {*}[glob ${worksrcpath}/*.md] \
+        ${destroot}${prefix}/share/doc/${name}/
+
+    copy ${worksrcpath}/COPYING ${destroot}${prefix}/share/doc/${name}/LICENSE
+}

@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran zhuwang46 mpath 0.4-2.25
+revision            1
+categories-append   math
+maintainers         nomaintainer
+license             GPL-2
+description         Regularized linear models
+long_description    {*}${description}
+homepage            https://github.com/zhuwang46/mpath
+checksums           rmd160  c43c83b4d3fa9b855c8c7d323e705c6b75a0b98f \
+                    sha256  4b9943386557779c42984c77f2ad97c2d689da3de52d69b521e863096e5d6184 \
+                    size    3733010
+
+depends_lib-append  port:R-bst \
+                    port:R-doParallel \
+                    port:R-foreach \
+                    port:R-glmnet \
+                    port:R-numDeriv \
+                    port:R-pamr \
+                    port:R-pscl \
+                    port:R-WeightSVM
+
+compilers.setup     require_fortran
+
+depends_test-append port:R-e1071 \
+                    port:R-knitr \
+                    port:R-openxlsx \
+                    port:R-R.rsp \
+                    port:R-rmarkdown \
+                    port:R-slam \
+                    port:R-SparseM \
+                    port:R-zic
+
+test.run            yes

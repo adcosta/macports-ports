@@ -3,17 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran GeoBosh Rdpack 2.4
+R.setup             cran GeoBosh Rdpack 2.6
 revision            1
-maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+maintainers         nomaintainer
+license             GPL-2+
 description         Update and manipulate Rd documentation objects
 long_description    {*}${description}
 homepage            https://geobosh.github.io/Rdpack
-checksums           rmd160  ebdf1343009f97803d829d7630bc3edba898f648 \
-                    sha256  7652add12b30fcba1f3a12493a089a4166079e78c47b95802a98595a3ff53581 \
-                    size    707773
+checksums           rmd160  13bce3247926ba9ee9d6d2821b582de9ad5969a8 \
+                    sha256  6a75d98c651778358732429258056a327def2be4d2af244a8daaac5b500c220a \
+                    size    495500
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_lib-append  port:R-rbibutils
 

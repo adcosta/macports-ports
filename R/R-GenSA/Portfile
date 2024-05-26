@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran GenSA 1.1.8
+R.setup             cran DL.RSupport GenSA 1.1.14
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,9 +11,9 @@ license             GPL-2
 description         R Functions for Generalized Simulated Annealing
 long_description    Performs search for global minimum of a very complex non-linear objective function \
                     with a very large number of optima.
-checksums           rmd160  e61c5957ffc540128a8d4638b825ff607d03acc4 \
-                    sha256  375e87541eb6b098584afccab361dc28ff09d03cf1d062ff970208e294eca216 \
-                    size    49934
+checksums           rmd160  c45ffbab1bfd80400aad0e2538c82497b7feeaa0 \
+                    sha256  66e455bb0e66d3c04af84d9dddc9b89f40b4cf9fe9ad1cf0714bcf30aa1b6837 \
+                    size    50698
 
 compilers.setup     require_fortran
 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
+PortGroup           compiler_blacklist_versions 1.0
 PortGroup           github 1.0
 PortGroup           legacysupport 1.0
 PortGroup           makefile 1.0
@@ -8,8 +9,7 @@ PortGroup           makefile 1.0
 # strnlen
 legacysupport.newest_darwin_requires_legacy 10
 
-github.setup        acpica acpica R10_20_22
-version             20221022
+github.setup        acpica acpica 20240322 G
 revision            0
 categories          devel
 # Comes with a restrictive Intel license in the source files, but the included
@@ -21,26 +21,38 @@ maintainers         {i0ntempest @i0ntempest} openmaintainer
 description         ACPI compiler
 long_description    A compiler for ACPI DSDT .asl files.
 
-homepage            https://acpica.org/
+homepage            https://www.intel.com/content/www/us/en/developer/topic-technology/open/acpica/overview.html
 
-checksums           rmd160  5e3bc16d798e4344035e0abac744b3e04f1c0e45 \
-                    sha256  1e2edbb00d76863d42df3fa2078b411d4bd2c86408ea71d350223dd24bf48635 \
-                    size    7478059
+checksums           rmd160  ee737b5db3d1d62704bcf6c6d8675ee0a422f042 \
+                    sha256  70aae6f9d7c46aa044e763248bf417b704d7a205e13e40e7601f36df782fa51c \
+                    size    7499596
 
 depends_build       port:bison
 depends_skip_archcheck-append \
                     bison
 
 patchfiles          disable-silent-rules.patch
+post-patch {
+         reinplace "s|MACROPROC=  m4|MACROPROC=  gm4|" ${worksrcpath}/generate/unix/Makefile.config
+}
+
+platform darwin {
+    if {${os.major} > 20 && ${configure.build_arch} eq "arm64"} {
+       # See https://github.com/acpica/acpica/issues/781
+       build.args-append \
+                    OPT_CFLAGS="-DACPI_PACKED_POINTERS_NOT_SUPPORTED"
+    } else {
+        # CFLAGS has MacPorts optimization
+        build.args-append \
+                    OPT_CFLAGS=""
+    }
+}
 
 # see generate/unix/Makefile.config
 makefile.override-delete \
                     INSTALL
 
-# CFLAGS has MacPorts optimization
-build.args-append   OPT_CFLAGS=""
-
-supported_archs     x86_64 i386
-
-livecheck.regex     ${name}-unix-(\[0-9.\]+)${extract.suffix}
-livecheck.url       ${homepage}downloads/
+# dmtbdump2.c:1226: error: ‘for’ loop initial declaration used outside C99 mode
+# aeinstall.c:443: error: ‘ACPI_RESOURCE_EXTENDED_IRQ’ has no member named ‘Interrupts’
+compiler.blacklist-append \
+                    *gcc-4.0 *gcc-4.2 {clang < 421}

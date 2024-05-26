@@ -2,12 +2,14 @@
 
 PortSystem          1.0
 PortGroup           golang 1.0
+PortGroup           legacysupport 1.1
 
-go.setup            github.com/yitsushi/totp-cli 1.2.5 v
+go.setup            github.com/yitsushi/totp-cli 1.8.7 v
 revision            0
 
 categories          security
 maintainers         {gmail.com:smanojkarthick @manojkarthick} \
+                    {gmail.com:herby.gillot @herbygillot} \
                     {hotmail.com:amtor @RobK88} \
                     openmaintainer
 
@@ -20,76 +22,97 @@ long_description    A simple TOTP (Time-based One-time Password) CLI tool. \
                     You can manage and organize your accounts with namespaces and protect your data with a password.
 
 checksums           ${distname}${extract.suffix} \
-                        rmd160  ddc68dc0d963212cffca299323781702b655358a \
-                        sha256  243de9bd4f2552a214cd0428794416546a0e3727a41d36b0ac0b84388125509c \
-                        size    17313
+                        rmd160  71bba4a66211a9961b5c7de288608fa5862888de \
+                        sha256  0e186a4c0005000f6f5fbe4e41783c4b8e4f6d6481b15005b61376f9a2e9de93 \
+                        size    20672
 
 go.vendors          gopkg.in/yaml.v3 \
                         lock    v3.0.1 \
                         rmd160  e85ac1368fb7f9ef945b7fd7bd608a1f0d261c12 \
                         sha256  f3ea6be3f405ec25f8799773355aba54f8831d11f5315a01155bdc69b92eca7b \
                         size    91208 \
-                    gopkg.in/yaml.v2 \
-                        lock    v2.4.0 \
-                        rmd160  66e9feb7944b3804efa63155ed9b618717b8955c \
-                        sha256  72812077e7f20278003de6ab0d85053d89131d64c443f39115a022114fd032b6 \
-                        size    73231 \
+                    gopkg.in/check.v1 \
+                        lock    20d25e280405 \
+                        rmd160  412aa0d109919182ff84259e9b5bbc9f24d78117 \
+                        sha256  233f8faf427ce6701ac3427f85c28bc6b6ae7cdc97a303a52873c69999223325 \
+                        size    30360 \
                     golang.org/x/term \
-                        lock    v0.4.0 \
-                        rmd160  ab690adab1da9bf826e1e2960b3c032c9284a23e \
-                        sha256  fe08b220b0929e25392011fd72353f50b7ac64d52cffff4a868318b0f16beab0 \
-                        size    14800 \
+                        lock    v0.16.0 \
+                        rmd160  bd756f55b20d8afea67740e01a2cc13d9c03f2da \
+                        sha256  0619c31c8e802b7380b4bc4ed21dbadab3938e88861829deda723aded067f90f \
+                        size    14741 \
                     golang.org/x/sys \
-                        lock    v0.4.0 \
-                        rmd160  83e9289b4e409a6a5a96cf70f6adda487c3f1170 \
-                        sha256  97f4948f84af5fe499733870e49ce277786e512787690065e3be9828d4a6c738 \
-                        size    1425728 \
+                        lock    v0.16.0 \
+                        rmd160  10e97b22e4ee6cb4210dc4a3939eff7029c76733 \
+                        sha256  1736d810e783163472b5653ec5eb4272b9f7d570f4e212c5d55d6491be694cf7 \
+                        size    1444408 \
                     golang.org/x/crypto \
-                        lock    v0.5.0 \
-                        rmd160  d1a21b7260574f31cbc6588e1c392eb8f373a9e6 \
-                        sha256  a21df3765c9643d1fadcfb966fde4173c0c930851fb01a24bdef28abd950f13c \
-                        size    1633695 \
-                    github.com/yitsushi/go-commander \
-                        lock    v1.1.0 \
-                        rmd160  07fc098fe5fc6d166121fa4af9bbaf8cfe5259e6 \
-                        sha256  5f9569b9266439706edc41621cef26589431b8be7d4460a44511a3e8a53a4958 \
-                        size    23298 \
-                    github.com/yitsushi/github-release-check \
-                        lock    v1.0.1 \
-                        rmd160  96cb5389321dd08cf84e33aeee87e9196ba30429 \
-                        sha256  147f852820301d4e36503b78de1cf768610062e62a9cd717023cb097c0612f18 \
-                        size    1730 \
+                        lock    v0.17.0 \
+                        rmd160  b42d588c4aa930e1d70d67b75a9a3f20a613536e \
+                        sha256  a559bc5b604090ff2ad6040e8207d79a969ff3017f9e61d2eb0df774ae3b47f4 \
+                        size    1809435 \
+                    github.com/xrash/smetrics \
+                        lock    1d8dd44e695e \
+                        rmd160  1d4694c12438fe017b12295d85d9f48073115c84 \
+                        sha256  9b27416730ef4c8884569e4afb51afa20d95e79bed55d7d5e08ee7a9ca47fe6a \
+                        size    1823507 \
+                    github.com/urfave/cli \
+                        lock    v2.27.1 \
+                        rmd160  5ed423283f063a24972ad7ba2dec285e244a25fa \
+                        sha256  ca879821f57d546acad456afaee27cb3d49e68068e37005e777acf3712d9458d \
+                        size    3484663 \
                     github.com/stretchr/testify \
-                        lock    v1.7.0 \
-                        rmd160  adae5096e8c4cfcc8e3f6d096646d1165b5ef49a \
-                        sha256  f7dde97d0c9634483ae6ea273968f80f3105c22382a1f841886cd20d57586642 \
-                        size    91096 \
-                    github.com/stretchr/objx \
-                        lock    v0.5.0 \
-                        rmd160  9ff3c4d1d122c7e389f2d8b0b0c5503fd1c15e0a \
-                        sha256  21b1f19a64c553c9ee77ab25f498ceafe839a84aa9380f04154ea28217c60974 \
-                        size    165551 \
+                        lock    v1.7.1 \
+                        rmd160  9e07f7d6890b8598706260ece5db26a7b12b5b2a \
+                        sha256  27cabaf81344157a188083266cf8ccc19d04c43d9a34b6276b760514b9c880a3 \
+                        size    94020 \
+                    github.com/russross/blackfriday \
+                        lock    v2.1.0 \
+                        rmd160  c42a9332a2c2f3074c6f7e8d37a58d6148d2af08 \
+                        sha256  c4df56f2012a7d16471418245e78b5790569e27bbe8d72a860d7117a801a7fae \
+                        size    92950 \
                     github.com/pmezard/go-difflib \
                         lock    v1.0.0 \
                         rmd160  fc879bfbdef9e3ff50844def58404e2b5a613ab8 \
                         sha256  7cd492737641847266115f3060489a67f63581e521a8ec51efbc280c33fc991f \
                         size    11409 \
-                    github.com/mitchellh/go-homedir \
-                        lock    v1.1.0 \
-                        rmd160  44b3985e40e5bbb22d11f8622c340f9ed727ea91 \
-                        sha256  024c8a57316c7fbc0eb23cdbfd57f72a74b51beb83d714034d67ee9aba48100c \
-                        size    3366 \
-                    github.com/kardianos/osext \
-                        lock    2bc1f35cddc0 \
-                        rmd160  9a45814aa98c9eb32b6c46ceb00e760d486c71ef \
-                        sha256  ed51f32d6729696e216d051b3955c22161a970aaef01c1819d85ad179e51ba41 \
-                        size    4904 \
                     github.com/davecgh/go-spew \
                         lock    v1.1.1 \
                         rmd160  7c02883aa81f81aca14e13a27fdca9e7fbc136f7 \
                         sha256  e85d6afa83e64962e0d63dd4812971eccf2b9b5445eda93f46a4406f0c177d5f \
-                        size    42171
+                        size    42171 \
+                    github.com/cpuguy83/go-md2man \
+                        lock    v2.0.3 \
+                        rmd160  f44cb99228e4f418c00979bf850d568837755b76 \
+                        sha256  712375b6a4472b6eff9225cdf3e01a4d33e1e0753f713874ecd67a0d0c74bfea \
+                        size    64980 \
+                    filippo.io/age \
+                        repo    github.com/FiloSottile/age \
+                        lock    v1.1.1 \
+                        rmd160  5e09dc3b85d53c92b62c114355097f51a8f79690 \
+                        sha256  007f2a349124a61c8357a8d34703f420248a4cd9c0c00892efab8186310baa8c \
+                        size    204319
+
+build.args-append   \
+    -ldflags \"-X ${go.package}/internal/info.Version=${github.tag_prefix}${version}\"
+
+pre-build {
+#   Sierra and earlier
+    if { ${os.platform} eq "darwin" && ${os.major} < 17 } {
+        build.env-append    GO_EXTLINK_ENABLED="1" \
+                            GO_LDFLAGS="\"-extldflags=${configure.ldflags}\"" \
+                            CGO_LDFLAGS="-g -O2 ${configure.ldflags}"
+    }
+}
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+
+    xinstall -d ${destroot}${prefix}/share/bash-completion/completions
+    file copy ${worksrcpath}/autocomplete/bash_autocomplete \
+        ${destroot}${prefix}/share/bash-completion/completions/${name}
+
+    xinstall -d ${destroot}${prefix}/share/zsh/site-functions
+    file copy ${worksrcpath}/autocomplete/zsh_autocomplete \
+        ${destroot}${prefix}/share/zsh/site-functions/_${name}
 }

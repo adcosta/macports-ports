@@ -3,17 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran r-forge mvtnorm 1.2-2
+R.setup             cran r-project mvtnorm 1.2-5
 revision            0
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-2
-description         Multivariate Normal and t Distributions
+description         Multivariate Normal and t distributions
 long_description    {*}${description}
 homepage            http://mvtnorm.R-forge.R-project.org
-checksums           rmd160  87786979cb96f9677352ebacd867807b80fa102c \
-                    sha256  6f5566b33f930334e07a9f5d3f17cdac8a0e1d86dc6b9d7ffd7a371fb626fe10 \
-                    size    662749
+checksums           rmd160  7be4557392fe56b7694f1bc4e3050c52748a96e5 \
+                    sha256  9e7882a3a24d5e288097466ed77fd6bb9e5fdfadfdfed953367b1d0667e3eda6 \
+                    size    688437
 
 compilers.setup     require_fortran
 

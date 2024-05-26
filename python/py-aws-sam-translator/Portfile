@@ -5,7 +5,7 @@ PortGroup           python 1.0
 PortGroup           github 1.0
 
 name                py-aws-sam-translator
-github.setup        awslabs serverless-application-model 1.69.0 v
+github.setup        awslabs serverless-application-model 1.87.0 v
 github.tarball_from archive
 revision            0
 
@@ -17,32 +17,22 @@ maintainers         {judaew @judaew} openmaintainer
 description         AWS SAM Translator is a library that transform SAM templates into AWS CloudFormation templates
 long_description    {*}${description}
 
-checksums           sha256  f4a2988d6bd9e1456b3d53fba329ebd725ed4340b5f0f954a88632489d5983ba \
-                    rmd160  f2c2e06978199a9351e39f32f398540709bf3663 \
-                    size    5925860
+checksums           sha256  7b9e1209839e0a3a0c73a7bb75b953bc576bb0505e11b12613e3160e0b42b948 \
+                    rmd160  11faf0dee9c67f5af7719baec9945fee60a00e45 \
+                    size    5497979
 
-python.versions     39 310 311
+python.versions     39 310 311 312
 
 if {${name} ne ${subport}} {
-    depends_build-append \
-                    port:py${python.version}-setuptools
-
     depends_run-append \
                     port:py${python.version}-boto3 \
                     port:py${python.version}-jsonschema \
-                    port:py${python.version}-six
+                    port:py${python.version}-pydantic
 
     depends_test-append \
                     port:py${python.version}-mock \
                     port:py${python.version}-parameterized \
-                    port:py${python.version}-yaml \
-                    port:py${python.version}-pytest
+                    port:py${python.version}-yaml
 
     test.run        yes
-    test.cmd        py.test-${python.branch}
-    test.args       -o addopts=''
-    test.target
-    test.env        PYTHONPATH=${worksrcpath}/build/lib
-
-    livecheck.type  none
 }

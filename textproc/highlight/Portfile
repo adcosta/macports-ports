@@ -7,11 +7,11 @@ PortGroup           lua 1.0
 PortGroup           makefile 1.0
 
 name                highlight
-version             4.5
+version             4.11
 revision            0
-checksums           rmd160  9bc3a2bc2fdd7bc33ae5b4d76b4e09c2fdad916c \
-                    sha256  7763f46927616690e3ecc718827458d119414436d4d6462c8997942d0a211172 \
-                    size    1482992
+checksums           rmd160  200226fffd1536e8fa785fe53f9cf6c1f1edd4b1 \
+                    sha256  080bdbc26342f11aaf78747e4a4db86ffedbaf2f053d4aad2d84d271f6647dcf \
+                    size    1502154
 
 categories          textproc devel
 license             GPL-3

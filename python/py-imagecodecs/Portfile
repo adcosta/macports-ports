@@ -4,9 +4,9 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-imagecodecs
-version             2023.3.16
-revision            2
 epoch               1
+version             2024.1.1
+revision            2
 
 categories-append   graphics
 license             BSD
@@ -15,17 +15,17 @@ maintainers         {mps @Schamschula} openmaintainer
 description         Image transformation, compression, and decompression codecs
 long_description    {*}${description}
 
-homepage            https://www.lfd.uci.edu/~gohlke/
+homepage            https://github.com/cgohlke/imagecodecs/
 
-checksums           rmd160  d6aa717b57501152a1d196429cea922da753ac43 \
-                    sha256  e39c2a63f7f5b9bee0ba4961db8c1e7f2518ce07d2fd10a56624d17f1407efc1 \
-                    size    22452941
+checksums           rmd160  f9bea8e86a4ebf829a37de2d6ff4a1cb14ef2704 \
+                    sha256  fde46bd698d008255deef5411c59b35c0e875295e835bf6079f7e2ab22f216eb \
+                    size    9452821
 
-python.versions     37 38 39 310 311
-
-platforms {darwin >= 17}
+python.versions     39 310 311 312
 
 if {${name} ne ${subport}} {
+    platforms {darwin >= 17}
+
     depends_build-append \
                     path:bin/cython-${python.branch}:py${python.version}-cython \
                     port:py${python.version}-setuptools
@@ -49,12 +49,6 @@ if {${name} ne ${subport}} {
                     port:webp \
                     port:zopfli \
                     port:zstd
-
-    # disable 12-bit, 16-bit, and lossless code paths ( only)
-    # remove when libjpeg-turbo 3 is out of beta
-    # see: https://github.com/conda-forge/imagecodecs-feedstock/pull/79#issuecomment-1492667986
-    # see: https://github.com/macports/macports-ports/commit/d3ad9afba4a88e09ed128dc87ccb401e64bc665b
-    patchfiles      patch-imagecodecs-_jpeg8.pyx.diff
 
     post-patch {
         reinplace "s|%PREFIX%|${prefix}|g" \

@@ -4,7 +4,7 @@ PortSystem              1.0
 PortGroup               boost 1.0
 PortGroup               github 1.0
 
-github.setup            stan-dev math 4.6.2 v
+github.setup            stan-dev math 4.8.1 v
 name                    stanmath
 revision                0
 categories              math
@@ -15,17 +15,18 @@ long_description        The Stan Math Library is a C++, reverse-mode automatic d
                         extensive and extensible, efficient, scalable, stable, portable and redistributable in order to facilitate \
                         the construction and utilization of algorithms that utilize derivatives.
 homepage                https://mc-stan.org/math
-checksums               rmd160  9b100a4fb069da1b11879606a271574b20034a43 \
-                        sha256  9b84cd31e4b11d73fc7ab24d06e29dc1f1631ba221971076c3cb186bafb152d0 \
-                        size    30415713
+checksums               rmd160  2c500ecf73f17bb719e307aabe6eabf98ed3c855 \
+                        sha256  78e115c89c298fb9e6fa5941b7e39c84cfea0a8f491a0dc556ab5746d5699136 \
+                        size    30104206
+github.tarball_from     archive
 supported_archs         noarch
-installs_libs           no
+platforms               any
 
 boost.version           1.78
 boost.depends_type      run
 
 # compiler define -DTBB_INTERFACE_NEW chooses oneTBB over TBB.
-depends_run-append      path:include/eigen3:eigen3 \
+depends_run-append      path:share/pkgconfig/eigen3.pc:eigen3 \
                         port:onetbb \
                         port:sundials6
 

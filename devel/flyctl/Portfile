@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/superfly/flyctl 0.1.36 v
+go.setup            github.com/superfly/flyctl 0.2.59 v
+go.offline_build    no
 github.tarball_from archive
 revision            0
 
@@ -19,12 +20,9 @@ long_description    ${name} is a command-line interface for fly.io.
 
 homepage            https://fly.io
 
-checksums           rmd160  a80560889c23fd4ebf2af53d03f02c8a139d34b6 \
-                    sha256  6296a6079bc508bb1c73b19e22be0507d067a1630bb774c16fd2b7d88fb0987d \
-                    size    1685355
-
-# Allow Go to download dependencies at runtime
-build.env-delete    GO111MODULE=off GOPROXY=off
+checksums           rmd160  0afa180b7bab35296aed3cc308a30e1a2bac32a8 \
+                    sha256  c64cbe265ac601debbfa39a53b5aae64741a5066391cca6cb05184ae984c8de1 \
+                    size    1712919
 
 build.cmd           "${go.bin} generate ./... && ${go.bin} build"
 
@@ -33,8 +31,9 @@ build.pre_args-append \
     -o ./_bin/${name} \
     -ldflags \" \
         -X ${go.package}/internal/buildinfo.environment=production \
-        -X ${go.package}/internal/buildinfo.buildDate=2022-03-15T00:00:00Z \
-        -X ${go.package}/internal/buildinfo.version=${version} \
+        -X ${go.package}/internal/buildinfo.branchName=v${version} \
+        -X ${go.package}/internal/buildinfo.buildDate=2024-02-15T00:00:00Z \
+        -X ${go.package}/internal/buildinfo.buildVersion=v${version} \
         -X ${go.package}/internal/buildinfo.commit=release \
     \"
 
@@ -46,13 +45,13 @@ destroot {
     # Shell completion
     xinstall -d "${destroot}${prefix}/etc/bash_completion.d"
     xinstall -d "${destroot}${prefix}/share/zsh/site-functions"
-    xinstall -d "${destroot}${prefix}/share/fish/completions"
+    xinstall -d "${destroot}${prefix}/share/fish/vendor_completions.d"
     system "${destroot}${prefix}/bin/${name} completion bash > \\
         ${destroot}${prefix}/etc/bash_completion.d/${name}"
     system "${destroot}${prefix}/bin/${name} completion zsh >  \\
         ${destroot}${prefix}/share/zsh/site-functions/_${name}"
     system "${destroot}${prefix}/bin/${name} completion fish > \\
-        ${destroot}${prefix}/share/fish/completions/${name}.fish"
+        ${destroot}${prefix}/share/fish/vendor_completions.d/${name}.fish"
 }
 
 # Only match releases. Pre-releaes have a "-pre-N" suffix

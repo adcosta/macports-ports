@@ -3,17 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran minqa 1.2.5
-revision            1
+R.setup             cran r-forge minqa 1.2.7
+revision            0
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-2
 description         Derivative-Free Optimization Algorithms by Quadratic Approximation
-long_description    Derivative-free optimization by quadratic approximation based on an interface to Fortran implementations by M.J.D. Powell.
-homepage            http://optimizer.r-forge.r-project.org
-checksums           rmd160  181204b2265faa5212175512fcea0a4a8eda869c \
-                    sha256  9b83562390990d04b2c61b63ac9a7c9ecab0d35c460d232596e3c73bdc89f4be \
-                    size    54415
+long_description    Derivative-free optimization by quadratic approximation \
+                    based on an interface to Fortran implementations by M.J.D. Powell.
+homepage            https://optimizer.r-forge.r-project.org
+checksums           rmd160  a0c3396ffc12f10d2b0ff9e9d58683ac25a3bca4 \
+                    sha256  76f3459d1ed860d5095b1d89d41628fc7187e72506cf48f073e15724d9e52fe2 \
+                    size    54344
 
 depends_lib-append  port:R-Rcpp
 

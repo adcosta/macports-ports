@@ -5,7 +5,7 @@ PortSystem       1.0
 name             openjdk17-zulu
 categories       java devel
 maintainers      {breun.nl:nils @breun} openmaintainer
-platforms        darwin
+platforms        {darwin any}
 # This port uses prebuilt binaries; 'NoMirror' makes sure MacPorts doesn't mirror/distribute these third-party binaries
 license          GPL-2 NoMirror
 # This port uses prebuilt binaries for a particular architecture; they are not universal binaries
@@ -14,10 +14,10 @@ universal_variant no
 # https://www.azul.com/downloads/?version=java-17-lts&os=macos&package=jdk
 supported_archs  x86_64 arm64
 
-version      17.42.19
+version      17.50.19
 revision     0
 
-set openjdk_version 17.0.7
+set openjdk_version 17.0.11
 
 description  Azul Zulu Community OpenJDK 17 (Long Term Support)
 long_description Azul® Zulu® is a Java Development Kit (JDK), and a compliant implementation of the Java Standard Edition (SE)\
@@ -29,27 +29,17 @@ master_sites https://cdn.azul.com/zulu/bin/
 
 if {${configure.build_arch} eq "x86_64"} {
     distname     zulu${version}-ca-jdk${openjdk_version}-macosx_x64
-    checksums    rmd160  41ec8cac543cbf2f199c0b1105a1e11629b596bf \
-                 sha256  fd8c32cbe06b9ecda87acc25ee212d74b7e221de5edc067f38ab5ba0c43445ae \
-                 size    193927373
+    checksums    rmd160  21dab02b17acb3981665b0135817d7aace0b66b6 \
+                 sha256  b384991e93af39abe5229c7f5efbe912a7c5a6480674a6e773f3a9128f96a764 \
+                 size    194484713
 } elseif {${configure.build_arch} eq "arm64"} {
     distname     zulu${version}-ca-jdk${openjdk_version}-macosx_aarch64
-    checksums    rmd160  1ecad80bf8ffd61c41b7d357fc0756a018d29a51 \
-                 sha256  650be4ed94caa22ec4242b007f90f8f3bad32f66c0a60ff9a18044ce2761a049 \
-                 size    191683319
+    checksums    rmd160  3674f400958b0ec378a081f49261930c7922d890 \
+                 sha256  dd1a82d57e80cdefb045066e5c28b5bd41e57eea9c57303ec7e012b57230bb9c \
+                 size    192349922
 }
 
 worksrcdir   ${distname}/zulu-17.jdk
-
-# https://trac.macports.org/wiki/PortfileRecipes#compare-osx-darwin-version
-if {${os.platform} eq "darwin" && ${os.major} < 18} {
-    # See https://www.azul.com/downloads/?version=java-17-lts&os=macos&package=jdk
-    known_fail yes
-    pre-fetch {
-        ui_error "${name} ${version} is only supported on macOS 10.14 Mojave or later."
-        return -code error
-    }
-}
 
 homepage     https://www.azul.com/downloads/
 
@@ -88,17 +78,21 @@ test.args   -version
 # macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, which is not under ${prefix}.
 destroot.violate_mtree yes
 
-set target /Library/Java/JavaVirtualMachines/${name}
-set destroot_target ${destroot}${target}
+set jvms /Library/Java/JavaVirtualMachines
+set jdk ${jvms}/${name}
 
 destroot {
-    xinstall -m 755 -d ${destroot_target}
-    copy ${worksrcpath}/Contents ${destroot_target}
+    xinstall -m 755 -d ${destroot}${prefix}${jdk}
+    copy ${worksrcpath}/Contents ${destroot}${prefix}${jdk}
+
+    # macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, so let's create a symlink there
+    xinstall -m 755 -d ${destroot}${jvms}
+    ln -s ${prefix}${jdk} ${destroot}${jdk}
 }
 
 notes "
 If you have more than one JDK installed you can make ${name} the default\
 by adding the following line to your shell profile:
 
-    export JAVA_HOME=${target}/Contents/Home
+    export JAVA_HOME=${jdk}/Contents/Home
 "

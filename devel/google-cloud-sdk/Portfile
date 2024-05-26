@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                google-cloud-sdk
-version             435.0.0
+version             477.0.0
 revision            0
 categories          devel python
 license             Apache-2
@@ -21,19 +21,19 @@ supported_archs     i386 x86_64 arm64
 
 if { ${configure.build_arch} eq "i386" } {
     distname        ${name}-${version}-darwin-x86
-    checksums       rmd160  54466922cc99b5c0fe03c597768c8ca03f9bbd9d \
-                    sha256  d4b439847cdef3c7d3e7b3a184ecb51557247812665bfe7e4540de39996425f9 \
-                    size    100486137
+    checksums       rmd160  5ba8a6cc794ede26dfdfffb88372a3890976af0a \
+                    sha256  f6f13f803c707094b8d8cdc19c7eebce47af352d7359d5e99ffb2f580b350713 \
+                    size    124878878
 } elseif { ${configure.build_arch} eq "x86_64" } {
     distname        ${name}-${version}-darwin-x86_64
-    checksums       rmd160  30ff10bb202505c18786077c341300a59ec34a02 \
-                    sha256  e77614ae832c4b2ea625e9efe39f0b5780146ced798e01bcdf48d12778f8f638 \
-                    size    120762227
+    checksums       rmd160  2113cbf4d634d615a3c23ade27b2e7c5b0ba1483 \
+                    sha256  c312f96ff7208152a533d0e7297efedecfa15b6c36ebb5e9ef0aa0b3a588e9c9 \
+                    size    126163652
 } elseif { ${configure.build_arch} eq "arm64" } {
     distname        ${name}-${version}-darwin-arm
-    checksums       rmd160  52c4760e7b1998ef7960823e2ad6ef569ec4888d \
-                    sha256  02fe7816e67f43caf6f1d8d7859dc16426064112551cf02875ee3d5e21b47442 \
-                    size    117882396
+    checksums       rmd160  5c5459bf2690a07a79a7896d5d4d53362cf72a5a \
+                    sha256  4b5b1963ca6d8b3a03783e62e9ef7ef3ede0795740bffacc6f9b22fa1a1540ab \
+                    size    122482639
 }
 
 homepage            https://cloud.google.com/sdk/
@@ -42,7 +42,7 @@ master_sites        https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/
 worksrcdir          ${name}
 
 # Most recent supported Python version according to https://cloud.google.com/sdk/docs/install#mac
-python.default_version 39
+python.default_version 312
 
 post-patch {
     # Default to the MacPorts Python binary
@@ -90,6 +90,7 @@ variant datalab description {Add Cloud Datalab Command Line Tool} { dict set var
 variant docker_credential_gcr description {Add Google Container Registry's Docker credential helper} { dict set variant_to_component docker_credential_gcr docker-credential-gcr }
 variant enterprise_certificate_proxy description {Add Enterprise certificate proxy} { dict set variant_to_component enterprise_certificate_proxy enterprise-certificate-proxy }
 variant gke_gcloud_auth_plugin description {Add GKE Google Cloud auth plugin} { dict set variant_to_component gke_gcloud_auth_plugin gke-gcloud-auth-plugin }
+variant istioctl description {Add istioctl} { dict set variant_to_component istioctl istioctl }
 variant kpt description {Add kpt} { dict set variant_to_component kpt kpt }
 variant kubectl description {Add kubectl} { dict set variant_to_component kubectl kubectl }
 variant kubectl_oidc description {Add kubectl-oidc} { dict set variant_to_component kubectl_oidc kubectl-oidc }
@@ -105,7 +106,7 @@ variant skaffold description {Add Skaffold} { dict set variant_to_component skaf
 variant terraform_tools description {Add Terraform Tools} { dict set variant_to_component terraform_tools terraform-tools }
 
 patch {
-    set install_command "CLOUDSDK_CONFIG=${worksrcpath}/.config ./install.sh \
+    set install_command "CLOUDSDK_CONFIG=${worksrcpath}/.config CLOUDSDK_PYTHON=${python.bin} ./install.sh \
         --usage-reporting false \
         --command-completion false \
         --path-update false \
@@ -148,29 +149,20 @@ destroot {
     }
     ln -s ../libexec/${name}/bin/git-credential-gcloud.sh ${destroot}${prefix}/bin/git-credential-gcloud
 
-    if {[variant_isset bash_completion]} {
-        # set completions_path ${prefix}/share/bash-completion/completions
-        set completions_path ${prefix}/etc/bash_completion.d
-        xinstall -d ${destroot}${completions_path}
-        xinstall -m 644 ${worksrcpath}/completion.bash.inc ${destroot}${completions_path}/google-cloud-sdk
-    }
+    # bash completion
+    set bash_completions_path ${prefix}/etc/bash_completion.d
+    xinstall -d ${destroot}${bash_completions_path}
+    xinstall -m 644 ${worksrcpath}/completion.bash.inc ${destroot}${bash_completions_path}/google-cloud-sdk
 
-    if {[variant_isset zsh_completion]} {
-        set gcloud_libexec ${destroot}${prefix}/libexec/google-cloud-sdk
-        xinstall -m 644 ${worksrcpath}/completion.zsh.inc ${gcloud_libexec}
-    }
+    # zsh completion
+    set gcloud_libexec ${destroot}${prefix}/libexec/google-cloud-sdk
+    xinstall -m 644 ${worksrcpath}/completion.zsh.inc ${gcloud_libexec}
 }
 
-variant bash_completion {
-    depends_run-append path:etc/bash_completion:bash-completion
-}
-
-variant zsh_completion description {Enable completion support for zsh} {
-    notes "
-        google-cloud-sdk zsh completions aren't loaded automatically.
-        You must source them manually in your .zshrc:
-            source '${prefix}/libexec/google-cloud-sdk/completion.zsh.inc'"
-}
+notes "
+    google-cloud-sdk zsh completions aren't loaded automatically.
+    You must source them manually in your .zshrc:
+        source '${prefix}/libexec/google-cloud-sdk/completion.zsh.inc'"
 
 livecheck.url       https://cloud.google.com/sdk/docs/install-sdk
 livecheck.regex     {google-cloud-cli-([\d\.]+)-darwin}

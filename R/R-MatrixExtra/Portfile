@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran david-cortes MatrixExtra 0.1.13
+R.setup             cran david-cortes MatrixExtra 0.1.15
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Methods and operators for the sparse matrix classes
 long_description    Extends sparse matrix and vector classes from the Matrix package.
-checksums           rmd160  eecc760418e947613fea9f0215b8f17da33ef400 \
-                    sha256  6a8c6b4d74a36222148590252663e76d2d991789f0a116a2b73a9f99ee471ee9 \
-                    size    219491
+homepage            https://github.com/david-cortes/MatrixExtra
+checksums           rmd160  0fd094d1b065597ae6ca7cfddd89a863310a2e77 \
+                    sha256  e98f410df97923d1156759277b73ce3674ff11120830d6f9546e0e914ad4e056 \
+                    size    213133
 
 depends_lib-append  port:R-float \
                     port:R-Rcpp \

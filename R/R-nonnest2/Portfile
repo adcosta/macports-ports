@@ -3,21 +3,21 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran nonnest2 0.5-5
-revision            1
+R.setup             cran merklee nonnest2 0.5-7
+revision            0
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             {GPL-2 GPL-3}
 description         Tests of non-nested models
 long_description    {*}${description}
-checksums           rmd160  7fdff50715047289a887da5ff76191acfe32e760 \
-                    sha256  027f510e322122fc75c936251a95ddd392f96047ac86e0fae6cf8f883ac7aab5 \
-                    size    256166
+checksums           rmd160  8b8478d7333a6f67782a6b99a4835a555cafcd29 \
+                    sha256  e440c2464b3bd3b452e02583bb280eecba6acecf0f2c04b6b9fe4dcdd128db3e \
+                    size    239522
 supported_archs     noarch
 
 depends_lib-append  port:R-CompQuadForm \
-                    port:R-mvtnorm \
                     port:R-lavaan \
+                    port:R-mvtnorm \
                     port:R-sandwich
 
 depends_test-append port:R-AER \
@@ -25,9 +25,11 @@ depends_test-append port:R-AER \
                     port:R-knitr \
                     port:R-mirt \
                     port:R-mlogit \
+                    port:R-OpenMx \
                     port:R-ordinal \
                     port:R-pscl \
                     port:R-rmarkdown \
-                    port:R-testthat
+                    port:R-testthat \
+                    port:R-tidySEM
 
 test.run            yes

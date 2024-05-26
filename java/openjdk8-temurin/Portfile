@@ -15,8 +15,8 @@ universal_variant no
 # https://adoptium.net/temurin/releases/
 supported_archs  x86_64
 
-version      8u372
-set build    07
+version      8u412
+set build    08
 revision     0
 
 description  Eclipse Temurin, based on OpenJDK 8
@@ -26,9 +26,9 @@ master_sites https://github.com/adoptium/temurin8-binaries/releases/download/jdk
 distname     OpenJDK8U-jdk_x64_mac_hotspot_${version}b${build}
 worksrcdir   jdk${version}-b${build}
 
-checksums    rmd160  ceed8ad4a8e633082a8fcbac142d52bd1e4394ff \
-             sha256  9c33db312cc46b6bfe705770fdc5c08edb7d790ba70be4e8b12a98e79da5f4a1 \
-             size    107968606
+checksums    rmd160  321d80d13a7c3f871846aa17864b5b372c8ab814 \
+             sha256  fd62491f7634c1cbed7557d6b21db7ef4818fbc0e63e678110d9d92cbea4ad8c \
+             size    109506799
 
 homepage     https://adoptium.net
 

@@ -3,7 +3,8 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github tidymodels butcher 0.3.1 v
+# Revert to GitHub once updated there.
+R.setup             cran tidymodels butcher 0.3.4 v
 revision            1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
@@ -11,10 +12,11 @@ description         Set of S3 generics to axe components of fitted model objects
                     and help reduce the size of model objects saved to disk.
 long_description    {*}${description}
 homepage            https://butcher.tidymodels.org
-checksums           rmd160  b91e67d0e32bf654c16eef5e7eb8077c4ddc0cbd \
-                    sha256  13fbc899aa2bd97884f5496ac06ff671a45541c7eb1f434fa84a91fa7757eabc \
-                    size    1842223
+checksums           rmd160  22a157012abaccfbe0bf9f6fa970cf85491eff7d \
+                    sha256  0de8b5215c971a33ee7975b6955969f5ce14fae485d637cca39fff082c22f208 \
+                    size    315665
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_lib-append  port:R-cli \
                     port:R-lobstr \

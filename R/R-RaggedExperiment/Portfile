@@ -3,21 +3,32 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             bioconductor Bioconductor RaggedExperiment 1.24.0
+R.setup             bioconductor Bioconductor RaggedExperiment 1.28.0
 revision            0
+categories-append   bioconductor
 maintainers         nomaintainer
 license             Artistic-2
 description         Representation of sparse experiments and assays across samples
 long_description    {*}${description}
-checksums           rmd160  02da71aa399a06ee2b2517c2a15862a1cf5c5bf0 \
-                    sha256  5441a09866f19d022e7dd2bf033fe4b96f24e38f4089870ed03fc159cb6f47f7 \
-                    size    380327
+checksums           rmd160  5ef2aaee9ef4aa80ee53d6ec44478bc52c2e55e7 \
+                    sha256  bd8f4ff5022810a21c7bd8a3a969facf0f6fc2544b34b39dcbcb38654561f2d7 \
+                    size    701031
 supported_archs     noarch
+platforms           {darwin any}
 
-depends_lib-append  port:R-BiocGenerics \
+depends_lib-append  port:R-BiocBaseUtils \
+                    port:R-BiocGenerics \
                     port:R-GenomeInfoDb \
                     port:R-GenomicRanges \
                     port:R-IRanges \
                     port:R-MatrixGenerics \
                     port:R-S4Vectors \
                     port:R-SummarizedExperiment
+
+depends_test-append port:R-BiocStyle \
+                    port:R-knitr \
+                    port:R-MultiAssayExperiment \
+                    port:R-rmarkdown \
+                    port:R-testthat
+
+test.run            yes

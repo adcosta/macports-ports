@@ -1,0 +1,31 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+# Revert to GitHub once updated there.
+R.setup             cran dbosak01 fmtr 1.6.4
+revision            0
+maintainers         nomaintainer
+license             public-domain
+description         Easily apply formats to data
+long_description    {*}${description}
+homepage            https://fmtr.r-sassy.org
+checksums           rmd160  284e0fb7a0afb998a17145530a1934631b0befde \
+                    sha256  47444d604a9c7d0c4b8c21ce5e939ee2f1038c8394dc9a95325a0207cc0e5dc0 \
+                    size    593622
+
+depends_lib-append  port:R-common \
+                    port:R-crayon \
+                    port:R-Rcpp \
+                    port:R-tibble
+
+depends_test-append port:R-covr \
+                    port:R-dplyr \
+                    port:R-knitr \
+                    port:R-libr \
+                    port:R-logr \
+                    port:R-rmarkdown \
+                    port:R-testthat
+
+test.run            yes

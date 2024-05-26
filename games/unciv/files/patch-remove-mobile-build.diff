@@ -1,45 +1,27 @@
-For some reason, unciv seems to always try and build the android version.
-
-Follow the AUR's fix and remove the android section completely.
-
-Also fixes errors relating to robovm dependency by removing the ios build.
-
---- build.gradle.kts.original	2023-03-11 19:18:53.000000000 +0000
-+++ build.gradle.kts	2023-03-11 19:19:24.000000000 +0000
-@@ -80,36 +80,6 @@
+--- build.gradle.kts.original	2024-01-28 20:05:16.000000000 +0000
++++ build.gradle.kts	2024-01-28 20:05:37.000000000 +0000
+@@ -92,24 +92,7 @@
  
  }
  
 -project(":android") {
 -    apply(plugin = "com.android.application")
 -    apply(plugin = "kotlin-android")
--
+ 
 -    val natives by configurations.creating
 -
 -    dependencies {
 -        "implementation"(project(":core"))
+-        // Not sure why I had to add this in for the upgrade to 1.12.1 to work, we can probably remove this later since it's contained in core
+-        "implementation"("com.badlogicgames.gdx:gdx:$gdxVersion")
 -        "implementation"("com.badlogicgames.gdx:gdx-backend-android:$gdxVersion")
--        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+-        "implementation"("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
 -        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a")
 -        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a")
 -        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86")
 -        natives("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64")
 -    }
 -}
--
--project(":ios") {
--    apply(plugin = "kotlin")
--    apply(plugin = "robovm")
--
--    dependencies {
--        "implementation"(project(":core"))
--        "implementation"("com.mobidevelop.robovm:robovm-rt:$roboVMVersion")
--        "implementation"("com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion")
--        "implementation"("com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion")
--        "implementation"("com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios")
--    }
--}
--
+ 
  
  project(":core") {
-     apply(plugin = "kotlin")

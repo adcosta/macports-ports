@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 R.setup             github r-hub rversions 2.1.2 v
-revision            1
+revision            2
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             MIT
 description         Query R versions, Including r-release and r-oldrel
@@ -16,3 +16,9 @@ supported_archs     noarch
 
 depends_lib-append  port:R-curl \
                     port:R-xml2
+
+depends_test-append port:R-covr \
+                    port:R-mockery \
+                    port:R-testthat
+
+test.run            yes

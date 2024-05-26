@@ -4,8 +4,8 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           muniversal 1.1
 
-github.setup        saagarjha unxip 2.1 v
-revision            0
+github.setup        saagarjha unxip 3.0 v
+revision            1
 github.tarball_from archive
 
 categories          archivers sysutils
@@ -18,9 +18,9 @@ long_description    ${name} is a command-line tool designed for rapidly unarchiv
                     outperform Bom (which powers xip and Archive Utility) in both performance \
                     and on-disk usage.
 
-checksums           rmd160  6435284b97e3bc38c856fdf7f37110003cdbea39 \
-                    sha256  3d13d7413e138810c65151d8b7574530cbbc5d2a18310f09ca0cdab3a4cbd6b4 \
-                    size    16128
+checksums           rmd160  c0cc0232dab6cd36bd7219aa87f20ac0529fce18 \
+                    sha256  3e2b841eb06462110a83f90584d7e0c4bcac90de23ccd45d2eba6a29066a7e2d \
+                    size    22523
 
 if {${os.platform} eq "darwin" && ${os.major} < 21} {
     known_fail yes
@@ -31,12 +31,16 @@ if {${os.platform} eq "darwin" && ${os.major} < 21} {
 }
 
 use_configure       no
-use_xcode           yes
 universal_variant   yes
+
+# Use MacOSX13.sdk to compile on macOS 12 Monterey
+if {${os.platform} eq "darwin" && ${os.major} < 22} {
+    configure.sdk_version   13
+}
 
 build.cmd           swiftc
 build.target        unxip.swift
-build.args          -O -parse-as-library
+build.args          -O -whole-module-optimization -parse-as-library
 
 if {${universal_possible} && [variant_isset universal]} {
     foreach arch "${muniversal.architectures}" {

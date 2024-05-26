@@ -5,7 +5,7 @@ PortGroup           python 1.0
 
 name                py-owslib
 python.rootname     OWSLib
-version             0.19.0
+version             0.30.0
 revision            0
 
 categories-append   gis science net
@@ -21,28 +21,28 @@ long_description    \
     related content models. OWSLib provides a common API for accessing \
     service metadata and wrappers for numerous OGC Web Service interfaces.
 
-homepage            https://geopython.github.io/OWSLib/
-master_sites        pypi:[string index ${python.rootname} 0]/${python.rootname}
-distname            ${python.rootname}-${version}
+homepage            https://owslib.readthedocs.io/
 
-checksums           rmd160  cceb6a9134a25c2f63085b9763f81e7739d2a516 \
-                    sha256  1d499981e13a1233822e94ee30c95ddd35d11f176e854d7f0cdc30ef55f5b065 \
-                    size    158237
+checksums           rmd160  5bb8e6fe34cc9dc1130109deac7998cfbdc658cf \
+                    sha256  f17413cc75836c0303cd1d4fd9bb0f21915a8b492dacc64ef5f4021b28e82d4c \
+                    size    175405
 
-python.versions     37 38 39 310 311
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
     depends_build-append    port:py${python.version}-setuptools
 
     depends_lib-append      port:py${python.version}-dateutil \
+                            port:py${python.version}-lxml \
                             port:py${python.version}-pyproj \
+                            port:py${python.version}-requests \
                             port:py${python.version}-tz \
-                            port:py${python.version}-requests
+                            port:py${python.version}-yaml
 
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}
         xinstall -d ${destroot}${docdir}
-        xinstall -m 0644 -W ${worksrcpath} LICENSE AUTHORS.rst \
-            README.rst CHANGES.rst ${destroot}${docdir}
+        xinstall -m 0644 -W ${worksrcpath} LICENSE AUTHORS.rst README.md \
+            ${destroot}${docdir}
     }
 }

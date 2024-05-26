@@ -7,12 +7,12 @@ PortGroup           select 1.0
 name                py-gdal
 python.rootname     GDAL
 # keep version in sync with gdal; rebuilt after gdal update
-version             3.7.0
+version             3.8.5
 revision            0
 
 categories-append   gis
 license             MIT
-maintainers         {petr @petrrr} openmaintainer
+maintainers         {petr @petrrr} {yahoo.com:n_larsson @nilason} openmaintainer
 
 description         GDAL: Geospatial Data Abstraction Library
 long_description    This Python package and extensions are a number of tools for programming \
@@ -20,15 +20,16 @@ long_description    This Python package and extensions are a number of tools for
 
 homepage            https://www.gdal.org
 
-checksums           rmd160  88caf77c4325034a1fa7058997588feaeff2c304 \
-                    sha256  116a924dd340f517ab4ccaea9fb6b333ce132e10f2b3120b0d539593719fd79a \
-                    size    775530
+checksums           rmd160  d459e0f7f60516f263f67baad215b76be22f1b1e \
+                    sha256  ad8addd58ba9c62aefc7f65d345c168736798f137e5c8f247af76fcf4862d371 \
+                    size    802628
 
-python.versions     37 38 39 310 311
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
     compiler.cxx_standard   2011
-    
+    compiler.thread_local_storage yes
+
     depends_run-append \
                     port:gdal_select
 
@@ -36,16 +37,16 @@ if {${name} ne ${subport}} {
                     port:gdal \
                     port:py${python.version}-numpy
 
-    post-patch {
-        reinplace "s|\\.\\./\\.\\./apps/|${prefix}/bin/|" ${worksrcpath}/setup.cfg
-    }
-
     post-destroot {
         set docdir ${prefix}/share/doc/${subport}
         xinstall -d ${destroot}${docdir}
         xinstall -m 0644 -W ${worksrcpath} README.rst ${destroot}${docdir}
+
+        set destroot_sel_dir ${destroot}${prefix}/etc/select/
+        reinplace -q "s|@PYVER@|${python.branch}|" ${destroot_sel_dir}/gdal/py-gdal
+        move ${destroot_sel_dir}/gdal/py-gdal ${destroot_sel_dir}/gdal/py${python.version}-gdal
     }
 
     select.group    gdal
-    select.file     ${filespath}/py${python.version}-gdal
+    select.file     ${filespath}/py-gdal
 }

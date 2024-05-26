@@ -5,8 +5,8 @@ PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 
 name                openssh
-version             9.3p1
-revision            2
+version             9.7p1
+revision            0
 categories          net
 maintainers         {@artkiver gmail.com:artkiver} openmaintainer
 license             BSD
@@ -28,9 +28,9 @@ long_description    OpenSSH is a FREE version of the SSH protocol suite of \
 
 homepage            https://www.openbsd.org/openssh/
 
-checksums           rmd160  29768ab6830484f797d0138d2c7f53791a319d4c \
-                    sha256  e9baba7701a76a51f3d85a62c383a3c9dcd97fa900b859bc7db114c1868af8a8 \
-                    size    1856839
+checksums           rmd160  5cad750b5779e16f1336fa38cec904411184d813 \
+                    sha256  490426f766d82a2763fcacd8d83ea3d70798750c7bd2aff2e57dc5660f773ffd \
+                    size    1848766
 
 master_sites        openbsd:OpenSSH/portable \
                     ftp://ftp.cise.ufl.edu/pub/mirrors/openssh/portable/ \
@@ -48,13 +48,13 @@ if {${name} eq ${subport}} {
         depends_build-append port:cctools
     }
 
-    patch.args          -p1
+    patch.pre_args-replace  -p0 -p1
     patchfiles          launchd.patch \
                         agent.patch \
                         pam.patch \
                         patch-sandbox-darwin.c-apple-sandbox-named-external.diff \
                         patch-sshd.c-apple-sandbox-named-external.diff \
-                        macports-config.patch
+                        macports-config.patch \
 
     # We need a couple of patches
     # - pam.patch
@@ -78,6 +78,7 @@ if {${name} eq ${subport}} {
         reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/sandbox-darwin.c
     }
 
+    # We are patching configure.ac
     use_autoreconf          yes
 
     # strnvis(3) isn't actually "broken".  OpenBSD decided to be special and flip

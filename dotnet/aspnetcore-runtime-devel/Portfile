@@ -3,9 +3,9 @@
 PortSystem          1.0
 
 name                aspnetcore-runtime-devel
-set main_version    8.0.0
-# See patch version in https://dotnet.microsoft.com/en-us/download/dotnet/8.0
-set patch_version   5.23302.2
+set main_version    9.0.0
+# See patch version in https://dotnet.microsoft.com/en-us/download/dotnet/9.0
+set patch_version   3.24172.13
 version             ${main_version}-preview.${patch_version}
 revision            0
 categories          dotnet
@@ -23,21 +23,21 @@ long_description    .NET is a free, cross-platform, open source developer platfo
                     to build for web, mobile, desktop, games, and IoT.
 
 homepage            https://dotnet.microsoft.com/
-platforms           darwin
+platforms           {darwin any}
 supported_archs     x86_64 arm64
 
 switch ${build_arch} {
     x86_64 {
         distname            aspnetcore-runtime-${version}-osx-x64
-        checksums           rmd160  c2b258bcd8c715e6873b451d193e9cbad531f33b \
-                            sha256  afac600727b369156da81440f475e7792a26c1746101f849052b6e438b36436a \
-                            size    39717485
+        checksums           rmd160  be2d7f05075b5d526364e4ef3e4a49317e0cb027 \
+                            sha256  b50cae6321a2cd550bb898a69ecf128a9dfcc019cb1f2f47515316905edf4316 \
+                            size    42294262
     }
     arm64 {
         distname            aspnetcore-runtime-${version}-osx-arm64
-        checksums           rmd160  6b9c8cf6ad23a6e9b5c45b77ad02b067d54eedc4 \
-                            sha256  5bbee4b9b461c13d0e5ce38166ce43af0150364d00a04651b76392941f23214e \
-                            size    37863266
+        checksums           rmd160  ef1accc9058228f11b6143b678a2df8f6e286173 \
+                            sha256  c03141817c94ca6d1336eb3da95afe484ed65849a3521cd7cb1a069f4eae68c4 \
+                            size    40333646
     }
     default {
         known_fail yes
@@ -55,7 +55,8 @@ extract.mkdir       yes
 
 use_configure       no
 
-depends_run         port:dotnet-cli
+depends_run         port:dotnet-cli \
+                    port:dotnet-runtime-devel
 
 build {}
 
@@ -69,5 +70,5 @@ destroot {
 
 livecheck.version   [join [lrange [split ${patch_version} .] 0 0] .]
 livecheck.type      regex
-livecheck.url       https://dotnet.microsoft.com/en-us/download/dotnet/8.0
+livecheck.url       https://dotnet.microsoft.com/en-us/download/dotnet/9.0
 livecheck.regex     "ASP.NET Core Runtime ${main_version}-preview.(\\d)"

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           compiler_blacklist_versions 1.0
 
 name                gloox
-version             1.0.24
+version             1.0.28
 revision            0
 
 categories          net devel
@@ -17,13 +17,13 @@ long_description    gloox is a C++ Jabber/XMPP library which takes care of \
                     the low-level protocol stuff. Additionally, it offers high-level \
                     interfaces for interaction with an XMPP server.
 
-homepage            http://camaya.net/gloox
-master_sites        http://camaya.net/download/
+homepage            https://camaya.net/gloox
+master_sites        https://camaya.net/download/
 use_bzip2           yes
 
-checksums           rmd160  90c3d9cf3d4b01feb611e0d9a415093b63b9240f \
-                    sha256  ae1462be2a2eb8fe5cd054825143617c53c2c9c7195606cb5a5ba68c0f68f9c9 \
-                    size    727442
+checksums           rmd160  32a83632baef7562c7b77ee6d9cda25db50acb46 \
+                    sha256  591bd12c249ede0b50a1ef6b99ac0de8ef9c1ba4fd2e186f97a740215cc5966c \
+                    size    728337
 
 depends_build       port:pkgconfig
 

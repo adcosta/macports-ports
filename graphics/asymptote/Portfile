@@ -6,7 +6,7 @@ PortGroup           legacysupport 1.1
 PortGroup           texlive 1.0
 
 name                asymptote
-version             2.85
+version             2.89
 revision            0
 
 categories          graphics
@@ -29,23 +29,15 @@ set python.bin      ${prefix}/bin/python${python.branch}
 master_sites        sourceforge:project/${name}/${version}/
 extract.suffix      .src.tgz
 
-checksums           rmd160  8bb7f9e757ab5109dd4d6772dcddcad05077c7e8 \
-                    sha256  4c0559b62c41f947b5fbf044b4d091bd3cf0abe599c85138087069809875ec87 \
-                    size    15073771
+checksums           rmd160  e955dd36b53da3eac8054e695757ff109a719904 \
+                    sha256  f64e62b4ee4f85f1a78640c4f1e8a6f98e91f54edacab19727c7cabe94a57f5b \
+                    size    15133552
 
 # On Lion the default clang fails with
 # ../base/graph_splinetype.asy: 13.10: arrays have different lengths: 24 != 25
 # gcc-4.2 fails on 10.6 with multiple errors.
 compiler.blacklist  {clang < 500} *gcc-4.*
 compiler.cxx_standard 2014
-
-# Note, patch-time.diff should likely to be dropped with 2.86.
-patchfiles          patch-Makefile.diff \
-                    patch-time.diff
-
-post-patch {
-    reinplace "s|@@PYTHON@@|${python.bin}|g" ${worksrcpath}/Makefile.in
-}
 
 configure.args-append \
                     --enable-gc=system \
@@ -57,6 +49,8 @@ configure.args-append \
 
 configure.cxxflags-append \
                     -std=c++14
+
+build.env-append     PYTHON=${python.bin}
 
 #build.env-append    PYRCC5=${prefix}/bin/pyrcc5-${python.branch} \
 #                    PYUIC5=${prefix}/bin/pyuic5-${python.branch}
@@ -75,6 +69,7 @@ configure.cxxflags-append \
 # or fetch the PDF from somewhere
 depends_build-append \
                     port:ghostscript \
+                    port:pkgconfig \
                     port:texinfo \
                     port:texlive-fonts-recommended \
                     port:texlive-latex-recommended \

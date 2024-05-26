@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-sip
-version             6.7.9
+version             6.8.3
 revision            0
 epoch               1
 
@@ -21,21 +21,21 @@ long_description    SIP is a tool that makes it very easy to create \
 
 homepage            https://www.riverbankcomputing.com/software/sip/
 
-checksums           rmd160  285333cf660304e5e88987eb3939e5587cb6f4f7 \
-                    sha256  35d51fc10f599d3696abb50f29d068ad04763df7b77808c76b74597660f99b17 \
-                    size    1163252
+checksums           rmd160  07127bf251f9a8b58447cd4ce4169b37d3dbc786 \
+                    sha256  888547b018bb24c36aded519e93d3e513d4c6aa0ba55b7cc1affbd45cf10762c \
+                    size    987656
 
-python.versions     35 36 37 38 39 310 311
+python.versions     35 36 37 38 39 310 311 312
 
-foreach pver {37 38 39 310 311} {
+foreach pver {37 38 39 310 311 312} {
     subport py${pver}-sip-devel {
-        version         6.6.2.dev2206062241
-        master_sites    https://www.riverbankcomputing.com/pypi/packages/sip/
+        version         6.8.1.dev2311302116
+        master_sites    https://www.riverbankcomputing.com/pypi/packages/sip
         epoch           0
         revision        0
-        checksums       rmd160  016f927449e095264f3439914f0eeed3521a1c3b \
-                        sha256  80410470fe90f37a1769e62bf0ca8b734cc224cb33c778f1de3b2491d1f2a0b6 \
-                        size    1144044
+        checksums       rmd160  295f07e60682763c78dc7823d0a57117e8e114c1 \
+                        sha256  64076f1a20fba16726ef3e69b5015aeb1c5526c6d7ec3e83c4516854493e0bc5 \
+                        size    1129175
         conflicts       py${pver}-sip
     }
 
@@ -58,6 +58,10 @@ if {${name} ne ${subport}} {
                     sha256  204f0240db8999a749d638a987b351861843e69239b811ec3d1881412c3706a6 \
                     size    1197925
     } else {
+        # Pure python as of 6.8.0
+        platforms       {darwin any}
+        supported_archs noarch
+
         depends_lib-append \
                     port:py${python.version}-ply
         # 'ScopedName' object has no attribute 'replace'
@@ -67,13 +71,19 @@ if {${name} ne ${subport}} {
 
     depends_lib-append \
                     port:py${python.version}-packaging \
-                    port:py${python.version}-setuptools \
-                    port:py${python.version}-toml \
-                    port:py${python.version}-tomli
+                    port:py${python.version}-setuptools
 
     if {${python.version} < 38} {
         depends_lib-append \
                     port:py${python.version}-importlib-metadata
+    }
+
+    if {${python.version} <= 36} {
+        depends_lib-append \
+                    port:py${python.version}-toml
+    } elseif {${python.version} < 311} {
+        depends_lib-append \
+                    port:py${python.version}-tomli
     }
 
     post-destroot {

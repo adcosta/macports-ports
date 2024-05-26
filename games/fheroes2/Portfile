@@ -7,7 +7,7 @@ PortGroup       cmake 1.1
 PortGroup       legacysupport 1.1
 PortGroup       compiler_blacklist_versions 1.0
 
-github.setup    ihhub fheroes2 1.0.5
+github.setup    ihhub fheroes2 1.1.0
 
 categories      games
 platforms       darwin
@@ -20,17 +20,18 @@ long_description \
 
 homepage        https://ihhub.github.io/fheroes2/
 
-checksums       rmd160  d1e39d34e972b4d1af9bcdb9e1e2772f55afad12 \
-                sha256  abd9dd607c01e9cd848c4922d727b756a62cd6f2fd9b138dca59d90d805ee4c6 \
-                size    11570151
+checksums       rmd160  f63c8290f0f349e37990cf5b75bd7410125b0ff0 \
+                sha256  f3fd798ed52552d51d0bd58246c1635bd084b70552c9733b24d0752048c92b34 \
+                size    12167067
 
 depends_build-append \
                 port:gettext
 
 depends_lib     port:libsdl2 \
-                port:libsdl2_image \
                 port:libsdl2_mixer \
                 port:zlib
+
+depends_run     port:innoextract
 
 patchfiles      patch-readme-txt.diff
 

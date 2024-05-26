@@ -3,13 +3,13 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/gohugoio/hugo 0.113.0 v
+go.setup            github.com/gohugoio/hugo 0.126.1 v
 github.tarball_from archive
 revision            0
 
-checksums           rmd160  885d4e13e8bee2eb11535c3cc72ae397acd36f53 \
-                    sha256  0bea01f37d7d04e6262844ff3070b76e5fb9f5fe2330a1367bd1c35c77098161 \
-                    size    28479787
+checksums           rmd160  e5cc847809cb51949dcbaa244398cecded4d9e4b \
+                    sha256  b7e1f393977bdf6275cf33dfff6d1bcd3bab4895e7302c8fd30f05556b13a6ad \
+                    size    21128076
 
 categories          www
 installs_libs       no
@@ -24,7 +24,7 @@ long_description    {*}${description}
 # FIXME: This port currently can't be built without allowing go mod to fetch
 # dependencies during the build phase. See
 # https://trac.macports.org/ticket/61192
-build.env-delete    GOPROXY=off GO111MODULE=off
+go.offline_build    no
 
 build.pre_args-append \
     -ldflags \"-X ${go.package}/common/hugo.vendorInfo=macports\"
@@ -49,4 +49,14 @@ post-destroot {
     system -W ${worksrcpath} "${worksrcpath}/${name} completion bash > hugo.sh"
     xinstall -d ${destroot}${prefix}/share/bash-completion/completions/
     xinstall -m 0644 ${worksrcpath}/hugo.sh ${destroot}${prefix}/share/bash-completion/completions/${name}
+
+    # generation fish completion then install them
+    system -W ${worksrcpath} "${worksrcpath}/${name} completion fish > hugo.fish"
+    xinstall -d ${destroot}${prefix}/share/fish/vendor_completions.d/
+    xinstall -m 644 ${worksrcpath}/hugo.fish ${destroot}${prefix}/share/fish/vendor_completions.d/
+
+    # generation zsh completion then install them
+    system -W ${worksrcpath} "${worksrcpath}/${name} completion zsh > _hugo"
+    xinstall -d ${destroot}${prefix}/share/zsh/site-functions/
+    xinstall -m 644 ${worksrcpath}/_hugo ${destroot}${prefix}/share/zsh/site-functions/
 }

@@ -3,69 +3,71 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/gokcehan/lf 30 r
+go.setup            github.com/gokcehan/lf 32 r
 revision            0
 categories          sysutils
 maintainers         {judaew @judaew} openmaintainer
 license             MIT
 
 description         Terminal file manager
-long_description    \
-    lf (as in \"list files\") is a terminal file manager written in Go. It is \
-    heavily inspired by ranger with some missing and extra features. Some of \
-    the missing features are deliberately omitted since they are better \
-    handled by external tools.
+long_description    ${name} (as in \"list files\") is a terminal file manager \
+                    written in Go. It is heavily inspired by ranger with some \
+                    missing and extra features. Some of the missing features \
+                    are deliberately omitted since they are better handled by \
+                    external tools.
 
 checksums           ${distname}${extract.suffix} \
-                        rmd160  8acb76f551a3cebd8dcc22b2996f409f78ce4e85 \
-                        sha256  d846199f2ceeea697fa4627ab922cd0b40c82a23246a87fa094d183301c7d1eb \
-                        size    125229
+                        rmd160  eb1c8d8ef935581d918630bbcee6f9f95b884cb8 \
+                        sha256  46efb7c58257820a35d10780a8253ca4b55de345c20eb454a715f354a6e0d308 \
+                        size    141938
+
+build.pre_args      -ldflags \"-s -w -X main.gVersion=${version}\"
 
 go.vendors          golang.org/x/text \
-                        lock    v0.7.0 \
-                        rmd160  bd2aafec6ceb2ea04c3904d2f7308916ca2b7a87 \
-                        sha256  9f3c2fc2967a7a81586f0af894f2a60ddcad5e7acda9713cd6b9cf2b39df010d \
-                        size    8361394 \
+                        lock    v0.14.0 \
+                        rmd160  e26a72d542901d19f6dde4e07746f72206fb8701 \
+                        sha256  ef54709caaafdd8b27ce3d5f7c53408f11bc5fd1688c1c4f328de8ed268b3188 \
+                        size    8972503 \
                     golang.org/x/term \
-                        lock    v0.8.0 \
-                        rmd160  4ad52ddb467af2722834a7c9330616d97dc9fdb3 \
-                        sha256  5dc93dd1d75d29a136b2c18dbacc8a244067f8a8d585c93ae28d5144efe12c45 \
-                        size    14800 \
+                        lock    v0.18.0 \
+                        rmd160  c183fe023094cf41b6a66e88cd765d97a35f439c \
+                        sha256  3441bd395a6788d71ab9d7fb4e16df2975c41f252cc21b5c8706feb92b9df47a \
+                        size    14742 \
                     golang.org/x/sys \
-                        lock    v0.8.0 \
-                        rmd160  e678fbf405f6f2de2dd29b0a8b71baec9f1f1321 \
-                        sha256  8c0922a390cb8c22c340d69aa24ecf3cd923b30ca28dc96965d32d4b3a4e917d \
-                        size    1436856 \
+                        lock    v0.18.0 \
+                        rmd160  f2df5cddcd4f72d2eb7f75309ed3c1c821e05d66 \
+                        sha256  d8d4c0874ddc66e9fb0c1264b4eeb8b8625153740b751eae59220eb5ff17eacb \
+                        size    1448593 \
                     github.com/rivo/uniseg \
                         lock    v0.4.3 \
                         rmd160  8549c36ce2cf42213bec9682642a6711ef4041f3 \
                         sha256  7578a5eac90d671db12e8ffd6c808ec285af8751bdeaa6a59bddd4341698758a \
                         size    452761 \
                     github.com/mattn/go-runewidth \
-                        lock    v0.0.14 \
-                        rmd160  7186117475d80aff012960b61daefd53c7efeca6 \
-                        sha256  71e68e76e460aff1af8b58453a5a7b2278c42f6659c8c7b4321907bdf14ee6eb \
-                        size    18269 \
+                        lock    v0.0.15 \
+                        rmd160  702d468077550681ac11c3c2f3f5c9f98a868798 \
+                        sha256  a6b5f47ffe7329895a605c356ff806dfd50b536bbc87af77773e55ad6e52d2db \
+                        size    18287 \
                     github.com/lucasb-eyer/go-colorful \
                         lock    v1.2.0 \
                         rmd160  a4183d0625e6c94474942cdc544c1061d35c4e34 \
                         sha256  fbad1aade4444bf51409f5b6a008cc14c7a7cdd1af856841fc1170605fae3914 \
                         size    970841 \
                     github.com/gdamore/tcell \
-                        lock    v2.6.0 \
-                        rmd160  05335f252adb8a5af62ec2e867bd17fa6398015b \
-                        sha256  2f95d1ace48b96e0cf409de324a04eba10c3fbc46be5b6461b6e512ca6f93679 \
-                        size    173916 \
+                        lock    v2.7.4 \
+                        rmd160  9c47c3776ddce4497bdf09b2045541aa28eacb2b \
+                        sha256  d0278f45afc50b1067a8ea8f581289514d73275f11e6c866ca6f7cc34fa18f23 \
+                        size    179213 \
                     github.com/gdamore/encoding \
                         lock    v1.0.0 \
                         rmd160  3ed8916f763a5b51db1bcc8bd3ad06cf3d12ec07 \
                         sha256  4f470c7308790bea8a526ea26cecbaa22345aad8dc566821cda6175b3d241ee1 \
                         size    10900 \
                     github.com/djherbis/times \
-                        lock    v1.5.0 \
-                        rmd160  57634e7e64f439bb1d312566710c3aedcda763f5 \
-                        sha256  557093602d616f1f3f8463d1f6935fb23f206135dd1503637b022fd07431a552 \
-                        size    7226
+                        lock    v1.6.0 \
+                        rmd160  74bbca79275e2c9a5c240f77e906b640b69543a7 \
+                        sha256  2b1e000f0c9408eb4d7735547a95e65860d6c2d7411ef70558db6b2b5d526f1f \
+                        size    8891
 
 patchfiles          patch-config-file-in-prefix.diff
 
@@ -77,31 +79,30 @@ destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
 
     # Install shell completion files
-    set bash_complete ${prefix}/share/bash-completion/completions
-    xinstall -d ${destroot}${bash_complete}
+    set bash_complete ${destroot}${prefix}/share/bash-completion/completions
+    xinstall -d ${bash_complete}
     xinstall -m 0644 ${worksrcpath}/etc/${name}.bash \
-        ${destroot}${bash_complete}/${name}
+        ${bash_complete}/${name}
 
-    set zsh_complete ${prefix}/share/zsh/site-functions
-    xinstall -d ${destroot}${zsh_complete}
+    set zsh_complete ${destroot}${prefix}/share/zsh/site-functions
+    xinstall -d ${zsh_complete}
     xinstall -m 0644 ${worksrcpath}/etc/${name}.zsh \
-        ${destroot}${zsh_complete}/_${name}
+        ${zsh_complete}/_${name}
 
-    set fish_complete ${prefix}/share/fish/vendor_completions.d
-    xinstall -d ${destroot}${fish_complete}
+    set fish_complete ${destroot}${prefix}/share/fish/vendor_completions.d
+    xinstall -d ${fish_complete}
     xinstall -m 0644 ${worksrcpath}/etc/${name}.fish \
-        ${destroot}${fish_complete}/${name}.fish
+        ${fish_complete}/${name}.fish
 
-    set tcsh_complete ${prefix}/etc/profile.d
-    xinstall -d ${destroot}${tcsh_complete}
+    set tcsh_complete ${destroot}${prefix}/etc/profile.d
+    xinstall -d ${tcsh_complete}
     xinstall -m 0644 ${worksrcpath}/etc/${name}.csh \
-        ${destroot}${tcsh_complete}/${name}.csh
+        ${tcsh_complete}/${name}.csh
 
     # Install vim plugin, man-page, lfcd shell scripts and docs
-    set vim_plugin ${prefix}/share/vim/vimfiles/ftdetect
-    xinstall -d ${destroot}${vim_plugin}
-    xinstall -m 0644 ${worksrcpath}/etc/${name}.vim \
-        ${destroot}${vim_plugin}/
+    set vim_plugin ${destroot}${prefix}/share/vim/vimfiles/ftdetect
+    xinstall -d ${vim_plugin}
+    xinstall -m 0644 ${worksrcpath}/etc/${name}.vim ${vim_plugin}/
 
     xinstall -m 0644 ${worksrcpath}/${name}.1 \
         ${destroot}${prefix}/share/man/man1

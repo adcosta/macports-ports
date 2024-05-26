@@ -3,7 +3,7 @@
 PortSystem                  1.0
 PortGroup                   golang 1.0
 
-go.setup                    github.com/influxdata/telegraf 1.27.0 v
+go.setup                    github.com/influxdata/telegraf 1.30.2 v
 github.tarball_from         archive
 revision                    0
 
@@ -26,9 +26,9 @@ license                     MIT
 maintainers                 {gmail.com:herby.gillot @herbygillot} \
                             openmaintainer
 
-checksums                   rmd160  eb82ac13c1f5cfcf4e178506e502304182279fae \
-                            sha256  9530283b6194f3e2c50343dbbbc48a70d05d138c5baf558d00817c69f2adb870 \
-                            size    4025778
+checksums                   rmd160  e9f164ee6453c837c1f73a651c681395468d81d1 \
+                            sha256  3514d870fe1899f20c5d1f1545233413cbe11061b23a0cafbd44b861a9295dc6 \
+                            size    4410274
 
 set telegraf_user           ${name}
 set telegraf_conf_dir       ${prefix}/etc/${name}
@@ -51,7 +51,7 @@ add_users                   ${telegraf_user} \
 
 # Allow fetching dependencies at build time for now.
 # See: https://trac.macports.org/ticket/61192
-build.env-delete            GOPROXY=off GO111MODULE=off
+go.offline_build no
 
 build.cmd                   make
 build.pre_args              tag=${version}

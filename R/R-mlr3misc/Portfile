@@ -1,0 +1,29 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+# Revert to GitHub once updated there.
+R.setup             cran mlr-org mlr3misc 0.15.0
+revision            1
+maintainers         nomaintainer
+license             LGPL-3
+description         Helper functions for R-mlr3
+long_description    {*}${description}
+homepage            https://mlr3misc.mlr-org.com
+checksums           rmd160  1ce7e83496253234cb6897dfb12b6ec6fc7b5f32 \
+                    sha256  7d30f790f58c387cdebf77d7e04d53d48d346d6af774ba5a16fab5d035a080d0 \
+                    size    90428
+
+depends_lib-append  port:R-backports \
+                    port:R-checkmate \
+                    port:R-data.table \
+                    port:R-digest \
+                    port:R-R6
+
+depends_test-append port:R-callr \
+                    port:R-evaluate \
+                    port:R-paradox \
+                    port:R-testthat
+
+test.run            yes

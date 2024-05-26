@@ -9,22 +9,22 @@ PortGroup           legacysupport 1.1
 legacysupport.newest_darwin_requires_legacy 10
 
 name                MoarVM
-version             2023.02
+version             2024.04
 revision            0
 categories          lang devel
-license             Artistic-2 MIT BSD ISC public-domain
-maintainers         {mojca @mojca} openmaintainer
-description         A virtual machine for NQP And Rakudo
+license             Artistic-2 BSD ISC MIT public-domain
+maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
+description         A virtual machine for NQP and Rakudo
 long_description    MoarVM is a modern virtual machine built for the Rakudo \
-                    compiler implementing the Raku Programming Language, \
-                    and the NQP Compiler Toolchain.
+                    compiler implementing the Raku programming language, \
+                    and the NQP compiler toolchain.
 
 homepage            https://moarvm.org/
 master_sites        https://moarvm.org/releases/
 
-checksums           rmd160  2fa9ea1374c0e6e2322b9c68b489c831519eb515 \
-                    sha256  67e214d44d5f626787ca7f04424043a639308a43a7777b6fa41926b7240e0dc5 \
-                    size    14917710
+checksums           rmd160  11fd938d69625ffac0a6c86e0ff37609a8739299 \
+                    sha256  499f2aa1d8b85db5b4335a1b5ae72b0bf8d80534c9a3b663f2c3a04a75c975ee \
+                    size    14953770
 
 depends_build-append \
                     port:perl5 \
@@ -33,12 +33,17 @@ depends_build-append \
 # libatomic_ops:    https://trac.macports.org/ticket/53171
 depends_lib-append  port:dyncall \
                     port:libatomic_ops \
-                    port:libtommath \
-                    port:libuv
+                    port:libtommath
 
 patchfiles          patch-Configure.diff \
                     patch-dyncall.diff \
                     patch-setup.pm.diff
+
+if ![variant_isset macports_libuv] {
+patchfiles-append   patch-libuv-includes-path.diff \
+                    patch-libuv-legacy.diff \
+                    patch-moar.pc.diff
+}
 
 if {[string match *gcc* ${configure.compiler}]} {
     patchfiles-append patch-gcc.diff
@@ -61,19 +66,12 @@ legacysupport.redirect_bins moar
 # https://trac.macports.org/ticket/53950
 compiler.blacklist  cc gcc-* apple-gcc-* llvm-gcc-*
 
-platform darwin 10 {
-    if {${build_arch} eq "ppc"} {
-        # Clang is broken on PPC, but Rosetta tries using it
-        compiler.blacklist-append *clang*
-    }
-}
-
 configure.cmd       ${prefix}/bin/perl Configure.pl
 configure.args      --cc=${configure.cc} \
                     --has-dyncall \
                     --has-libatomic_ops \
-                    --has-libtommath \
-                    --has-libuv
+                    --has-libtommath
+
 configure.cflags-append \
                     -I${prefix}/include/libtommath
 
@@ -91,3 +89,15 @@ if {${os.platform} eq "darwin" && ${os.major} <= 10} {
 universal_variant   no
 # Unsupported by Configure.pl
 # configure.universal_args-delete --disable-dependency-tracking
+
+variant macports_libuv description "Use MacPorts' libuv" {
+    # Once libuv is updated, this should be changed to path-style dependency:
+    depends_lib-append  port:libuv-devel
+
+    configure.args-append \
+                    --has-libuv
+}
+
+# This can be enabled once libuv port is updated.
+# See: https://trac.macports.org/ticket/68464
+# default_variants-append macports_libuv

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           legacysupport 1.1
 
 name                got
-version             0.89
+version             0.99
 revision            0
 distname            ${name}-portable-${version}
 categories          devel
@@ -20,10 +20,16 @@ long_description    Game of Trees is a version control system which \
                     repository.
 homepage            https://gameoftrees.org/
 master_sites        ${homepage}releases/portable/
-checksums           rmd160 179123d7d7a462dce67610ce20d899fa73a88f71 \
-                    sha256 27404932c07713400124c15e318417385411b7a1fe7ee534e48f2b9e4f096d8c \
-                    size 1049166
+checksums           rmd160 1cd4d50d1f6c74155fb7ab7bac500772a4d33a80 \
+                    sha256 aea408353a02b2e3ad9b4d1b7607900269af97986d40998c57f10acdf0fa1e38 \
+                    size 1481387
+# There is probably a smarter way to do this, see failed attempts at
+# https://trac.macports.org/ticket/69827
+# So, if you, like me, are using LibreSSL, remove the port:libretls line
+# as that is only required for OpenSSL users to supply libtls which is
+# already included with LibreSSL.
 depends_lib         path:lib/libssl.dylib:openssl \
+                    port:libretls \
                     port:ncurses \
                     port:ossp-uuid \
                     port:libevent

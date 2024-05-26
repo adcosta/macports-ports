@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran maxlike 0.1-9
-revision            0
+R.setup             cran RoelandCEKindt maxlike 0.1-11
+revision            1
 maintainers         nomaintainer
 license             GPL-3+
-description         Model species distributions by estimating the probability of occurrence \
-                    using presence-only data
+description         Model species distributions by estimating the probability \
+                    of occurrence using presence-only data
 long_description    {*}${description}
-checksums           rmd160  030dfd897e94115abdaf8c36ccd09825ca88e507 \
-                    sha256  632fb15dd21a75bb95c7473ba4fe2ed58bc1b2f1401da65c6df348599b2f655f \
-                    size    481323
+checksums           rmd160  f34b8c91a0f89d52d385b5332107551bbc536464 \
+                    sha256  6dde7bb4a46d5509a1fee024c2fd1d13c82e14a80806969ec89359103ade01e9 \
+                    size    481334
 supported_archs     noarch
 
 depends_lib-append  port:R-raster

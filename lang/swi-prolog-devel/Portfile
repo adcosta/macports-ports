@@ -6,13 +6,13 @@ PortGroup           cmake 1.1
 name                swi-prolog-devel
 conflicts           swi-prolog
 epoch               20051223
-version             9.1.10
+version             9.3.6
 revision            0
 
 categories          lang
 universal_variant   no
 license             BSD
-maintainers         {cwi.nl:J.Wielemaker @JanWielemaker} openmaintainer
+maintainers         {swi-prolog.org:jan @JanWielemaker} openmaintainer
 
 description         SWI-Prolog compiler plus extra packages (development version)
 long_description    ISO/Edinburgh-style Prolog compiler including modules, \
@@ -31,9 +31,9 @@ master_sites        https://www.swi-prolog.org/download/devel/src/
 distname            swipl-${version}
 dist_subdir         swi-prolog
 
-checksums           rmd160  645a14e76326ac10aabf629a51a496d06a911f87 \
-                    sha256  16c0d014510f5e0c3b427d2842cac89fea0d4c136caabbeb698d578ee8126870 \
-                    size    11940972
+checksums           rmd160  32522399f1d00997ee3fe7bb8b633acfba041c44 \
+                    sha256  381074a9c82bc3ccfd864d84c1e2f9589b8fe64b89ecf459a0068518850777a3 \
+                    size    12278390
 
 depends_build-append \
                     port:pkgconfig
@@ -53,7 +53,12 @@ depends_lib-append  port:db62 \
                     port:xorg-libXt \
                     port:xpm \
                     port:libyaml \
-                    port:zlib
+                    port:zlib \
+                    port:python312
+
+compiler.c_standard 2011
+compiler.cxx_standard 2017
+compiler.thread_local_storage yes
 
 configure.cmd       cmake
 cmake.generator     Ninja
@@ -61,7 +66,8 @@ configure.pre_args  -DCMAKE_INSTALL_PREFIX=${prefix} \
                     -DCMAKE_BUILD_TYPE=Release \
                     -DCMAKE_INCLUDE_PATH=${prefix}/include \
                     -DCMAKE_LIBRARY_PATH=/usr/lib:${prefix}/lib \
-                    -DSWIPL_PACKAGES_QT=OFF
+                    -DSWIPL_PACKAGES_QT=OFF \
+                    -DCPYTHON_VERSION="3.12\;EXACT"
 
 variant qt5 description {Add Qt5 GUI} {
     depends_lib-append          port:qt5-qtbase

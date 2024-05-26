@@ -4,17 +4,17 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran grantmcdermott etwfe 0.3.3
-revision            0
+R.setup             cran grantmcdermott etwfe 0.4.0
+revision            1
 categories-append   math
 maintainers         nomaintainer
 license             MIT
 description         Extended Two-Way Fixed Effects
 long_description    {*}${description}
 homepage            https://grantmcdermott.com/etwfe
-checksums           rmd160  c20db7229550a6c67e889e0706da413ff49bef07 \
-                    sha256  b59c4295fce4fdb3a3bf5c244f339e2bd42f4ca4181299adcf514d30832d366c \
-                    size    103672
+checksums           rmd160  d7898aca67fed94d4c6ec933cfbf6f9abfe0814f \
+                    sha256  6da1069389209250cb51097a2bed56dbc8d78c8ddd0138c9ee32bae610efc91b \
+                    size    111219
 supported_archs     noarch
 
 depends_lib-append  port:R-data.table \

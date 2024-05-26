@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github tidymodels infer 1.0.4 v
+R.setup             github tidymodels infer 1.0.7 v
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,32 +11,35 @@ license             MIT
 description         Tidy statistical inference
 long_description    {*}${description}
 homepage            https://infer.tidymodels.org
-checksums           rmd160  2550eebc38649c013e31db69dde51b80eb038b6b \
-                    sha256  959fdc6abd7e4715d73bd4434655ec07a8be1cc54a07120ad5c6aa7a9b0a26a1 \
-                    size    8950199
+checksums           rmd160  c1d37fb6be9ca28c7e1aef783b9f81955c436dcf \
+                    sha256  1624686868fadba38a1234f42c6709597072770cc9aed42809eec61fdb2156af \
+                    size    2527847
 supported_archs     noarch
 
 depends_lib-append  port:R-broom \
+                    port:R-cli \
                     port:R-dplyr \
                     port:R-generics \
                     port:R-ggplot2 \
                     port:R-glue \
+                    port:R-lifecycle \
                     port:R-magrittr \
+                    port:R-patchwork \
                     port:R-purrr \
                     port:R-rlang \
                     port:R-tibble \
                     port:R-tidyr \
-                    port:R-patchwork
+                    port:R-vctrs
 
 depends_test-append port:R-covr \
                     port:R-devtools \
                     port:R-fs \
                     port:R-knitr \
                     port:R-nycflights13 \
+                    port:R-parsnip \
                     port:R-rmarkdown \
                     port:R-stringr \
                     port:R-testthat \
-                    port:R-vdiffr \
-                    port:R-parsnip
+                    port:R-vdiffr
 
 test.run            yes

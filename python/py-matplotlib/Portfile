@@ -5,7 +5,7 @@ PortGroup           python 1.0
 PortGroup           compiler_wrapper 1.0
 
 name                py-matplotlib
-version             3.7.1
+version             3.8.4
 revision            0
 
 categories-append   graphics math
@@ -25,16 +25,18 @@ long_description    Matplotlib strives to produce publication quality 2D \
 
 homepage            https://matplotlib.org/
 
-checksums           rmd160  29f3a8925d369f3ffed0408a7e13392717412698 \
-                    sha256  7b73305f25eab4541bd7ee0b96d87e53ae9c9f1823be5659b806cd85786fe882 \
-                    size    38003777
+checksums           rmd160  7b064016b4a4fe30b3aef6920e10c9324f82073c \
+                    sha256  8aac397d5e9ec158960e31c381c5ffc52ddd52bd9a47717e2a694038167dffea \
+                    size    35934425
 
 use_parallel_build  no
 
-python.versions     27 37 38 39 310 311
+python.versions     27 37 38 39 310 311 312
 python.pep517       no
 
 if {${name} ne ${subport}} {
+    compiler.cxx_standard 2011
+
     depends_build-append \
                     port:pkgconfig \
                     port:py${python.version}-certifi \
@@ -55,14 +57,28 @@ if {${name} ne ${subport}} {
                     port:py${python.version}-packaging \
                     port:py${python.version}-Pillow
 
-    patchfiles      patch-v37-mplsetup.cfg.diff \
-                    patch-v37-setupext.py.diff
+    if {${python.version} < 310} {
+        depends_lib-append \
+                    port:py${python.version}-importlib-resources
+    }
+
+    patchfiles      patch-v38-mplsetup.cfg.diff \
+                    patch-v38-setupext.py.diff \
+                    patch-v38-setupext-Werror.diff
 
     set configfile mplsetup.cfg
 
-    if {${python.version} == 37 || ${python.version} > 37 && ${os.platform} eq "darwin" && ${os.major} <= 16} {
-        version     3.5.3
+    if {${python.version} == 38 && ${os.platform} eq "darwin" && ${os.major} > 16} {
+        version     3.7.4
         revision    0
+        checksums   rmd160  f7a3fcd9c325779c236828ec1a23f4baadfa0f6b \
+                    sha256  7cd4fef8187d1dd0d9dcfdbaa06ac326d396fb8c71c647129f0bf56835d77026 \
+                    size    38098243
+        patchfiles  patch-v37-mplsetup.cfg.diff \
+                    patch-v37-setupext.py.diff
+    } elseif {${python.version} == 37 || ${python.version} > 37 && ${os.platform} eq "darwin" && ${os.major} <= 16} {
+        version     3.5.3
+        revision    1
         checksums   rmd160  6eef2bea598dcd4b004e861349c081fe712a11c1 \
                     sha256  339cac48b80ddbc8bfd05daae0a3a73414651a8596904c2a881cfd1edb65f26c \
                     size    35236343
@@ -76,7 +92,7 @@ if {${name} ne ${subport}} {
                     port:py${python.version}-contourpy
     } elseif {${python.version} == 27} {
         version     2.2.5
-        revision    3
+        revision    4
         checksums   rmd160  4532a205e8f40d6f40346b2e461d3dca144b38b9 \
                     sha256  a3037a840cd9dfdc2df9fee8af8f76ca82bfab173c0f9468193ca7a89a2b60ea \
                     size    36678633
@@ -128,6 +144,13 @@ if {${name} ne ${subport}} {
             }
         }
 
+        variant pyside description "Enable PySide backend" {
+            depends_lib-append  port:py${python.version}-pyside
+            post-patch {
+                reinplace "s|^pyside=False|pyside=True|" ${worksrcpath}/${configfile}
+            }
+        }
+
         # jquery-ui is included in the PyPI files, patch added for setup.py that avoids trying
         # to install if from the cache or download from URL. Just copy the directory in the post-
         # build phase.
@@ -172,8 +195,13 @@ if {${name} ne ${subport}} {
                 ${destroot}${prefix}/share/doc/${subport}
         }
 
-        file copy ${worksrcpath}/examples \
-            ${destroot}${prefix}/share/${subport}
+        if {[vercmp ${version} 3.8.0] < 0} {
+            file copy ${worksrcpath}/examples \
+                ${destroot}${prefix}/share/${subport}
+        } else {
+            file copy ${worksrcpath}/galleries \
+                ${destroot}${prefix}/share/${subport}
+        }
     }
 
     variant webagg description "Enable WebAgg backend" {
@@ -184,37 +212,48 @@ if {${name} ne ${subport}} {
 
     variant tkinter description "Enable TkAgg backend" {
         depends_lib-append  port:py${python.version}-tkinter
-        post-patch {
-            reinplace "s|^tkagg=False|tkagg=True|" ${worksrcpath}/${configfile}
+
+        if {${python.version} == 27} {
+            post-patch {
+                reinplace "s|^tkagg=False|tkagg=True|" ${worksrcpath}/${configfile}
+            }
         }
     }
 
     variant gtk3 description "Enable GTK3Agg backend" {
         depends_lib-append  port:py${python.version}-gobject3 \
                             path:lib/pkgconfig/gtk+-3.0.pc:gtk3
-        post-patch {
-            reinplace "s|^gtk3agg=False|gtk3agg=True|" ${worksrcpath}/${configfile}
+
+        if {${python.version} == 27} {
+            post-patch {
+                reinplace "s|^gtk3agg=False|gtk3agg=True|" ${worksrcpath}/${configfile}
+            }
         }
     }
 
     variant qt5 description "Enable Qt5Agg backend" {
         depends_lib-append  port:py${python.version}-pyqt5
-        post-patch {
-            reinplace "s|^qt5agg=False|qt5agg=True|" ${worksrcpath}/${configfile}
-        }
-    }
 
-    variant pyside description "Enable PySide backend" {
-        depends_lib-append  port:py${python.version}-pyside
-        post-patch {
-            reinplace "s|^pyside=False|pyside=True|" ${worksrcpath}/${configfile}
+        if {${python.version} == 27} {
+            post-patch {
+                reinplace "s|^qt5agg=False|qt5agg=True|" ${worksrcpath}/${configfile}
+            }
         }
     }
 
     variant cairo description "Enable Cairo backends" {
         depends_lib-append  port:py${python.version}-cairo
-        post-patch {
-            reinplace "s|^cairo=False|cairo=True|" ${worksrcpath}/${configfile}
+
+        if {${python.version} == 27} {
+            post-patch {
+                reinplace "s|^cairo=False|cairo=True|" ${worksrcpath}/${configfile}
+            }
+        }
+    }
+
+    if {${python.version} > 27} {
+        variant pyside2 description "Enable PySide2 backend" {
+            depends_lib-append  port:py${python.version}-pyside2
         }
     }
 
@@ -237,11 +276,11 @@ if {${name} ne ${subport}} {
     default_variants +webagg
 
     if {![variant_isset gtk2] && ![variant_isset tkinter] && ![variant_isset qt5] &&
-        ![variant_isset qt4] && ![variant_isset pyside]} {
+        ![variant_isset qt4] && ![variant_isset pyside] && ![variant_isset pyside2]} {
             default_variants-append +cairo
     }
 
-    if {[variant_isset gtk3] && [variant_isset cairo]} {
+    if {[variant_isset gtk3] && [variant_isset cairo] && ${python.version} == 27} {
         post-patch {
             reinplace "s|^gtk3cairo=False|gtk3cairo=True|" ${worksrcpath}/${configfile}
         }

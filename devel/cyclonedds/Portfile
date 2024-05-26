@@ -1,18 +1,27 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           cmake 1.1
-PortGroup           github 1.0
+PortGroup           cmake   1.1
+PortGroup           github  1.0
 
-github.setup        eclipse-cyclonedds cyclonedds 0.10.2
+github.setup        eclipse-cyclonedds cyclonedds 0.10.5
+github.tarball_from archive
 revision            0
 categories          devel
 license             EPL-2
-maintainers         {@sikmir disroot.org:sikmir} openmaintainer
+maintainers         {@sikmir disroot.org:sikmir} \
+                    {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
 description         Eclipse Cyclone DDS project
 long_description    {*}${description}
 homepage            https://cyclonedds.io/
 
-checksums           rmd160  77e7c0261abe246e18a624fc36d60e59706c3596 \
-                    sha256  ac59ee08975cd25a1fb414ddeb0183fb8636b12d49cea80373013bea59465b43 \
-                    size    6978904
+checksums           rmd160  f8ae32da57f51de102662bf77efcd161b1474f98 \
+                    sha256  ec3ec898c52b02f939a969cd1a276e219420e5e8419b21cea276db35b4821848 \
+                    size    6982715
+
+depends_lib-append  path:lib/libssl.dylib:openssl
+
+compiler.thread_local_storage yes
+
+compiler.c_standard 1999

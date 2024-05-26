@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran ezplot 0.7.7
-revision            0
+R.setup             cran wojtek.kostelecki ezplot 0.7.13
+revision            1
 categories-append   graphics
 maintainers         nomaintainer
 license             MIT
 description         Functions for common chart types
 long_description    {*}${description}
-checksums           rmd160  0dce446bb332c64b3dbcde186df2bc13984c946f \
-                    sha256  36c62b033b8a6845fbed844ceee989e36cae2bd3724fdb7e528a60c133d7efe6 \
-                    size    301359
+checksums           rmd160  c889870c3fb7a650dbfd3e4ce4d4b45711bada11 \
+                    sha256  6cdec6e0b588eee43c1a13a9af0be88fff8875df37067cabdf30019d3c64eeaa \
+                    size    552771
 supported_archs     noarch
 
 depends_lib-append  port:R-dplyr \

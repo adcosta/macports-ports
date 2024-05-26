@@ -4,16 +4,16 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Data-Printer 1.001000
+perl5.setup         Data-Printer 1.002001
 revision            0
 license             {Artistic-1 GPL}
 maintainers         {devans @dbevans} openmaintainer
 description         Data::Printer - colored pretty-print of Perl data structures and objects
-long_description    ${description}
+long_description    {*}${description}
 
 platforms           {darwin any}
 supported_archs     noarch
 
-checksums           rmd160  fe6d463924e5b824a8bf50205581d44504829223 \
-                    sha256  e7f6f94f25317dd60dfbd358e17f7b8b27c9409cd04b1eb892ddf5d9cd301e47 \
-                    size    117188
+checksums           rmd160  4aec6fba395876d149534763c275651e407207ab \
+                    sha256  96292d29edf85eca10724a00e0af509c40b17b9b5638c00332d703599b6f3b74 \
+                    size    119574

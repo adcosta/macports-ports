@@ -5,10 +5,9 @@ PortGroup python 1.0
 PortGroup select 1.0
 
 name                py-mypy
-version             1.3.0
+version             1.10.0
+revision            0
 license             MIT
-supported_archs     noarch
-platforms           {darwin any}
 maintainers         {toby @tobypeterson} openmaintainer
 description         Optional static typing for Python
 long_description    Add type annotations to your Python programs, and use mypy to \
@@ -18,17 +17,17 @@ long_description    Add type annotations to your Python programs, and use mypy t
                     type system with features such as type inference, gradual typing, \
                     generics and union types.
 
-homepage            http://www.mypy-lang.org
+homepage            https://www.mypy-lang.org
 
-checksums           rmd160  ab62aa2f786e3cca7d445432c8ff61938a2dfde7 \
-                    sha256  e1f4d16e296f5135624b34e8fb741eb0eadedca90862405b1f1fde2040b9bd11 \
-                    size    2812673
+checksums           rmd160  eec78f63f4f7cf6b848f63098d1a6722093f763b \
+                    sha256  3d087fcbec056c4ee34974da493a826ce316947485cef3901f511848e687c131 \
+                    size    3022145
 
-python.versions     37 38 39 310 311
-python.pep517       no
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
-    depends_build-append    port:py${python.version}-setuptools
+    depends_build-append    port:py${python.version}-types-psutil \
+                            port:py${python.version}-types-setuptools
     depends_lib-append      port:py${python.version}-mypy_extensions \
                             port:py${python.version}-typing_extensions
     depends_run-append      port:mypy_select
@@ -36,12 +35,20 @@ if {${name} ne ${subport}} {
     if {${python.version} < 311} {
         depends_lib-append  port:py${python.version}-tomli
     }
-    if {${python.version} < 38} {
-        depends_lib-append  port:py${python.version}-typed-ast
+
+    compiler.blacklist-append \
+                            *gcc-4.0 *gcc-4.2
+
+    build.env-append        MYPY_USE_MYPYC=1
+
+    # https://trac.macports.org/ticket/68943
+    # https://github.com/python/mypy/issues/16684
+    # https://github.com/python/mypy/issues/11507
+    if {${configure.build_arch} in [list arm i386 ppc]} {
+        build.env-append    MYPYC_DEBUG_LEVEL=0 \
+                            MYPYC_MULTI_FILE=1
     }
 
     select.group            mypy
     select.file             ${filespath}/mypy${python.version}
-
-    livecheck.type          none
 }

@@ -5,8 +5,8 @@ PortGroup               sourcehut 1.0
 PortGroup               compiler_blacklist_versions 1.0
 
 name                    uxn
-sourcehut.setup         rabbits uxn f07775a9a2e9c8f7dd0b78a1404ac67aaa3d697a
-version                 20230217
+sourcehut.setup         rabbits uxn 3a696f8fa9931857e99e50074c6994649ee62d37
+version                 20240506
 revision                0
 
 categories              emulators
@@ -23,23 +23,21 @@ long_description        Uxn is a virtual machine with 32 instructions. \
 
 homepage                https://100r.co/site/uxn.html
 
-checksums               rmd160  859c5a4503d9519f39ea51231b3aafc9eff25eba \
-                        sha256  1ad8913c583162a9ab4a5d36a48cc27e4d68912c876e48d81e5cf8b177bf81ae \
-                        size    285968
+checksums               rmd160  4ea127f0842ca8ba7a50f628be2d4593916f2d52 \
+                        sha256  9167e62cccd885e69f3b0e3dbe36a12b5f7ddccd5f53b63e96125897e810f212 \
+                        size    305528
 
 depends_lib             port:libsdl2
 
 patchfiles              patch-uxn-build.diff
 
-post-patch {
-    reinplace "s|@PREFIX@|${prefix}|g" ${worksrcpath}/build.sh
-    reinplace "s|launcher.rom|${prefix}/share/examples/${name}/launcher.rom|g" ${worksrcpath}/src/uxnemu.c
-}
-
 use_configure           no
 
+# gcc-4.2 fails to build it, because does not support required flag.
+# gcc13 builds it normally though. No reason to blacklist all *gcc*.
 compiler.blacklist-append \
-                        *gcc* {clang < 500}
+                        *gcc-4.* {clang < 500}
+configure.cflags-append -std=c89 -Wno-typedef-redefinition -D_C99_SOURCE
 
 build.cmd               ${worksrcpath}/build.sh
 build.args              --no-run
@@ -52,7 +50,6 @@ destroot {
     set doc_dir         ${destroot}${prefix}/share/doc/${name}
 
     xinstall -d -m 0755 ${demos_dir} ${doc_dir}
-    xinstall -m 0644 ${build.dir}/bin/launcher.rom ${destroot}${prefix}/share/examples/${name}
     xinstall -m 0644 {*}[glob ${worksrcpath}/projects/examples/demos/*.tal] ${demos_dir}
     xinstall -m 0644 -W ${worksrcpath} LICENSE README.md ${doc_dir}
     xinstall -m 0755 ${build.dir}/bin/uxnasm ${build.dir}/bin/uxncli ${build.dir}/bin/uxnemu \

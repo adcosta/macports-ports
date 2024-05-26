@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran BART 2.9.4
+R.setup             cran rsparapa BART 2.9.7
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Bayesian Additive Regression Trees
 long_description    {*}${description}
-checksums           rmd160  d6b022bd3bb4e5036a71707384d421e31622075a \
-                    sha256  f18975ace003050ac6735cb8838fc1458c061b72498cba9978ade930aefd1b55 \
-                    size    3774241
+checksums           rmd160  ae001bb03a670cdb49f4e306559384aba79e4d26 \
+                    sha256  2760dfb1f0de2bbaff119a17dde0e1f9d3bafcc158cffc537302cf12a132d596 \
+                    size    3774301
 
 depends_lib-append  port:R-Rcpp
 

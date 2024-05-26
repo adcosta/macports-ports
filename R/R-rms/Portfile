@@ -3,17 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran harrelfe rms 6.7-0
-revision            0
+R.setup             cran harrelfe rms 6.8-0
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Regression Modelling Strategies
 long_description    {*}${description}
-homepage            https://biostat.mc.vanderbilt.edu/rms
-checksums           rmd160  1fb464b105126281c7fb4ad37407fc5c2dc1e137 \
-                    sha256  8b3a14c47e2eafb24d9f0807f50af4b8bb8b44b0ec6bd6f38e0676f5a53dbbff \
-                    size    606882
+homepage            https://hbiostat.org/R/rms
+checksums           rmd160  0778e326fac571285f0d7967902b2da488abbf58 \
+                    sha256  ad64c55c81b68abc6d1b7a995480ef038fb1b012cdcf9cba70a2d128a2a9a6b1 \
+                    size    614784
 
 depends_lib-append  port:R-colorspace \
                     port:R-digest \

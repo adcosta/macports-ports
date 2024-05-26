@@ -3,15 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran tdhock PeakSegDisk 2022.2.1
+R.setup             cran r-project PeakSegDisk 2023.11.27
 revision            1
 maintainers         nomaintainer
 license             GPL-3
-description         Named capture to data tables
+description         Disk-based constrained change-point detection
 long_description    {*}${description}
-checksums           rmd160  41ffd346aa9e742c2cdbd7795f24bfbf9fc4a3c3 \
-                    sha256  295b667e37c3d4a2d870793467f9a98fe618c6b06890850a3ed1b7ec0e7a7af3 \
-                    size    510978
+homepage            https://github.com/tdhock/PeakSegDisk
+checksums           rmd160  451aed20f3e778848476ef048fcc8b285bd7957f \
+                    sha256  2c793f687267be70402b10fde2babe3fce22c31b0d760a87fd1d06a80e78718c \
+                    size    536218
 
 depends_lib-append  port:R-data.table
 

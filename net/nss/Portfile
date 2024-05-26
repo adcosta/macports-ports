@@ -1,12 +1,11 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:filetype=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           legacysupport 1.1
 PortGroup           muniversal 1.0
 PortGroup           compiler_blacklist_versions 1.0
 
 name                nss
-version             3.90
+version             3.100
 revision            0
 set NSS_VMAJOR      [lindex [split ${version} .] 0]
 set NSS_VMINOR      [lindex [split ${version} .] 1]
@@ -24,14 +23,14 @@ long_description    {*}${description}
 use_configure       no
 homepage            https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
 
-set my_release      NSS_[strsed ${version} {g/\./_/}]_RTM
+set my_release      NSS_[string map {. _} ${version}]_RTM
 
 master_sites        https://ftp.mozilla.org/pub/security/nss/releases/${my_release}/src/ \
                     ftp://ftp.mozilla.org/pub/security/nss/releases/${my_release}/src/
 
-checksums           rmd160  186ede1e916b2e55649761c1f76dff07a1bad15a \
-                    sha256  9acd6534c41d8ead19fca6fcb3fffed2f9f09c437c3d79fee6a4ee668aaa93b6 \
-                    size    72211928
+checksums           rmd160  14464ae1bc571e3c6137b5b36d81cc972b5fc9bc \
+                    sha256  1e35373ce9cb5b776f678bb341b0625c437520d09ebd91d1abd622e072e38d88 \
+                    size    76746058
 
 # build fails with gcc-4.2 on Intel, but succeeds with gcc-4.2 on PPC
 # cc1: error: unrecognized command line option "-mpclmul"
@@ -39,6 +38,8 @@ checksums           rmd160  186ede1e916b2e55649761c1f76dff07a1bad15a \
 if {${configure.build_arch} in [list i386 x86_64]} {
     compiler.blacklist-append *gcc-4.* *gcc-3.*
 }
+
+patchfiles          undef-prefix.patch
 
 # VSX and Crypto have to be disabled, since they belong to post-G5 ISA.
 # See: https://bugzilla.mozilla.org/show_bug.cgi?id=1687164

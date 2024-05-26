@@ -4,14 +4,14 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-idna
-version             3.4
+version             3.7
 revision            0
 categories-append   devel
 license             BSD
 supported_archs     noarch
 platforms           {darwin any}
 
-python.versions     27 35 36 37 38 39 310 311
+python.versions     27 35 36 37 38 39 310 311 312
 python.pep517       yes
 python.pep517_backend flit
 
@@ -22,9 +22,9 @@ long_description    ${description}
 
 homepage            https://github.com/kjd/idna/
 
-checksums           rmd160  a6a010b1d9e750b1ee52a2eef54d94ce38ced0ba \
-                    sha256  814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
-                    size    183077
+checksums           rmd160  d0b573cbaf5b18cb048ed4ace2e5fc71d4218156 \
+                    sha256  028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc \
+                    size    189575
 
 if {${name} ne ${subport}} {
     if {${python.version} < 36} {

@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran NickCH-K vtable 1.4.4
-revision            0
+R.setup             cran NickCH-K vtable 1.4.6
+revision            1
 maintainers         nomaintainer
 license             MIT
 description         An R package for creating variable documentation files
 long_description    {*}${description}
 homepage            https://nickch-k.github.io/vtable
-checksums           rmd160  72eb6c7f1d77ea1615a770d947811abb8948eac6 \
-                    sha256  9e334d4537b0d5056fcf95ee08363ae6638195c4c12d76bb165e1e761ab988b9 \
-                    size    145174
+checksums           rmd160  77a4a508e1c9967bfdbe39124274993bce5c6df7 \
+                    sha256  b9dd8fe2cdaafbef47c8d27d1f0bdb12d3bff04ef929552017804f6f7e342aee \
+                    size    145345
 supported_archs     noarch
 
 depends_lib-append  port:R-haven \

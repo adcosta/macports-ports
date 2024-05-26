@@ -9,11 +9,12 @@ PortGroup           legacysupport 1.1
 legacysupport.newest_darwin_requires_legacy 19
 legacysupport.use_mp_libcxx                 yes
 
-github.setup        rizsotto Bear 3.1.1
+github.setup        rizsotto Bear 3.1.3
 revision            4
-checksums           rmd160  66e4698f34c116ff875bd80e15e097fb4fada48f \
-                    sha256  b80b81abe8b38cfd7399a074ef97e1c1045875a3e38459c960543e226e309476 \
-                    size    127097
+
+checksums           rmd160  909b90269b3528c4960a634c47b76a534e389a87 \
+                    sha256  389a5251a835cd156fad4f4e598d0bf8c66783a0d5835eba7f113ab5f26637f5 \
+                    size    127777
 
 maintainers         {cal @neverpanic} openmaintainer
 license             GPL-3+
@@ -30,8 +31,9 @@ long_description    {*}${description} \
 
 patchfiles          patch-spdlog-header-only.diff
 
+set port_libfmt     libfmt9
 cmake.module_path-append \
-                    ${prefix}/lib/libfmt9/cmake
+                    ${prefix}/lib/${port_libfmt}/cmake
 
 # Cxx 2017 needed, as of latest 3.1.x releases
 compiler.cxx_standard 2017
@@ -41,8 +43,9 @@ depends_build-append \
                     port:spdlog \
                     port:nlohmann-json \
 
-depends_lib-append  port:grpc \
-                    port:libfmt9 \
+depends_lib-append  port:abseil \
+                    port:grpc \
+                    port:${port_libfmt} \
                     port:protobuf3-cpp \
                     port:re2
 

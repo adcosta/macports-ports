@@ -3,18 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran lavaan 0.6-15
+R.setup             cran Yves.Rosseel lavaan 0.6-17
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Latent variable analysis
 long_description    Fit a variety of latent variable models, including confirmatory factor analysis, \
                     structural equation modeling and latent growth curve models.
 homepage            https://lavaan.ugent.be
-checksums           rmd160  b99c0873d7f5e631123d1e5c5ecb5cc43204299b \
-                    sha256  9a43f3e999f9b3003a8c46a615902e01d6701d28a871d657751dd2ff3928ed9b \
-                    size    883724
+checksums           rmd160  0616f18b82664fbb9f2e623d4a1fa971b76ff52e \
+                    sha256  9233251e32ccfba49928ea8320a28e65fdd423bddf44e63622b08c75c25ef7ae \
+                    size    921430
 supported_archs     noarch
 
 depends_lib-append  port:R-mnormt \

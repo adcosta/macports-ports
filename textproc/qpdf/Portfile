@@ -8,7 +8,7 @@ PortGroup           legacysupport 1.1
 legacysupport.newest_darwin_requires_legacy 16
 legacysupport.use_mp_libcxx yes
 
-github.setup        qpdf qpdf 11.4.0 v
+github.setup        qpdf qpdf 11.9.0 v
 revision            0
 
 categories          textproc pdf
@@ -22,9 +22,9 @@ long_description    QPDF is a command-line program that does structural, \
 homepage            http://qpdf.sourceforge.net/
 github.tarball_from releases
 
-checksums           rmd160  223e332712dff3378d8ceadf6b0ba1ca5d41180d \
-                    sha256  b0180971cc1b79b2dfe02ffe28e2c88c47f735888a3a2543dd42b9054ef146e1 \
-                    size    18643945
+checksums           rmd160  99bc15e15cce5dd42d8611791d495aeed83e1b56 \
+                    sha256  9f5d6335bb7292cc24a7194d281fc77be2bbf86873e8807b85aeccfbff66082f \
+                    size    18552462
 
 depends_build-append \
                     port:perl5

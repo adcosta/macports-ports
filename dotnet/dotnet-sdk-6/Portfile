@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                dotnet-sdk-6
-version             6.0.410
+version             6.0.421
 revision            0
 categories          dotnet devel
 license             MIT
@@ -25,16 +25,18 @@ supported_archs     x86_64 arm64
 
 switch ${build_arch} {
     x86_64 {
+        set dotnet_rid osx-x64
         distname            dotnet-sdk-${version}-osx-x64
-        checksums           rmd160  5cacc67ac537ebeb6d91ed865c9b4fc182a1bccd \
-                            sha256  707f1c290b756dd0f9386de73a4c6bfe8795cb9c315f03fb270ac4dbe07988ff \
-                            size    184199763
+        checksums           rmd160  50faf1cd1492917be50a18eee17f7df96cdf1e8a \
+                            sha256  2404aee6e84b3946a3c0d7ab5b41432ecadc7985bed7d58bc43283c60f135a06 \
+                            size    184109410
     }
     arm64 {
+        set dotnet_rid osx-arm64
         distname            dotnet-sdk-${version}-osx-arm64
-        checksums           rmd160  720fa39d0247e2d8d6f0a55ffceaee336c5f5059 \
-                            sha256  8249be7aa11f5c8136c479cd357be2f934399888f8b0001770657445ce97115f \
-                            size    178377780
+        checksums           rmd160  3063fab3bfad918c04e9dd6f8215b87e07af596e \
+                            sha256  21b803887e117826f74ceb50faf0c968f59b48b05de77432d872714be9b415af \
+                            size    178310050
     }
     default {
         known_fail yes
@@ -59,17 +61,39 @@ depends_run         port:dotnet-cli \
 build {}
 
 destroot {
-    set dotnet_manifest_version 6.0.300
-    set dotnet_templates_version 6.0.18
     set dotnet_home ${prefix}/share/dotnet
+    set dotnet_runtime_version 6.0.29
 
-    # Create the target directory
+    # ASP.NET Core Targeting Pack
+    set aspnet_target_dir /packs/Microsoft.AspNetCore.App.Ref
+    set aspnet_target_version ${dotnet_runtime_version}
+    xinstall -d ${destroot}${dotnet_home}${aspnet_target_dir}
+    move ${worksrcpath}${aspnet_target_dir}/${aspnet_target_version} ${destroot}${dotnet_home}${aspnet_target_dir}
+
+    # .NET AppHost Pack
+    set dotnet_apphost_dir /packs/Microsoft.NETCore.App.Host.${dotnet_rid}
+    set dotnet_apphost_version ${dotnet_runtime_version}
+    xinstall -d ${destroot}${dotnet_home}${dotnet_apphost_dir}
+    move ${worksrcpath}${dotnet_apphost_dir}/${dotnet_apphost_version} ${destroot}${dotnet_home}${dotnet_apphost_dir}
+
+    # .NET Targeting Pack
+    set dotnet_target_dir /packs/Microsoft.NETCore.App.Ref
+    set dotnet_target_version ${dotnet_runtime_version}
+    xinstall -d ${destroot}${dotnet_home}${dotnet_target_dir}
+    move ${worksrcpath}${dotnet_target_dir}/${dotnet_target_version} ${destroot}${dotnet_home}${dotnet_target_dir}
+
+    # SDK
     xinstall -d ${destroot}${dotnet_home}/sdk
-    xinstall -d ${destroot}${dotnet_home}/sdk-manifests
-    xinstall -d ${destroot}${dotnet_home}/templates
-
     move ${worksrcpath}/sdk/${version} ${destroot}${dotnet_home}/sdk
+
+    # SDK-Manifests
+    set dotnet_manifest_version 6.0.300
+    xinstall -d ${destroot}${dotnet_home}/sdk-manifests
     move ${worksrcpath}/sdk-manifests/${dotnet_manifest_version} ${destroot}${dotnet_home}/sdk-manifests
+
+    # Templates
+    set dotnet_templates_version ${dotnet_runtime_version}
+    xinstall -d ${destroot}${dotnet_home}/templates
     move ${worksrcpath}/templates/${dotnet_templates_version} ${destroot}${dotnet_home}/templates
 }
 

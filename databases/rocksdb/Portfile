@@ -3,8 +3,12 @@
 PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           cmake 1.1
+PortGroup           legacysupport 1.1
 
-github.setup        facebook rocksdb 8.1.1 v
+# strnlen
+legacysupport.newest_darwin_requires_legacy 10
+
+github.setup        facebook rocksdb 8.9.1 v
 revision            0
 
 categories          databases devel
@@ -17,9 +21,10 @@ long_description    {*}${description}
 
 homepage            https://rocksdb.org
 
-checksums           rmd160  c6cd420eb8a23c745c91a1ee8ac511a2ddb98da5 \
-                    sha256  c5e33f010ea320ddcf227266f6d9c73252997b013b2be8ac42696628de3707b9 \
-                    size    12663407
+checksums           rmd160  2cef8c315d646dc1fdce79ba88d443e44ef4e168 \
+                    sha256  c22d2097e7aa75629612fd020499bdae0d3e321c7bc4361960c42aaf9cbd6dc1 \
+                    size    13293245
+github.tarball_from archive
 
 depends_lib-append  port:gflags \
                     port:snappy \
@@ -28,14 +33,14 @@ depends_lib-append  port:gflags \
                     port:lz4 \
                     port:zstd
 
-patch.pre_args      -p1
+patch.pre_args-replace  -p0 -p1
 patchfiles          0001-rocksdb-fixes-for-macOS-PPC.patch \
-                    0002-MAP_ANON.patch \
-                    0003-remove-redundant-move-11418.patch
+                    0002-MAP_ANON.patch
 
-compiler.cxx_standard 2011
+compiler.cxx_standard 2017
 compiler.thread_local_storage yes
 
+# DCMAKE_INCLUDE_DIRECTORIES_BEFORE=ON fixes the build while an older version is installed, see #69079
 configure.args-append \
                     -DWITH_JEMALLOC=OFF \
                     -DWITH_LIBURING=OFF \
@@ -47,7 +52,8 @@ configure.args-append \
                     -DROCKSDB_BUILD_SHARED=ON \
                     -DWITH_BZ2=ON \
                     -DWITH_MD_LIBRARY=ON \
-                    -DWITH_TBB=OFF
+                    -DWITH_TBB=OFF \
+                    -DCMAKE_INCLUDE_DIRECTORIES_BEFORE=ON
 
 if {[string match *gcc* ${configure.compiler}]} {
     # version_set.cc: error: 'rocksdb::{anonymous}::ManifestPicker::ManifestPicker' defined but not used

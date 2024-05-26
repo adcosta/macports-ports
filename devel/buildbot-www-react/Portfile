@@ -4,11 +4,11 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                buildbot-www-react
-version             3.7.0
+version             3.10.1
 revision            0
-checksums           rmd160  e7f8c742ac486df3ad287bfa78d6e66a80d7c68c \
-                    sha256  2b121245f94df21406e3d2626b79f115cbb5276bc1cfb4305f7cc7d9199db4a4 \
-                    size    1391092
+checksums           rmd160  9e2d5ccfd49847907ad57135dd1e12e4cd756a2c \
+                    sha256  35fa604d9d3eb0fd94f2b91ff82e164e95ca541bcef13fa28ecf3120f7b8f6d0 \
+                    size    339495
 
 categories          devel
 maintainers         {ryandesign @ryandesign} {rajdeep @rajdeepbh} {mojca @mojca} openmaintainer
@@ -21,6 +21,8 @@ long_description    {*}${description}
 
 homepage            https://buildbot.net
 
+# Can't update to 311 due to missing dependency:
+# https://trac.macports.org/ticket/67849
 python.default_version \
                     310
 

@@ -3,7 +3,7 @@
 PortSystem          1.0
 
 name                logtalk
-version             3.66.0
+version             3.79.0
 revision            0
 
 categories          lang
@@ -31,9 +31,9 @@ long_description    Logtalk is an object-oriented logic programming language tha
 homepage            https://logtalk.org/
 master_sites        ${homepage}files/
 
-checksums           rmd160  3a0f4fe8b3b7e925e85eaebf744c406afaea33d5 \
-                    sha256  bf59db7b141830ce2de0d52253ac8a7d58f629f1ec42adb6f068e3a4a7d2f44d \
-                    size    14575078
+checksums           rmd160  e45ddddc016edba9dc2a93775cf16ceeaeb75b8b \
+                    sha256  5e91171ee82bebe938f9fc0b6447ccbadf6630589a7c581a3380fea49432230a \
+                    size    17761729
 
 use_bzip2           yes
 
@@ -67,19 +67,18 @@ post-activate {
     ui_msg "* back-end Prolog compilers (which must be properly installed for running"
     ui_msg "* the scripts!):"
     ui_msg "*"
-    ui_msg "* B-Prolog (8.1 or later):           bplgt"
+    ui_msg "* B-Prolog (8.1 or later):           bplgt       (experimental)"
     ui_msg "* Ciao Prolog (1.22.0 or later):     ciaolgt     (experimental; first run may require sudo)"
     ui_msg "* CxProlog (0.98.1 or later):        cxlgt"
     ui_msg "* ECLiPSe (6.1#143 or later):        eclipselgt"
     ui_msg "* GNU Prolog (1.4.5 or later):       gplgt"
     ui_msg "* JIProlog (4.1.7.1 or later):       jiplgt      (first run may require sudo)"
-    ui_msg "* LVM (4.1.0 or later):              lvmlgt"
+    ui_msg "* LVM (6.3.0 or later):              lvmlgt"
     ui_msg "* Quintus Prolog (3.3 or later):     quintuslgt  (experimental)"
-    ui_msg "* Scryer Prolog (0.9.1 or later):    scryerlgt   (experimental)"
     ui_msg "* SICStus Prolog (4.1.0 or later):   sicstuslgt"
     ui_msg "* SWI-Prolog (6.6.0 or later):       swilgt"
     ui_msg "* Tau Prolog (0.3.2 or later):       taulgt"
-    ui_msg "* Trealla Prolog (2.17.10 or later): tplgt       (experimental)"
+    ui_msg "* Trealla Prolog (2.18.7 or later):  tplgt       (experimental)"
     ui_msg "* XSB (3.8.0 or later):              xsblgt      (first run may require sudo)"
     ui_msg "* YAP (6.3.4 or later):              yaplgt"
     ui_msg "*"

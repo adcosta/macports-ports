@@ -3,17 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran wdnetwork wdnet 1.1.0
-revision            0
+R.setup             cran wdnetwork wdnet 1.2.3
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3+
 description         Weighted and Directed Networks
 long_description    {*}${description}
 homepage            https://gitlab.com/wdnetwork/wdnet
-checksums           rmd160  dad56020996aba892e744faa5db7e8f5c5d12756 \
-                    sha256  55e0fbaa0a3a0d66edad5d96fb6fba3002342f2c9c4eaf1a67c3699a34f5b834 \
-                    size    71729
+checksums           rmd160  b885b269a26acdd36bf1a5f292bc76a4f62e0b7a \
+                    sha256  f3a62912395f5930de1a36445dfbad50550f09b37facfe8ba4c2f3215b465f0b \
+                    size    71898
 
 depends_lib-append  port:R-CVXR \
                     port:R-igraph \
@@ -25,7 +25,6 @@ depends_lib-append  port:R-CVXR \
 
 compilers.setup     require_fortran
 
-depends_test-append port:R-knitr \
-                    port:R-testthat
+depends_test-append port:R-testthat
 
 test.run            yes

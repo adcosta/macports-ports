@@ -3,16 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran DPQ 0.5-4
+R.setup             cran r-project DPQ 0.5-8
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         DPQ: Density, Probability, Quantile computations
 long_description    {*}${description}
-checksums           rmd160  d701680bd9deebac076dd3264ea8c08e5c0b8603 \
-                    sha256  aa4f277e6512cb65e99c42d8a96af7f26a3f897569129f509ac4977afd87f31a \
-                    size    1883549
+homepage            https://r-forge.r-project.org/scm/viewvc.php/pkg/DPQ
+checksums           rmd160  d1ab136a9cd1fbee8dde3c05383d61ac41d55d6d \
+                    sha256  bf912cec27298b03ecf737cbb66536190875deca9218f731ab54dc7646eab071 \
+                    size    1894674
 
 depends_lib-append  port:R-sfsmisc
 

@@ -3,19 +3,19 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran robStepSplitReg 1.0.1
-revision            0
+R.setup             cran cran robStepSplitReg 1.1.0
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-2+
 description         Robust stepwise split regularized regression
 long_description    {*}${description}
-checksums           rmd160  3f0afc52d95876f76ae3074e463b0f2c7a7cc0ed \
-                    sha256  9655baa4f63b1b0633c271454ff79048121f06a3d507786738eda783151c4777 \
-                    size    49302
+checksums           rmd160  70ebfeb303d91e88729a44f13f0ce2971a99f867 \
+                    sha256  961be38939f7bba8a629f2f69a1f7a60d1e0bc445d2dad192df84a346f895f11 \
+                    size    48892
 
 depends_lib-append  port:R-cellWise \
-                    port:R-pense \
+                    port:R-glmnet \
                     port:R-Rcpp \
                     port:R-RcppArmadillo
 

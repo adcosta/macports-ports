@@ -3,27 +3,32 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/abiosoft/colima 0.5.5 v
+go.setup            github.com/abiosoft/colima 0.6.9 v
 github.tarball_from archive
 revision            0
 
-description         Container runtimes on MacOS with minimal setup
+description         Run Kubernetes and Docker containers with minimal setup
+long_description    {*}{
+    Colima allows running Docker, containerd and Kubernetes locally
+    with minimal setup. It supports port forwarding, volume mounts and
+    multiple instances. On initial startup, Colima initiates with a
+    user specified runtime that defaults to Docker.
+}
 
-long_description    {*}${description}
-
-categories          sysutils
+categories          sysutils emulators
 installs_libs       no
 license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
+                    {macports.halostatue.ca:austin @halostatue} \
                     openmaintainer
 
-checksums           rmd160  7dc0b3a7d0081152436d00bea5eaa777c5ec7d96 \
-                    sha256  60b3edf5e363d44d280abc1d15173f5f0f051e45b2113d6a813c925582a8b7e2 \
-                    size    613676
+checksums           rmd160  cc2559fb2bb65674daf6320a2c0f3f87907d6c71 \
+                    sha256  97e04f0f28effcf519d76e5307a14e5d87da038946be0da980d9d7c9d95b3c11 \
+                    size    608586
 
 depends_run         port:lima
 
-build.env-delete    GO111MODULE=off GOPROXY=off
+go.offline_build no
 
 build.pre_args-append \
     -ldflags \" \
@@ -35,4 +40,24 @@ build.args          ./cmd/${name}
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+
+    # install completion for various shells
+    set bash_completions_dir ${destroot}${prefix}/share/bash-completion/completions
+    set fish_completions_dir ${destroot}${prefix}/share/fish/vendor_completions.d
+    set zsh_completions_dir ${destroot}${prefix}/share/zsh/site-functions
+    xinstall -d ${bash_completions_dir} ${fish_completions_dir} ${zsh_completions_dir}
+    system "${worksrcpath}/${name} completion bash > ${bash_completions_dir}/${name}"
+    system "${worksrcpath}/${name} completion fish > ${fish_completions_dir}/${name}.fish"
+    system "${worksrcpath}/${name} completion zsh > ${zsh_completions_dir}/_${name}"
+}
+
+notes {
+    If upgrading from Colima 0.5.6 or earlier, both colima instances and
+    profiles must be deleted and recreated.
+
+    Colima 0.6.8 addresses several CVEs. Newly created colima instances
+    are automatically patched. Existing instances should upgrade manually:
+
+      colima ssh -- \
+        sh -c "sudo apt update && sudo apt install -y containerd.io"
 }

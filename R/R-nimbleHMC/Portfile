@@ -3,17 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran nimble-dev nimbleHMC 0.1.0
-revision            0
+R.setup             cran nimble-dev nimbleHMC 0.2.1
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             {BSD GPL-2+}
 description         Hamiltonian Monte Carlo and other gradient-based MCMC sampling algorithms for R-nimble
 long_description    {*}${description}
 homepage            https://R-nimble.org
-checksums           rmd160  3e003c995dc9365f262888fb52aaa97f720a6b4d \
-                    sha256  a76caabc07d0e9c21ea351f8e99791d071f2c73cfe73c925e69d0bdb0a7283bf \
-                    size    24429
+checksums           rmd160  e27f8e6e7175c35480b564f6dbbce7134283ea65 \
+                    sha256  f28f19ff5820c8659140e740c4a126715698e36b4f7c5e91db82c11b34bea9c5 \
+                    size    41109
 supported_archs     noarch
 
 # Fix running tests:

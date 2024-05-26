@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           perl5 1.0
 
 perl5.branches      5.28 5.30 5.32 5.34
-perl5.setup         Amazon-S3 0.63 ../../authors/id/B/BI/BIGFOOT
+perl5.setup         Amazon-S3 0.65 ../../authors/id/B/BI/BIGFOOT
 revision            0
 license             Artistic-1
 maintainers         nomaintainer
@@ -12,9 +12,9 @@ description         A portable client library for working with and \
                     managing Amazon S3 buckets and keys.
 long_description    {*}${description}
 
-checksums           rmd160  f8804419b623428ab13f2798d566698fc2c0642a \
-                    sha256  dbd341a82ef4c4e9f12003494b58850507aa8911cb2dffd510ba878af6b29308 \
-                    size    54041
+checksums           rmd160  ab4ae2d9ce522131321a5c6675acba52f95a37c4 \
+                    sha256  7d2c76540619beab28c478e6f5f99091b4fd30e32f5c86113f115c6da1b6dbd4 \
+                    size    61122
 
 platforms           {darwin any}
 supported_archs     noarch

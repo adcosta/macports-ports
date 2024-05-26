@@ -4,32 +4,33 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version is old.
-R.setup             cran r-spatial lwgeom 0.2-13
-revision            0
+R.setup             cran r-spatial lwgeom 0.2-14
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-2
 description         Bindings to selected liblwgeom functions for simple features
 long_description    {*}${description}
-checksums           rmd160  364c9fb4936512b3712b096b7fda48d4458ffe24 \
-                    sha256  f0822888c029af48bf0238e3d20d82d3c75018e7e63728765a6220a6a0151c67 \
-                    size    474857
+checksums           rmd160  50b0437623ade22ca142514a119110312a2f30c6 \
+                    sha256  26db6cf7dbc8cf43a70e5e2a34941a1c4b65e182f86f58d64ff9f614b3be929c \
+                    size    475042
+
+set proj_v          proj9
 
 depends_build-append \
                     port:pkgconfig
-depends_lib-append  path:lib/proj5/lib/pkgconfig/proj.pc:proj \
+depends_lib-append  path:lib/${proj_v}/lib/pkgconfig/proj.pc:${proj_v} \
                     port:geos \
                     port:R-Rcpp \
                     port:R-sf \
                     port:R-units
 
-destroot.pre_args-append \
-                    --configure-args=' \
-                        --with-proj-include=${prefix}/lib/proj5/include \
-                        --with-proj-lib=${prefix}/lib/proj5/lib \
-                        --with-proj-share=${prefix}/lib/proj5/share/proj \
-                        --with-proj-api=yes \
-                        '
+# configure fails to do its job: https://github.com/r-spatial/sf/issues/2292
+build.env-append    CPPFLAGS=-I${prefix}/lib/${proj_v}/include
+
+build.args-append   --configure-args="--with-proj-include=${prefix}/lib/${proj_v}/include \
+                        --with-proj-lib=${prefix}/lib/${proj_v}/lib \
+                        --with-proj-share=${prefix}/lib/${proj_v}/share/proj"
 
 depends_test-append port:R-covr \
                     port:R-geosphere \

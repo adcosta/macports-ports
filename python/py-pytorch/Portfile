@@ -8,13 +8,15 @@ PortGroup           python 1.0
 name                py-pytorch
 # NOTE: please remove blacklist of clang14+ after update
 version             2.0.0
-revision            2
+revision            5
 github.setup        pytorch pytorch ${version} v
 fetch.type          git
 
 supported_archs     arm64 x86_64
-# third_party/pthreadpool needs DISPATCH_APPLY_AUTO (as of torch 2.0.0)
-platforms           {darwin >= 16}
+
+# third_party/pthreadpool needs DISPATCH_APPLY_AUTO (as of torch 2.0.0), requiring 10.12+
+# But builds fail for 10.12 - 10.14, so exclude those too
+platforms           {darwin >= 19}
 
 license             BSD
 
@@ -100,10 +102,10 @@ if {${name} ne ${subport}} {
         port:py${python.version}-setuptools
 
     depends_lib-append \
-        port:eigen3 \
+        path:share/pkgconfig/eigen3.pc:eigen3 \
         port:gmp \
         port:mpfr \
-        port:OpenBLAS \
+        path:lib/libopenblas.dylib:OpenBLAS \
         path:lib/opencv4/libopencv_core.dylib:opencv4 \
         port:zmq \
         port:zstd \

@@ -12,13 +12,13 @@ maintainers         {ra1nb0w @ra1nb0w} \
 description         gopls is the official language server for the Go language
 long_description    {*}${description}
 
-go.setup            golang.org/x/tools 0.12.2 gopls/v
+go.setup            golang.org/x/tools 0.15.3 gopls/v
 github.tarball_from archive
 revision            0
 
-checksums           rmd160  82df875b9c8eca5a5b125b5d442d8ed0d204edfc \
-                    sha256  f185a44f46fe39688493008d47debfe63ea7cd26464f522df292c62539b8ca8d \
-                    size    3356782
+checksums           rmd160  bd57b81e31b2690916ebf36d9cc4275023ad63a1 \
+                    sha256  7fb0a43ff5e562089ca0ec3e8e7819dd205977758c02ea9bded05f56d5080a54 \
+                    size    3716753
 
 build.dir           ${worksrcpath}/${name}
 
@@ -28,7 +28,7 @@ test.cmd            ${worksrcpath}/${name}/gopls version
 github.livecheck.regex  {([0-9.]+)}
 
 # Allow Go to fetch dependencies during build time
-build.env-delete    GO111MODULE=off GOPROXY=off
+go.offline_build no
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name}/${name} \

@@ -4,11 +4,11 @@ PortSystem              1.0
 PortGroup xcodeversion  1.0
 PortGroup bitbucket     1.0
 
-bitbucket.setup odedevs ode 0.16.3
+bitbucket.setup odedevs ode 0.16.5
 revision                0
-checksums               rmd160  d79c680e25986779c1d147f75675f064bf86d97c \
-                        sha256  c741dbf49bfc468ce2964824e5bc3f906ea956b1ae3594c50d351c383f03c413 \
-                        size    2628380
+checksums               rmd160  1d855d7103575e7a2d056d810fbca9526699f1ce \
+                        sha256  ba875edd164570958795eeaa70f14853bfc34cc9871f8adde8da47e12bd54679 \
+                        size    2629150
 
 categories              devel
 maintainers             {ryandesign @ryandesign} openmaintainer
@@ -26,13 +26,9 @@ long_description        ODE is a free, industrial quality library for \
 homepage                https://www.ode.org
 bitbucket.tarball_from  downloads
 
-depends_build-append    port:pkgconfig
+depends_build-append    path:bin/pkg-config:pkgconfig
 
 depends_lib-append      port:libccd
-
-# https://bitbucket.org/odedevs/ode/issues/83
-configure.cppflags-append \
-                        -D_UINT64 -D_UINT32 -D_UINT16 -D_UINT8
 
 configure.args          --with-trimesh=opcode \
                         --disable-demos \
@@ -42,6 +38,9 @@ configure.args          --with-trimesh=opcode \
                         --enable-shared
 
 build.type              gnu
+
+test.run                yes
+test.target             check
 
 post-destroot {
     system "ranlib ${destroot}${prefix}/lib/libode.a"

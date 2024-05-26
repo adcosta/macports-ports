@@ -1,0 +1,98 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem       1.0
+
+name             openjdk21-corretto
+categories       java devel
+maintainers      {breun.nl:nils @breun} openmaintainer
+
+# See https://aws.amazon.com/corretto/faqs/#Using_Amazon_Corretto
+# and https://trac.macports.org/wiki/PortfileRecipes#compare-osx-darwin-version
+platforms        {darwin any} {darwin >= 21}
+
+# This port uses prebuilt binaries; 'NoMirror' makes sure MacPorts doesn't mirror/distribute these third-party binaries
+license          GPL-2 NoMirror
+
+# This port uses prebuilt binaries for a particular architecture; they are not universal binaries
+universal_variant no
+
+supported_archs  x86_64 arm64
+
+# https://github.com/corretto/corretto-21/releases
+version      21.0.3.9.1
+revision     0
+
+description  Amazon Corretto OpenJDK 21 (Long Term Support)
+long_description No-cost, multiplatform, production-ready distribution of OpenJDK from Amazon.
+
+master_sites https://corretto.aws/downloads/resources/${version}/
+
+if {${configure.build_arch} eq "x86_64"} {
+    distname     amazon-corretto-${version}-macosx-x64
+    checksums    rmd160  1860b8b8a6a9f7dd4a24378a8e6428b73635e880 \
+                 sha256  2c6497ced7b926d584243d512b3732a345eb1b5afefd416e6588c33a43c0fa70 \
+                 size    203301232
+} elseif {${configure.build_arch} eq "arm64"} {
+    distname     amazon-corretto-${version}-macosx-aarch64
+    checksums    rmd160  f027aa44a007636b82502abc8fd94aebf96e626f \
+                 sha256  db1df7a3fe5d481a2ec52ea3c12b51ba7e9121cdb3dd39e0cf7bc77fba88cd98 \
+                 size    201107917
+}
+
+worksrcdir   amazon-corretto-21.jdk
+
+homepage     https://aws.amazon.com/corretto/
+
+livecheck.type      regex
+livecheck.url       https://github.com/corretto/corretto-21/releases
+livecheck.regex     amazon-corretto-(21\.\[0-9\.\]+)-macosx-.*\.tar\.gz
+
+use_configure    no
+build {}
+
+variant Applets \
+    description { Advertise the JVM capability "Applets".} {}
+
+variant BundledApp \
+    description { Advertise the JVM capability "BundledApp". This is required by some java-based app bundles to recognize and use the JVM.} {}
+
+variant JNI \
+    description { Advertise the JVM capability "JNI". This is required by some java-based app bundles to recognize and use the JVM.} {}
+
+variant WebStart \
+    description { Advertise the JVM capability "WebStart".} {}
+
+patch {
+    foreach var { Applets BundledApp JNI WebStart } {
+        if {[variant_isset ${var}]} {
+            reinplace -E "s|^(\[\[:space:\]\]*<string>)CommandLine(</string>)|\\1${var}\\2\\\n\\1CommandLine\\2|" ${worksrcpath}/Contents/Info.plist
+        }
+    }
+}
+
+test.run    yes
+test.cmd    Contents/Home/bin/java
+test.target
+test.args   -version
+
+# macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, which is not under ${prefix}.
+destroot.violate_mtree yes
+
+set jvms /Library/Java/JavaVirtualMachines
+set jdk ${jvms}/jdk-21-amazon-corretto.jdk
+
+destroot {
+    xinstall -m 755 -d ${destroot}${prefix}${jdk}
+    copy ${worksrcpath}/Contents ${destroot}${prefix}${jdk}
+
+    # macOS Java tools expect to find Java virtual machines under /Library/Java/JavaVirtualMachines, so let's create a symlink there
+    xinstall -m 755 -d ${destroot}${jvms}
+    ln -s ${prefix}${jdk} ${destroot}${jdk}
+}
+
+notes "
+If you have more than one JDK installed you can make ${name} the default\
+by adding the following line to your shell profile:
+
+    export JAVA_HOME=${jdk}/Contents/Home
+"

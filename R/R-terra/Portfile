@@ -3,37 +3,44 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-# https://github.com/rspatial/terra/issues/1131
-R.setup             github rspatial terra f511ea5ac254acbb668704852a9ba72b1b792717
-version             1.7-30
-revision            3
-categories-append   math
+R.setup             cran rspatial terra 1.7-78
+revision            0
+categories-append   gis
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3+
 description         Spatial data analysis
 long_description    {*}${description}
 homepage            https://rspatial.org/terra
-checksums           rmd160  5dd636e1c8a1cbbd72dcf1235f28bd1557a6adf0 \
-                    sha256  b9f9462ffe8a3b2108943fff1661a5b9b677655f67eb33b623bfff2ec87a94c1 \
-                    size    833182
+checksums           rmd160  2216d9100bdb0027141a35e68ec187cae675edfb \
+                    sha256  658956b79d8a1371aefdf7300316f1756b58d436ba549ade012307684b2d4b7e \
+                    size    842880
+
+set proj_v          proj9
 
 depends_build-append \
                     port:pkgconfig
-depends_lib-append  path:lib/proj5/lib/pkgconfig/proj.pc:proj \
+depends_lib-append  path:lib/${proj_v}/lib/pkgconfig/proj.pc:${proj_v} \
                     port:gdal \
                     port:geos \
                     port:R-Rcpp \
                     port:sqlite3
 
-# TODO: verify this works correctly:
-if {${build_arch} in [list i386 ppc]} {
-    patchfiles      patch-32-bit.diff
-}
+compiler.cxx_standard 2017
 
-destroot.pre_args-append \
-                    --configure-args=' \
-                        --with-proj-include=${prefix}/lib/proj5/include \
-                        --with-proj-lib=${prefix}/lib/proj5/lib \
-                        --with-proj-share=${prefix}/lib/proj5/share/proj \
-                        --with-proj-api=yes \
-                        '
+# configure fails to do its job: https://github.com/r-spatial/sf/issues/2292
+build.env-append    CPPFLAGS=-I${prefix}/lib/${proj_v}/include
+
+build.args-append   --configure-args="--with-proj-include=${prefix}/lib/${proj_v}/include \
+                        --with-proj-lib=${prefix}/lib/${proj_v}/lib \
+                        --with-proj-share=${prefix}/lib/${proj_v}/share/proj"
+
+depends_test-append port:R-deldir \
+                    port:R-htmlwidgets \
+                    port:R-leaflet \
+                    port:R-ncdf4 \
+                    port:R-sf \
+                    port:R-tinytest \
+                    port:R-XML
+
+# For now, not enabled:
+test.run            no

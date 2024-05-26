@@ -1,10 +1,10 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           conflicts_build 1.0
 PortGroup           R 1.0
 
-R.setup             github shikokuchuo nanonext 0.9.0 v
+# Revert to GitHub once updated there.
+R.setup             cran shikokuchuo nanonext 1.0.0
 revision            0
 categories-append   devel
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -12,9 +12,9 @@ license             GPL-3+
 description         NNG (Nanomsg Next Gen) lightweight messaging library
 long_description    {*}${description}
 homepage            https://shikokuchuo.net/nanonext
-checksums           rmd160  c39684c06d96508a3129197f90eabe2f7338c6d8 \
-                    sha256  e14f5f79009f79f9ab8fe7c61c4f6b62fcd138348f6add33b5a0cb9d6e3730bc \
-                    size    1145635
+checksums           rmd160  0bf4384ec0bc29a37ca2b03794c1686ee8cba053 \
+                    sha256  d5becd2a2884014a14935cd6eb2c9cc854c8cef34f55343237788028e84308f4 \
+                    size    767157
 
 depends_build-append \
                     path:bin/cmake:cmake \
@@ -22,7 +22,8 @@ depends_build-append \
                     port:xz
 
 depends_lib-append  port:mbedtls3 \
-                    port:nng
+                    port:nng \
+                    port:R-later
 
 # Configure literally searches everywhere besides the correct place.
 patchfiles          patch-fix-paths.diff
@@ -32,6 +33,9 @@ post-patch {
     reinplace "s,@PREFIX@,${prefix},g" ${worksrcpath}/configure
 }
 
-destroot.env-append CC=${configure.cc} CXX=${configure.cxx}
+build.env-append    CC=${configure.cc} CXX=${configure.cxx}
+
+depends_test-append port:R-knitr \
+                    port:R-markdown
 
 test.run            yes

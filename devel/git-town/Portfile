@@ -3,23 +3,25 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/git-town/git-town 7.8.0 v
+go.setup            github.com/git-town/git-town 14.2.0 v
+github.tarball_from archive
+revision            0
 
 description         High-level command-line interface for Git
 long_description    {*}${description}
-
 
 categories          devel
 installs_libs       no
 license             MIT
 maintainers         {karpenko.ca:alexei @akarpenko} \
+                    {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
 homepage            https://www.git-town.com/
 
-checksums           sha256  d6e06d395def2116b76cb63f548a9a4cccaed12cb804c84396f4150568609673 \
-                    rmd160  cf88fb00c64ce4100b464a3f390f676d4a3f6499 \
-                    size    2532916
+checksums           sha256  8984afe372bf9b75411c653779db7d516517e9fd59f609c2a7de8c534e0538a4 \
+                    rmd160  f96f10d0fe4ffee1df2159dcbdba0d2b318fcb3b \
+                    size    4241960
 
 build.pre_args-append \
     -ldflags \"-X ${go.package}/src/cmd.version=v${version}\"

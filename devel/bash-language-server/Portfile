@@ -4,17 +4,19 @@ PortSystem          1.0
 PortGroup           npm 1.0
 
 name                bash-language-server
-version             4.10.0
+version             5.3.1
 revision            0
 
 categories          devel
 license             MIT
+platforms           any
+supported_archs     noarch
 maintainers         {judaew @judaew} openmaintainer
 
 description         A language server for Bash
 long_description    {*}${description}
 homepage            https://github.com/bash-lsp/bash-language-server
 
-checksums           rmd160  b821a20b9a4df999b24ca9b616dd9a7d07498215 \
-                    sha256  acfe9c75fa26074fd56ce55147ac8b0b3dfcf1ce71d42e16f493062d1bbb7488 \
-                    size    192648
+checksums           rmd160  1232088a01fc695150166869852ebcbee8ae264c \
+                    sha256  15bba3e57e679925822be90645dfb287f296e6c33c50520b5f995bf85e22df06 \
+                    size    331871

@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-lmfit
-version             1.2.1
+version             1.3.1
 revision            0
 
 categories-append   math
@@ -21,12 +21,11 @@ long_description    Built on top of scipy.optimize, lmfit provides a\
 
 homepage            https://lmfit.github.io/lmfit-py/
 
-checksums           rmd160  e53829654e929eab2fb7fa22cd9deb60210aebac \
-                    sha256  00cef5bd145bf81b73630b78926af24b24f1805421e6211ca585588aa7cc415b \
-                    size    329039
+checksums           rmd160  cac3bae84144af5118f0a36d2de023f76e5157b8 \
+                    sha256  bc386244adbd10ef1a2a2c4f9d17b3def905552c0a64aef854f0ad46cc309cc5 \
+                    size    629917
 
-python.versions     37 38 39 310 311
-python.pep517       yes
+python.versions     38 39 310 311 312
 
 if {${subport} ne ${name}} {
     depends_build-append \

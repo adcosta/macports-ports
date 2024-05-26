@@ -3,19 +3,19 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github Bioconductor S4Arrays 91a9dbaedc57c5bb314b10ffb8c659fecb948ca9
-version             1.1.4
+R.setup             bioconductor Bioconductor S4Arrays 1.4.1
 revision            0
-categories-append   devel
+categories-append   bioconductor devel
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             Artistic-2
 description         Foundation of array-like containers in Bioconductor
 long_description    {*}${description}
-checksums           rmd160  1399aa946f5b60d529993430c45f27a17caf664f \
-                    sha256  6e478e24895ffdf95ab24947297cfbaf756453f8183cc437792f243e7fcb6dcb \
-                    size    56908
+checksums           rmd160  1a849a5f25eee128d4924ea0a505a7419250b648 \
+                    sha256  94b7e95a5f18e4106d8de1f4d8b1c25a8273aca0fe04519d227a7a6870b8bf71 \
+                    size    282453
 
-depends_lib-append  port:R-BiocGenerics \
+depends_lib-append  port:R-abind \
+                    port:R-BiocGenerics \
                     port:R-crayon \
                     port:R-IRanges \
                     port:R-S4Vectors

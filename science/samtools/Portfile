@@ -7,11 +7,11 @@ PortGroup               legacysupport 1.1
 # strnlen
 legacysupport.newest_darwin_requires_legacy 10
 
-github.setup            samtools samtools 1.17
+github.setup            samtools samtools 1.20
 revision                0
-checksums               rmd160  754d76646bff4b648b3413aa3297d7c33297fb68 \
-                        sha256  3adf390b628219fd6408f14602a4c4aa90e63e18b395dad722ab519438a2a729 \
-                        size    8605080
+checksums               rmd160  6c5e1359bdaef171255be4733a1a755d1a120e98 \
+                        sha256  c71be865e241613c2ca99679c074f1a0daeb55288af577db945bdabe3eb2cf10 \
+                        size    9179938
 
 categories              science
 maintainers             {ryandesign @ryandesign} openmaintainer
@@ -37,7 +37,7 @@ configure.args          --with-htslib=system
 post-destroot {
     xinstall -d ${destroot}${prefix}/share/doc/${name}
     xinstall -m 0644 -W ${worksrcpath} \
-        AUTHORS LICENSE NEWS README \
+        AUTHORS LICENSE NEWS.md README \
         ${destroot}${prefix}/share/doc/${name}
 }
 

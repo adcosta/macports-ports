@@ -3,24 +3,43 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran rstudio bslib 0.5.0
-revision            0
+R.setup             cran rstudio bslib 0.7.0
+revision            1
 maintainers         nomaintainer
 license             MIT
-description         Custom Bootstrap SASS themes for shiny and rmarkdown
-long_description    {*}${description}
+description         Custom bootstrap SASS themes
+long_description    {*}${description} for R-shiny and R-rmarkdown.
 homepage            https://rstudio.github.io/bslib
-checksums           rmd160  e1ffe830ea9aa7b15794e82ddc02aba4f22d914d \
-                    sha256  a2c6fbc62242806e10bb58c5d1ba04a6d3bf4e546bc53d7acf1b8eb1160bd115 \
-                    size    4917051
+checksums           rmd160  1dd86f637fab489948def61a022795f3075ca052 \
+                    sha256  2135d9841af382673b815a14454abff2f2ce0f5dc97484d1499298b85b752ca0 \
+                    size    5125401
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_lib-append  port:R-base64enc \
                     port:R-cachem \
+                    port:R-fastmap \
                     port:R-htmltools \
                     port:R-jquerylib \
                     port:R-jsonlite \
+                    port:R-lifecycle \
                     port:R-memoise \
                     port:R-mime \
                     port:R-rlang \
                     port:R-sass
+
+depends_test-append port:R-bsicons \
+                    port:R-curl \
+                    port:R-fontawesome \
+                    port:R-future \
+                    port:R-ggplot2 \
+                    port:R-knitr \
+                    port:R-magrittr \
+                    port:R-rappdirs \
+                    port:R-rmarkdown \
+                    port:R-shiny \
+                    port:R-testthat \
+                    port:R-thematic \
+                    port:R-withr
+
+test.run            yes

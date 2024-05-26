@@ -3,16 +3,16 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran robeth 2.7-6
+R.setup             cran cran robeth 2.7-8
 revision            1
 categories-append   math
 maintainers         nomaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         R functions for robust statistics
 long_description    {*}${description}
-checksums           rmd160  1384d64be27100ac546de651e8b8f50c6be232ca \
-                    sha256  621b99cda9d85277b92fd9eaa94a92602700908a01155f391f887279f0fb10f4 \
-                    size    182168
+checksums           rmd160  6b403db1a36247c28e303f325aa671994689724a \
+                    sha256  c0f03c600ca344aeac237479705eb78c0dfb0e1d9a93a2b08edf9616d84eb238 \
+                    size    182615
 
 compilers.setup     require_fortran
 

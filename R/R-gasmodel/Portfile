@@ -3,31 +3,34 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran vladimirholy gasmodel 0.3.0
-revision            0
+R.setup             cran vladimirholy gasmodel 0.6.0
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3
 description         Generalized autoregressive score models
 long_description    {*}${description}
-checksums           rmd160  cc2e76d59e1b0de4128f64ec95601f94ab19fb2d \
-                    sha256  2b767de926c5a503d88969158d9f77adf0216f9e031a49f4f1b6f8985eb57e1f \
-                    size    414132
+homepage            https://github.com/vladimirholy/gasmodel
+checksums           rmd160  1154e7234ea865f1415918e80183450829bf119b \
+                    sha256  8b0dc586678a3cd26a72a5c61dcf3cc4231dd3f5dc0c024bdbdd2b351dd89d9b \
+                    size    967033
 supported_archs     noarch
 
 depends_lib-append  port:R-abind \
                     port:R-arrangements \
                     port:R-CircStats \
+                    port:R-copula \
+                    port:R-dplyr \
+                    port:R-ggplot2 \
                     port:R-mvnfast \
                     port:R-nloptr \
                     port:R-numDeriv \
-                    port:R-pracma
+                    port:R-pracma \
+                    port:R-tidyr
 
-depends_test-append port:R-dplyr \
-                    port:R-ggplot2 \
+depends_test-append port:R-hms \
                     port:R-knitr \
                     port:R-rmarkdown \
-                    port:R-testthat \
-                    port:R-tidyr
+                    port:R-testthat
 
 test.run            yes

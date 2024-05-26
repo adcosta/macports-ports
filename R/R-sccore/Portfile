@@ -3,15 +3,15 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github kharchenkolab sccore 1.0.3 v
+R.setup             github kharchenkolab sccore 1.0.5 v
 revision            1
 maintainers         nomaintainer
 license             GPL-3
 description         Core utilities for single-cell RNA-seq
 long_description    {*}${description}
-checksums           rmd160  b26854f77a837923104eaea2294b6a29339517ce \
-                    sha256  d02994b96af3d884bf0adf25d8622196569b4709031f67a3e20038668d2bf662 \
-                    size    378718
+checksums           rmd160  94579f31fa179cd282e900554213692abe1182ab \
+                    sha256  cc2d546866ab57550e887b76d3d7f77dcb248a36dc6cb4a4670fed76b40f1a9d \
+                    size    378860
 
 depends_lib-append  port:R-dplyr \
                     port:R-ggplot2 \

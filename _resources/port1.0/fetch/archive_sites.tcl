@@ -19,7 +19,6 @@ set aarnet.au   http
 set atl.us      http
 set cph.dk      ${letsencrypt_https_or_http}
 set cjj.kr      http
-set ema.uk      ${letsencrypt_https_or_http}
 # cert doesn't have macports.org SANs; admin notified
 #set fco.it      ${letsencrypt_https_or_http}
 set fco.it      http
@@ -40,9 +39,9 @@ set fcix.net    http
 set portfetch::mirror_sites::sites(macports_archives) [lsearch -all -glob -inline -not "
     ${fastly}://packages.macports.org/:nosubdir
     ${nue.de}://nue.de.packages.macports.org/:nosubdir
+    ${fcix.net}://mirror.fcix.net/macports/packages/:nosubdir
     ${atl.us}://atl.us.packages.macports.org/:nosubdir
     ${cph.dk}://cph.dk.packages.macports.org/:nosubdir
-    ${ema.uk}://ema.uk.packages.macports.org/:nosubdir
     ${fco.it}://fco.it.packages.macports.org/:nosubdir
     ${fra.de}://fra.de.packages.macports.org/:nosubdir
     ${jnb.za}://jnb.za.packages.macports.org/packages/:nosubdir
@@ -51,7 +50,6 @@ set portfetch::mirror_sites::sites(macports_archives) [lsearch -all -glob -inlin
     ${mse.uk}://mse.uk.packages.macports.org/:nosubdir
     ${pek.cn}://pek.cn.packages.macports.org/macports/packages/:nosubdir
     ${ywg.ca}://ywg.ca.packages.macports.org/mirror/macports/packages/:nosubdir
-    ${fcix.net}://mirror.fcix.net/macports/packages/:nosubdir
 " {:*}]
 
 set portfetch::mirror_sites::archive_type(macports_archives) tbz2

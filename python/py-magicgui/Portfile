@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-magicgui
-version             0.7.2
+version             0.8.2
 revision            0
 categories          python
 license             MIT
@@ -13,19 +13,21 @@ description         magicgui: build GUIs from functions, using magic.
 long_description    {*}${description}
 supported_archs     noarch
 platforms           {darwin any}
-homepage            https://github.com/napari/magicgui
+homepage            https://github.com/pyapp-kit/magicgui
 
-python.versions     37 38 39 310 311
+python.versions     38 39 310 311 312
 
-checksums           rmd160  46beec141499791f35dab52bfcce59f8f6f7427c \
-                    sha256  568c65268cac2ad2d6010d54f37d96bfc3c4caf2219d0a59498608e63b9463e2 \
-                    size    20857706
+checksums           rmd160  c2ef1163ec4ee848bad84595beff7b4fc8a28ef6 \
+                    sha256  470176d4864007f42af2f1a64a1224a665b8afec14e5c8efa1e6c644b4100096 \
+                    size    20937020
 
 if {${name} ne ${subport}} {
     python.pep517   yes
+    python.pep517_backend \
+                    hatch
 
     depends_build-append \
-                    port:py${python.version}-setuptools_scm
+                    port:py${python.version}-hatch-vcs
 
     depends_lib-append  \
                     port:py${python.version}-docstring_parser \

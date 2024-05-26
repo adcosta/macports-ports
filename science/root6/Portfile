@@ -8,13 +8,12 @@ PortGroup           compilers                     1.0
 PortGroup           compiler_blacklist_versions   1.0
 PortGroup           github                        1.0
 PortGroup           select                        1.0
-PortGroup           xcodeversion                  1.0
 PortGroup           legacysupport                 1.1
 
 # Please also check if Gate needs a revbump after root6 update
-github.setup        root-project root 6-28-04 v
+github.setup        root-project root 6-30-06 v
 version             [string map {- .} ${github.version}]
-revision            0
+revision            1
 livecheck.version   ${github.version}
 
 # Use git commit
@@ -24,9 +23,9 @@ livecheck.version   ${github.version}
 #livecheck.version   6-14-00
 #revision            0
 
-checksums           rmd160  431858bbcb93b64caf9bb1bd587d50aa9bde2b36 \
-                    sha256  20e2a9a1177cee0a1c592211bd3ba1ff1f56c70ac3c0c3947fa9493dc9fd87c0 \
-                    size    185358669
+checksums           rmd160  a78f79e2e4d7e9194c68b6ffa1e31472827426ba \
+                    sha256  fa0469f272d640d017cc2817d073c3515c05d8b867f701f303226370218d3db9 \
+                    size    184798854
 
 # extract major version
 set version_major   [lindex [split ${version} .] 0]
@@ -48,7 +47,7 @@ long_description    The ROOT system provides a set of frameworks with all \
                     of data in a very efficient way.
 
 homepage            https://root.cern.ch/
-platforms           darwin
+platforms           {darwin > 15}
 
 dist_subdir         root/${version}
 
@@ -61,6 +60,9 @@ compiler.blacklist-append *gcc* {clang < 920} {macports-clang-3.[0-9]} {macports
 if {[regexp {macports-clang-(.*)} ${configure.compiler} -> clang_v]} {
     depends_run-append port:clang-${clang_v}
 }
+
+# https://trac.macports.org/ticket/69945
+use_parallel_build  no
 
 depends_build-append port:pkgconfig
 
@@ -80,17 +82,18 @@ depends_lib-append  port:expat \
                     port:xxhashlib \
                     port:z3 \
                     port:zstd \
+                    port:nlohmann-json \
+                    port:zlib \
+                    port:bzip2 \
+                    port:brotli \
+                    port:librsvg \
                     path:lib/libopenblas.dylib:OpenBLAS \
                     path:lib/libssl.dylib:openssl
-
-# Use builtin zlib instead as upstream claims has better performance
-# https://root.cern/content/release-61800
-#                   port:zlib
 
 depends_run-append  port:root_select
 
 cmake.out_of_source yes
-cmake.generator     Ninja
+#cmake.generator     Ninja
 
 # TODO: the file ${filespath}/${name} would have to be generated on the fly instead
 select.group        root
@@ -99,7 +102,7 @@ select.file         ${filespath}/${name}
 # port specific location
 set install_prefix  ${prefix}/libexec/root${version_major}
 
-patch.pre_args      -p1
+patch.pre_args-replace  -p0 -p1
 
 configure.args-append \
                     -Dgnuinstall=ON \
@@ -112,7 +115,7 @@ configure.args-append \
                     -Dbuiltin_freetype=ON \
                     -Dbuiltin_glew=OFF \
                     -Dbuiltin_pcre=OFF \
-                    -Dbuiltin_zlib=ON \
+                    -Dbuiltin_zlib=OFF \
                     -Dbuiltin_lzma=OFF \
                     -Dbuiltin_tbb=OFF \
                     -Dbuiltin_afterimage=ON \
@@ -130,8 +133,6 @@ configure.args-append \
                     -Dxml=OFF \
                     -Dpyroot=OFF \
                     -Dfitsio=OFF \
-                    -Dgsl_shared=OFF \
-                    -Dbuiltin_gsl=OFF \
                     -Dpgsql=OFF \
                     -Ddcache=OFF \
                     -Dchirp=OFF \
@@ -143,13 +144,12 @@ configure.args-append \
                     -Dqtgsi=OFF \
                     -Dgviz=OFF \
                     -Dsoversion=ON \
-                    -Dcxx11=ON \
                     -Dcxx14=OFF \
-                    -Dcxx17=OFF \
                     -Dlibcxx=ON \
                     -Dxrootd=OFF \
                     -Dbuiltin_ftgl=ON \
-                    -Dmathmore=OFF \
+                    -Dbuiltin_gsl=ON \
+                    -Dmathmore=ON \
                     -Dgenvector=ON \
                     -Dunuran=ON \
                     -Dgdml=ON \
@@ -167,25 +167,12 @@ configure.args-append \
 configure.env-append \
                     TBB_ROOT=${prefix}/libexec/tbb
 
-# Work-around until ROOT supports building for macOS 11.X as deployment target.
-if {${os.platform} eq "darwin" && ${os.major} >= 20} {
-    macosx_deployment_target 10.16
-}
-
 # https://root-forum.cern.ch/t/v6-22-00-build-error-on-macos/40239
 configure.args-append -Druntime_cxxmodules=OFF
 
-# Enable C++17 on 10.14 and newer (Darwin 18+)
-#        C++14 otherwise
-if {${os.platform} ne "darwin" || ${os.major} >= 18} {
-    compiler.cxx_standard 2017
-    configure.args-replace  -Dcxx17=OFF -Dcxx17=ON
-    configure.args-replace  -Droot7=OFF -Droot7=ON
-} else {
-    compiler.cxx_standard 2014
-    configure.args-replace  -Dcxx14=OFF -Dcxx14=ON
-}
-cmake.set_cxx_standard      yes
+# Enable C++17
+compiler.cxx_standard    2017
+cmake.set_cxx_standard   yes
 
 # Configure the C++ runtime to use
 if { ${configure.cxx_stdlib} ne "libc++" } {
@@ -208,15 +195,6 @@ if {${os.platform} eq "darwin" && ${os.major} >= 12} {
     default_variants-append +xrootd
 }
 
-# No longer compiles on Mac OS X 10.6 or older.
-if {${os.platform} eq "darwin" && ${os.major} <= 10} {
-    known_fail yes
-    pre-fetch {
-        ui_error "${name} @${version} requires Mac OS X 10.7 or later"
-        return -code error "Unsupported Mac OS X version"
-    }
-}
-
 if {${os.platform} eq "darwin" && ${os.major} >= 20} {
     # Starting with macOS 11 the SDK version changes on incremental OS updates,
     # e.g. going from 11.0 to 11.1. This causes problems with root as it bakes
@@ -229,6 +207,18 @@ if {${os.platform} eq "darwin" && ${os.major} >= 20} {
     configure.sdk_version
 }
 
+if {${os.platform} eq "darwin" && ${os.major} >= 22} {
+    if { [vercmp ${xcodeversion} >= 15.0] || [vercmp ${xcodecltversion} >= 15.0] } {
+        # On macOS13 and newer ensure the 'legacy' linker is used as GCC currently has problems
+        # with the new default linker in Xcode 15. See e.g.
+        # https://developer.apple.com/documentation/xcode-release-notes/xcode-15-release-notes#Linking
+        # https://discussions.apple.com/thread/255137447
+        # https://developer.apple.com/forums/thread/737707
+        # https://github.com/Homebrew/homebrew-core/issues/145991
+        configure.ldflags-append  -Wl,-ld_classic
+    }
+}
+
 pre-configure {
     # Force use of system python in build scripts
     # Find command finds text files containing the string to be replaced.
@@ -236,6 +226,19 @@ pre-configure {
     set pystringtoreplace "/usr/bin/env python"
     foreach f [ exec find ${worksrcpath} -type f -and -not -name "shtest-encoding.py" -and -name "*.py" ] {
         reinplace -q "s|${pystringtoreplace}|/usr/bin/python|g" $f
+    }
+}
+
+post-build {
+    ui_debug "Searching ${workpath}/build for third party build logs ..."
+    foreach log [ exec find ${workpath}/build -type f -and -name "*.log" ] {
+        ui_debug "Contents of ${log} :-"
+        set f [open ${log}]
+        set lines [split [read $f] "\n"]
+        foreach line $lines {
+            ui_debug "${line}"
+        }
+        close $f
     }
 }
 
@@ -305,7 +308,7 @@ post-activate {
 
 universal_variant no
 
-default_variants-append +xml +gsl +tmva +roofit +graphviz +opengl +davix
+default_variants-append +xml +tmva +roofit +graphviz +opengl +davix
 
 variant native description {Build with best native support for local CPU capabilities} {
     configure.cflags-append    -O3 -mtune=native
@@ -359,15 +362,6 @@ variant fftw3 description {Build with fftw3 support} {
     depends_lib-append      port:fftw-3
 }
 
-variant gsl description {Build with gsl support} {
-    # External GSL library
-    configure.args-replace  -Dgsl_shared=OFF -Dgsl_shared=ON
-    configure.args-append   -DGSL_CONFIG_EXECUTABLE="${prefix}/bin/gsl-config"
-    depends_lib-append      port:gsl
-    # Enable the MathMore library
-    configure.args-replace  -Dmathmore=OFF -Dmathmore=ON
-}
-
 variant fitsio description {Build with fitsio support} {
     configure.args-replace  -Dfitsio=OFF -Dfitsio=ON
     depends_lib-append      port:cfitsio
@@ -398,13 +392,13 @@ variant opengl description {Build with opengl support} {
 # ========================================================================================
 
 # List of possible python versions
-set python_versions { 3.8 3.9 3.10 3.11 }
+set python_versions { 3.8 3.9 3.10 3.11 3.12 }
 # Enable python variant by default on OS X 10.9 and newer.
 # Disabled on older systems due to an issue fetching the source for
 # the various python dependencies due to these systems having out of
 # date SSL versions that are rejected by the upstream server.
 if {${os.platform} ne "darwin" || ${os.major} >= 13} {
-    set default_python_variant +python311
+    set default_python_variant +python312
 } else {
     set default_python_variant ""
 }

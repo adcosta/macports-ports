@@ -3,16 +3,22 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran georgheinze mfp 1.5.2.2
+R.setup             cran georgheinze mfp 1.5.4.1
 revision            0
 categories-append   math
 maintainers         nomaintainer
 license             GPL-2+
 description         Multivariable Fractional Polynomials
 long_description    {*}${description}
-checksums           rmd160  b90d8ebd01e3fe7ba6d8272bb9f83a9e5f241600 \
-                    sha256  7b21cdf7305aa7d5269de446cbc4ed87c5b5374d7aa68d87baecfdd88084c1f0 \
-                    size    209917
+homepage            https://github.com/georgheinze/mfp
+checksums           rmd160  4cdbb0c78ea59e64ebaebc5d443ef9027721d482 \
+                    sha256  b5880f731d128d586f4927115403c20eea455583e51452e26acd562f4ee25c9f \
+                    size    92491
 supported_archs     noarch
+
+depends_lib-append  port:R-numDeriv
+
+depends_test-append port:R-knitr \
+                    port:R-rmarkdown
 
 test.run            yes

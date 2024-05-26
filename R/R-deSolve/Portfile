@@ -3,17 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran deSolve 1.35
+R.setup             cran r-forge deSolve 1.40
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         Solvers for initial value problems of differential equations
 long_description    {*}${description}
 homepage            https://desolve.r-forge.r-project.org
-checksums           rmd160  4621d033d433ae72f1b247e1f000a1ca0f69aac1 \
-                    sha256  96f17f497713754f84ff56c3538c6d05b9f5229f9a2a32aafec7d7cdc721d488 \
-                    size    2008803
+checksums           rmd160  566610a6479992eff138cdbed99e89ceee78a7c4 \
+                    sha256  8c09ae6bb6875b569b9844eede30b790f39fc227f5c9d045fa63ce1b22f500ef \
+                    size    2007247
 
 compilers.setup     require_fortran
 

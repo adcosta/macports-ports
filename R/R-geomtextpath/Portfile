@@ -1,0 +1,34 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+R.setup             cran AllanCameron geomtextpath 0.1.3
+revision            1
+maintainers         nomaintainer
+license             MIT
+description         Create curved text paths in R-ggplot2
+long_description    {*}${description}
+homepage            https://allancameron.github.io/geomtextpath
+checksums           rmd160  e9486db1ccfbe2325734302172b53349cb54aa0a \
+                    sha256  f7ec4f5cb09db9a160c1238bf688564d493fe94bf76b506eb718078fbec72f03 \
+                    size    3499001
+supported_archs     noarch
+
+depends_lib-append  port:R-ggplot2 \
+                    port:R-rlang \
+                    port:R-scales \
+                    port:R-systemfonts \
+                    port:R-textshaping
+
+depends_test-append port:R-covr \
+                    port:R-knitr \
+                    port:R-markdown \
+                    port:R-ragg \
+                    port:R-rmarkdown \
+                    port:R-roxygen2 \
+                    port:R-sf \
+                    port:R-testthat \
+                    port:R-xml2
+
+test.run            yes

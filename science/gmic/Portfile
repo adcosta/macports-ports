@@ -16,8 +16,8 @@ if {${subport} eq "gmic-gimp" || ${subport} eq "gmic-qt"} {
 }
 
 name                gmic
-version             3.2.5
-revision            1
+version             3.3.6
+revision            0
 license             CeCILL
 categories          science graphics
 maintainers         {mps @Schamschula} openmaintainer
@@ -34,9 +34,12 @@ long_description    G'MIC stands for GREYC's Magic Image Converter. It is \
 homepage            https://gmic.eu
 master_sites        https://gmic.eu/files/source/
 
-checksums           rmd160  86f03dfc69827e3d9c44c64a4db5b42404a82c9b \
-                    sha256  ae1a903df27e3131702c27b6fea6bdd8faabd756f53e22d3f35fb790f22d2035 \
-                    size    11352319
+# stealth update; remove for next release
+dist_subdir         ${dist_subdir}/${version}_1
+
+checksums           rmd160  09610844de02dbc2be70caf8ebbcbfa73be5b01b \
+                    sha256  783db018dece6dc443349ddf1cc85ff06b2aeb9a4612f795859c39c85d38fddf \
+                    size    17981244
 
 distfiles           ${name}_${version}${extract.suffix}
 
@@ -44,6 +47,7 @@ depends_lib         port:curl \
                     path:lib/libavcodec.dylib:ffmpeg \
                     port:fftw-3 \
                     port:GraphicsMagick \
+                    port:ilmbase \
                     port:imath \
                     port:libheif \
                     path:include/turbojpeg.h:libjpeg-turbo \

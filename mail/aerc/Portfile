@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           makefile    1.0
 PortGroup           sourcehut   1.0
 
-sourcehut.setup     rjarry aerc 0.15.2
+sourcehut.setup     rjarry aerc 0.17.0
 revision            0
 
 homepage            https://aerc-mail.org
@@ -22,9 +22,9 @@ license             MIT
 maintainers         {gmail.com:herby.gillot @herbygillot} \
                     openmaintainer
 
-checksums           rmd160  bd192c610df9cf446a8fadb752f9e3047dfd28d2 \
-                    sha256  722da196e8807c497f5472704b8a1737d7780ad0faa7166ae83348bc67b144f7 \
-                    size    331263
+checksums           rmd160  51c77c6b336f10fd6ec40f37469e650cc2e671d9 \
+                    sha256  a8a1af36b4d4989afd670601d83fc2088e14d804c66bd1e3bdd14561bd89c2cc \
+                    size    419228
 
 depends_build-append \
                     port:go \
@@ -33,8 +33,10 @@ depends_build-append \
 default_variants    +notmuch
 
 variant notmuch description {Enable support for notmuch integration} {
-    depends_lib         port:notmuch
-    build.args-append   GOFLAGS="-tags=notmuch"
+    depends_lib-append \
+                    port:notmuch
+    build.args-append \
+                    GOFLAGS="-tags=notmuch"
 }
 
 build.pre_args-append \

@@ -11,7 +11,7 @@ configure.cxx_stdlib    libc++
 compiler.cxx_standard   2014
 
 name                    nodejs20
-version                 20.3.0
+version                 20.13.1
 revision                0
 
 categories              devel net
@@ -26,19 +26,19 @@ long_description        Node's goal is to provide an easy way to build scalable 
                         Machine or Python's Twisted. Node takes the event model a bit further-it \
                         presents the event loop as a language construct instead of as a library.
 
-conflicts               nodejs8 nodejs10 nodejs12 nodejs13 nodejs14 nodejs15 nodejs16 nodejs17 nodejs18 nodejs19
+conflicts               nodejs8 nodejs10 nodejs12 nodejs13 nodejs14 nodejs15 nodejs16 nodejs17 nodejs18 nodejs19 nodejs21 nodejs22
 
 homepage                https://nodejs.org/
 master_sites            ${homepage}dist/v${version}
 use_xz                  yes
 
-checksums               rmd160  0ec10285869dc3a88c7a5237520bb5df91578265 \
-                        sha256  1ba8d49423ed3a75729066bb3ea26493ee9cb7d6568ef948597fc9ef454f7435 \
-                        size    41709484
+checksums               rmd160  2235a63e8c799aec56343c5c271c8f551e40ed0f \
+                        sha256  791786a09023241cb7e4f7d65ec90aa924bb39141ff7bb6d5a1dedf7def4b4e7 \
+                        size    41770976
 
 distname                node-v${version}
 
-set py_ver              3.11
+set py_ver              3.12
 set py_ver_nodot        [string map {. {}} ${py_ver}]
 
 depends_build-append    port:pkgconfig \
@@ -164,6 +164,7 @@ destroot {
     xinstall -d ${libndir}
     xinstall -d ${libddir}
     xinstall -d ${incdir}
+    xinstall -d ${incdir}/uv
     xinstall -d ${docdir}
 
     # install binaries
@@ -175,6 +176,7 @@ destroot {
     xinstall -m 644 {*}[glob ${worksrcpath}/src/*.h]                ${incdir}
     xinstall -m 644 {*}[glob ${worksrcpath}/deps/v8/include/*.h]    ${incdir}
     xinstall -m 644 {*}[glob ${worksrcpath}/deps/uv/include/*.h]    ${incdir}
+    xinstall -m 644 {*}[glob ${worksrcpath}/deps/uv/include/uv/*.h] ${incdir}/uv
     xinstall -m 644 {*}[glob ${worksrcpath}/deps/cares/include/*.h] ${incdir}
 
     # install manpage
@@ -195,4 +197,4 @@ destroot {
 
 livecheck.url       ${homepage}dist/
 livecheck.type      regex
-livecheck.regex     {v(\d+\.\d+\.\d+)}
+livecheck.regex     {v(20\.\d+\.\d+)}

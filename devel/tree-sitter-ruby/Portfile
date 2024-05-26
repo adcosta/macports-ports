@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           github 1.0
 PortGroup           tree_sitter 1.0
 
-github.setup        tree-sitter tree-sitter-ruby 0.19.0 v
+github.setup        tree-sitter tree-sitter-ruby 0.21.0 v
 revision            0
 
 description         A tree-sitter parser for Ruby
@@ -15,8 +15,11 @@ categories          devel
 license             MIT
 maintainers         {amake @amake} openmaintainer
 
-checksums           rmd160  56b83468873762fc92f375f2ec1a33cdda0d9f1e \
-                    sha256  18e7dce1011fbbd10e8a22a6a06c867d57b6ba4e1541a9adf46a681022958f1e \
-                    size    325081
+checksums           rmd160  0a51ecd68a94dd2fd177a2c768d5028cc8d0ebe8 \
+                    sha256  0fcc9074ec31f27b247858173cb3111492b05957b1f9073cb1dd4738cf2c0a4d \
+                    size    618044
 
 worksrcdir          ${worksrcdir}/src
+
+# scanner.h: error: ‘for’ loop initial declaration used outside C99 mode
+configure.cflags-append -std=c99

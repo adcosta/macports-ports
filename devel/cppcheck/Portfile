@@ -3,12 +3,11 @@
 PortSystem                  1.0
 PortGroup                   github 1.0
 
-github.setup                danmar cppcheck 2.10.3
+github.setup                danmar cppcheck 2.14.0
 revision                    0
 
 categories                  devel
 license                     GPL-3
-platforms                   darwin
 maintainers                 {khindenburg @kurthindenburg} openmaintainer
 
 description                 Static analysis of C and C++ code.
@@ -21,12 +20,11 @@ long_description            Cppcheck is an analysis tool for C and C++ code. Unl
 
 github.tarball_from         archive
 
-checksums                   rmd160  fb27ebeb83dc0d6219289bbdb7d9a9973f0f5c84 \
-                            sha256  8aae5e116daeaaf5d19f3efa61b91c06f161cb97412a1d1af6e1e20686e48967 \
-                            size    3447010
+checksums                   rmd160  d08cf2b98304310043bd45b728e86ccfea6fe817 \
+                            sha256  2d2ead75db10c5993d77c8dfe854dc42b00fac65953611bb6c83e25fc74b9d50 \
+                            size    3716204
 
-
-set python_branch   3.11
+set python_branch   3.12
 set python_version  [string map {"." ""} ${python_branch}]
 set python_bin      ${prefix}/bin/python${python_branch}
 

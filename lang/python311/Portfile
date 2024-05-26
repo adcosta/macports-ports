@@ -1,12 +1,11 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem 1.0
-PortGroup select 1.0
 
 name                python311
 
 # Remember to keep py311-tkinter and py311-gdbm's versions sync'd with this
-version             3.11.4
+version             3.11.9
 
 set branch          [join [lrange [split ${version} .] 0 1] .]
 categories          lang
@@ -22,15 +21,17 @@ master_sites        ${homepage}ftp/python/${version}/
 
 distname            Python-${version}
 use_xz              yes
-checksums           md5 fb7f7eae520285788449d569e45b6718 \
-                    rmd160 3b31d5c3e4294282de3ff76958efac2fa75d55b4 \
-                    sha256 2f0e409df2ab57aa9fc4cbddfb976af44e4e55bf6f619eee6bc5c2297264a7f6
+checksums           md5 22ea467e7d915477152e99d5da856ddc \
+                    rmd160 3f817129ad823ef32cee7bb361e80f5867473ff1 \
+                    sha256 9b1e896523fc510691126c864406d9360a3d1e986acbda59cda57b5abda45b87
 
 patchfiles          patch-setup.py.diff \
                     patch-Lib-cgi.py.diff \
                     patch-configure.diff \
                     patch-Lib-ctypes-macholib-dyld.py.diff \
-                    sysconfig.py.patch
+                    sysconfig.py.patch \
+                    configure-disable-libb2.patch \
+                    configure-disable-libuuid.patch
 
 if {${os.platform} eq "darwin" && ${os.major} <= 10} {
     # work around no copyfile and/or pthread_threadid_np on older systems
@@ -57,8 +58,10 @@ depends_lib         port:bzip2 \
                     port:sqlite3 \
                     port:xz \
                     port:zlib
-depends_run         port:python_select \
-                    port:python3_select
+
+set pythonVerNoDot  [string map {. {}} $branch]
+depends_run         port:python_select-${pythonVerNoDot} \
+                    port:python3_select-${pythonVerNoDot}
 
 compiler.c_standard 2011
 # clang 15+ depend on python311, avoid circular dep
@@ -100,10 +103,6 @@ test.run            yes
 test.target         test
 
 destroot.target     frameworkinstall maninstall
-
-set pythonNoDot python[string map {. {}} $branch]
-select.entries      [list python python-$pythonNoDot $pythonNoDot] \
-                    [list python3 python3-$pythonNoDot $pythonNoDot]
 
 platform darwin {
     set framewpath  ${frameworks_dir}/Python.framework
@@ -177,8 +176,8 @@ notes "
 To make this the default Python or Python 3 (i.e., the version run by\
 the 'python' or 'python3' commands), run one or both of:
 
-    sudo port select --set python $pythonNoDot
-    sudo port select --set python3 $pythonNoDot
+    sudo port select --set python python$pythonVerNoDot
+    sudo port select --set python3 python$pythonVerNoDot
 "
 
 variant universal {

@@ -3,18 +3,20 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran lrberge dreamerr 1.2.3
+R.setup             cran lrberge dreamerr 1.4.0
 revision            1
 maintainers         nomaintainer
 license             GPL-3
 description         Error handling made easy
 long_description    {*}${description}
-checksums           rmd160  abd118630a8f1189eb90ee688e473f797d3078b5 \
-                    sha256  aece4ef13fc75cdb6490a0d42865f45c89eca8a72e71e921550270f72da16f3c \
-                    size    825150
+homepage            https://github.com/lrberge/dreamerr
+checksums           rmd160  255a21db5f03e3cbe0cbbc22dd7088a1ea94d11d \
+                    sha256  3e5e4afd10623b6dac6bb9b8bf0480d41c7422884cfec2d9d9786414f9026a87 \
+                    size    1122706
 supported_archs     noarch
 
-depends_lib-append  port:R-Formula
+depends_lib-append  port:R-Formula \
+                    port:R-stringmagic
 
 depends_test-append port:R-knitr \
                     port:R-rmarkdown

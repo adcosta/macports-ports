@@ -1,0 +1,38 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           R 1.0
+
+# Revert to GitHub once updated there.
+R.setup             cran ropensci aorsf 0.1.4 v
+revision            0
+categories-append   math
+maintainers         nomaintainer
+license             MIT
+description         Accelerated oblique random survival forests
+long_description    {*}${description}
+homepage            https://docs.ropensci.org/aorsf
+checksums           rmd160  7b4e4b07fafe786656f34a1c50083fb596f95645 \
+                    sha256  f2977ca63812b4a4d0964db9d2572b9ffeef9d47032509b05b2f56f7c8294449 \
+                    size    818434
+
+depends_lib-append  port:R-collapse \
+                    port:R-data.table \
+                    port:R-lifecycle \
+                    port:R-R6 \
+                    port:R-Rcpp \
+                    port:R-RcppArmadillo
+
+compilers.setup     require_fortran
+
+depends_test-append port:R-covr \
+                    port:R-ggplot2 \
+                    port:R-glmnet \
+                    port:R-knitr \
+                    port:R-rmarkdown \
+                    port:R-SurvMetrics \
+                    port:R-testthat \
+                    port:R-tibble \
+                    port:R-units
+
+test.run            yes

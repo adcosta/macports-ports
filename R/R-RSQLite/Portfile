@@ -3,16 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github r-dbi RSQLite 2.3.1.9003 v
+R.setup             github r-dbi RSQLite 2.3.7.9001 v
 revision            0
 categories-append   databases
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {LGPL-2.1 LGPL-3}
+license             LGPL-2.1+
 description         SQLite interface for R
 long_description    {*}${description}
-checksums           rmd160  14520c3312a70314a44ff22d0396fa1d7faf1d6b \
-                    sha256  8dc000650455acfa0baa3803b88be25b68489f6e0c80739d1cef79005cda303f \
-                    size    4129531
+homepage            https://rsqlite.r-dbi.org
+checksums           rmd160  191c3928c6cde69eda55be287f6d814232de8256 \
+                    sha256  2e65bc88dd98c18dacb5ce0edb6c54c13931ca084fa03ce783a99249edb696d5 \
+                    size    4229842
+github.tarball_from archive
 
 depends_lib-append  port:R-bit64 \
                     port:R-blob \
@@ -21,3 +23,18 @@ depends_lib-append  port:R-bit64 \
                     port:R-memoise \
                     port:R-pkgconfig \
                     port:R-plogr
+
+depends_test-append port:R-callr \
+                    port:R-DBItest \
+                    port:R-gert \
+                    port:R-gh \
+                    port:R-hms \
+                    port:R-knitr \
+                    port:R-magrittr \
+                    port:R-rmarkdown \
+                    port:R-rvest \
+                    port:R-testthat \
+                    port:R-withr \
+                    port:R-xml2
+
+test.run            yes

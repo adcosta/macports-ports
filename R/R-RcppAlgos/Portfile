@@ -4,17 +4,17 @@ PortSystem          1.0
 PortGroup           R 1.0
 
 # GitHub version lags behind.
-R.setup             cran jwood000 RcppAlgos 2.7.2
+R.setup             cran jwood000 RcppAlgos 2.8.3
 revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
-license             {GPL-2 GPL-3}
+license             GPL-2+
 description         High-performance tools for combinatorics and computational mathematics
 long_description    Provides optimized functions and flexible combinatorial iterators \
                     implemented in C++ for solving problems in combinatorics and computational mathematics.
-checksums           rmd160  d8679988f2bd3af64ca29df94f964cc76d66ae74 \
-                    sha256  c571e061efa67c7af0ad66f01aa0f8dffb441967df0c06e6da42679ef6e2dcf1 \
-                    size    563121
+checksums           rmd160  90faa81ff7629d090bae516da2f4345cd1304652 \
+                    sha256  6065e791ea46ebac07ecda4a4d65e57b5b4f86d994897f00b4193d6f04e9f15e \
+                    size    1016582
 
 depends_lib-append  port:gmp \
                     port:R-cpp11 \

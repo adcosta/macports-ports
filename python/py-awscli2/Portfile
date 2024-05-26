@@ -6,11 +6,12 @@ PortGroup           select 1.0
 PortGroup           github 1.0
 
 name                py-awscli2
-github.setup        aws aws-cli 2.11.27
+github.setup        aws aws-cli 2.15.53
 revision            0
 
 categories          python devel
-platforms           darwin
+platforms           {darwin any}
+supported_archs     noarch
 license             Apache-2
 maintainers         {gmail.com:davidgilman1 @dgilman} openmaintainer
 
@@ -19,9 +20,9 @@ long_description    {*}${description}
 
 homepage            https://aws.amazon.com/cli/
 
-checksums           rmd160  979cb4f8156232032b41b99e0764baaa0fa3dbbe \
-                    sha256  508f1ea6c959f434318aecb209ed9ddfd925c57c19f8e915b159ec6ae0026c42 \
-                    size    13447441
+checksums           rmd160  4ede7c27c2fc5d91f6bef5a7af37c0fa52c2efb3 \
+                    sha256  d99c6bc1bcc07b25d331d4c8a0cd0e894fd5b08aae354fe842f79b858778b409 \
+                    size    15174373
 
 python.versions     38 39 310 311
 python.pep517       yes
@@ -63,7 +64,7 @@ if {${name} ne ${subport}} {
         copy -force ${filespath}/awscli2 ${worksrcpath}/py${python.version}-awscli2
     }
 
-    patch.pre_args      -p1
+    patch.pre_args-replace  -p0 -p1
     patchfiles          patch-requirements.diff
 
     post-patch {

@@ -5,8 +5,8 @@ PortGroup           app 1.0
 PortGroup           python 1.0
 
 name                napari
-version             0.4.17
-revision            1
+version             0.4.19.post1
+revision            0
 categories-prepend  science
 license             BSD
 maintainers         {mps @Schamschula} openmaintainer
@@ -17,21 +17,24 @@ long_description    {*}${description} It's designed for browsing, annotating, an
                     (for the GUI), vispy (for performant GPU-based rendering), and the \
                     scientific Python stack (numpy, scipy).
 supported_archs     noarch
+platforms           {darwin any}
 homepage            https://github.com/napari/napari
 
-checksums           rmd160  003adc2c5f98528ed1e9c1b643b43c29a23a41a2 \
-                    sha256  26def5271c7a0910182e9f6798a0ae13c7e4b1c3b746d1a4ff0a041db1aa3949 \
-                    size    2307044
+checksums           rmd160  11b546bf63ffac08a5f405722b6fc0d2407e4032 \
+                    sha256  88e298697c38c9f842d7c26c8d51d2e0fbb90d0be05575fdd159d27eede11301 \
+                    size    10631211
 
-variant python38 conflicts python39 python310 description {Use Python 3.8} {}
-variant python39 conflicts python38 python310 description {Use Python 3.9} {}
-variant python310 conflicts python38 python39 description {Use Python 3.10} {}
+variant python38 conflicts python39 python310 python311 python312 description {Use Python 3.8} {}
+variant python39 conflicts python38 python310 python311 python312 description {Use Python 3.9} {}
+variant python310 conflicts python38 python39 python311 python312 description {Use Python 3.10} {}
+variant python311 conflicts python38 python39 python310 python312 description {Use Python 3.11} {}
+variant python312 conflicts python38 python39 python310 python311 description {Use Python 3.12} {}
 
-if {![variant_isset python38] && ![variant_isset python39]} {
-    default_variants +python310
+if {![variant_isset python38] && ![variant_isset python39] && ![variant_isset python310] && ![variant_isset python311]} {
+    default_variants +python312
 }
 
-foreach pv {310 39 38} {
+foreach pv {312 311 310 39 38} {
     if {[variant_isset python${pv}]} {
         python.default_version ${pv}
         break
@@ -67,6 +70,7 @@ depends_lib-append  \
                     port:py${python.version}-pint \
                     port:py${python.version}-psutil \
                     port:py${python.version}-pydantic \
+                    port:py${python.version}-pydantic-compat \
                     port:py${python.version}-qtpy \
                     port:py${python.version}-scikit-image \
                     port:py${python.version}-scipy \

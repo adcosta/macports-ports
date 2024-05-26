@@ -9,10 +9,11 @@ name            sbcl
 
 # Note to maintainers:
 #
-# Please bump the revision of math/maxima (and when it exists
-# math/maxima-devel) and fricas when this port changes.
-version         2.3.5
-revision        2
+# Please bump the revisions of math/maxima, math/fricas and possibly
+# math/maxima-devel when this port changes.
+version         2.4.4
+revision        0
+epoch           1
 
 categories      lang
 license         BSD
@@ -30,68 +31,49 @@ long_description \
 
 
 homepage        http://www.sbcl.org
-master_sites    sourceforge
 
-use_bzip2       yes
-
-# See: https://github.com/catap/sbcl/tree/macports
+# https://bugs.launchpad.net/sbcl/+bug/2033284
 patchfiles      0001-fix-building-when-root-directory-contain-non-ASCII-c.patch \
                 0002-add-MacPorts-XDG_DATA_DIRS.patch
 
-checksums       rmd160  95a02d7a489137602ebba333b83bfc1d9eb794be \
-                sha256  89c90720cf9d05dbcd90d690e381a2514c0f1807159e0d7222220c5a8c2d5186 \
-                size    7474392
+checksums           rmd160  0cd9d9f156883991a3113f7f5499176c86b8c4a4 \
+                    sha256  8a932627b3f1d8e9618f1cdc225edcb002456804697e2c87d140683764a106d5 \
+                    size    8065883
+if {${name} eq ${subport}} {
+    master_sites \
+                sourceforge
 
-# NOTE: Historically, the last version to support x86/Darwin and ppc/Darwin was
-# 2.2.5 and 2.2.2. Here, we have backported it to nearly the latest version. On
-# such platforms, we have a different epoch and versioning.
-#
-# Please do not update it without testing.
-if {${os.platform} eq "darwin" && ${configure.build_arch} in [list ppc i386]} {
-    version     2.3.5
-    revision    1
-    epoch       [ expr ${epoch} + 1 ]
+    use_bzip2   yes
 
-    checksums   rmd160  95a02d7a489137602ebba333b83bfc1d9eb794be \
-                sha256  89c90720cf9d05dbcd90d690e381a2514c0f1807159e0d7222220c5a8c2d5186 \
-                size    7474392
-
-    # See: https://github.com/catap/sbcl/tree/macports-legacy
-    patchfiles-append \
-                1001-x86-Darwin-Revert-x86-darwin-files.patch \
-                1002-x86-Darwin-Revert-Perform-darwin-related-housekeepin.patch \
-                1003-x86-Darwin-Remove-mach-exception-handler.patch \
-                1004-Darwin-use-libc-nanosleep-before-10.6-and-on-PPC.patch \
-                1005-Darwin-recovery-support-non-dispatch-semaphores.patch \
-                1006-x86-Darwin-mask-out-O_LARGEFILE-in-fcntl.1-test.patch \
-                1007-x86-Darwin-revert-OS_THREAD_STACK.patch \
-                1008-x86-Darwin-fix-build-by-old-preprocessor.patch \
-                1009-x86-Darwin-disable-failing-stat-mode-tests.patch \
-                1010-x86-Darwin-add-missed-OS_CONTEXT_PC.patch \
-                1011-x86-Darwin-fix-syntax-typos.patch \
-                1012-ppc-Darwin-Revert-Delete-support-for-and-darwin-ppc.patch \
-                1013-ppc-Darwin-Config.ppc-follow-up-changes.patch \
-                1014-ppc-Darwin-ppc-assem.S-fix-wrong-assembler-code-chun.patch \
-                1015-ppc-Darwin-Misc-fixes-for-PPC.patch \
-                1016-ppc-Darwin-ppc-assem-a-minor-fix-to-assembler-syntax.patch \
-                1017-Fix-building-by-lisp-without-endian-features.patch \
-                1018-Darwin-implement-os_tsd_get_direct-for-macOS-before-.patch \
-                1019-ppc-Darwin-fix-threads-support.patch
+    distfiles   ${name}-${version}-source${extract.suffix}
+    worksrcdir  ${name}-${version}
 }
 
-distfiles       ${name}-${version}-source${extract.suffix}
-worksrcdir      ${name}-${version}
+conflicts       sbcl-devel
 
-depends_build-append \
-                port:sbcl-bootstrap
-depends_skip_archcheck-append \
-                sbcl-bootstrap
+subport sbcl-devel {
+    PortGroup   github  1.0
 
-# clock_gettime
-legacysupport.newest_darwin_requires_legacy 15
-# NOTE: check that it can be removed
-patchfiles-append \
-                0003-Use-CLOCK_MONOTONIC-when-CLOCK_PROCESS_CPUTIME_ID-un.patch
+    github.setup \
+                sbcl sbcl 9c63b7eaeb9e53cb4f73709d9d397f4ad4a939f9
+    version     20240106
+    revision    0
+
+    conflicts   sbcl
+
+    checksums   rmd160  c442a1bdb9061f4eaa4248f2f9895177fcb525b2 \
+                sha256  b774aaf314515c4c55b59cf674eda985f57983470836917dd21bdbff39de17ab \
+                size    9801341
+
+    pre-build {
+        system -W ${worksrcpath} "echo '\"${version}\"' > version.lisp-expr"
+    }
+}
+
+if {${name} eq ${subport}} {
+    # clock_gettime
+    legacysupport.newest_darwin_requires_legacy 15
+}
 
 # Uses: __attribute__((aligned(8)))
 # See: https://bugs.launchpad.net/sbcl/+bug/1991485
@@ -117,6 +99,16 @@ post-patch {
     }
 }
 
+# SBCL records used compiler inside lib/sbcl/sbcl.mk which may lead to not working sb-grovel
+if { [string match macports-clang-* ${configure.compiler}] } {
+    depends_run-append \
+                    port:[string map {"macports-" ""} ${configure.compiler}]
+}
+if { [string match macports-gcc-* ${configure.compiler}] } {
+    depends_run-append \
+                   port:[string map {"macports-gcc-" "gcc"} ${configure.compiler}]
+}
+
 use_configure   no
 
 pre-build {
@@ -137,8 +129,18 @@ use_parallel_build  no
 build.cmd       sh
 build.target    make.sh
 build.args-append \
-                --prefix=${prefix} \
-                --xc-host=${prefix}/libexec/sbcl-bootstrap/bin/sbcl
+                --prefix=${prefix}
+
+variant bootstrap_ecl description { Use ECL to bootstrap compilation instead of SBCL binary. } {}
+
+if { ![variant_isset bootstrap_ecl]  } {
+    depends_build-append           port:sbcl-bootstrap
+    depends_skip_archcheck-append  sbcl-bootstrap
+    build.args-append              --xc-host=${prefix}/libexec/sbcl-bootstrap/bin/sbcl
+} else {
+    depends_build-append           path:bin/ecl:ecl
+    build.args-append              --xc-host=${prefix}/bin/ecl
+}
 
 if {${configure.build_arch} eq "i386"} {
     build.args-append \
@@ -149,11 +151,6 @@ if {${configure.build_arch} eq "i386"} {
 } else {
     build.args-append \
                 --arch=${configure.build_arch}
-}
-
-platform darwin arm 20 {
-    patchfiles-append \
-                0004-arm-Darwin-disable-futex-on-BigSur.patch
 }
 
 # SBCL enables SIMD only when host CPU supports AVX2 which may not be true for buildbot.
@@ -212,5 +209,7 @@ destroot.env    INSTALL_ROOT=${destroot}${prefix}
 destroot.target install.sh
 destroot.destdir
 
-livecheck.url   http://sourceforge.net/api/file/index/project-id/1373/rss?path=%2F${name}
-livecheck.regex guid.*${name}-(\\d+(\\.\\d+)+)-source
+if {${name} eq ${subport}} {
+    livecheck.url   http://sourceforge.net/api/file/index/project-id/1373/rss?path=%2F${name}
+    livecheck.regex guid.*${name}-(\\d+(\\.\\d+)+)-source
+}

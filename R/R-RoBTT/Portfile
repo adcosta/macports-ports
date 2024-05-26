@@ -3,17 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             github FBartos RoBTT 1.1.0 v
-revision            0
+# Revert to GitHub once updated there.
+R.setup             cran FBartos RoBTT 1.3.0
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-3
 description         Robust Bayesian t-test
 long_description    {*}${description}
 homepage            https://fbartos.github.io/RoBTT
-checksums           rmd160  8713a10ba536a0860f3013b5dcb5c671210b692e \
-                    sha256  1d83dba72956a87f749aacc96af2ecdf3817fa538a4db415f2cf67c8c5c1f727 \
-                    size    182134077
+checksums           rmd160  1dc9a93cb49b5d48100670f1b5ae4c486a5443f3 \
+                    sha256  d026aea183c3a51d47d32e4574cad5717746097a7c438e8b443efc6ba8a1d903 \
+                    size    188808
 
 depends_lib-append  port:R-BayesTools \
                     port:R-BH \

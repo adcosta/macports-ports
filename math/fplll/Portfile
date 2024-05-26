@@ -3,7 +3,7 @@
 PortSystem          1.0
 PortGroup           github 1.0
 
-github.setup        fplll fplll 5.4.3
+github.setup        fplll fplll 5.4.5
 categories          math
 license             LGPL-2.1
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
@@ -11,9 +11,10 @@ description         Lattice algorithms using floating-point arithmetic
 long_description    fplll contains implementations of several lattice algorithms. \
                     The implementation relies on floating-point orthogonalization, \
                     and LLLis central to the code, hence the name.
-checksums           rmd160  a56c2d79ff9fe12c74efe01311a05d35dbc3ed12 \
-                    sha256  c8c7532be9c1bfae4c85717a7dc37b68a678ac6713af6968e842738e508b5db3 \
-                    size    2335592
+checksums           rmd160  c0fe8e6b3fadab2ec96be8230599d9a0f1b3dbe8 \
+                    sha256  be770e5a509865c08bc856ff13a44757f77359e930e29093adbb25eb36301be9 \
+                    size    2336346
+github.tarball_from archive
 
 use_autoconf        yes
 autoconf.cmd        ./autogen.sh
@@ -28,7 +29,3 @@ depends_lib-append  port:gmp \
                     port:mpfr
 
 compiler.cxx_standard 2011
-
-# Temporary solution until non_lazy_ptr bug is fixed.
-compiler.blacklist-append \
-                    macports-gcc-12

@@ -5,11 +5,11 @@ PortGroup               github 1.0
 PortGroup               cmake 1.1
 PortGroup               app 1.0
 
-github.setup            wesnoth wesnoth 1.16.9
+github.setup            wesnoth wesnoth 1.16.12
 revision                0
-checksums               rmd160  215ecfb8384600be7e3a3aa4da57224b8bed7cc9 \
-                        sha256  3ded6938fb24100b9884ab5a902711f6c7a25cef65aafddb3e3b8a15b7652386 \
-                        size    476167874
+checksums               rmd160  8cb290ae1451d4dea2665baae6e99999d0e7cba0 \
+                        sha256  1ebb0ec3f7d90ec1edf61710253a05ff5b04d7068a1d48d29b0e6318c946b966 \
+                        size    476686555
 
 set branch              [join [lrange [split ${version} .] 0 1] .]
 categories              games
@@ -29,7 +29,7 @@ long_description        Battle for Wesnoth is a fantasy turn-based strategy \
                         levels, and are carried over from one scenario to the \
                         next campaign.
 
-depends_build-append    port:pkgconfig
+depends_build-append    path:bin/pkg-config:pkgconfig
 
 depends_lib-append      port:boost \
                         port:bzip2 \

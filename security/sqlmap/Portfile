@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                sqlmap
-version             1.7.6
+version             1.8.4
 revision            0
 
 categories          security databases python
@@ -24,9 +24,9 @@ long_description    \
     the operating system via out-of-band connections.
 homepage            https://sqlmap.org/
 
-checksums           rmd160  c57009606ec87b688370db6f7a7dabdaa1850736 \
-                    sha256  4f67a2d5ca8301e47efec4a27dbd12bc96895f7b2070f711ceb9a38277100d17 \
-                    size    7205667
+checksums           rmd160  f51240b462d915b8b58dbde9a0b3faeee96b2305 \
+                    sha256  cd315d183cef3e535e6ec7a93f15e7dbefb6d9800d943bbcdb2a6bb3b7877da7 \
+                    size    7237763
 
 patchfiles          patch-cmd-usage-string.diff
 
@@ -40,41 +40,47 @@ post-patch {
     }
 }
 
-variant python27 conflicts python37 python38 python39 python310 python311 \
+variant python27 conflicts python38 python39 python310 python311 python312 \
     description {Build for Python 2.7} {
     python.default_version 27
 }
 
-variant python37 conflicts python27 python38 python39 python310 python311 \
-    description {Build for Python 3.7} {
-    python.default_version 37
-}
-
-variant python38 conflicts python27 python37 python39 python310 python311 \
+variant python38 conflicts python27 python39 python310 python311 python312 \
     description {Build for Python 3.8} {
     python.default_version 38
 }
 
-variant python39 conflicts python27 python37 python38 python310 python311 \
+variant python39 conflicts python27 python38 python310 python311 python312 \
     description {Build for Python 3.9} {
     python.default_version 39
 }
 
-variant python310 conflicts python27 python37 python38 python39 python311 \
+variant python310 conflicts python27 python38 python39 python311 python312 \
     description {Build for Python 3.10} {
     python.default_version 310
 }
 
-variant python311 conflicts python27 python37 python38 python39 python310 \
+variant python311 conflicts python27 python38 python39 python310 python312 \
     description {Build for Python 3.11} {
     python.default_version 311
+}
+
+variant python312 conflicts python27 python38 python39 python310 python311 \
+    description {Build for Python 3.12} {
+    python.default_version 312
 }
 
 depends_build-append \
                     port:py${python.version}-setuptools
 
-if {![variant_isset python27] && ![variant_isset python37] && \
+if {![variant_isset python27] && \
     ![variant_isset python38] && ![variant_isset python39] && \
-    ![variant_isset python310] && ![variant_isset python311]} {
-    default_variants +python311
+    ![variant_isset python310] && ![variant_isset python311] && \
+    ![variant_isset python312]} {
+    default_variants +python312
+}
+
+post-destroot {
+    ln -s ${frameworks_dir}/Python.framework/Versions/[string index ${python.version} 0].[string range ${python.version} 1 end]/bin/${name} \
+        ${destroot}${prefix}/bin/${name}
 }

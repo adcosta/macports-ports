@@ -3,17 +3,17 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             cran cran mnorm 1.2.0
-revision            0
+R.setup             cran cran mnorm 1.2.2
+revision            1
 categories-append   math
 maintainers         {@barracuda156 gmail.com:vital.had} openmaintainer
 license             GPL-2+
 description         Multivariate normal distribution
 long_description    Calculates and differentiates probabilities and density \
                     of (conditional) multivariate normal distribution and Gaussian copula.
-checksums           rmd160  70d600d9b766ea22feb38e45c55113d7da9d50f2 \
-                    sha256  0f469ef9e2f80f846a0ff2d945229d523fb6220d0107b8773ac7f8f3e4d308c7 \
-                    size    48777
+checksums           rmd160  8010541623f56de2f02bffe8979b9cf76e43f6bf \
+                    sha256  e00791d32112c8ced1a7f3c1e1df1d0057fc1c48942ec63c81c65c5619206dc7 \
+                    size    58125
 
 depends_lib-append  port:R-hpa \
                     port:R-Rcpp \

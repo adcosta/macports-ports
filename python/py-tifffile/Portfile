@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           python 1.0
 
 name                py-tifffile
-version             2023.4.12
+version             2024.5.22
 revision            0
 license             BSD
 maintainers         {mps @Schamschula} openmaintainer
@@ -17,11 +17,11 @@ supported_archs     noarch
 platforms           {darwin any}
 homepage            https://www.lfd.uci.edu/~gohlke/
 
-checksums           rmd160  81b3d0aca4e585bbcc5d3e603740dd6b9282f2ca \
-                    sha256  2fa99f9890caab919d932a0acaa9d0f5843dc2ef3594e212963932e20713badd \
-                    size    342873
+checksums           rmd160  df2a38a4d46511ad1961395cb740be406f9a3e14 \
+                    sha256  3a105801d1b86d55692a98812a170c39d3f0447aeacb1d94635d38077cb328c4 \
+                    size    360476
 
-python.versions     37 38 39 310 311
+python.versions     38 39 310 311 312
 
 if {${name} ne ${subport}} {
     depends_build-append \

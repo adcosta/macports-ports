@@ -3,16 +3,18 @@
 PortSystem          1.0
 PortGroup           R 1.0
 
-R.setup             bioconductor Bioconductor BiocBaseUtils 1.2.0
+R.setup             bioconductor Bioconductor BiocBaseUtils 1.6.0
 revision            0
+categories-append   bioconductor devel
 maintainers         nomaintainer
 license             Artistic-2
 description         General utility functions for developing Bioconductor packages
 long_description    {*}${description}
-checksums           rmd160  e0b66473620aa04c279f98b1171a0f7a007c356f \
-                    sha256  15c3d33fa6c817aee34533f63df63ababbafa5de3db02ded90ea6a1497ac6e90 \
-                    size    227873
+checksums           rmd160  b965c45d366bb2911345adc085ea613aa988c2a3 \
+                    sha256  a4d8aa652a1ab929cd66172b315d2fb79e489f06a2ddbdb4288a76132ffc0b39 \
+                    size    228328
 supported_archs     noarch
+platforms           {darwin any}
 
 depends_test-append port:R-BiocStyle \
                     port:R-knitr \

@@ -3,28 +3,33 @@
 PortSystem          1.0
 PortGroup           golang 1.0
 
-go.setup            github.com/scaleway/scaleway-cli 2.14.0 v
+go.setup            github.com/scaleway/scaleway-cli 2.30.0 v
+go.offline_build    no
+github.tarball_from archive
+revision            0
 name                scw
+
+homepage            https://www.scaleway.com/en/cli/
 
 categories          net
 installs_libs       no
 license             Apache-2
-
-maintainers         {gmail.com:davidriod @dgsb} openmaintainer
+maintainers         {gmail.com:davidriod @dgsb} \
+                    {gmail.com:herby.gillot @herbygillot} \
+                    openmaintainer
 
 description         Command Line Interface for Scaleway
 
 long_description    Scaleway CLI is a tool to help you pilot your Scaleway \
                     infrastructure directly from your terminal.
 
-checksums           rmd160  7b081c439c4228985529c673eff34a2c8f6719cb \
-                    sha256  07ad99d16012c33b5e697fefefe51821f4fec3d6484fbc90a19faa6356d52fe5 \
-                    size    2476919
+checksums           rmd160  3d5346c65ea23857aaa0aa3e0bad551b43456e2d \
+                    sha256  5d88f0368848202d777285da7d8379ce1166e8d7c0e97e224c4258dd6b9b0a92 \
+                    size    2467651
 
-build.target        ./cmd/scw
-
-build.env-delete    GO111MODULE=off \
-                    GOPROXY=off
+build.pre_args-append \
+    -ldflags \" -X main.Version=${github.tag_prefix}${version} \"
+build.args          ./cmd/scw
 
 destroot {
     xinstall -m 0755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/${name}
